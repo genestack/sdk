@@ -214,6 +214,7 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
+    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path]
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
@@ -230,10 +231,4 @@ class UserManagement(GenestackShell):
 
 if __name__ == '__main__':
     shell = UserManagement()
-    shell.add_command(Init)
-    shell.add_command(List)
-    shell.add_command(AddUser)
-    shell.add_command(SetDefault)
-    shell.add_command(SetPassword)
-    shell.add_command(Path)
     shell.cmdloop()

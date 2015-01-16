@@ -50,6 +50,7 @@ class Time(Invoke):
 
 
 class Shell(GenestackShell):
+    COMMAND_LIST = [Time]
 
     def default(self, line):
         args = line.split()
@@ -60,5 +61,4 @@ class Shell(GenestackShell):
 
 if __name__ == '__main__':
     shell = Shell()
-    shell.add_command(Time)
     shell.cmdloop()

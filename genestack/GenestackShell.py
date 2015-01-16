@@ -85,16 +85,17 @@ class Command(object):
 
 class GenestackShell(cmd.Cmd):
     INTRO = ''
+    COMMAND_LIST = []
     COMMANDS = {}
     DESCRIPTION = "Shell and commandline application"
 
-    def add_command(self, command):
-        self.COMMANDS[command.COMMAND] = command
 
     def get_history_file(self):
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
     def preloop(self):
+        self.COMMANDS = {command.COMMAND: command for command in self.COMMAND_LIST}
+
         parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
                                 parents=[make_connection_parser()])
         # override default help

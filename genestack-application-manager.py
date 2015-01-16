@@ -423,16 +423,9 @@ def show_info(files, vendor_only, with_filename, no_filename):
 class ApplicationManager(GenestackShell):
     DESCRIPTION = 'Application manager shell and commandline application.'
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
+    COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
 
 
 if __name__ == '__main__':
     shell = ApplicationManager()
-    shell.add_command(Info)
-    shell.add_command(Install)
-    shell.add_command(ListVersions)
-    shell.add_command(ListApplications)
-    shell.add_command(MarkAsStable)
-    shell.add_command(Remove)
-    shell.add_command(Reload)
-    shell.add_command(Invoke)
     shell.cmdloop()
