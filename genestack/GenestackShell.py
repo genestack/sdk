@@ -29,7 +29,7 @@ if isatty():
 HELP_SEPARATOR = '\n%s  Help  %s' % ('=' * 20, '=' * 20)
 
 
-def print_help(parser):
+def get_help(parser):
     formatter = parser._get_formatter()
 
     # usage
@@ -51,7 +51,7 @@ def print_help(parser):
     formatter.add_text(parser.epilog)
 
     # determine help from format above
-    print formatter.format_help()
+    return formatter.format_help()
 
 
 class Command(object):
@@ -107,20 +107,20 @@ class GenestackShell(cmd.Cmd):
             command = command()
         elif args.command:
             print "*** Unknown command: %s" % args.command
-            print_help(parser)
+            print get_help(parser)
             exit(0)
         elif others:
             print "*** Unknown arguments: %s" % ' '.join(others)
-            print_help(parser)
+            print get_help(parser)
             exit(0)
 
         if args.help:
             if not command:
-                print_help(parser)
+                print get_help(parser)
             elif command.OFFLINE:
-                print_help(command.get_command_parser())
+                print get_help(command.get_command_parser())
             else:
-                print_help(command.get_command_parser(make_connection_parser()))
+                print get_help(command.get_command_parser(make_connection_parser()))
             exit(0)
 
         if command:
@@ -184,7 +184,7 @@ class GenestackShell(cmd.Cmd):
 
         command = self.COMMANDS.get(line)
         if command:
-            print_help(command().get_command_parser())
+            print get_help(command().get_command_parser())
             return
 
         if not line:
