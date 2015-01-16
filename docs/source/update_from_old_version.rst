@@ -10,4 +10,7 @@ Major changes
  - All script related to import data moved to ``DataImporter``
  - Colorization is not included to core, so it should be removed.
 
+ - Application manager script was renamed from app-manager to genestack-application-manager, no this script installed with setup. Commands `list versions` and `list applications` was replaced by `versions` and `applications`
+
+
 About any issues please report to Andrey via skype or track (component pythonSDK)
