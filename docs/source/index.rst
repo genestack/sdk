@@ -9,6 +9,8 @@ Contents:
    setup
    overview
    connection
+   genestack-user-setup
+   genestack-application-manager
    update_from_old_version
 
 Indices and tables

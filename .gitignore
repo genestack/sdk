@@ -3,3 +3,5 @@
 docs/build
 .DS_Store
 build/
+genestack-user-setup.rst
+genestack-application-manager.rst
