@@ -89,18 +89,25 @@ class GenestackShell(cmd.Cmd):
     COMMANDS = {}
     DESCRIPTION = "Shell and commandline application"
 
-
     def get_history_file(self):
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
-    def preloop(self):
+    def __init__(self, *args, **kwargs):
         self.COMMANDS = {command.COMMAND: command for command in self.COMMAND_LIST}
+        cmd.Cmd.__init__(self, *args, **kwargs)
 
+    def get_shell_parser(self):
         parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
                                 parents=[make_connection_parser()])
         # override default help
         parser.add_argument('-h', '--help', action='store_true', help="show this help message and exit")
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
+        return parser
+
+    def preloop(self):
+
+
+        parser = self.get_shell_parser()
         args, others = parser.parse_known_args()
 
         command = self.COMMANDS.get(args.command)
