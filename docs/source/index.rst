@@ -11,6 +11,8 @@ Contents:
    connection
    genestack-user-setup
    genestack-application-manager
+
+   files_util
    local_setup
    update_from_old_version
 
