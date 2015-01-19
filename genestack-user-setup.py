@@ -62,7 +62,6 @@ def ask_email_and_password(host, alias=None):
             print
             continue
         user = User(user_login, host=host, password=user_password, alias=alias)
-        print user, alias
         try:
             connection = user.get_connection()
             break
