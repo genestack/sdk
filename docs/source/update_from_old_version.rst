@@ -12,5 +12,9 @@ Major changes
 
  - Application manager script was renamed from app-manager to genestack-application-manager, no this script installed with setup. Commands `list versions` and `list applications` was replaced by `versions` and `applications`
 
+There is two way to fix script:
+   - fix scripts to new api
+   - temporary fix scripts by adding `sys.path.insert(0, 'genestack-python')`
+
 
 About any issues please report to Andrey via skype or track (component pythonSDK)
