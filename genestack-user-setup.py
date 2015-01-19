@@ -200,14 +200,13 @@ class Init(Command):
         if os.path.exists(config_path):
             print "Config is already present at %s" % config_path
             return
-
-        print "To setup you setting you need to have genestack account, please visit %s and create one." % DEFAULT_HOST
-        print "This setup can be relaunched later."  # TODO add script name to be lunched
+        print "If you have not genestack account you need to create it."
 
         connection, user = ask_email_and_password(DEFAULT_HOST)
         config.add_user(user)
         config.set_default_user(user)
         config.save()
+        print "Initialization finished."
         return connection
 
 
