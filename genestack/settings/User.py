@@ -10,9 +10,7 @@ from getpass import getpass
 from genestack import GenestackException, Connection
 from genestack.utils import isatty
 
-# DEFAULT_HOST = 'platform.genestack.org'
-DEFAULT_HOST = 'localhost:8080'
-# DEFAULT_HOST = 'internal-dev.genestack.com'
+DEFAULT_HOST = 'platform.genestack.org'
 
 
 def _get_server_url(host):
