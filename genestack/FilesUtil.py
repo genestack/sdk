@@ -42,8 +42,11 @@ class FilesUtil(Application):
         Returns the accession of the reference genome with the specified parameters: organism, assembly, release.
         If more than one or no genome is found, the corresponding exceptions are thrown.
 
+        :param organism: organism
         :type organism: str
+        :param assembly: assembly
         :type assembly: str
+        :param release: release
         :type release: str
         :return: accession
         :rtype: str
@@ -155,7 +158,6 @@ class FilesUtil(Application):
 
         :param accession: file accession
         :param parent: folder accession
-        :return:
         """
         self.invoke('unlinkFile', accession, parent)
 
@@ -199,7 +201,7 @@ class FilesUtil(Application):
     def get_special_folder(self, name):
         """
         Return special folder accession.
-        Available special folders
+        Available special folders:
             SpecialFolders.IMPORTED folder where new files are created by Data Importers
             SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
             SpecialFolders.TEMPORARY temporary files
