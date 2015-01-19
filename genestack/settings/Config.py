@@ -66,7 +66,7 @@ class Config(object):
         config_path = os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)  # temp hack before file is created
 
         if not os.path.exists(config_path):
-            print 'Default setting is not present. you can setup it using ????'  # TODO specify how to do it
+            print 'Default setting is not present. You can setup it via: genestack-user-setup.py init'
             return  # check that this return handled everywhere
 
         def get_text(parent, tag):
