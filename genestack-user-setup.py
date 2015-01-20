@@ -219,6 +219,7 @@ class UserManagement(GenestackShell):
         if not shell and not isinstance(command, (Init, Path, List)) and not os.path.exists(config_path):
             print "Config is not present, please do init. Exiting."
             exit(1)
+        return GenestackShell.process_command(self, command, argument_line, connection, shell=shell)
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
