@@ -66,7 +66,7 @@ def ask_email_and_password(host, alias=None):
             connection = user.get_connection()
             break
         except GenestackException:
-            print 'You email and password does not match. Please try again.'
+            print 'Your username or password was incorrect. Please try again.'
     return connection, user
 
 
