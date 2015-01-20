@@ -214,10 +214,16 @@ class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
     COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path]
 
+    def process_command(self, command, argument_line, connection, shell=False):
+        config_path = config.get_settings_file()
+        if not shell and not isinstance(command, Init) and not os.path.exists(config_path):
+            print "Config is not present, please do init. Exiting."
+            exit(1)
+
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
-            print "Config is not present, running init manager."
+            print "Config is not present, starting init."
             connection = self.process_command(Init(), [], None)
             self.connection = connection
         else:
