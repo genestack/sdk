@@ -12,6 +12,7 @@ from genestack import GenestackException
 from xml.dom.minidom import getDOMImplementation, parse
 from User import User
 from copy import deepcopy
+from genestack.utils import isatty
 
 
 GENESTACK_SDK = "Genestack SDK"
@@ -66,8 +67,11 @@ class Config(object):
         config_path = os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)  # temp hack before file is created
 
         if not os.path.exists(config_path):
-            print 'Default setting is not present. You can setup it via: genestack-user-setup.py init'
+            print 'Warning. config is not present. You can setup it via: genestack-user-setup.py init'
             return  # check that this return handled everywhere
+            if isatty():
+                print "Work without config with not a TTY is not supported."
+                exit(1)
 
         def get_text(parent, tag):
             elements = parent.getElementsByTagName(tag)
