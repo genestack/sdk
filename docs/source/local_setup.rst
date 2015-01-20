@@ -30,3 +30,4 @@ To use local system installation add users via `genestack-user-setup.py`::
         localhost:8080
         pwdTester123
 
+Make tester default user. `genestack-user-setup.py default tester`
