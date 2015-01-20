@@ -41,19 +41,19 @@ def ask_alias(existed):
 
 
 def ask_email_and_password(host, alias=None):
-    print 'Please input you email and password for %s' % host
+    print 'Please input your email and password for %s' % host
     user_login = None
     while True:
         if user_login:
-            res = raw_input('Please specify you user login(email) [%s]: ' % user_login).strip()
+            res = raw_input('Please specify your user login(email) [%s]: ' % user_login).strip()
             if res:
                user_login = res
         else:
-            user_login = raw_input('Please specify you user login(email): ').strip()
+            user_login = raw_input('Please specify your user login(email): ').strip()
             if not user_login:
                 print 'Login cannot be empty.'
                 continue
-        user_password = getpass('Please specify you password for %s: ' % user_login)
+        user_password = getpass('Please specify your password for %s: ' % user_login)
         if not user_password:
             print 'Password cannot be empty'
             continue
@@ -206,7 +206,7 @@ class Init(Command):
         config.add_user(user)
         config.set_default_user(user)
         config.save()
-        print "Initialization finished."
+        print "Initialization finished. Config created at %s" % config_path
         return connection
 
 
