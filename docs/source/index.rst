@@ -13,8 +13,8 @@ Contents:
    genestack-application-manager
 
    files_util
-   local_setup
-   update_from_old_version
+
+
 
 Indices and tables
 ==================

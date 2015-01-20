@@ -8,12 +8,12 @@ Internal release
   - navigate to root folder
   - install
 
-    -install via setup:
+    - install via setup:
 
       - ``sudo python setup.py install``
       - install keyring https://pypi.python.org/pypi/keyring
 
-    -install via pip:
+    - install via pip:
 
       - ``sudo pip install .``
 

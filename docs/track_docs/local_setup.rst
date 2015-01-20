@@ -4,7 +4,7 @@ Local setup
 Setup users for local installation
 ----------------------------------
 
-- Find config file location  ``genestack-user-setup.py path''
+- Find config file location  ``genestack-user-setup.py path``
 
 - Replace it with next one.  (or merge ro your settings)::
 
