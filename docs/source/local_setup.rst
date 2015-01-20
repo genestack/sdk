@@ -13,7 +13,7 @@ Available hosts
 Setup users for local installation
 ----------------------------------
 
-To use local system installation add users via `genestack-user-setup.py add`::
+To use local system installation add users via ``genestack-user-setup.py add``::
 
     root
         root@genestack.com
@@ -30,6 +30,6 @@ To use local system installation add users via `genestack-user-setup.py add`::
         localhost:8080
         pwdTester123
 
-Make tester default user. `genestack-user-setup.py default tester`
+Make tester default user. ``genestack-user-setup.py default tester``
 
 
