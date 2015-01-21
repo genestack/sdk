@@ -7,7 +7,9 @@ Setup users for local installation
 - Find config file location  ``genestack-user-setup.py path``
 
 if file is not created:
+
 - make config folder ``mkdir ~/.genestack``
+
 - make config file ``touch ~/.genestack/genestack.xml``
 
 - Replace it with next one.  (or merge with your settings)::
