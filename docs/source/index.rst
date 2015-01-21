@@ -8,6 +8,7 @@ Contents:
 
    setup
    overview
+   user_config
    connection
    genestack-user-setup
    genestack-application-manager
