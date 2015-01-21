@@ -8,14 +8,14 @@ Internal release
   - navigate to root folder
   - install
 
-    - install via setup:
-
-      - ``sudo python setup.py install``
-      - install keyring https://pypi.python.org/pypi/keyring
-
     - install via pip:
 
       - ``sudo pip install .``
+
+    - install manually:
+
+      - ``sudo python setup.py install``
+      - install keyring https://pypi.python.org/pypi/keyring
 
   - run ``genestack-user-setup.py init`` and input you login and password for dotorg
 
