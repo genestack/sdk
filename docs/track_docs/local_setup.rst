@@ -41,10 +41,4 @@ Setup users for local installation
 To use installAll -db default user must be ``tester``! To set it use: ``genestack-user-setup.py default tester``
 
 
-Available hosts
----------------
-::
 
-   localhost:8080
-   platform.genestack.org
-   internal-dev.genestack.com
