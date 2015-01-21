@@ -4,9 +4,13 @@ Local setup
 Setup users for local installation
 ----------------------------------
 
-- Find config file location  ``genestack-user-setup.py path``
+- Find config file location  `genestack-user-setup.py path`
 
-- Replace it with next one.  (or merge ro your settings)::
+if file is not created:
+- make config folder `mkdir ~/.genestack`
+- make config file `touch ~/.genestack/genestack.xml`
+
+- Replace it with next one.  (or merge with your settings)::
 
      <genestack>
         <users>
@@ -32,7 +36,8 @@ Setup users for local installation
         <default_user>tester</default_user>
     </genestack>
 
-- installAll -db expect to have ``tester`` as default user. To set it use: ``genestack-user-setup.py default tester``
+To use installAll -db default user must be `tester`! To set it use: `genestack-user-setup.py default tester`
+
 
 Available hosts
 ---------------
