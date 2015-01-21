@@ -6,30 +6,43 @@ import sys
 sys.path.append('..')
 
 files = [
-    ('genestack-application-manager', 'ApplicationManager'),
-    ('genestack-user-setup', 'UserManagement')
+    ('genestack-application-manager', 'ApplicationManager', 'app-manager_usage.rst'),
+    ('genestack-user-setup', 'UserManagement', None)
 ]
 
 template = """
-{0}
+{name}
+{name_underline}
+
+{name} installed with pythonSDK and accessed as `{name}.py`.
 
 
 Usage
 -----
-This application can be used both as shell and command line::
+This script can be used both as shell and command line::
 
     {usage}
 
-In shell mode type `help` to get list of available commands.
-Read :doc:`connection` for more info about connection arguments.
+You can get description for every ``command`` by running::
+
+  {name}.py command -h
+
+
+In shell mode type ``help`` to get list of available commands.
+Use ``help command`` to get command help.
+
+See :doc:`connection` for more information about connection arguments.
+
 
 Commands
 --------
-{1}
+{commands}
+
+{footer}
 """
 
 
-def generate_rst_doc(shell_name, class_name):
+def generate_rst_doc(shell_name, class_name, footer_file_name):
     shell_module = __import__(shell_name)
     shell = getattr(shell_module, class_name)
 
@@ -46,18 +59,26 @@ def generate_rst_doc(shell_name, class_name):
         text = ' - **%s**::\n\n    %s\n' % (command.COMMAND, help_text)
         commands.append(text)
 
+    if footer_file_name:
+        with open(footer_file_name) as f:
+            footer = f.read()
+    else:
+        footer = ''
+
     with open('%s.rst' % shell_name, 'w') as f:
         f.write(template.format(
-            '%s\n%s' % (tool_file_name, '=' * len(tool_file_name)),
-            '\n'.join(commands),
+            name=tool_file_name,
+            name_underline='=' * len(tool_file_name),
+            commands='\n'.join(commands),
             description=shell.DESCRIPTION,
             usage=script_help,
+            footer=footer,
         ))
 
 
 def main():
-    for shell_name, class_name in files:
-        generate_rst_doc(shell_name, class_name)
+    for shell_name, class_name, footer_file_name in files:
+        generate_rst_doc(shell_name, class_name, footer_file_name)
 
 
 if __name__ == '__main__':

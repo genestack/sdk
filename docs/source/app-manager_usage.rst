@@ -1,0 +1,70 @@
+Useful commands
+---------------
+
+I ``-u`` is not specified default user is used. USer need to have rights to reproduce this commands.
+
+Installing applications
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to install new JAR file with applications, you simply execute::
+
+    genestack-application-manager.py -r root install my-version path/to/file.jar
+
+If you have your JAR file inside some folder, and this is the only JAR file inside the folder and all its subfolders, then you can specify path to the folder instead for the full path to JAR file::
+
+    genestack-application-manager.py -r root install my-version path/to/folder
+
+**NOTE**: when you specify folder path instead of JAR path, then the folder and all its subfolders are searched for JAR files; if only one JAR is found — it is installed, otherwise error is reported.
+
+
+If you want to install new JAR and also mark all applications from that JAR as stable for your current user, then you can use ``-s`` key of ``install`` command (application manager has default stable scope "user")::
+
+    genestack-application-manager.py install -s my-version path/to/file.jar
+
+If you want to make applications globally stable, you should specify ``system`` scope with ``-S`` key::
+
+    genestack-application-manager.py install -s -S system my-version path/to/file.jar
+
+Otherwise, you can use ``stable`` command after installing JAR file::
+
+    JAR=path/to/file.jar
+    VERSION=my-version
+    genestack-application-manager.py install $VERSION $JAR
+    for A in $(genestack-application-manager.py info $JAR | tail -n+3); do
+        genestack-application-manager.py stable -S system $VERSION $A
+    done
+
+If you want to reinstall your applications later with the same version (no matter if this version was marked as stable), you can simply use ``-o`` key of ``install`` command::
+
+    genestack-application-manager.py install -o my-version path/to/file.jar
+
+**NOTE:** ``-o`` key works exactly as removing old version before uploading new one, so there are two things to keep in mind:
+  - ``-o`` key can be used to overwrite only your versions, because you cannot overwrite or remove versions uploaded by other users;
+  - ``-o`` key removes global stable mark, so if you overwrite globally stable version, then after that no globally stable version will be available.
+
+Sometimes you need to upload JAR file with many applications and mark as stable only one application from that JAR.
+In this case you should use ``install`` and ``stable`` commands::
+
+    genestack-application-manager.py install my-version path/to/file.jar
+    genestack-application-manager.py stable my-version vendor/appIdFromJarFile
+
+Removing all your applications
+------------------------------
+
+If you want to remove all your applications, just enter the following command::
+
+    for A in $(genestack-application-manager.py applications); do
+        for V in $(genestack-application-manager.py versions -o $A); do
+            genestack-application-manager.py remove $V $A
+        done
+    done
+
+If you want to remove only those your applications that were loaded from specific JAR file, then::
+
+    JAR=path/to/file.jar
+    for A in $(genestack-application-manager.py info $JAR | tail -n+3); do
+        for V in $(genestack-application-manager.py versions -o $A); do
+            genestack-application-manager.py remove $V $A
+        done
+    done
+
