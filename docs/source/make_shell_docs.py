@@ -14,7 +14,7 @@ template = """
 {name}
 {name_underline}
 
-{name} installed with pythonSDK and accessed as `{name}.py`.
+{name} installed with pythonSDK and accessed as ``{name}.py``.
 
 
 Usage
