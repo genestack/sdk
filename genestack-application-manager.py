@@ -421,7 +421,9 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 
 class ApplicationManager(GenestackShell):
-    DESCRIPTION = 'Application manager shell and commandline application.'
+    DESCRIPTION = ('Application manager is a script that lets you to add new applications into the system, '
+                   'remove your uploaded applications from the system, '
+                   'list available applications and do other related things.')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
     COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
 
