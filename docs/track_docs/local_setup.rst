@@ -38,7 +38,7 @@ Setup users for local installation
         <default_user>tester</default_user>
     </genestack>
 
-To use installAll -db default user must be ``tester``! To set it use: ``genestack-user-setup.py default tester``
+To use installAll -db default user must be ``tester``!
 
 
 
