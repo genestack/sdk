@@ -232,3 +232,26 @@ class FilesUtil(Application):
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
+
+    def get_folder(self, parent, *paths):
+        """
+        Finds/creates path recursively. As first argument it accepts any accession.
+        None and 'private' for  user folder, 'public' for public data. Parent file must exist.
+        For each path in path corresponding folder founded/created.
+
+
+        :param parent: parent accession
+        :param paths: tuple of path to be founded/created
+        :return: accession of last folder in paths.
+        :raise GenestackException: when paths are not specified or parent cant be found.
+        """
+        if not paths:
+            raise GenestackException("Need to specify paths to be created")
+
+        if parent not in (None, 'public', 'private'):
+            parent = self.find_or_create_folder(parent)
+            if parent is None:
+                raise GenestackException('Parent file %s is not found' % parent)
+        for path in paths:
+            parent = self.find_or_create_folder(path, parent=parent)
+        return parent
