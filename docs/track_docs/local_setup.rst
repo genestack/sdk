@@ -36,7 +36,7 @@ Setup users for local installation
             </user>
         </users>
         <default_user>tester</default_user>
-    </genestack>
+     </genestack>
 
 To use installAll -db default user must be ``tester``!
 
