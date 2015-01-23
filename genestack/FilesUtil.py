@@ -233,6 +233,31 @@ class FilesUtil(Application):
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
 
+    def get_groups_to_share(self):
+        """
+        Return dict for:  group_accession: group_info_dict
+
+         group info keys:
+             savedFolderName:
+             savedFolderAccession:
+             name:   group name
+             folderName: name of shared group folder
+             folderAccession: accessing of shared group folder
+
+        """
+        share_utils = self.connection.application('shareutils')
+        return share_utils.invoke('getGroupsToShare')
+
+    def get_shared_folder(self, folder_name):
+        """
+        Return first accession of shared folder found.
+        If no folder present raises GenestackException.
+        """
+        for _, group_info in sorted(self.get_groups_to_share().items()):
+            if group_info['folderName'] == folder_name:
+                return group_info['folderAccession']
+        raise GenestackException('Group folder with name "%s" not found' % folder_name)
+
     def get_folder(self, parent, *paths):
         """
         Finds/creates path recursively. As first argument it accepts any accession.
