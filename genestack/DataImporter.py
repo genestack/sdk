@@ -170,7 +170,7 @@ class DataImporter(object):
 
     def create_dbnsfp(self, parent, link=None, link_text=None, name=None, organism=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
-        metainfo.add_string('genestack.bio:databaseId')
+        metainfo.add_string('genestack.bio:databaseId', 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link and link_text:
