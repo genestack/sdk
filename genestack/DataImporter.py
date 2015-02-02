@@ -101,12 +101,6 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
         return self.__invoke_loader('wigLoader', 'importFile', parent, metainfo)
 
-    def create_experiment(self, parent, name=None, description=None, metainfo=None):
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        description and metainfo.add_string(BioMetainfo.DESCRIPTION, description)
-        return self.__invoke_loader('experimentLoader', 'addExperiment', parent, metainfo)
-
     def create_bam(self,
                    parent,
                    name=None,
@@ -123,15 +117,11 @@ class DataImporter(object):
         bam_link and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, os.path.basename(bam_link), bam_link)
         return self.__invoke_loader('alignedReadsLoader', 'importFile', parent, metainfo)
 
-    def create_sequencing_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+    def create_experiment(self, parent, name=None, description=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        method and metainfo.add_string(BioMetainfo.METHOD, method)
-        if links:
-            for link in links:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
-        return self.__invoke_loader('experimentLoader', 'addSequencingAssay', parent, metainfo)
+        description and metainfo.add_string(BioMetainfo.DESCRIPTION, description)
+        return self.__invoke_loader('experimentLoader', 'addExperiment', parent, metainfo)
 
     def create_microarray_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
@@ -142,6 +132,26 @@ class DataImporter(object):
             for link in links:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
         return self.__invoke_loader('experimentLoader', 'addMicroarrayAssay', parent, metainfo)
+
+    def create_sequencing_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        method and metainfo.add_string(BioMetainfo.METHOD, method)
+        if links:
+            for link in links:
+                metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
+        return self.__invoke_loader('experimentLoader', 'addSequencingAssay', parent, metainfo)
+
+    def create_unaligned_read(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        method and metainfo.add_string(BioMetainfo.METHOD, method)
+        if links:
+            for link in links:
+                metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
+        return self.__invoke_loader('unalignedReadsLoader', 'importFile', parent, metainfo)
 
     def create_genome_annotation(self, parent, link=None, name=None, organism=None, reference_genome=None,
                                  strain=None, metainfo=None):
@@ -160,6 +170,7 @@ class DataImporter(object):
 
     def create_dbnsfp(self, parent, link=None, link_text=None, name=None, organism=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
+        metainfo.add_string('genestack.bio:databaseId', 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link and link_text:

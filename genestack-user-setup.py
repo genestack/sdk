@@ -8,6 +8,7 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+from argparse import ArgumentParser
 
 import os
 import re
@@ -195,6 +196,15 @@ class Init(Command):
     DESCRIPTION = 'Create default settings.'
     OFFLINE = True
 
+    def get_command_parser(self, parser=None):
+        parser = parser or ArgumentParser(description=self.DESCRIPTION)
+        parser.description = self.DESCRIPTION
+        group = parser.add_argument_group("command arguments")
+        self.update_parser(group)
+        group.add_argument('-H', '--host', default=DEFAULT_HOST,
+                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST, metavar='<host>')
+        return parser
+
     def run(self):
         config_path = config.get_settings_file()
         if os.path.exists(config_path):
@@ -202,7 +212,7 @@ class Init(Command):
             return
         print "If you have not genestack account you need to create it."
 
-        connection, user = ask_email_and_password(DEFAULT_HOST)
+        connection, user = ask_email_and_password(self.args.host)
         config.add_user(user)
         config.set_default_user(user)
         config.save()
