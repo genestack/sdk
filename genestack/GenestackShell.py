@@ -165,7 +165,7 @@ class GenestackShell(cmd.Cmd):
     do_quit = do_EOF
 
     def process_command(self, command, argument_line, connection, shell=False):
-        if shell:
+        if shell or command.OFFLINE:
             p = command.get_command_parser()
         else:
             p = command.get_command_parser(make_connection_parser())
