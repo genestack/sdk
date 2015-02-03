@@ -17,7 +17,7 @@ Internal release
       - ``sudo python setup.py install``
       - install keyring https://pypi.python.org/pypi/keyring
 
-  - run ``genestack-user-setup.py init`` and input you login and password for dotorg
+  - run ``genestack-user-setup.py init`` and input your login and password for dotorg
 
 Reinstall
 ---------

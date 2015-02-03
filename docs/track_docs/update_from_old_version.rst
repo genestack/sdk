@@ -1,5 +1,5 @@
-Update from old version
-=======================
+Changes from genestack-python epoch
+===================================
 
 
 Changes for users
