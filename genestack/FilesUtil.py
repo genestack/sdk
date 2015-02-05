@@ -13,6 +13,9 @@ from Metainfo import Metainfo
 from Connection import Application
 from SudoUtils import SudoUtils
 
+PRIVATE = 'private'
+PUBLIC = 'public'
+
 
 class SpecialFolders:
     IMPORTED = 'imported'
@@ -56,7 +59,7 @@ class FilesUtil(Application):
 
     def find_file_by_name(self, name, parent=None, file_class=IFile):
         """
-        Finds file with specified name and type.
+        Finds file with specified name (ignore case!) and type.
         If no file is found None is returned.
         If more than one file is found the first one is returned.
         If the parent container is not found, the corresponding exceptions are thrown.
@@ -232,3 +235,45 @@ class FilesUtil(Application):
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
+
+    def get_groups_to_share(self):
+        """
+        Return dict for:  group_accession: group_info_dict
+
+         group info keys:
+             savedFolderName:
+             savedFolderAccession:
+             name:   group name
+             folderName: name of shared group folder
+             folderAccession: accessing of shared group folder
+
+        """
+        share_utils = self.connection.application('shareutils')
+        return share_utils.invoke('getGroupsToShare')
+
+    def get_folder(self, parent, *names, **kwargs):
+        """
+        Finds path recursively. As first argument it accepts any accession.
+        Use PRIVATE for user folder, PUBLIC for public data. Parent folder must exist.
+        For each path in path corresponding folder founded.  If folder is not found exception raised,
+        except key "create=True" specified. In that case all folders will be created.
+
+        :param parent: parent accession
+        :param names: tuple of folder names that should be founded/created
+        :param created: set True if missed folder should be created, default=False
+        :return: accession of last folder in paths.
+        :raise GenestackException: when paths are not specified or parent cant be found.
+        """
+        if not names:
+            raise GenestackException("At least one path should be specified.")
+
+        create = bool(kwargs.get('create'))
+        for path in names:
+            if create:
+                parent = self.find_or_create_folder(path, parent=parent)
+            else:
+                _parent_accession = self.find_folder_by_name(path, parent=parent)
+                if _parent_accession is None:
+                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
+                parent = _parent_accession
+        return parent

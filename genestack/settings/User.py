@@ -40,14 +40,14 @@ class User(object):
     def __repr__(self):
         return "User('%s', alias='%s', host='%s', password='%s')" % (self.email, self.alias, self.host, self.password and '*****')
 
-    def __interactive_login(self, connection=None):
+    def __interactive_login(self, connection):
         """
         Login interactive.
         """
         if not isatty():
             raise GenestackException("Interactive login is not possible.")
         email = self.email
-        message = ''
+        message = 'Connecting to %s' % self.host
         while True:
             if message:
                 print message
@@ -64,5 +64,5 @@ class User(object):
                 self.password = password
                 return
             except GenestackException:
-                message = 'Your username or password was incorrect. Please try again.\n'
+                message = 'Your username or password was incorrect for %s. Please try again.' % self.host
 

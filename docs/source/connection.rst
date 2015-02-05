@@ -22,6 +22,7 @@ Connection with additional arguments::
 
 Arguments for connection parser
 -------------------------------
+
 There are two way to specify user:
 Using settings:
 

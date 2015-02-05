@@ -150,7 +150,7 @@ class ListApplications(Command):
 
 class MarkAsStable(Command):
     COMMAND = 'stable'
-    description = 'Mark applications of the specified version as stable.'
+    DESCRIPTION = 'Mark applications of the specified version as stable.'
 
     def update_parser(self, p):
         p.add_argument(

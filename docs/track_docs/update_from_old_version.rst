@@ -1,5 +1,5 @@
-Update from old version
-=======================
+Changes from genestack-python epoch
+===================================
 
 
 Changes for users
@@ -25,7 +25,11 @@ Changes for users
 Changes for coders
 ------------------
 
-- Connection mechanism was changes. ``enviroment.py`` was removed, see Connection section.
+- Connection mechanism was changes. ``enviroment.py`` was removed. It is replaced by genestack-user-setup.py script.
+  There is two way to specify you login params on script launch:
+    1) via alias form settings ``script.py -u <alias>`` Login host and password will be used form settings. If -u is not specified default user will be used.
+    2) via full connection parametrs  ``script.py -u <email> -H host [-p password]`` then system will not use any information from setup.
+
 
 - All methods was renamed form ``camelCase`` to ``snake_case``
 
@@ -37,5 +41,5 @@ Changes for coders
 
 
 There is two way to fix script:
-   - fix scripts to new api
+   - update scripts to new api
    - temporary fix scripts by adding ``sys.path.insert(0, 'genestack-python')``
