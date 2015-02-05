@@ -26,7 +26,7 @@ def ask_host():
 def ask_alias(existed):
     expression = re.compile('[A-z0-9_@\-]+$')
 
-    print 'Please input alias. (Alias can contain: letters(a-Z), numbers(0-9), at(@), underscore(_), minus(-)'
+    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), minus (-))'
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
