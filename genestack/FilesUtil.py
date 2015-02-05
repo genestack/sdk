@@ -251,35 +251,30 @@ class FilesUtil(Application):
         share_utils = self.connection.application('shareutils')
         return share_utils.invoke('getGroupsToShare')
 
-    def get_shared_folder(self, folder_name):
+    def get_folder(self, parent_accession, *paths, **kwargs):
         """
-        Return first accession of shared folder found.
-        If no folder present raises GenestackException.
-        """
-        for _, group_info in sorted(self.get_groups_to_share().items()):
-            if group_info['folderName'] == folder_name:
-                return group_info['folderAccession']
-        raise GenestackException('Group folder with name "%s" not found' % folder_name)
-
-    def get_folder(self, parent, *paths):
-        """
-        Finds/creates path recursively. As first argument it accepts any accession.
-        None and 'private' for  user folder, 'public' for public data. Parent file must exist.
-        For each path in path corresponding folder founded/created.
+        Finds path recursively. As first argument it accepts any accession.
+        Use PRIVATE for  user folder, PUBLIC for public data. Parent file must exist.
+        For each path in path corresponding folder founded.  If folder is not found exception raised,
+        except key "create=True" specified. In that case all folders will be created.
 
 
-        :param parent: parent accession
-        :param paths: tuple of path to be founded/created
+        :param parent_accession: parent accession
+        :param *paths: tuple of path to be founded/created
+        :param created=False: specify if folder should be created
         :return: accession of last folder in paths.
         :raise GenestackException: when paths are not specified or parent cant be found.
         """
         if not paths:
-            raise GenestackException("Need to specify paths to be created")
+            raise GenestackException("At least one path should be specified.")
 
-        if parent not in (None, 'public', 'private'):
-            parent = self.find_or_create_folder(parent)
-            if parent is None:
-                raise GenestackException('Parent file %s is not found' % parent)
+        create = bool(kwargs.get('create'))
         for path in paths:
-            parent = self.find_or_create_folder(path, parent=parent)
-        return parent
+            if create:
+                parent_accession = self.find_or_create_folder(path, parent=parent_accession)
+            else:
+                _parent_accession = self.find_folder_by_name(path, parent=parent_accession)
+                if _parent_accession is None:
+                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent_accession))
+                parent_accession = _parent_accession
+        return parent_accession
