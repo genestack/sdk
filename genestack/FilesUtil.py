@@ -13,6 +13,9 @@ from Metainfo import Metainfo
 from Connection import Application
 from SudoUtils import SudoUtils
 
+PRIVATE = 'private'
+PUBLIC = 'public'
+
 
 class SpecialFolders:
     IMPORTED = 'imported'
