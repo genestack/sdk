@@ -54,8 +54,8 @@ class Shell(GenestackShell):
 
     def default(self, line):
         args = line.split()
-        if args and args[0] in self.apps:
-            self.process_command(self.apps[args[0]](), args[1:], self.connection)
+        if args and args[0] in self.COMMANDS:
+            self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection)
         else:
             self.process_command(Invoke(), args, self.connection)
 

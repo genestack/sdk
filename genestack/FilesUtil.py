@@ -259,7 +259,7 @@ class FilesUtil(Application):
         except key "create=True" specified. In that case all folders will be created.
 
         :param parent: parent accession
-        :param names: tuple of path to be founded/created
+        :param names: tuple of folder names that should be founded/created
         :param created: set True if missed folder should be created, default=False
         :return: accession of last folder in paths.
         :raise GenestackException: when paths are not specified or parent cant be found.
