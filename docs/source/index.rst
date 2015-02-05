@@ -4,17 +4,18 @@ Welcome to pyhton SDK's documentation
 Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    setup
    overview
    user_config
    connection
+
+
+   applications
+
    genestack-user-setup
    genestack-application-manager
-
-   files_util
-
 
 
 Indices and tables

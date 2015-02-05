@@ -1,10 +1,10 @@
 User config
-===========
+###########
 
 User config needed to store user connection data.
 
 First setup
------------
+***********
 
 - Create genestack account if you don't have one.
 
@@ -20,7 +20,7 @@ This is will be you default user.
 
 
 Setup additional users
-----------------------
+**********************
 
 If you have more then one account on genestack platforms you may want to add other users.
 

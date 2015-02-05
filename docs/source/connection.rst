@@ -1,8 +1,8 @@
 Connection
-==========
+##########
 
 Create connection
------------------
+=================
 
 You need to have genestack account to connect to server.
 
@@ -21,7 +21,7 @@ Connection with additional arguments::
     connection = get_connection(parser.parse_args())
 
 Arguments for connection parser
--------------------------------
+===============================
 
 There are two way to specify user:
 Using settings:
