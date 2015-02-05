@@ -105,8 +105,6 @@ class GenestackShell(cmd.Cmd):
         return parser
 
     def preloop(self):
-
-
         parser = self.get_shell_parser()
         args, others = parser.parse_known_args()
 
