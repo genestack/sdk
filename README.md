@@ -19,12 +19,12 @@
 
 ### Generate docs
 
-   install sphinx http://sphinx-doc.org/
-   `cd docs`
-   `make html`
+ - install sphinx http://sphinx-doc.org/
+ - `cd docs`
+ - `make html`
 
-   **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell
-    scripts(genestack-user-setup.rst, genestack-application-manager.rst).  app-manager_usage.rst is not included to index, it is required for `make_shell_docs.py`
+ **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell scripts(genestack-user-setup.rst, genestack-application-manager.rst). 
+ app-manager_usage.rst is not included to index, it is required for `make_shell_docs.py`
 
 
 
