@@ -59,7 +59,7 @@ class FilesUtil(Application):
 
     def find_file_by_name(self, name, parent=None, file_class=IFile):
         """
-        Finds file with specified name and type.
+        Finds file with specified name (ignore case!) and type.
         If no file is found None is returned.
         If more than one file is found the first one is returned.
         If the parent container is not found, the corresponding exceptions are thrown.
