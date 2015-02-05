@@ -251,30 +251,29 @@ class FilesUtil(Application):
         share_utils = self.connection.application('shareutils')
         return share_utils.invoke('getGroupsToShare')
 
-    def get_folder(self, parent_accession, *paths, **kwargs):
+    def get_folder(self, parent, *names, **kwargs):
         """
         Finds path recursively. As first argument it accepts any accession.
-        Use PRIVATE for  user folder, PUBLIC for public data. Parent file must exist.
+        Use PRIVATE for user folder, PUBLIC for public data. Parent folder must exist.
         For each path in path corresponding folder founded.  If folder is not found exception raised,
         except key "create=True" specified. In that case all folders will be created.
 
-
-        :param parent_accession: parent accession
-        :param *paths: tuple of path to be founded/created
-        :param created=False: specify if folder should be created
+        :param parent: parent accession
+        :param names: tuple of path to be founded/created
+        :param created: set True if missed folder should be created, default=False
         :return: accession of last folder in paths.
         :raise GenestackException: when paths are not specified or parent cant be found.
         """
-        if not paths:
+        if not names:
             raise GenestackException("At least one path should be specified.")
 
         create = bool(kwargs.get('create'))
-        for path in paths:
+        for path in names:
             if create:
-                parent_accession = self.find_or_create_folder(path, parent=parent_accession)
+                parent = self.find_or_create_folder(path, parent=parent)
             else:
-                _parent_accession = self.find_folder_by_name(path, parent=parent_accession)
+                _parent_accession = self.find_folder_by_name(path, parent=parent)
                 if _parent_accession is None:
-                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent_accession))
-                parent_accession = _parent_accession
-        return parent_accession
+                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
+                parent = _parent_accession
+        return parent
