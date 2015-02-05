@@ -22,13 +22,20 @@ Connection with additional arguments::
 
 Arguments for connection parser
 -------------------------------
-If not arguments specifies will use default user
+There are two way to specify user:
+Using settings:
 
-``-u <alias or email>``
-  if not other params is specified try to get alias from settings, if faile will open interactive login to default server
-``-H <host>``
-  if host is specified user is treated as email
-``-p <password>``
-  if password is not specified will trigger interactive login.
+  if not argument specified get_connection will return connection to default user
+
+  if only ``-u <alias>`` specified will be used user form settings. If user is not present system will switch to interactive login with default server.
+
+Raw input:
+  if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
+
+  ``-u <email>`` expect email
+
+  ``-H <host>`` full server host if not specified default host will be used.
+
+  ``-p <password>`` if not password specified will ask it in interactive mode.
 
 
