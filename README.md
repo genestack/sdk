@@ -1,29 +1,26 @@
 # PythonSDK
 
-## Ducumnetation
+### Ducumnetation
 
    [x Missed documentation link is here x]()
 
-## Repo
+### Repo
 
   ```
-  docs/                             - folder with documentation
+  docs/                             - folder with documentation sources
   genestack/                        - folder with genestack library
   tests/                            - developer tests, require pytest to run.
   genestack-application-manager.py  - script to connect to application-manager (installed as script with genestack)
   genestack-user-setup.py           - script to setup user (installed as script with genestack)
-  setup.py                          - installation setup for genestack library
   local_settings_sample.xml         - sample settings file for local developer
+  setup.py                          - installation setup for genestack library
   ```
 
 
-## Generate docs
+### Generate docs
 
-
-   To make docs you need to install sphinx http://sphinx-doc.org/
-
+   install sphinx http://sphinx-doc.org/
    `cd docs`
-   
    `make html`
 
    **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell
