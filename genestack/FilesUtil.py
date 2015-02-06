@@ -204,11 +204,13 @@ class FilesUtil(Application):
     def get_special_folder(self, name):
         """
         Return special folder accession.
+
         Available special folders:
-         - SpecialFolders.IMPORTED folder where new files are created by Data Importers
-         -  SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
-         - SpecialFolders.TEMPORARY temporary files
-         - SpecialFolders.UPLOADED  files there raw files are stored.
+
+        - SpecialFolders.IMPORTED folder where new files are created by Data Importers
+        - SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
+        - SpecialFolders.TEMPORARY temporary files
+        - SpecialFolders.UPLOADED  files there raw files are stored.
 
         :param name: special folder name
         :return: accession
@@ -240,13 +242,14 @@ class FilesUtil(Application):
         """
         Return dict for:  group_accession: group_info_dict
 
-         group info keys:
-             savedFolderName:
-             savedFolderAccession:
-             name:   group name
-             folderName: name of shared group folder
-             folderAccession: accessing of shared group folder
+        Group info keys:
+        - savedFolderName:
+        - savedFolderAccession:
+        - name:   group name
+        - folderName: name of shared group folder
+        - folderAccession: accessing of shared group folder
 
+        :return: dict
         """
         share_utils = self.connection.application('shareutils')
         return share_utils.invoke('getGroupsToShare')
