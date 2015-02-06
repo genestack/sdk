@@ -1,5 +1,5 @@
 Connection
-##########
+**********
 
 Create connection
 =================
