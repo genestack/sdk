@@ -205,10 +205,10 @@ class FilesUtil(Application):
         """
         Return special folder accession.
         Available special folders:
-          SpecialFolders.IMPORTED folder where new files are created by Data Importers
-          SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
-          SpecialFolders.TEMPORARY temporary files
-          SpecialFolders.UPLOADED  files there raw files are stored.
+         - SpecialFolders.IMPORTED folder where new files are created by Data Importers
+         -  SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
+         - SpecialFolders.TEMPORARY temporary files
+         - SpecialFolders.UPLOADED  files there raw files are stored.
 
         :param name: special folder name
         :return: accession
