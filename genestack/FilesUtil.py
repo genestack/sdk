@@ -13,11 +13,18 @@ from Metainfo import Metainfo
 from Connection import Application
 from SudoUtils import SudoUtils
 
+#: Accession of private folder of current user.
 PRIVATE = 'private'
 PUBLIC = 'public'
 
 
 class SpecialFolders:
+    """
+    - IMPORTED: folder where new files are created by Data Importers
+    - CREATED: default folder for files created by prepossessing and analyzing applications
+    - TEMPORARY: temporary files
+    - UPLOADED:  files there raw files are stored.
+    """
     IMPORTED = 'imported'
     CREATED = 'created'
     TEMPORARY = 'temporary'
@@ -205,12 +212,7 @@ class FilesUtil(Application):
         """
         Return special folder accession.
 
-        Available special folders:
-
-        - SpecialFolders.IMPORTED folder where new files are created by Data Importers
-        - SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
-        - SpecialFolders.TEMPORARY temporary files
-        - SpecialFolders.UPLOADED  files there raw files are stored.
+        Available special folders is described in :class:`.SpecialFolders`
 
         :param name: special folder name
         :return: accession
@@ -275,7 +277,7 @@ class FilesUtil(Application):
             if create:
                 parent = self.find_or_create_folder(path, parent=parent)
             else:
-                _parent_accession = self.find_folder_by_name(path, parent=parent)
+                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.IFolder)
                 if _parent_accession is None:
                     raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
                 parent = _parent_accession

@@ -13,6 +13,7 @@ DataImporter
 
     .. automodule:: genestack.DataImporter
        :members:
+       :undoc-members:
 
 
 SudoUtils
@@ -20,3 +21,4 @@ SudoUtils
 
     .. automodule:: genestack.SudoUtils
        :members:
+       :undoc-members:
