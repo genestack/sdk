@@ -85,9 +85,9 @@ class Config(object):
         if not os.path.exists(config_path):
             print 'Warning. config is not present. You can setup it via: genestack-user-setup.py init'
             return  # check that this return handled everywhere
-            if isatty():
-                print "Work without config with not a TTY is not supported."
-                exit(1)
+        if isatty():
+            print "Work without config with not a TTY is not supported."
+            exit(1)
 
         def get_text(parent, tag):
             elements = parent.getElementsByTagName(tag)
