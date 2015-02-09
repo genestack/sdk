@@ -8,25 +8,25 @@ Install
 Internal release
 ----------------
 
-  - clone repo or download and unpack archive
-  - navigate to root folder
-  - install
+- clone repo or download and unpack archive
+- navigate to root folder
+- install
 
-    - install via pip:
+- install via pip:
 
-      - ``sudo pip install .``
+  - ``sudo pip install .``
 
-    - install manually:
+- install manually:
 
-      - ``sudo python setup.py install``
-      - install keyring https://pypi.python.org/pypi/keyring
+  - ``sudo python setup.py install``
+  - install keyring https://pypi.python.org/pypi/keyring
 
-  - run ``genestack-user-setup.py init`` and input your login and password for dotorg
+- run ``genestack-user-setup.py init`` and input your login and password for dotorg
 
 Reinstall
 ---------
 
- - ``sudo python setup.py install`` or ``sudo pip install -U .``
+- ``sudo python setup.py install`` or ``sudo pip install -U .``
 
 
 User config
