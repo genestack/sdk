@@ -48,7 +48,7 @@ def ask_email_and_password(host, alias=None):
         if user_login:
             res = raw_input('Please specify your user login(email) [%s]: ' % user_login).strip()
             if res:
-               user_login = res
+                user_login = res
         else:
             user_login = raw_input('Please specify your user login(email): ').strip()
             if not user_login:
@@ -223,7 +223,8 @@ class Init(Command):
         group = parser.add_argument_group("command arguments")
         self.update_parser(group)
         group.add_argument('-H', '--host', default=DEFAULT_HOST,
-                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST, metavar='<host>')
+                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST,
+                           metavar='<host>')
         return parser
 
     def run(self):
