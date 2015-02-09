@@ -4,4 +4,4 @@ docs/build
 .DS_Store
 build/
 genestack-user-setup.rst
-docs/source/genestack-application-manager.rst
+docs/source/scripts/
