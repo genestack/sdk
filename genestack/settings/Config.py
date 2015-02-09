@@ -52,6 +52,7 @@ class Config(object):
 
     def remove_user(self, user):
         del self.__users[user.alias]
+        self.save()
         try:
             import keyring
             keyring.delete_password(GENESTACK_SDK, user.alias)
@@ -66,12 +67,17 @@ class Config(object):
         if user.alias in self.__users:
             raise GenestackException("User alias %s is already present" % user.alias)
         self.__users[user.alias] = user
+        if len(self.__users) == 1:
+            self.set_default_user(user)  # will save it inside
+        else:
+            self.save()
 
     def set_default_user(self, user):
         if not user.alias in self.__users:
             raise GenestackException('User %s is not present in config users.' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
+        self.save()
 
     def load(self):
         config_path = os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)  # temp hack before file is created
@@ -120,6 +126,7 @@ class Config(object):
     def change_password(self, alias, password):
         user = self.__users[alias]
         user.password = password
+        self.save()
 
     def save(self):
         settings_folder = self.get_settings_folder()

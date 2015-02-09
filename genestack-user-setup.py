@@ -140,7 +140,6 @@ class SetPassword(Command):
                 continue
         config.change_password(user.alias, user.password)
         print 'Password was changed.'
-        config.save()
 
 
 class SetDefault(Command):
@@ -159,7 +158,6 @@ class SetDefault(Command):
         if user.alias != config.default_user.alias:
             print 'Set "%s" as default user.' % user.alias
             config.set_default_user(user)
-            config.save()
         else:
             print "Default user was not changed."
 
@@ -182,7 +180,6 @@ class Remove(Command):
             print 'Cant delete default user'
             return
         config.remove_user(user)
-        config.save()
         print "%s was removed form config" % user.alias
 
 
@@ -235,9 +232,7 @@ class Init(Command):
         print "If you have not genestack account you need to create it."
 
         connection, user = ask_email_and_password(self.args.host)
-        config.add_user(user)
-        config.set_default_user(user)
-        config.save()
+        config.add_user(user)  # adding first user make him default.
         print "Initialization finished. Config created at %s" % config_path
         return connection
 
