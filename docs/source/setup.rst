@@ -69,4 +69,4 @@ If email or password omitted script will ask them in interactive mode.
 User setup script
 -----------------
 
-  :doc:`setup/genestack-user-setup`
+  :doc:`scripts/genestack-user-setup`
