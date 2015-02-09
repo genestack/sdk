@@ -153,9 +153,9 @@ class SetDefault(Command):
 
     def run(self):
         users = config.users
-        user = users.get(self.args.alias, config.default_user)
+        user = users.get(self.args.alias)
         if not user:
-            user = select_user(users)
+            user = select_user(users, config.default_user)
         if user.alias != config.default_user.alias:
             print 'Set "%s" as default user.' % user.alias
             config.set_default_user(user)
