@@ -1,4 +1,4 @@
-Welcome to pyhton SDK's documentation
+Welcome to python SDK's documentation
 =====================================
 
 
