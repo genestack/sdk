@@ -153,16 +153,37 @@ class SetDefault(Command):
 
     def run(self):
         users = config.users
-
-        user = users.get(self.args.alias)
+        user = users.get(self.args.alias, config.default_user)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users)
         if user.alias != config.default_user.alias:
             print 'Set "%s" as default user.' % user.alias
             config.set_default_user(user)
             config.save()
         else:
             print "Default user was not changed."
+
+
+class Remove(Command):
+    COMMAND = 'remove'
+    DESCRIPTION = 'Remove user'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
+
+    def run(self):
+        users = config.users
+
+        user = users.get(self.args.alias)
+        if not user:
+            user = select_user(users, config.default_user)
+        if user.alias == config.default_user.alias:
+            print 'Cant delete default user'
+            return
+        config.remove_user(user)
+        config.save()
+        print "%s was removed form config" % user.alias
 
 
 class List(Command):
@@ -222,7 +243,7 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path]
+    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove]
 
     def process_command(self, command, argument_line, connection, shell=False):
         config_path = config.get_settings_file()

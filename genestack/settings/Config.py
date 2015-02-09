@@ -50,6 +50,16 @@ class Config(object):
     def users(self):
         return deepcopy(self.__users)
 
+    def remove_user(self, user):
+        del self.__users[user.alias]
+        try:
+            import keyring
+            keyring.delete_password(GENESTACK_SDK, user.alias)
+        except ImportError:
+            pass
+        except Exception as e:
+            print "Error while deleting user password for %s: %s" % (user.alias, e)
+
     def add_user(self, user):
         if not user.alias:
             raise GenestackException("Cant add user with out alias to config.")
