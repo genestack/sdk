@@ -80,7 +80,7 @@ class Config(object):
         self.save()
 
     def load(self):
-        config_path = os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)  # temp hack before file is created
+        config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
             print 'Warning. config is not present. You can setup it via: genestack-user-setup.py init'
@@ -132,7 +132,7 @@ class Config(object):
         settings_folder = self.get_settings_folder()
         if not os.path.exists(settings_folder):
             os.makedirs(settings_folder)
-        config_path = os.path.join(settings_folder, SETTING_FILE_NAME)
+        config_path = self.get_settings_file()
 
         dom = getDOMImplementation()
         document = dom.createDocument(None, 'genestack', None)
