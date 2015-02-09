@@ -9,7 +9,7 @@ Python SDK will help you to automate server interaction.
 
  Typical usages:
    - upload many files at once
-   - create / update cla application
+   - create / update files with cla application
    - debug you own application
    - measure time of execution
 
