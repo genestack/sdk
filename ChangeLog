@@ -1,0 +1,6 @@
+version *
+
+   add `remove` command to genestack-user-setup.py
+
+version 1
+   add python sdk
