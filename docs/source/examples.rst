@@ -1,7 +1,7 @@
 Examples
 ########
 
-.. include:: examples/connection.rst
-.. include:: examples/file_utils.rst
-.. include:: examples/load_unaligned_reads.rst
+- :doc:`examples/connection`
+- :doc:`examples/file_utils`
+- :doc:`examples/load_unaligned_reads`
 

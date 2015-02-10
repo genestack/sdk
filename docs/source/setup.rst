@@ -4,12 +4,8 @@ Setup
 Install
 *******
 
-
-Internal release
-----------------
-
 - clone repo or download and unpack archive
-- navigate to root folder
+- navigate to repository folder or unpacked folder
 - install
 
 - install via pip:
@@ -43,7 +39,7 @@ Reinstall
 User config
 ***********
 
-User config allow to store credentials for your account on local machine to establish connection to server :doc:`examples/connection`.
+User config allow to store credentials for your account on local machine to establish :doc:`examples/connection` to server.
 
 Password stored in system secure storage (See https://pypi.python.org/pypi/keyring for more information).
 If system storage in not accessible it will ask your permission to store password as plain text.

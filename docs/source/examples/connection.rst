@@ -24,13 +24,16 @@ Arguments for connection parser
 ===============================
 
 There are two way to specify user:
+
 Using settings:
+^^^^^^^^^^^^^^^
 
   if not argument specified get_connection will return connection to default user
 
   if only ``-u <alias>`` specified will be used user form settings. If user is not present system will switch to interactive login with default server.
 
 Raw input:
+^^^^^^^^^^
   if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
 
   ``-u <email>`` expect email
