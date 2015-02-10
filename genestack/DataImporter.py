@@ -64,16 +64,7 @@ class DataImporter(object):
     def __invoke_loader(self, application, method, parent, metainfo):
         self.replace_links_to_raw_files(metainfo)
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
-        # TODO: set format for external links?
-
-        # TODO remove after dotorg update.
-        # Some dataloaders on dotorg uses old scheme (return string accession)
-        # Other uses new scheme (return FileInfo object)
-        # This hack allow to use this code both on dotorg and idev
-        if isinstance(fileinfo, dict):
-            return fileinfo['Accession']
-        else:
-            return fileinfo
+        return fileinfo['Accession']
 
     def load_raw(self, file_path):
         filename = os.path.basename(file_path)

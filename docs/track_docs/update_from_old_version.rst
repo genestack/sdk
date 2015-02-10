@@ -13,6 +13,8 @@ Changes for users
 
 - ``-H`` argument in scripts was changed form alias to host to real host.  If you setup your users you will never need to specify it.
 
+- Creditional saved
+
   Available hosts::
 
        localhost:8080

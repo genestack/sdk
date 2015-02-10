@@ -11,8 +11,8 @@ files = [
 ]
 
 template = """
-{name}
-{name_underline}
+{name}.py
+{name_underline}===
 
 {name} installed with pythonSDK and accessed as ``{name}.py``.
 
@@ -31,7 +31,7 @@ You can get description for every ``command`` by running::
 In shell mode type ``help`` to get list of available commands.
 Use ``help command`` to get command help.
 
-See :doc:`connection` for more information about connection arguments.
+See :doc:`../examples/connection` for more information about connection arguments.
 
 
 Commands
@@ -65,7 +65,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name):
     else:
         footer = ''
 
-    with open('%s.rst' % shell_name, 'w') as f:
+    with open(os.path.join('scripts', '%s.rst' % shell_name), 'w') as f:
         f.write(template.format(
             name=tool_file_name,
             name_underline='=' * len(tool_file_name),
