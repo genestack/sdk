@@ -8,6 +8,8 @@
 # actual or intended publication of such source code.
 #
 
+from version import __version__
+
 from Exceptions import *
 from Connection import Connection, Application
 from Metainfo import Metainfo
