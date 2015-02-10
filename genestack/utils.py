@@ -9,7 +9,6 @@ import argparse
 import sys
 
 
-
 def isatty():
     try:
         return sys.stdout.isatty()
