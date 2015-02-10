@@ -43,16 +43,57 @@ See :doc:`../examples/connection` for more information about connection argument
 
 Commands
 --------
- - **reload**::
+ - **applications**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <version> <appId> [<appId> ...]
     
-    Reload specific version of applications
+    Show information about available applications.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+    
+    connection:
+      -H <host>, --host <host>
+                            server host
+      -u <user>             user alias from settings or email
+      -p <password>         user password
+    
+
+ - **info**::
+
+    usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
+                        <jar_file_or_folder> [<jar_file_or_folder> ...]
+    
+    Read and show info from applications JAR file.
     
     command arguments:
-      <version>             applications version
-      <appId>               application identifier to mark as stable
+      -f, --with-filename   show file names for each JAR
+      -F, --no-filename     do not show file names
+      --vendor              show only vendor for each JAR file
+      <jar_file_or_folder>  file to upload or folder with single JAR file inside
+                            (recursively)
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+    
+
+ - **install**::
+
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-o] [-s]
+                        [-S <scope>]
+                        <version> <jar_file_or_folder> [<jar_file_or_folder> ...]
+    
+    Upload and install JAR files to Genestack system.
+    
+    command arguments:
+      -o, --override        overwrite old version of applications with the new one
+      -s, --stable          mark installed applications as stable
+      -S <scope>, --scope <scope>
+                            scope in which application will be stable (default is
+                            'user'): session | system | user
+      <version>             version of applications to upload
+      <jar_file_or_folder>  file to upload or folder with single JAR file inside
+                            (recursively)
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -86,66 +127,16 @@ Commands
       -p <password>         user password
     
 
- - **install**::
+ - **reload**::
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-o] [-s]
-                        [-S <scope>]
-                        <version> <jar_file_or_folder> [<jar_file_or_folder> ...]
-    
-    Upload and install JAR files to Genestack system.
-    
-    command arguments:
-      -o, --override        overwrite old version of applications with the new one
-      -s, --stable          mark installed applications as stable
-      -S <scope>, --scope <scope>
-                            scope in which application will be stable (default is
-                            'user'): session | system | user
-      <version>             version of applications to upload
-      <jar_file_or_folder>  file to upload or folder with single JAR file inside
-                            (recursively)
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-    connection:
-      -H <host>, --host <host>
-                            server host
-      -u <user>             user alias from settings or email
-      -p <password>         user password
-    
-
- - **info**::
-
-    usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
-                        <jar_file_or_folder> [<jar_file_or_folder> ...]
-    
-    Read and show info from applications JAR file.
-    
-    command arguments:
-      -f, --with-filename   show file names for each JAR
-      -F, --no-filename     do not show file names
-      --vendor              show only vendor for each JAR file
-      <jar_file_or_folder>  file to upload or folder with single JAR file inside
-                            (recursively)
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-
- - **stable**::
-
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
     
-    Mark applications of the specified version as stable.
+    Reload specific version of applications
     
     command arguments:
-      <version>             applications version or '-' (minus sign) to remove
-                            stable version
+      <version>             applications version
       <appId>               application identifier to mark as stable
-      -S <scope>, --scope <scope>
-                            scope in which application will be stable (default is
-                            'user'): session | system | user
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -178,11 +169,20 @@ Commands
       -p <password>         user password
     
 
- - **applications**::
+ - **stable**::
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
+                        <version> <appId> [<appId> ...]
     
-    Show information about available applications.
+    Mark applications of the specified version as stable.
+    
+    command arguments:
+      <version>             applications version or '-' (minus sign) to remove
+                            stable version
+      <appId>               application identifier to mark as stable
+      -S <scope>, --scope <scope>
+                            scope in which application will be stable (default is
+                            'user'): session | system | user
     
     optional arguments:
       -h, --help            show this help message and exit

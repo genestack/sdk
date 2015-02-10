@@ -48,7 +48,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
     script_help = get_help(shell().get_shell_parser()).replace("\n", "\n    ").replace('sphinx-build',
                                                                                        tool_file_name + '.py')
 
-    for command in sorted(shell.COMMAND_LIST):
+    for command in sorted(shell.COMMAND_LIST, key=lambda x: x.COMMAND):
         command = command()
         parser = command.get_command_parser(parser=None if command.OFFLINE else make_connection_parser())
         help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name + '.py')
