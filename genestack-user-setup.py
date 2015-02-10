@@ -82,6 +82,7 @@ class AddUser(Command):
         _, user = ask_email_and_password(host, alias=alias)
         config.add_user(user)
         config.save()
+        print "User %s created" % user.alias
 
 
 def select_user(users, selected=None):
