@@ -1,6 +1,6 @@
 
-genestack-application-manager
-=============================
+genestack-application-manager.py
+================================
 
 genestack-application-manager installed with pythonSDK and accessed as ``genestack-application-manager.py``.
 
@@ -38,11 +38,32 @@ You can get description for every ``command`` by running::
 In shell mode type ``help`` to get list of available commands.
 Use ``help command`` to get command help.
 
-See :doc:`connection` for more information about connection arguments.
+See :doc:`../examples/connection` for more information about connection arguments.
 
 
 Commands
 --------
+ - **reload**::
+
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
+                        <version> <appId> [<appId> ...]
+    
+    Reload specific version of applications
+    
+    command arguments:
+      <version>             applications version
+      <appId>               application identifier to mark as stable
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+    
+    connection:
+      -H <host>, --host <host>
+                            server host
+      -u <user>             user alias from settings or email
+      -p <password>         user password
+    
+
  - **invoke**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
@@ -111,49 +132,12 @@ Commands
       -h, --help            show this help message and exit
     
 
- - **versions**::
-
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
-                        <appId>
-    
-    Show information about available applications.
-    
-    command arguments:
-      -s                    display stable scopes in output (S: System, U: User,
-                            E: sEssion)
-      -o                    show only versions owned by current user
-      <appId>               application identifier to show versions
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-    connection:
-      -H <host>, --host <host>
-                            server host
-      -u <user>             user alias from settings or email
-      -p <password>         user password
-    
-
- - **applications**::
-
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-    
-    Show information about available applications.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-    connection:
-      -H <host>, --host <host>
-                            server host
-      -u <user>             user alias from settings or email
-      -p <password>         user password
-    
-
  - **stable**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
                         <version> <appId> [<appId> ...]
+    
+    Mark applications of the specified version as stable.
     
     command arguments:
       <version>             applications version or '-' (minus sign) to remove
@@ -194,16 +178,34 @@ Commands
       -p <password>         user password
     
 
- - **reload**::
+ - **applications**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <version> <appId> [<appId> ...]
     
-    Reload specific version of applications
+    Show information about available applications.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+    
+    connection:
+      -H <host>, --host <host>
+                            server host
+      -u <user>             user alias from settings or email
+      -p <password>         user password
+    
+
+ - **versions**::
+
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
+                        <appId>
+    
+    Show information about available applications.
     
     command arguments:
-      <version>             applications version
-      <appId>               application identifier to mark as stable
+      -s                    display stable scopes in output (S: System, U: User,
+                            E: sEssion)
+      -o                    show only versions owned by current user
+      <appId>               application identifier to show versions
     
     optional arguments:
       -h, --help            show this help message and exit
