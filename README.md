@@ -1,8 +1,10 @@
 # PythonSDK
 
-### Ducumnetation
 
-   [x Missed documentation link is here x]()
+### Ducumetation
+
+   [Documentation](https://internal-dev.genestack.com/developers/index.html)
+
 
 ### Repo
 
@@ -25,6 +27,4 @@
 
  **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell scripts(genestack-user-setup.rst, genestack-application-manager.rst). 
  app-manager_usage.rst is not included to index, it is required for `make_shell_docs.py`
-
-
 

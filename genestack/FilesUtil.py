@@ -13,8 +13,10 @@ from Metainfo import Metainfo
 from Connection import Application
 from SudoUtils import SudoUtils
 
-#: Accession of private folder of current user.
+
+# Accession of private folder of current user.
 PRIVATE = 'private'
+# Accession for public folder
 PUBLIC = 'public'
 
 
