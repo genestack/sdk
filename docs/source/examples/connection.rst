@@ -1,16 +1,38 @@
 Connection
 **********
 
-Create connection
-=================
+Get connection
+==============
 
-You need to have genestack account to connect to server.
+To work with platform you should have connection. First thing you need is to have account at genestack sight.
 
-Connection as default user::
+You have different way to create connection:
+
+Create connection directly::
+
+    from genestack import Connection
+
+    # crease connection object for server
+    connection = Connection('https://platform.genestack.org/endpoint')
+
+    # login as user: 'your-email@mail.com' with password 'your-email@mail.com'
+    connection.login('your-email@mail.com', 'your password')
+
+Now connection is ready. But this approach has some disadvantages: you need to store passwords as plain text, that is not secure.
+
+Preferred way to get connection via helper function.  First thing you need to setup users.
+get_connection use Argparse module to get you credentials from config file. By default it uses credentials of default user.
+You can specify other user by adding ``-u <alias>`` to command line argument.
+
+Get connection::
 
     from genestack import get_connection
 
     connection = get_connection()
+
+
+In case then you need more arguments you need to add it to connection_parser. Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
+
 
 Connection with additional arguments::
 
@@ -19,6 +41,7 @@ Connection with additional arguments::
     parser = make_connection_parser()
     parser.add_argument('-c', '--cool',  dest='cool', action='store_true', help='Add unicorns and stuff')
     connection = get_connection(parser.parse_args())
+
 
 Arguments for connection parser
 ===============================
