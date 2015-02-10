@@ -74,7 +74,7 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
-                        postal_code=None, state=None, phone=None, email=None, url=None):
+                         postal_code=None, state=None, phone=None, email=None, url=None):
         result = Metainfo._create_dict_with_type('organization')
         result['name'] = xstr(name)
         result['department'] = xstr(department)
