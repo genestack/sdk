@@ -12,7 +12,6 @@ from genestack import GenestackException
 from xml.dom.minidom import getDOMImplementation, parse
 from User import User
 from copy import deepcopy
-from genestack.utils import isatty
 
 
 GENESTACK_SDK = "Genestack SDK"
@@ -61,33 +60,31 @@ class Config(object):
         except Exception as e:
             print "Error while deleting user password for %s: %s" % (user.alias, e)
 
-    def add_user(self, user):
+    def add_user(self, user, save=True):
         if not user.alias:
-            raise GenestackException("Cant add user with out alias to config.")
+            raise GenestackException("Cant add user without alias to config.")
         if user.alias in self.__users:
             raise GenestackException("User alias %s is already present" % user.alias)
         self.__users[user.alias] = user
         if len(self.__users) == 1:
-            self.set_default_user(user)  # will save it inside
-        else:
+            self.set_default_user(user, save=False)
+        if save:
             self.save()
 
-    def set_default_user(self, user):
+    def set_default_user(self, user, save=True):
         if not user.alias in self.__users:
             raise GenestackException('User %s is not present in config users.' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
-        self.save()
+        if save:
+            self.save()
 
     def load(self):
-        config_path = os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)  # temp hack before file is created
+        config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
             print 'Warning. config is not present. You can setup it via: genestack-user-setup.py init'
             return  # check that this return handled everywhere
-            if isatty():
-                print "Work without config with not a TTY is not supported."
-                exit(1)
 
         def get_text(parent, tag):
             elements = parent.getElementsByTagName(tag)
@@ -110,7 +107,7 @@ class Config(object):
                         password = keyring.get_password(GENESTACK_SDK, alias)
                     except (ImportError, Exception) as e:
                         print e
-                self.add_user(User(email, alias=alias, host=host, password=password))
+                self.add_user(User(email, alias=alias, host=host, password=password), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
         store_raw_text = get_text(dom, 'store_raw')
@@ -119,9 +116,10 @@ class Config(object):
         elif store_raw_text == 'False':
             self.store_raw = False
         try:
-            self.__default_user = self.__users[default_user_alias]
+            default_user = self.__users[default_user_alias]
+            self.set_default_user(default_user, save=False)
         except KeyError:
-            print "Cannot set default user. User %s is not present in config users." % default_user_alias
+            raise GenestackException("Cannot set find user. User %s is not present in config users." % default_user_alias)
 
     def change_password(self, alias, password):
         user = self.__users[alias]
@@ -132,7 +130,7 @@ class Config(object):
         settings_folder = self.get_settings_folder()
         if not os.path.exists(settings_folder):
             os.makedirs(settings_folder)
-        config_path = os.path.join(settings_folder, SETTING_FILE_NAME)
+        config_path = self.get_settings_file()
 
         dom = getDOMImplementation()
         document = dom.createDocument(None, 'genestack', None)
