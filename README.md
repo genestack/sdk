@@ -1,6 +1,6 @@
 # PythonSDK
 
-### Ducumnetation
+### Ducumetation
 
    [Documentation](https://internal-dev.genestack.com/developers/index.html)
 
