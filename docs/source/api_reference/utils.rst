@@ -1,5 +1,5 @@
-genestack.utils
-***************
+utils
+*****
 
     .. automodule:: genestack.utils
         :members:

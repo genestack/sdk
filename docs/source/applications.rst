@@ -6,7 +6,10 @@ Applications
    :maxdepth: 1
 
 
-   applications/files_util
-   applications/importer
-   applications/sudo_utils
+   applications/Admin
+   applications/CLApplications
+   applications/DataImporter
+   applications/FileInitializer
+   applications/FilesUtil
+   applications/SudoUtils
 

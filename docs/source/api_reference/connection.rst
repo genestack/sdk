@@ -1,5 +1,5 @@
-genestack.Connection
-********************
+Connection
+**********
 
     .. automodule:: genestack.Connection
         :members:

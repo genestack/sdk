@@ -127,8 +127,8 @@ Method can access arguments. To invoke method you need to pass exactly same numb
 
 
 You can send connection to predefined or own classes:
- - Operations for managing files :doc:`files_util`
- - Importing data :doc:`importers`
+ - Operations for managing files :doc:`FileUtils`
+ - Importing data :doc:`DataImporter`
  - Own created classes :doc:`own_classes`
 
 

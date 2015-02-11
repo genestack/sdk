@@ -29,4 +29,4 @@ Find folder::
     print folder_accession
 
 
-See :doc:`../applications/files_util` for more info.
+See :doc:`../applications/FileUtils` for more info.
