@@ -26,7 +26,7 @@ Changes for coders
 ------------------
 
 - Connection mechanism was changed. ``enviroment.py`` was removed. It is replaced by genestack-user-setup.py script.
-  There are two ways to specify you login params on script launch:
+  There are two ways to specify your login params on script launch:
     1) via alias from settings ``script.py -u <alias>`` Login host and password will be used from settings. If -u is not specified default user will be used.
     2) via full connection parametrs  ``script.py -u <email> -H host [-p password]`` then system will not use any information from setup.
 

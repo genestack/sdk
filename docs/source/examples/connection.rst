@@ -10,7 +10,7 @@ To work with platform you should have connection. First thing you need is to hav
 
 
     Preferred way to get connection via helper function.  First thing you need to setup users.
-    get_connection use Argparse module to get you credentials from config file. By default it uses credentials of default user.
+    get_connection use Argparse module to get your credentials from config file. By default it uses credentials of default user.
     You can specify other user by adding ``-u <alias>`` to command line argument.
 
     **Get connection**::
@@ -126,7 +126,7 @@ Method can access arguments. To invoke method you need to pass exactly same numb
 .. TODO make table java python javascrpt serializable objects.
 
 
-You can send connection to predefined or own classes:
+You can send connection to predefined or your own applications:
  - Operations for managing files :doc:`FileUtils`
  - Importing data :doc:`DataImporter`
  - Own created classes :doc:`own_classes`

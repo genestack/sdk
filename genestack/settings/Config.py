@@ -83,7 +83,7 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            print 'Warning. config is not present. You can setup it via: genestack-user-setup.py init'
+            print 'Warning: config is not present. You can setup it via: genestack-user-setup.py init'
             return  # check that this return handled everywhere
 
         def get_text(parent, tag):
