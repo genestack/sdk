@@ -1,10 +1,8 @@
 # PythonSDK
 
-
-### Ducumetation
+### Documentation
 
    [Documentation](https://internal-dev.genestack.com/developers/index.html)
-
 
 ### Repo
 
@@ -17,7 +15,6 @@
   local_settings_sample.xml         - sample settings file for local developer
   setup.py                          - installation setup for genestack library
   ```
-
 
 ### Generate docs
 
