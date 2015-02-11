@@ -24,6 +24,7 @@ Contents:
    setup
    examples
    applications
+   api_reference
 
 Indices and tables
 ==================
