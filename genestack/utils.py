@@ -10,6 +10,11 @@ import sys
 
 
 def isatty():
+    """
+    True if the file is connected to a tty device.
+
+    :rtype: bool
+    """
     try:
         return sys.stdout.isatty()
     except AttributeError:
@@ -19,7 +24,16 @@ def isatty():
 def make_connection_parser(user=None, password=None, host=None):
     """
     Create argument parser to with connection parameters.
-    If one of email, password or user specified use them as default, else use data form user object.
+    If one of email, password or user specified use them as default, else use data from user object.
+
+    :param user: user alias or email
+    :type user: str
+    :param password: user password
+    :type password: str
+    :param host: host
+    :type host: str
+    :return: parser
+    :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group('connection')
@@ -32,9 +46,10 @@ def make_connection_parser(user=None, password=None, host=None):
 def get_user(args=None):
     """
     Return user corresponding to arguments.
-    If arguments is None use connection argument parser to get arguments.
+    If arguments is None use :function:`make_connection_parser` to get arguments.
 
-    :return:
+    :return: user
+    :rtype: genestack.settings.User.User
     """
 
     from settings import config, User
@@ -54,6 +69,11 @@ def get_user(args=None):
 def get_connection(args=None):
     """
     Shortcut to get_user().get_connection()
+
+    :param args: argument from :attr:`argparse.parse_args`
+    :type args: argparse.Namespace
+    :return: connection
+    :rtype: genestack.Connection.Connection
     """
     user = get_user(args)
     return user.get_connection(interactive=True)
