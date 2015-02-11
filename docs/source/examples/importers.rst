@@ -1,5 +1,5 @@
-Load unaligned reads
-********************
+Importers
+*********
 
 Load unaligned read script::
 

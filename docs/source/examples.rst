@@ -2,6 +2,8 @@ Examples
 ########
 
 - :doc:`examples/connection`
-- :doc:`examples/file_utils`
-- :doc:`examples/load_unaligned_reads`
+- :doc:`examples/files_util`
+- :doc:`examples/importers`
+- :doc:`own_classes`
 
+.. maybe TODO Create own shell

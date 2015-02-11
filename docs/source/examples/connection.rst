@@ -6,63 +6,130 @@ Get connection
 
 To work with platform you should have connection. First thing you need is to have account at genestack sight.
 
-You have different way to create connection:
-
-Create connection directly::
-
-    from genestack import Connection
-
-    # crease connection object for server
-    connection = Connection('https://platform.genestack.org/endpoint')
-
-    # login as user: 'your-email@mail.com' with password 'your-email@mail.com'
-    connection.login('your-email@mail.com', 'your password')
-
-Now connection is ready. But this approach has some disadvantages: you need to store passwords as plain text, that is not secure.
-
-Preferred way to get connection via helper function.  First thing you need to setup users.
-get_connection use Argparse module to get you credentials from config file. By default it uses credentials of default user.
-You can specify other user by adding ``-u <alias>`` to command line argument.
-
-Get connection::
-
-    from genestack import get_connection
-
-    connection = get_connection()
+* Connection via arguments
 
 
-In case then you need more arguments you need to add it to connection_parser. Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
+    Preferred way to get connection via helper function.  First thing you need to setup users.
+    get_connection use Argparse module to get you credentials from config file. By default it uses credentials of default user.
+    You can specify other user by adding ``-u <alias>`` to command line argument.
+
+    **Get connection**::
+
+        from genestack import get_connection
+
+        connection = get_connection()
+        print connection.whoami()
 
 
-Connection with additional arguments::
-
-    from genestack import get_connection, make_connection_parser
-
-    parser = make_connection_parser()
-    parser.add_argument('-c', '--cool',  dest='cool', action='store_true', help='Add unicorns and stuff')
-    connection = get_connection(parser.parse_args())
+    **Run script from commandline**:
 
 
-Arguments for connection parser
-===============================
+    .. code-block:: sh
 
-There are two way to specify user:
+        # with default user
+        $ ./script.py
+        user@email.com
 
-Using settings:
-^^^^^^^^^^^^^^^
+        # with user bob@email.com that present in config with alias bob
 
-  if not argument specified get_connection will return connection to default user
+        $ ./script.py -u bob
+        bob@email.com
 
-  if only ``-u <alias>`` specified will be used user form settings. If user is not present system will switch to interactive login with default server.
 
-Raw input:
-^^^^^^^^^^
-  if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
+    In case then you need more arguments you need to add it to connection_parser. Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
 
-  ``-u <email>`` expect email
 
-  ``-H <host>`` full server host if not specified default host will be used.
+    **Connection with additional script arguments**::
 
-  ``-p <password>`` if not password specified will ask it in interactive mode.
+        from genestack import get_connection, make_connection_parser
+
+        parser = make_connection_parser()  # return instance of argparse.ArgumentParser
+        parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have unicorn.')
+        args = parser.parse_args()
+        connection = get_connection(args)
+        if args.unicorn:
+            print connection.whoami(), 'has unicorn!'
+        else:
+            print connection.whoami(), 'does not have unicorn.'
+
+
+    .. code-block:: sh
+
+        $ ./script.py -u
+        user@email.com has unicorn!
+
+        $ ./script.py -u bob
+        bob@email.com does not have unicorn.
+
+
+    **Arguments for connection parser**
+
+    * Using settings:
+
+      if not argument specified get_connection will return connection to default user
+
+      if only ``-u <alias>`` specified will be used user form settings. If user is not present system will switch to interactive login with default server.
+
+    * Raw input:
+
+        if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
+
+        ``-u <email>`` expect email
+
+        ``-H <host>`` full server host if not specified default host will be used.
+
+        ``-p <password>`` if not password specified will ask it in interactive mode.
+
+        .. code-block:: sh
+
+            $ ./script.py -u user@email.com -H platform.genestack.org -p passwords
+
+
+* Create connection directly in code
+
+    This approach required more efforts and require so store your password as plain text.
+
+    ::
+
+        from genestack import Connection
+
+        # crease connection object for server
+        connection = Connection('https://platform.genestack.org/endpoint')
+
+        # login as user: 'user@email.com' with password 'password'
+        connection.login('user@email.com', 'password')
+        print connection.whoami()
+
+
+    Run script from commandline:
+
+    .. code-block:: sh
+
+        $ ./script.py
+        user@email.com
+
+Connection usage
+================
+
+
+With connection you can call application methods::
+
+    # whoami implementation.
+    application_id = 'signin'
+    method = 'whoami'
+
+    application = connection.application(application_id)
+    email = application.invoke(method)
+
+Method can access arguments. To invoke method you need to pass exactly same number of arguments of same type.
+
+.. TODO make table java python javascrpt serializable objects.
+
+
+You can send connection to predefined or own classes:
+ - Operations for managing files :doc:`files_util`
+ - Importing data :doc:`importers`
+ - Own created classes :doc:`own_classes`
+
 
 
