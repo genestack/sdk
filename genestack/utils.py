@@ -46,7 +46,7 @@ def make_connection_parser(user=None, password=None, host=None):
 def get_user(args=None):
     """
     Return user corresponding to arguments.
-    If arguments is None use :function:`make_connection_parser` to get arguments.
+    If arguments is None use :attr:`make_connection_parser` to get arguments.
 
     :return: user
     :rtype: genestack.settings.User.User
