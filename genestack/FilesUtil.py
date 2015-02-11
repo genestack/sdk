@@ -62,7 +62,7 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raise GenestackServerException:
+        :raises: GenestackServerException: if there is not ore more then one reference genome
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -218,7 +218,7 @@ class FilesUtil(Application):
 
         :param name: special folder name
         :return: accession
-        :raise GenestackException: if folder name is unknown
+        :raises: GenestackException: if folder name is unknown
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
                            SpecialFolders.UPLOADED)
@@ -269,7 +269,7 @@ class FilesUtil(Application):
         :param names: tuple of folder names that should be founded/created
         :param created: set True if missed folder should be created, default=False
         :return: accession of last folder in paths.
-        :raise GenestackException: when paths are not specified or parent cant be found.
+        :raises:  GenestackException: when paths are not specified or parent cannot be found.
         """
         if not names:
             raise GenestackException("At least one path should be specified.")

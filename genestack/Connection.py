@@ -75,7 +75,7 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raise GenestackServerException:
+        :raises: GenestackServerException: if login failed
         """
         logged = self.application('signin').invoke('authenticate', email, password)
         if not logged:
