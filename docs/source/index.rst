@@ -26,8 +26,6 @@ Contents:
 
    class_reference
 
-   scripts/genestack-application-manager
-
 Indices and tables
 ==================
 
