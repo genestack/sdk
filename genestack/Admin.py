@@ -11,7 +11,7 @@
 
 class Admin:
     """
-    Admin application.
+    Admin application for managing users and groups.
     """
     def __init__(self, connection):
         self.connection = connection
@@ -27,7 +27,14 @@ class Admin:
         self.connection.logout()
 
     def create_user(self, email, pwd, name):
-        return self.connection.application('usersadmin').invoke('createUser', email, pwd, name)
+        """
+        Create user.
+        :param email: email will be used as login
+        :param pwd:  password
+        :param name: user display name
+        :rtype: None
+        """
+        self.connection.application('usersadmin').invoke('createUser', email, pwd, name)
 
     def change_admin_status(self, email):
         return self.connection.application('usersadmin').invoke('changeAdminStatus', email)
