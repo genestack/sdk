@@ -11,11 +11,11 @@
 from Metainfo import Metainfo
 
 
-def xstr(arg):
-    return str(arg) if arg is not None else None
-
-
 class BioMetainfo(Metainfo):
+    """
+    MetainfoRepresentation with additional methods for bio metadata.
+    """
+
     METHOD = 'genestack.bio:method'
     ORGANISM = 'genestack.bio:organism'
     STRAIN = 'genestack.bio:strain/breed/cultivar'
@@ -50,7 +50,25 @@ class BioMetainfo(Metainfo):
     SOURCE_DATA_PREFIX = 'sourceData:'
 
     def add_organism(self, key, value):
+        """
+        Add organism value.
+
+        :param key: key
+        :type key: str
+        :param value: organism name
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'Organism')
 
     def add_ethnic_group(self, key, value):
+        """
+        Add ethnic group value.
+
+        :param key: key
+        :type key: str
+        :param value: organism name
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'EthnicGroup')
