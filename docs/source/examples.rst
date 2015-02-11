@@ -1,9 +1,12 @@
 Examples
 ########
 
-- :doc:`examples/connection`
-- :doc:`examples/files_util`
-- :doc:`examples/importers`
-- :doc:`own_classes`
+.. toctree::
+   :maxdepth: 2
+
+   examples/connection
+   examples/files_util
+   examples/importers
+   own_classes
 
 .. maybe TODO Create own shell

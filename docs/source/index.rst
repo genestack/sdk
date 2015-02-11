@@ -23,8 +23,7 @@ Contents:
 
    setup
    examples
-
-   class_reference
+   applications
 
 Indices and tables
 ==================
