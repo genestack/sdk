@@ -7,6 +7,7 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+
 from Connection import Application
 
 CALCULATE_CHECKSUMS = 'markKeyForCountChecksum'
