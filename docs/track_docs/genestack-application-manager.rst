@@ -1,6 +1,5 @@
-
-genestack-application-manager
-=============================
+genestack-application-manager.py
+================================
 
 genestack-application-manager installed with pythonSDK and accessed as ``genestack-application-manager.py``.
 
@@ -38,22 +37,16 @@ You can get description for every ``command`` by running::
 In shell mode type ``help`` to get list of available commands.
 Use ``help command`` to get command help.
 
-See :doc:`connection` for more information about connection arguments.
+See :doc:`../examples/connection` for more information about connection arguments.
 
 
 Commands
 --------
- - **invoke**::
+ - **applications**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <appId> <method> [<args> [<args> ...]]
     
-    Invoke method of stable application
-    
-    command arguments:
-      <appId>               application identifier
-      <method>              application method to call
-      <args>                application method to call
+    Show information about available applications.
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -63,6 +56,24 @@ Commands
                             server host
       -u <user>             user alias from settings or email
       -p <password>         user password
+    
+
+ - **info**::
+
+    usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
+                        <jar_file_or_folder> [<jar_file_or_folder> ...]
+    
+    Read and show info from applications JAR file.
+    
+    command arguments:
+      -f, --with-filename   show file names for each JAR
+      -F, --no-filename     do not show file names
+      --vendor              show only vendor for each JAR file
+      <jar_file_or_folder>  file to upload or folder with single JAR file inside
+                            (recursively)
+    
+    optional arguments:
+      -h, --help            show this help message and exit
     
 
  - **install**::
@@ -93,52 +104,17 @@ Commands
       -p <password>         user password
     
 
- - **info**::
-
-    usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
-                        <jar_file_or_folder> [<jar_file_or_folder> ...]
-    
-    Read and show info from applications JAR file.
-    
-    command arguments:
-      -f, --with-filename   show file names for each JAR
-      -F, --no-filename     do not show file names
-      --vendor              show only vendor for each JAR file
-      <jar_file_or_folder>  file to upload or folder with single JAR file inside
-                            (recursively)
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-
- - **versions**::
-
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
-                        <appId>
-    
-    Show information about available applications.
-    
-    command arguments:
-      -s                    display stable scopes in output (S: System, U: User,
-                            E: sEssion)
-      -o                    show only versions owned by current user
-      <appId>               application identifier to show versions
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-    connection:
-      -H <host>, --host <host>
-                            server host
-      -u <user>             user alias from settings or email
-      -p <password>         user password
-    
-
- - **applications**::
+ - **invoke**::
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
+                        <appId> <method> [<args> [<args> ...]]
     
-    Show information about available applications.
+    Invoke method of stable application
+    
+    command arguments:
+      <appId>               application identifier
+      <method>              application method to call
+      <args>                application method to call
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -150,18 +126,16 @@ Commands
       -p <password>         user password
     
 
- - **stable**::
+ - **reload**::
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
     
+    Reload specific version of applications
+    
     command arguments:
-      <version>             applications version or '-' (minus sign) to remove
-                            stable version
+      <version>             applications version
       <appId>               application identifier to mark as stable
-      -S <scope>, --scope <scope>
-                            scope in which application will be stable (default is
-                            'user'): session | system | user
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -194,16 +168,43 @@ Commands
       -p <password>         user password
     
 
- - **reload**::
+ - **stable**::
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
                         <version> <appId> [<appId> ...]
     
-    Reload specific version of applications
+    Mark applications of the specified version as stable.
     
     command arguments:
-      <version>             applications version
+      <version>             applications version or '-' (minus sign) to remove
+                            stable version
       <appId>               application identifier to mark as stable
+      -S <scope>, --scope <scope>
+                            scope in which application will be stable (default is
+                            'user'): session | system | user
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+    
+    connection:
+      -H <host>, --host <host>
+                            server host
+      -u <user>             user alias from settings or email
+      -p <password>         user password
+    
+
+ - **versions**::
+
+    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
+                        <appId>
+    
+    Show information about available applications.
+    
+    command arguments:
+      -s                    display stable scopes in output (S: System, U: User,
+                            E: sEssion)
+      -o                    show only versions owned by current user
+      <appId>               application identifier to show versions
     
     optional arguments:
       -h, --help            show this help message and exit
