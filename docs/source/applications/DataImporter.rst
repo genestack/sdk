@@ -1,6 +1,5 @@
 DataImporter
 ************
 
-    .. automodule:: genestack.DataImporter
+    .. autoclass:::: genestack.DataImporter
        :members:
-       :undoc-members:

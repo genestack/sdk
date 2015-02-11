@@ -1,5 +1,5 @@
 AdminApplication
 ****************
 
-    .. automodule:: genestack.Admin
+    .. autoclass:: genestack.Admin
        :members:

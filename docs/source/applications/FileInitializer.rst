@@ -1,5 +1,5 @@
 FileInitializerApplication
 **************************
 
-    .. automodule:: genestack.FileInitializer
+    .. autoclass:: genestack.FileInitializer
        :members:

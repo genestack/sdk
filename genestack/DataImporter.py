@@ -19,6 +19,9 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 
 
 class DataImporter(object):
+    """
+    Import files.
+    """
     def __init__(self, connection):
         self.connection = connection
 

@@ -12,6 +12,10 @@ from Connection import Application
 
 
 class FileInitializer(Application):
+    """
+    Initialize files.
+    """
+
     APPLICATION_ID = 'initializer'
 
     def initialize(self, accessions):

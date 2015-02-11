@@ -1,5 +1,5 @@
 FilesUtilsApplication
 *********************
 
-    .. automodule:: genestack.FilesUtil
+    .. autoclass:: genestack.FilesUtil
        :members:
