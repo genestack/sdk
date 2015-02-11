@@ -66,19 +66,19 @@ To work with platform you should have connection. First thing you need is to hav
 
     * Using settings:
 
-      if not argument specified get_connection will return connection to default user
+      if no argument specified get_connection will return connection to default user
 
-      if only ``-u <alias>`` specified will be used user form settings. If user is not present system will switch to interactive login with default server.
+      if only ``-u <alias>`` is specified will be used user from settings. If user is not present system will switch to interactive login with default server.
 
     * Raw input:
 
         if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
 
-        ``-u <email>`` expect email
+        ``-u <email>`` expects email
 
-        ``-H <host>`` full server host if not specified default host will be used.
+        ``-H <host>`` server host, if it is not specified will use default host.
 
-        ``-p <password>`` if not password specified will ask it in interactive mode.
+        ``-p <password>`` if password is not specified user should add it in interactive mode.
 
         .. code-block:: sh
 

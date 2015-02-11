@@ -181,7 +181,7 @@ class Remove(Command):
             print 'Cant delete default user'
             return
         config.remove_user(user)
-        print "%s was removed form config" % user.alias
+        print "%s was removed from config" % user.alias
 
 
 class List(Command):

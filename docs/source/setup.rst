@@ -23,7 +23,7 @@ Install
 
   - create genestack account if you don't have one.
   - run init script ``genestack-user-setup.py init``.
-  - input email and password for genestack server. If you email and password match setup is finished.
+  - input email and password for genestack server. If your email and password match setup is finished.
   - to check result ``genestack-user-setup.py list``
 
   See more information in :ref:`user_config`.
@@ -52,17 +52,17 @@ Setup additional users
 
 If you have more then one account on genestack platform you may want to add other users.
 
-Each user need to have alias, email, host and password. There is not limitation to number of aliases
+Each user needs to have alias, email, host and password. There is not limitation to number of aliases
 you can create couple of them to one account.  To add user execute ``genestack-user-setup.py add``
 
 
-To use script with other user add ``-u <alias>`` to you command.
+To use script with other user add ``-u <alias>`` to your command.
 
 There is alternative way to specify user by adding all its credentials to command line::
 
    -u <email> -H <host> -p <passwod>
 
-If email or password omitted script will ask them in interactive mode.
+If email or password are omitted script will ask them in interactive mode.
 **NOTE**: interactive mode work only if you run script in terminal.
 
 See more info about possible commands: :doc:`scripts/genestack-user-setup`
