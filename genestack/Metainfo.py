@@ -14,11 +14,14 @@ from Exceptions import GenestackException
 
 
 def xstr(arg):
-    if arg is None:
-        return None
-    if isinstance(arg, basestring):
-        return arg
-    return str(arg)
+    """
+    Convert argument to string if it is not None.
+
+    :param arg:
+    :return: string representation of item
+    :rtype: str
+    """
+    return str(arg) if arg is not None else None
 
 
 class Metainfo(dict):
@@ -52,15 +55,54 @@ class Metainfo(dict):
         return {'type': type}
 
     def add_string(self, key, value):
+        """
+        Add string value.
+
+        :param key: key
+        :type key: str
+        :param value: string value
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'string')
 
     def add_boolean(self, key, value):
+        """
+        Add boolean value.
+
+        :param key: key
+        :type key: str
+        :param value: boolean value
+        :type value: bool
+        :rtype: None
+        """
         self._add_value(key, value, 'boolean')
 
     def add_integer(self, key, value):
+        """
+        Add integer value.
+
+        :type key: str
+        :param value: integer value
+        :type value: int
+        :rtype: None
+        """
         self._add_value(key, value, 'integer')
 
     def add_external_link(self, key, text, url, fmt=None):
+        """
+        Add external link. Url should be to valid source.
+        Source should be in public access in www or local file.
+        Local files will be uploaded if import file with :py:class:`~genestack.DataImporter.DataImporter`
+
+        :param key: key
+        :type key: str
+        :param text: url text for display purposes
+        :type text: str
+        :param fmt: format for unaligned read link
+        :type fmt: dict
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('externalLink')
         result['text'] = xstr(text)
         result['url'] = xstr(url)
@@ -68,6 +110,15 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_person(self, key, name, phone=None, email=None):
+        """
+        Add person.
+
+        :type key: str
+        :type name: str
+        :type phone: str
+        :type email: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('person')
         result['name'] = xstr(name)
         result['phone'] = xstr(phone)
@@ -76,6 +127,22 @@ class Metainfo(dict):
 
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
                          postal_code=None, state=None, phone=None, email=None, url=None):
+        """
+        Add organization.
+
+        :type key: str
+        :type name: str
+        :type department: str
+        :type country: str
+        :type city: str
+        :type street: str
+        :type postal_code: str
+        :type state: str
+        :type phone: str
+        :type email: str
+        :type url: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('organization')
         result['name'] = xstr(name)
         result['department'] = xstr(department)
@@ -90,18 +157,51 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_time(self, key, value, unit):
+        """
+        Add time value (for example age).
+
+        value can be any number.
+
+        Unit values can be one of next: :py:attr:`Metainfo.YEAR`, :py:attr:`Metainfo.MONTH`, :py:attr:`Metainfo.WEEK`,
+        :py:attr:`Metainfo.DAY`, :py:attr:`Metainfo.HOUR`, :py:attr:`Metainfo.MINUTE`, :py:attr:`Metainfo.SECOND`,
+        :py:attr:`Metainfo.MILLISECOND`
+
+        :type key: str
+        :type unit: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('time')
         result['value'] = xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
-    def add_file_reference(self, key, value):
+    def add_file_reference(self, key, accession):
+        """
+        Add reference to other file.
+
+        :type key: str
+        :type accession: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('file')
-        result['accession'] = xstr(value)
+        result['accession'] = xstr(accession)
         self.setdefault(key, []).append(result)
 
-    # This method takes time as returned from time.time() function.
     def add_date_time(self, key, time):
+        """
+        Add date to metainfo.
+        Time can be passed in one of the next formats:
+
+         - :py:class:`datetime.datetime`
+         - :py:class:`datetime.date`
+         - :py:class:`str` in format: ``'%Y-%m-%d %H:%M:%S'`` or ``'%Y-%m-%d'``
+         - number of seconds since the epoch as a floating point number
+
+        :param key: key
+        :type key: str
+        :param value: time value
+        :rtype: None
+        """
         date_time_format = '%Y-%m-%d %H:%M:%S'
         date_format = '%Y-%m-%d'
         result = Metainfo._create_dict_with_type('datetime')
