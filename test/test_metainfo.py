@@ -47,17 +47,11 @@ def test_add_datetime_as_string(metainfo):
     metainfo.add_date_time('key', '1982-09-01')
     assert metainfo == {'key': [{'type': 'datetime', 'date': '399686400000'}]}, 'Value is not match'
 
+
 def test_wrong_date(metainfo):
     with pytest.raises(GenestackException):
         metainfo.add_date_time('key', '01-09-1982')
 
-
-
-
-def test_get_string_value(metainfo):
-    metainfo.add_string('key', 42)
-    metainfo.add_string('key', 43)
-    assert '42' == metainfo.get_string_value('key')
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'short', __file__])
