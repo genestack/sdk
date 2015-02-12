@@ -14,16 +14,6 @@ class Admin:
     def __init__(self, connection):
         self.connection = connection
 
-    def login(self, user, pwd):
-        try:
-            self.connection.logout()
-        except Exception:
-            pass
-        self.connection.login(user, pwd)
-
-    def logout(self):
-        self.connection.logout()
-
     def create_user(self, email, pwd, name):
         return self.connection.application('usersadmin').invoke('createUser', email, pwd, name)
 
