@@ -1,3 +1,7 @@
+* version ?
+  * remove login and logout form Admin
+  * remove get_string_value from Metainfo
+
 * version 0.1.0
   * add `remove` command to genestack-user-setup.py
   * add version.py, use same version in github releases and documentation
