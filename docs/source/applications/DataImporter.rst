@@ -1,5 +1,5 @@
 DataImporter
 ************
 
-    .. autoclass:::: genestack.DataImporter
+    .. automodule:: genestack.DataImporter
        :members:

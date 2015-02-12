@@ -1,5 +1,5 @@
 SudoUtils
 *********
 
-    .. autoclass:: genestack.SudoUtils
+    .. automodule:: genestack.SudoUtils
        :members:
