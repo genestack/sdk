@@ -3,6 +3,7 @@ Metainfo
 
     .. automodule:: genestack.Metainfo
         :members: xstr
+        :show-inheritance:
 
         .. autoclass:: genestack.Metainfo.Metainfo
             :members:
