@@ -166,7 +166,7 @@ class GenestackShell(cmd.Cmd):
     # Don't add docstrings to methods, all methods should be considered private, but due design of Cmd it is not possible
     # TODO make private all that possible
 
-    def get_history_file(self):
+    def get_history_file_path(self):
         """
         Get path to history file.
 
@@ -222,7 +222,7 @@ class GenestackShell(cmd.Cmd):
 
         # do shell
         try:
-            readline.read_history_file(self.get_history_file())
+            readline.read_history_file(self.get_history_file_path())
         except (IOError, NameError):
             pass
         self.set_shell_user(args)
@@ -236,7 +236,7 @@ class GenestackShell(cmd.Cmd):
 
     def postloop(self):
         try:
-            readline.write_history_file(self.get_history_file())
+            readline.write_history_file(self.get_history_file_path())
         except (IOError, NameError):
             pass
 
