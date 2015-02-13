@@ -159,13 +159,13 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         return self.__invoke_loader('codonTableLoader', 'addCodonTable', parent, metainfo)
 
-    def create_dbnsfp(self, parent, link=None, link_text=None, name=None, organism=None, metainfo=None):
+    def create_dbnsfp(self, parent, link=None, name=None, organism=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
         metainfo.add_string('genestack.bio:databaseId', 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        if link and link_text:
-            metainfo.add_external_link(BioMetainfo.DATA_LINK, link_text, link)
+        if link:
+            metainfo.add_external_link(BioMetainfo.DATA_LINK, os.path.basename(link), link)
         return self.__invoke_loader('variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
 
     def create_reference_genome(self,
