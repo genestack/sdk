@@ -87,9 +87,9 @@ class Command(object):
 
         :param parser: base argument parser, for OFFLINE commands and commands inside shell it will be None,
             for other cases it will be result of :py:func:`~genestack.utils.make_connection_parser`
-        :type parser: ArgumentParser
+        :type parser: argparse.ArgumentParser
         :return: parser
-        :rtype: ArgumentParser
+        :rtype: argparse.ArgumentParser
         """
         parser = parser or ArgumentParser(description=self.DESCRIPTION)
         parser.description = self.DESCRIPTION
@@ -108,12 +108,27 @@ class Command(object):
         pass
 
     def set_connection(self, conn):
+        """
+        Set connection to command.
+
+        :param conn: connection
+        :type conn: genestack.Connection.Connection
+        """
         self.connection = conn
 
     def set_arguments(self, args):
+        """
+        Set parsed arguments to command.
+
+        :param args: parsed arguments
+        :type args: argparse.Namespace
+        """
         self.args = args
 
     def get_short_description(self):
+        """
+        Return short description for command, used in call of help command.
+        """
         return self.DESCRIPTION
 
 
@@ -152,6 +167,12 @@ class GenestackShell(cmd.Cmd):
     # TODO make private all that possible
 
     def get_history_file(self):
+        """
+        Get path to history file.
+
+        :return: path to history file
+        :rtype str:
+        """
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
     def __init__(self, *args, **kwargs):
