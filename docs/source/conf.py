@@ -313,6 +313,8 @@ epub_copyright = u'2015, genestack'
 # If false, no index is generated.
 #epub_use_index = True
 
+autoclass_content = 'both'
+
 
 # Generate autodoc for shell apps
 print sys.path.append('.')
