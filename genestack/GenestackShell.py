@@ -7,9 +7,6 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
-"""
-Base shell class used to create shell applications.
-"""
 
 from argparse import ArgumentParser
 import sys
@@ -32,8 +29,17 @@ HELP_SEPARATOR = '\n%s  Help  %s' % ('=' * 20, '=' * 20)
 
 
 def get_help(parser):
-    formatter = parser._get_formatter()
+    """
+    Return help text for parser.
 
+    :param parser: parser
+    :type parser: ArgumentParser
+    :return:
+    """
+    # Code almost identical with parser.print_help() with next changes:
+    # it return text instead print
+    # it place group 'command arguments' to the first place
+    formatter = parser._get_formatter()
     # usage
     formatter.add_usage(parser.usage, parser._actions,
                         parser._mutually_exclusive_groups)
@@ -57,15 +63,34 @@ def get_help(parser):
 
 
 class Command(object):
+    """
+    Command class to be inherited.
+
+    COMMAND - name of command that used to call it
+    DESCRIPTION - description is shown in help
+    OFFLINE - if true then command don't require connection to server.
+    """
     COMMAND = None
     DESCRIPTION = ''
     OFFLINE = False
+
+    # TODO make private all that possible
 
     def __init__(self):
         self.connection = None
         self.args = None
 
     def get_command_parser(self, parser=None):
+        """
+        Return command parser. This function called each time before command run.
+        To add new argument to command overwrite :py:meth:`update_parser` method
+
+        :param parser: base argument parser, for OFFLINE commands and commands inside shell it will be None,
+            for other cases it will be result of :py:func:`~genestack.utils.make_connection_parser`
+        :type parser: ArgumentParser
+        :return: parser
+        :rtype: ArgumentParser
+        """
         parser = parser or ArgumentParser(description=self.DESCRIPTION)
         parser.description = self.DESCRIPTION
         group = parser.add_argument_group("command arguments")
@@ -73,6 +98,13 @@ class Command(object):
         return parser
 
     def update_parser(self, parent):
+        """
+        Add arguments for command. Overwrite it in children.
+
+        :param parent: argument group
+        :type parent: argparse._ArgumentGroup
+        :rtype: None
+        """
         pass
 
     def set_connection(self, conn):
@@ -86,10 +118,38 @@ class Command(object):
 
 
 class GenestackShell(cmd.Cmd):
+    """
+    Base shell class.
+    INTRO - greeting at start of shell mode
+    COMMAND_LIST - list of available commands
+    DESCRIPTION - description for help.
+
+    Lunch as script:
+
+        .. code-block:: sh
+
+            script.py [connection_args] command [command_args]
+
+    Lunch as shell:
+
+        .. code-block:: sh
+
+            script.py [connection_args]
+
+
+    Default shell commands:
+        - help: show help about shell or command
+        - quit: quits shell
+        - ctrl+D: quits shell
+    """
     INTRO = ''
     COMMAND_LIST = []
-    COMMANDS = {}
     DESCRIPTION = "Shell and commandline application"
+
+    COMMANDS = {}  # filled in init
+
+    # Don't add docstrings to methods, all methods should be considered private, but due design of Cmd it is not possible
+    # TODO make private all that possible
 
     def get_history_file(self):
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
@@ -147,7 +207,7 @@ class GenestackShell(cmd.Cmd):
         self.set_shell_user(args)
 
     def set_shell_user(self, args):
-        """Set user for shell."""
+        # set user for shell
         self.connection = get_connection(args)
         email = self.connection.whoami()
         self.prompt = '%s> ' % email
@@ -160,7 +220,6 @@ class GenestackShell(cmd.Cmd):
             pass
 
     def do_EOF(self, line):
-        """Exit shell."""
         return True
     do_quit = do_EOF
 
