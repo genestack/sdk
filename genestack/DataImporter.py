@@ -21,6 +21,19 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 class DataImporter(object):
     """
     Import files to system.
+
+    Required and recommended values can be set by arguments directly or passed inside BioMetainfo object::
+
+       create_bed(PRIVATE, name="Bed", link='link')
+
+       # has same effect as:
+
+       metainfo = BioMetainfo()
+       metainfo.add_string(BioMetainfo.NAME, 'name)
+       metainfo.add_external_link(BioMetainfo.DATA_LINK, text='link name', url=url)
+       create_bed(PRIVATE, metainfo=metainfo)
+
+    It is prohibited to pass same value both with argument and in metainfo.
     """
     def __init__(self, connection):
         self.connection = connection
@@ -369,6 +382,31 @@ class DataImporter(object):
                                 release=None,
                                 strain=None,
                                 metainfo=None):
+        """
+        Create reference genome.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param description: experiment description
+        :type description: str
+        :param sequence_urls: list urls or local path to sequencing files.
+        :type sequence_urls: list
+        :param annotation_url: url to annotation file
+        :type annotation_url: str
+        :param organism: organism
+        :param organism: str
+        :param assembly: assembly
+        :type assembly: str
+        :param release: release
+        :type release: str
+        :param strain: strain
+        :type strain: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return:
+        """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
