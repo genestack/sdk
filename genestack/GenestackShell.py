@@ -171,7 +171,7 @@ class GenestackShell(cmd.Cmd):
         Get path to history file.
 
         :return: path to history file
-        :rtype str:
+        :rtype: str
         """
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
@@ -180,6 +180,13 @@ class GenestackShell(cmd.Cmd):
         cmd.Cmd.__init__(self, *args, **kwargs)
 
     def get_shell_parser(self):
+        """
+        Get parser for shell.
+        :return: parser for shell commands
+        :rtype: argparse.ArgumentParser
+
+        :return:
+        """
         parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
                                 parents=[make_connection_parser()])
         # override default help
@@ -188,6 +195,10 @@ class GenestackShell(cmd.Cmd):
         return parser
 
     def preloop(self):
+        """
+        Entry point. Check if should run script and exit or start shell.
+        """
+
         parser = self.get_shell_parser()
         args, others = parser.parse_known_args()
 
@@ -228,6 +239,12 @@ class GenestackShell(cmd.Cmd):
         self.set_shell_user(args)
 
     def set_shell_user(self, args):
+        """
+        Set connection for shell mode.
+
+        :param args: script arguments
+        :type args: argparse.Namespace
+        """
         # set user for shell
         self.connection = get_connection(args)
         email = self.connection.whoami()
@@ -245,6 +262,18 @@ class GenestackShell(cmd.Cmd):
     do_quit = do_EOF
 
     def process_command(self, command, argument_line, connection, shell=False):
+        """
+        Run command with arguments.
+
+        :param command: command
+        :param command: Command
+        :param argument_line: argument string for command
+        :type argument_line: str
+        :param connection: connection, for OFFLINE command can be None
+        :param connection: genestack.Connection.Connection
+        :param shell: flag if shell mode
+        :type shell: bool
+        """
         if shell or command.OFFLINE:
             p = command.get_command_parser()
         else:
