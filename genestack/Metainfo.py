@@ -130,10 +130,3 @@ class Metainfo(dict):
 
         result['date'] = xstr(milliseconds)
         self.setdefault(key, []).append(result)
-
-    def get_string_value(self, key):
-        values = self.get(key)
-        if values is not None:
-            if len(values) > 0:
-                value = values[0].get('value')
-                return xstr(value)
