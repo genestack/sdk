@@ -334,6 +334,22 @@ class DataImporter(object):
         return self.__invoke_loader('codonTableLoader', 'addCodonTable', parent, metainfo)
 
     def create_dbnsfp(self, parent, link=None, name=None, organism=None, metainfo=None):
+        """
+        Create dbNSFP file.  name and link are required.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param link: link or local path
+        :type link: str
+        :param name: name of the file
+        :type name: str
+        :param organism: organism
+        :type organism: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
         metainfo = metainfo or BioMetainfo()
         metainfo.add_string('genestack.bio:databaseId', 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
