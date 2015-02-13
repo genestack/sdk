@@ -1,4 +1,6 @@
 * version ?
+
+* version 0.1.1
   * remove login and logout from Admin
   * remove get_string_value from Metainfo
   * remove link_name argument form create_dbnsfp
