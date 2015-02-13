@@ -134,7 +134,10 @@ class Command(object):
 
 class GenestackShell(cmd.Cmd):
     """
-    Base shell class.
+    Base shell class. :py:class:`GenestackShell` is a subclass of the :py:class:`cmd.Cmd`.
+
+    Arguments to be overwritten in children:
+
         - ``INTRO``: greeting at start of shell mode
         - ``COMMAND_LIST``: list of available commands
         - ``DESCRIPTION``: description for help.
