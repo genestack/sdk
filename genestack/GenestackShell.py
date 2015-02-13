@@ -66,9 +66,9 @@ class Command(object):
     """
     Command class to be inherited.
 
-    COMMAND - name of command that used to call it
-    DESCRIPTION - description is shown in help
-    OFFLINE - if true then command don't require connection to server.
+        - ``COMMAND``: name of command that used to call it
+        - ``DESCRIPTION``: description is shown in help
+        - ``OFFLINE``: if true then command don't require connection to server.
     """
     COMMAND = None
     DESCRIPTION = ''
@@ -135,9 +135,9 @@ class Command(object):
 class GenestackShell(cmd.Cmd):
     """
     Base shell class.
-    INTRO - greeting at start of shell mode
-    COMMAND_LIST - list of available commands
-    DESCRIPTION - description for help.
+        - ``INTRO``: greeting at start of shell mode
+        - ``COMMAND_LIST``: list of available commands
+        - ``DESCRIPTION``: description for help.
 
     Lunch as script:
 
@@ -153,9 +153,9 @@ class GenestackShell(cmd.Cmd):
 
 
     Default shell commands:
-        - help: show help about shell or command
-        - quit: quits shell
-        - ctrl+D: quits shell
+        - ``help``: show help about shell or command
+        - ``quit``: quits shell
+        - ``ctrl+D``: quits shell
     """
     INTRO = ''
     COMMAND_LIST = []
@@ -182,10 +182,9 @@ class GenestackShell(cmd.Cmd):
     def get_shell_parser(self):
         """
         Get parser for shell.
+
         :return: parser for shell commands
         :rtype: argparse.ArgumentParser
-
-        :return:
         """
         parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
                                 parents=[make_connection_parser()])
