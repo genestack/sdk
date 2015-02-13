@@ -20,7 +20,7 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 
 class DataImporter(object):
     """
-    Import files.
+    Import files to system.
     """
     def __init__(self, connection):
         self.connection = connection
@@ -70,11 +70,36 @@ class DataImporter(object):
         return fileinfo['Accession']
 
     def load_raw(self, file_path):
+        """
+        Load file to genestack storage, return created file accession.
+
+        :param file_path: existing file path
+        :type file_path: str
+        :return: accession
+        :rtype: str
+        """
         filename = os.path.basename(file_path)
         application = self.connection.application('rawloader')
         return application.upload_file(file_path, filename)
 
     def create_bed(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
+        """
+        Create bed file.
+        name and url are required fields they can be specified by arguments or via metainfo.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param reference_genome: accession of reference genome
+        :type reference_genome: str
+        :param url: url or local path to file
+        :type url: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
@@ -82,6 +107,23 @@ class DataImporter(object):
         return self.__invoke_loader('bedLoader', 'importFile', parent, metainfo)
 
     def create_vcf(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
+        """
+        Create vcf file.
+        name and url are required fields they can be specified by arguments or via metainfo.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param reference_genome: accession of reference genome
+        :type reference_genome: str
+        :param url: url or local path to file
+        :type url: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
