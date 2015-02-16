@@ -89,6 +89,9 @@ class GenestackShell(cmd.Cmd):
     COMMANDS = {}
     DESCRIPTION = "Shell and commandline application"
 
+    def get_names(self):
+        return [x for x in cmd.Cmd.get_names(self) if x != 'do_EOF']
+
     def get_history_file(self):
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
@@ -235,3 +238,9 @@ class GenestackShell(cmd.Cmd):
         commands = [a[3:] for a in self.get_names() if a.startswith(dotext)]
         commands += [x for x in self.COMMANDS.keys() if x.startswith(text)]
         return commands
+
+    def cmdloop(self, intro=None):
+        try:
+            cmd.Cmd.cmdloop(self, intro=intro)
+        except KeyboardInterrupt:
+            self.postloop()
