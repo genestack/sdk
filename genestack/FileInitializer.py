@@ -12,7 +12,7 @@ from Connection import Application
 
 
 class FileInitializer(Application):
-    APPLICATION_ID = 'initializer'
+    APPLICATION_ID = 'genestack/initializer'
 
     def initialize(self, accessions):
         """
