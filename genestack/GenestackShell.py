@@ -235,3 +235,9 @@ class GenestackShell(cmd.Cmd):
         commands = [a[3:] for a in self.get_names() if a.startswith(dotext)]
         commands += [x for x in self.COMMANDS.keys() if x.startswith(text)]
         return commands
+
+    def cmdloop(self, intro=None):
+        try:
+            cmd.Cmd.cmdloop(self, intro=intro)
+        except KeyboardInterrupt:
+            self.postloop()
