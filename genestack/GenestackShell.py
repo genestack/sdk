@@ -89,6 +89,9 @@ class GenestackShell(cmd.Cmd):
     COMMANDS = {}
     DESCRIPTION = "Shell and commandline application"
 
+    def get_names(self):
+        return [x for x in cmd.Cmd.get_names(self) if x != 'do_EOF']
+
     def get_history_file(self):
         return os.path.join(os.path.expanduser("~"), '.%s' % self.__class__.__name__)
 
