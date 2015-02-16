@@ -53,10 +53,10 @@ class Connection:
             pass
 
     def whoami(self):
-        return self.application('signin').invoke('whoami')
+        return self.application('genestack/signin').invoke('whoami')
 
     def login(self, email, password):
-        logged = self.application('signin').invoke('authenticate', email, password)
+        logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged:
             raise GenestackException("Fail to login %s" % email)
 
