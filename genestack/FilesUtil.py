@@ -123,7 +123,7 @@ class FilesUtil(Application):
         """
         return self.invoke('getFileChildren', container_accession)
 
-    def create_folder(self, name, parent=None, accession=None, description=None, metainfo=None):
+    def create_folder(self, name, parent=None, description=None, metainfo=None):
         """
         Create folder.
 
@@ -139,8 +139,6 @@ class FilesUtil(Application):
         metainfo.add_string(Metainfo.NAME, name)
         if description is not None:
             metainfo.add_string(Metainfo.DESCRIPTION, description)
-        if accession is not None:
-            metainfo.add_string(Metainfo.ACCESSION, accession)
         return self.invoke('createFolder', parent, metainfo)
 
     def find_or_create_folder(self, name, parent=None):
