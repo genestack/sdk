@@ -26,12 +26,12 @@ class CLApplication(Application):
             self.rename_file(app_file, name)
 
         if calculate_checksums:
-            self.connection.application('bio-test-preprocess').invoke(
+            self.connection.application('genestack/bio-test-preprocess').invoke(
                 '%s' % CALCULATE_CHECKSUMS, app_file
             )
 
         if expected_checksums:
-            self.connection.application('bio-test-preprocess').invoke(
+            self.connection.application('genestack/bio-test-preprocess').invoke(
                 'addCheckSums', app_file, expected_checksums or []
             )
 
@@ -120,71 +120,71 @@ class CLApplication(Application):
 
 
 class TestCLApplication(CLApplication):
-    APPLICATION_ID = 'testcla'
+    APPLICATION_ID = 'genestack/testcla'
 
 
 class BsmapApplication(CLApplication):
-    APPLICATION_ID = 'bsmap'
+    APPLICATION_ID = 'genestack/bsmap'
 
 
 class UnalignedReadsQC(CLApplication):
-    APPLICATION_ID = 'unalignedreads-qc'
+    APPLICATION_ID = 'genestack/unalignedreads-qc'
 
 
 class AlignedReadsQC(CLApplication):
-    APPLICATION_ID = 'alignedreads-qc'
+    APPLICATION_ID = 'genestack/alignedreads-qc'
 
 
 class MethratioApplication(CLApplication):
-    APPLICATION_ID = 'methratio'
+    APPLICATION_ID = 'genestack/methratio'
 
 
 class HTSeqCountsApplication(CLApplication):
-    APPLICATION_ID = 'htseqCount'
+    APPLICATION_ID = 'genestack/htseqCount'
 
 
 class NormalizationApplication(CLApplication):
-    APPLICATION_ID = 'normalization'
+    APPLICATION_ID = 'genestack/normalization'
 
 
 class TophatApplication(CLApplication):
-    APPLICATION_ID = 'tophat'
+    APPLICATION_ID = 'genestack/tophat'
 
 
 class VariationCallerApplication(CLApplication):
-    APPLICATION_ID = 'variationCaller'
+    APPLICATION_ID = 'genestack/variationCaller'
 
 
 # Preprocess
 ## preprocess raw reads
 class TrimAdaptorsAndContiminations(CLApplication):
-    APPLICATION_ID = 'fastq-mcf'
+    APPLICATION_ID = 'genestack/fastq-mcf'
 
 
 class FilterByQuality(CLApplication):
-    APPLICATION_ID = 'qualityFilter'
+    APPLICATION_ID = 'genestack/qualityFilter'
 
 
 class TrimToFixedLength(CLApplication):
-    APPLICATION_ID = 'fastx-trimmer'
+    APPLICATION_ID = 'genestack/fastx-trimmer'
 
 
 class SubsampleReads(CLApplication):
-    APPLICATION_ID = 'subsampling'
+    APPLICATION_ID = 'genestack/subsampling'
 
 
 class FilterDuplicatedReads(CLApplication):
-    APPLICATION_ID = 'filter-duplicated-reads'
+    APPLICATION_ID = 'genestack/filter-duplicated-reads'
 
 
 class TrimLowQualityBases(CLApplication):
-    APPLICATION_ID = 'trim-low-quality-bases'
+    APPLICATION_ID = 'genestack/trim-low-quality-bases'
 
 
 ## preprocess mapped reads
 class MarkDuplicated(CLApplication):
-    APPLICATION_ID = 'markDuplicates'
+    APPLICATION_ID = 'genestack/markDuplicates'
 
 
 class RemoveDuplicates(CLApplication):
-    APPLICATION_ID = 'removeDuplicates'
+    APPLICATION_ID = 'genestack/removeDuplicates'

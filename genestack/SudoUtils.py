@@ -16,7 +16,7 @@ from genestack import GenestackException
 
 
 class SudoUtils(Application):
-    APPLICATION_ID = 'sudoutils'
+    APPLICATION_ID = 'genestack/sudoutils'
 
     def is_sudo_active(self):
         """

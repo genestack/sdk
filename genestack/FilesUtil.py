@@ -36,7 +36,7 @@ class FilesUtil(Application):
     """
     Application for file management.
     """
-    APPLICATION_ID = 'filesUtil'
+    APPLICATION_ID = 'genestack/filesUtil'
 
     IFile = 'com.genestack.api.files.IFile'
     IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
@@ -236,7 +236,7 @@ class FilesUtil(Application):
                if not specified will be asked in interactive prompt (work only if output redirected to terminal)
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
-        share_utils = self.connection.application('shareutils')
+        share_utils = self.connection.application('genestack/shareutils')
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
@@ -254,7 +254,7 @@ class FilesUtil(Application):
 
         :return: dict
         """
-        share_utils = self.connection.application('shareutils')
+        share_utils = self.connection.application('genestack/shareutils')
         return share_utils.invoke('getGroupsToShare')
 
     def get_folder(self, parent, *names, **kwargs):
