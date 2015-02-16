@@ -64,7 +64,7 @@ class Connection:
         :return: email
         :rtype: str
         """
-        return self.application('signin').invoke('whoami')
+        return self.application('genestack/signin').invoke('whoami')
 
     def login(self, email, password):
         """

@@ -15,7 +15,7 @@ class FileInitializer(Application):
     """
     Initialize files.
     """
-    APPLICATION_ID = 'initializer'
+    APPLICATION_ID = 'genestack/initializer'
 
     def initialize(self, accessions):
         """

@@ -19,8 +19,7 @@ class SudoUtils(Application):
     """
     Sudo utils.
     """
-
-    APPLICATION_ID = 'sudoutils'
+    APPLICATION_ID = 'genestack/sudoutils'
 
     def is_sudo_active(self):
         """
