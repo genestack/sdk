@@ -111,7 +111,9 @@ class FilesUtil(Application):
         Recursively search for all initialisable file in container.
 
         :param accession: accession of container
+        :type accession: str
         :return: list of accessions
+        :rtype: list
         """
         return self.invoke('collectInitializableFilesInContainer', accession)
 
@@ -135,8 +137,9 @@ class FilesUtil(Application):
         :param parent: if not specified create folder in 'private'
         :type parent: str
         :param description: description for folder
-        :param metainfo: additional Metainfo.
-               description and accession should be specified via arguments or in metainfo, not in both places.
+        :type description: str
+        :param metainfo: additional Metainfo. Description and accession should be specified via arguments or in metainfo, not in both places.
+        :type metainfo: Metainfo
         :return: accession of created folder
         """
         metainfo = metainfo or Metainfo()
@@ -151,8 +154,11 @@ class FilesUtil(Application):
         If more than one folder is found the first one is returned.
 
         :param name: display name
-        :param parent: if not specified create folder in 'private'
+        :type name: str
+        :param parent: parent accession, use home folder if None
+        :type parent: str
         :return: accession of folder
+        :rtype: str
         """
         return self.invoke('findOrCreateFolder', name, parent)
 
@@ -161,7 +167,10 @@ class FilesUtil(Application):
         Link file to folder.
 
         :param accession: file accession
+        :type accession: str
         :param parent: destination accession
+        :type parent: str
+        :rtype: None
         """
         self.invoke('linkFile', accession, parent)
 
@@ -170,7 +179,10 @@ class FilesUtil(Application):
         Unlink file from folder.
 
         :param accession: file accession
+        :type accession: str
         :param parent: folder accession
+        :type parent: str
+        :rtype: None
         """
         self.invoke('unlinkFile', accession, parent)
 
@@ -179,6 +191,8 @@ class FilesUtil(Application):
         Unlink all files from current container.
 
         :param container_accession: accession of the container
+        :type container_accession: str
+        :rtype: None
         """
         self.invoke('clearContainer', container_accession)
 
@@ -187,8 +201,12 @@ class FilesUtil(Application):
         Add string value to metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
         :param value: string
+        :type value: str
+        :rtype: None
         """
         self.invoke('addMetainfoStringValue', accession_list, key, value)
 
@@ -197,8 +215,12 @@ class FilesUtil(Application):
         Replace string value to metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
         :param value: string
+        :type value: str
+        :rtype: None
         """
         self.invoke('replaceMetainfoStringValue', accession_list, key, value)
 
@@ -207,7 +229,10 @@ class FilesUtil(Application):
         Delete key from metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
+        :rtype: None
         """
         self.invoke('removeMetainfoValue', accession_list, key)
 
@@ -218,7 +243,9 @@ class FilesUtil(Application):
         Available special folders is described in :class:`.SpecialFolders`
 
         :param name: special folder name
+        :type name: str
         :return: accession
+        :rtype: str
         :raises: GenestackException: if folder name is unknown
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
@@ -232,10 +259,14 @@ class FilesUtil(Application):
         Share files.
 
         :param accessions: files accessions
+        :type accessions: list
         :param group: group to share
+        :type group: str
         :param destination_folder: folder there shared files to be linked. No links if folder is None
-        :param password: password for share,
-               if not specified will be asked in interactive prompt (work only if output redirected to terminal)
+        :type destination_folder: str
+        :param password: password for share, if not specified will be asked in interactive prompt (work only if output redirected to terminal)
+        :type: str
+        :rtype: None
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
         share_utils = self.connection.application('genestack/shareutils')
@@ -254,7 +285,9 @@ class FilesUtil(Application):
         - folderName: name of shared group folder
         - folderAccession: accessing of shared group folder
 
-        :return: dict
+        :return: group dict
+        :rtype: dict
+
         """
         share_utils = self.connection.application('genestack/shareutils')
         return share_utils.invoke('getGroupsToShare')
@@ -264,12 +297,16 @@ class FilesUtil(Application):
         Finds path recursively. As first argument it accepts any accession.
         Use PRIVATE for user folder, PUBLIC for public data. Parent folder must exist.
         For each path in path corresponding folder founded.  If folder is not found exception raised,
-        except key "create=True" specified. In that case all folders will be created.
+        except key ``create=True`` specified. In that case all folders will be created.
 
         :param parent: parent accession
+        :type parent: str
         :param names: tuple of folder names that should be founded/created
-        :param created: set True if missed folder should be created, default=False
+        :type names: tuple
+        :param created: set True if missed folder should be created, default is False
+        :type created: bool
         :return: accession of last folder in paths.
+        :rtype: str
         :raises:  GenestackException: when paths are not specified or parent cannot be found.
         """
         if not names:
