@@ -129,7 +129,6 @@ class FilesUtil(Application):
 
         :param name: display name
         :param parent: if not specified create folder in 'private'
-        :param accession: new folder accession, should be unique among platform.
         :param description: description for folder
         :param metainfo: additional Metainfo.
                description and accession should be specified via arguments or in metainfo, not in both places.
