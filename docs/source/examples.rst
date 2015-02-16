@@ -7,6 +7,6 @@ Examples
    examples/connection
    examples/FileUtils
    examples/DataImporter
-   examples/own_classes
+   examples/call_methods
 
 .. maybe TODO Create own shell
