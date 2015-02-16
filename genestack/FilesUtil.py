@@ -62,7 +62,7 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raises: GenestackServerException: if there is not ore more then one reference genome
+        :raises: GenestackServerException: if there is not or more then one reference genome
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -120,7 +120,9 @@ class FilesUtil(Application):
         Return accessions of files linked to current container.
 
         :param container_accession:  accession of container
+        :type container_accession: str
         :return: list of accessions
+        :rtype: list
         """
         return self.invoke('getFileChildren', container_accession)
 
@@ -129,7 +131,9 @@ class FilesUtil(Application):
         Create folder.
 
         :param name: display name
+        :type name: str
         :param parent: if not specified create folder in 'private'
+        :type parent: str
         :param accession: new folder accession, should be unique among platform.
         :param description: description for folder
         :param metainfo: additional Metainfo.

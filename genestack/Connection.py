@@ -114,6 +114,14 @@ class Connection:
                                                                 str(e).replace('urlopen error', '').strip('<\ >')))
 
     def application(self, application_id):
+        """
+        Return documentation with specified id.
+
+        :param application_id: application_id.
+        :type application_id: str
+        :return: application class
+        :rtype: Application
+        """
         return Application(self, application_id)
 
     def __repr__(self):
@@ -122,7 +130,7 @@ class Connection:
 
 class Application:
     """
-    Create new application instance for given connection. Connection must be logged in.
+    Create new application instance for given connection. Connection must be logged in to call methods.
 
     application_id can be specified as init argument or in APPLICATION_ID class variable in case of using inheritance.
     """
