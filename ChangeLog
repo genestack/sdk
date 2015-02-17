@@ -1,4 +1,5 @@
 * version ?
+  * add warning if not vendor specified in application ID
 
 * version 0.1.1
   * remove login and logout from Admin
