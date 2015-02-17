@@ -1,4 +1,5 @@
 * version ?
+  * remove Admin application (move it to core scripts)
 
 * version 0.1.1
   * remove login and logout from Admin
