@@ -18,6 +18,7 @@ def xstr(arg):
     Convert argument to string if it is not None.
 
     :param arg:
+    :type arg: object
     :return: string representation of item
     :rtype: str
     """
@@ -28,7 +29,6 @@ class Metainfo(dict):
     """
     Python representation of metainfo.
     """
-
     NAME = 'genestack:name'
     DESCRIPTION = 'genestack:description'
     ACCESSION = 'genestack:accession'
@@ -82,6 +82,7 @@ class Metainfo(dict):
         """
         Add integer value.
 
+        :param key: key
         :type key: str
         :param value: integer value
         :type value: int
@@ -111,11 +112,16 @@ class Metainfo(dict):
 
     def add_person(self, key, name, phone=None, email=None):
         """
-        Add person.
+        Add person. Name is required. All other fields is optional.
+        All fields will be visible for all who can access this metainfo.
 
+        :param key: key
         :type key: str
+        :param name: full name
         :type name: str
+        :param phone: phone number
         :type phone: str
+        :param email: contact email
         :type email: str
         :rtype: None
         """
@@ -128,18 +134,30 @@ class Metainfo(dict):
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
                          postal_code=None, state=None, phone=None, email=None, url=None):
         """
-        Add organization.
+        Add organization. Name is required. All other fields is optional.
+        All fields will be visible for all who can access this metainfo.
 
+        :param key: key
         :type key: str
+        :param name: name
         :type name: str
+        :param department: department
         :type department: str
+        :param country: country
         :type country: str
+        :param city: city
         :type city: str
+        :param street: street
         :type street: str
+        :param postal_code: postal/zip code
         :type postal_code: str
+        :param state: state
         :type state: str
+        :param phone: phone
         :type phone: str
+        :param email: email
         :type email: str
+        :param url: organisation web page
         :type url: str
         :rtype: None
         """
@@ -166,7 +184,9 @@ class Metainfo(dict):
         :py:attr:`Metainfo.DAY`, :py:attr:`Metainfo.HOUR`, :py:attr:`Metainfo.MINUTE`, :py:attr:`Metainfo.SECOND`,
         :py:attr:`Metainfo.MILLISECOND`
 
+        :param key: key
         :type key: str
+        :param unit: unit
         :type unit: str
         :rtype: None
         """
@@ -179,7 +199,9 @@ class Metainfo(dict):
         """
         Add reference to other file.
 
+        :param key: key
         :type key: str
+        :param accession: accession for referenced file
         :type accession: str
         :rtype: None
         """

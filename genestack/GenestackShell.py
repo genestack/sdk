@@ -34,7 +34,8 @@ def get_help(parser):
 
     :param parser: parser
     :type parser: ArgumentParser
-    :return:
+    :return: fully formatted help string
+    :rtype: str
     """
     # Code almost identical with parser.print_help() with next changes:
     # it return text instead print
@@ -142,13 +143,13 @@ class GenestackShell(cmd.Cmd):
         - ``COMMAND_LIST``: list of available commands
         - ``DESCRIPTION``: description for help.
 
-    Lunch as script:
+    Run as script:
 
         .. code-block:: sh
 
             script.py [connection_args] command [command_args]
 
-    Lunch as shell:
+    Run as shell:
 
         .. code-block:: sh
 
@@ -337,6 +338,7 @@ class GenestackShell(cmd.Cmd):
         self.stdout.write('%s\n' % str(self.nohelp % (line,)))
 
     def emptyline(self):
+        # override default cmd behavior.
         pass
 
     def default(self, line):
@@ -353,6 +355,7 @@ class GenestackShell(cmd.Cmd):
         return commands
 
     def cmdloop(self, intro=None):
+        # TODO on ctrl+C don't exit
         try:
             cmd.Cmd.cmdloop(self, intro=intro)
         except KeyboardInterrupt:

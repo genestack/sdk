@@ -14,8 +14,9 @@ import sys
 
 def isatty():
     """
-    True if the file is connected to a tty device.
+    Return True if the file is connected to a tty device.
 
+    :return: is a tty
     :rtype: bool
     """
     try:
@@ -36,7 +37,7 @@ def make_connection_parser(user=None, password=None, host=None):
     :param host: host
     :type host: str
     :return: parser
-    :rtype: argparse.ArgumentParser
+    :rtype: :py:class:`~argparse.ArgumentParser`
     """
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group('connection')
@@ -51,8 +52,10 @@ def get_user(args=None):
     Return user corresponding to arguments.
     If arguments is None use :attr:`make_connection_parser` to get arguments.
 
+    :param args: result of commandline parse
+    :type args: argparse.Namespace
     :return: user
-    :rtype: genestack.settings.User.User
+    :rtype: :py:class:`~genestack.settings.User.User`
     """
 
     from settings import config, User
@@ -76,7 +79,7 @@ def get_connection(args=None):
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: genestack.Connection.Connection
+    :rtype: :py:class:`~genestack.Connection.Connection`
     """
     user = get_user(args)
     return user.get_connection(interactive=True)

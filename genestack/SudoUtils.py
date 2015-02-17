@@ -33,12 +33,20 @@ class SudoUtils(Application):
         is password is None has same effect as is_sudo_active
 
         :param password: password
+        :type password: str
         :return: True if sudo is active.
         """
         # TODO rename this method in java and javascript https://trac.genestack.com/ticket/3393
         return self.invoke('isPasswordCorrect', password)
 
     def ensure_sudo_interactive(self, password):
+        """
+        SHow interactive dialog of entering sudo password.
+
+        :param password: password
+        :type password: str
+        :rtype: None
+        """
         if self.is_sudo_active():
             return
         if password is None:
