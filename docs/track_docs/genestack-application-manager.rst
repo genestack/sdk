@@ -7,7 +7,9 @@ genestack-application-manager installed with pythonSDK and accessed as ``genesta
 
 Usage
 -----
-This script can be used both as shell and command line::
+This script can be used both as shell and command line:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
@@ -30,9 +32,11 @@ This script can be used both as shell and command line::
       -p <password>         user password
     
 
-You can get description for every ``command`` by running::
+You can get description for every ``command`` by running:
 
-  genestack-application-manager.py command -h
+  .. code-block:: none
+
+    $ genestack-application-manager.py command -h
 
 
 In shell mode type ``help`` to get list of available commands.
@@ -43,7 +47,9 @@ See :doc:`../examples/connection` for more information about connection argument
 
 Commands
 --------
- - **applications**::
+- **applications**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
     
@@ -59,7 +65,10 @@ Commands
       -p <password>         user password
     
 
- - **info**::
+
+- **info**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
                         <jar_file_or_folder> [<jar_file_or_folder> ...]
@@ -77,7 +86,10 @@ Commands
       -h, --help            show this help message and exit
     
 
- - **install**::
+
+- **install**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-o] [-s]
                         [-S <scope>]
@@ -105,7 +117,10 @@ Commands
       -p <password>         user password
     
 
- - **invoke**::
+
+- **invoke**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <appId> <method> [<args> [<args> ...]]
@@ -127,7 +142,10 @@ Commands
       -p <password>         user password
     
 
- - **reload**::
+
+- **reload**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
@@ -148,7 +166,10 @@ Commands
       -p <password>         user password
     
 
- - **remove**::
+
+- **remove**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
@@ -169,7 +190,10 @@ Commands
       -p <password>         user password
     
 
- - **stable**::
+
+- **stable**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
                         <version> <appId> [<appId> ...]
@@ -194,7 +218,10 @@ Commands
       -p <password>         user password
     
 
- - **versions**::
+
+- **versions**:
+
+  .. code-block:: none
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
                         <appId>
@@ -216,6 +243,7 @@ Commands
       -u <user>             user alias from settings or email
       -p <password>         user password
     
+
 
 
 Useful commands

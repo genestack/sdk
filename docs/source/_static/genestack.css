@@ -1,3 +1,7 @@
 div.highlight-sh div pre {
-    background-color: ghostwhite;
+    background-color: lightgray;
+}
+
+div.highlight-none div pre {
+    background-color: lightgray;
 }

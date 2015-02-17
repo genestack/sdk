@@ -15,13 +15,17 @@ template = """
 
 Usage
 -----
-This script can be used both as shell and command line::
+This script can be used both as shell and command line:
+
+  .. code-block:: none
 
     {usage}
 
-You can get description for every ``command`` by running::
+You can get description for every ``command`` by running:
 
-  {name}.py command -h
+  .. code-block:: none
+
+    $ {name}.py command -h
 
 
 In shell mode type ``help`` to get list of available commands.
@@ -52,7 +56,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
         command = command()
         parser = command.get_command_parser(parser=None if command.OFFLINE else make_connection_parser())
         help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name + '.py')
-        text = ' - **%s**::\n\n    %s\n' % (command.COMMAND, help_text)
+        text = '- **%s**:\n\n  .. code-block:: none\n\n    %s\n\n' % (command.COMMAND, help_text)
         commands.append(text)
 
     if footer_file_name:
