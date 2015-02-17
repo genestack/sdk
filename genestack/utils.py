@@ -74,7 +74,7 @@ def get_user(args=None):
 
 def get_connection(args=None):
     """
-    Shortcut to get_user().get_connection()
+    Shortcut to :py:func:`get_user` . :py:meth:`~genestack.settings.User.User.get_connection`
 
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace

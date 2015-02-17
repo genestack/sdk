@@ -3,7 +3,7 @@ API reference
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    api_reference/BioMetainfo
    api_reference/Connection
@@ -11,6 +11,7 @@ API reference
    api_reference/GenestackShell
    api_reference/Metainfo
    api_reference/utils
+   api_reference/settings/__init__
 
 
 
