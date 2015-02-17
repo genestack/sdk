@@ -13,13 +13,10 @@ To work with platform you should have connection. First thing you need is to hav
     get_connection use Argparse module to get your credentials from config file. By default it uses credentials of default user.
     You can specify other user by adding ``-u <alias>`` to command line argument.
 
-    **Get connection**::
+    **Get connection**:
 
-        from genestack import get_connection
-
-        connection = get_connection()
-        print connection.whoami()
-
+    .. literalinclude:: simple_connection.py
+        :language: python
 
     **Run script from commandline**:
 
@@ -31,7 +28,6 @@ To work with platform you should have connection. First thing you need is to hav
         user@email.com
 
         # with user bob@email.com that present in config with alias bob
-
         $ ./script.py -u bob
         bob@email.com
 
@@ -39,19 +35,10 @@ To work with platform you should have connection. First thing you need is to hav
     In case then you need more arguments you need to add it to connection_parser. Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
 
 
-    **Connection with additional script arguments**::
+    **Connection with additional script arguments**:
 
-        from genestack import get_connection, make_connection_parser
-
-        parser = make_connection_parser()  # return instance of argparse.ArgumentParser
-        parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have unicorn.')
-        args = parser.parse_args()
-        connection = get_connection(args)
-        if args.unicorn:
-            print connection.whoami(), 'has unicorn!'
-        else:
-            print connection.whoami(), 'does not have unicorn.'
-
+    .. literalinclude:: connection_with_args.py
+        :language: python
 
     .. code-block:: sh
 
@@ -89,16 +76,8 @@ To work with platform you should have connection. First thing you need is to hav
 
     This approach required more efforts and require so store your password as plain text.
 
-    ::
-
-        from genestack import Connection
-
-        # crease connection object for server
-        connection = Connection('https://platform.genestack.org/endpoint')
-
-        # login as user: 'user@email.com' with password 'password'
-        connection.login('user@email.com', 'password')
-        print connection.whoami()
+    .. literalinclude:: connection_raw.py
+        :language: python
 
 
     Run script from commandline:
@@ -111,25 +90,9 @@ To work with platform you should have connection. First thing you need is to hav
 Connection usage
 ================
 
-
-With connection you can call application methods::
-
-    # whoami implementation.
-    application_id = 'signin'
-    method = 'whoami'
-
-    application = connection.application(application_id)
-    email = application.invoke(method)
-
-Method can access arguments. To invoke method you need to pass exactly same number of arguments of same type.
-
-.. TODO make table java python javascrpt serializable objects.
-
-
-You can send connection to predefined or your own applications:
+You can send connection to predefined or to your own applications:
+ - Calling application methods :doc:`call_methods`
  - Operations for managing files :doc:`FileUtils`
  - Importing data :doc:`DataImporter`
- - Calling application methods :doc:`call_methods`
-
 
 
