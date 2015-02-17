@@ -15,8 +15,8 @@ To work with platform you should have connection. First thing you need is to hav
 
     **Get connection**:
 
-    .. literalinclude:: simple_connection.py
-        :language: python
+    .. literalinclude:: code/connection.py
+        :lines: 2-5
 
     **Run script from commandline**:
 
@@ -37,8 +37,8 @@ To work with platform you should have connection. First thing you need is to hav
 
     **Connection with additional script arguments**:
 
-    .. literalinclude:: connection_with_args.py
-        :language: python
+    .. literalinclude:: code/connection.py
+        :lines: 9-19
 
     .. code-block:: sh
 
@@ -76,8 +76,8 @@ To work with platform you should have connection. First thing you need is to hav
 
     This approach required more efforts and require so store your password as plain text.
 
-    .. literalinclude:: connection_raw.py
-        :language: python
+    .. literalinclude:: code/connection.py
+        :lines: 22-
 
 
     Run script from commandline:
