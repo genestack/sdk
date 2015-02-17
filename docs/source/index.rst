@@ -25,6 +25,7 @@ Contents:
    examples
    applications
    api_reference
+   scripts/scripts
 
 Indices and tables
 ==================
