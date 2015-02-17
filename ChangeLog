@@ -1,4 +1,8 @@
 * version ?
+  * add warning if vendor is not specified in application ID
+  * remove Admin application (move it to core scripts)
+  * remove optional accession param from FileUtils.create_folder()
+
 
 * version 0.1.1
   * remove login and logout from Admin

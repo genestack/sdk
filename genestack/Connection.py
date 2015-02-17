@@ -147,6 +147,7 @@ class Application:
         if len(parts) == 1:
             self.vendor = 'genestack'
             self.application = application_id
+            print 'Deprecation warning: use "genestack/%(id)s" instead of "%(id)s"' % {'id': application_id}
         elif len(parts) == 2:
             self.vendor = parts[0]
             self.application = parts[1]
