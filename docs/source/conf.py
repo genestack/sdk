@@ -317,6 +317,6 @@ autoclass_content = 'both'
 
 
 # Generate autodoc for shell apps
-print sys.path.append('.')
+sys.path.append('.')
 from make_shell_docs import main
 main()
