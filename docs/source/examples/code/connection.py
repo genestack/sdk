@@ -8,7 +8,8 @@ print connection.whoami()
 # connection with args
 from genestack import get_connection, make_connection_parser
 
-parser = make_connection_parser()  # return instance of argparse.ArgumentParser
+# create instance of argparse.ArgumentParser with predefined arguments for connection
+parser = make_connection_parser()
 parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have unicorn.')
 args = parser.parse_args()
 connection = get_connection(args)

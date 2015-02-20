@@ -1,9 +1,11 @@
 from genestack import get_connection, DataImporter, FileInitializer, PRIVATE
 
 
-connection = get_connection()  # create connection
+# create connection
+connection = get_connection()
 
-importer = DataImporter(connection)  # create importer instance
+# create importer instance
+importer = DataImporter(connection)
 
 # create experiment in home folder
 experiment = importer.create_experiment(PRIVATE,
@@ -12,7 +14,7 @@ experiment = importer.create_experiment(PRIVATE,
 
 
 # create sequencing assay in experiment.
-# use local files as source, files should be present in folder current working dir.
+# use local files as source, files should be present in current working dir.
 assay = importer.create_sequencing_assay(experiment,
                                          name='Test paired-end sequencing of A. fumigatus',
                                          links=['ds1.gz', 'ds2.gz'],

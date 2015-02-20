@@ -77,7 +77,7 @@ To work with platform you should have connection. First thing you need is to hav
     This approach required more efforts and require so store your password as plain text.
 
     .. literalinclude:: code/connection.py
-        :lines: 22-
+        :lines: 23-
 
 
     Run script from commandline:
