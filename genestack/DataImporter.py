@@ -13,7 +13,7 @@ import os
 
 from Exceptions import GenestackException
 from BioMetainfo import BioMetainfo
-from genestack import FilesUtil, SpecialFolders
+from FilesUtil import FilesUtil, SpecialFolders
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
