@@ -20,7 +20,7 @@ from genestack import GenestackException
 from genestack.GenestackShell import GenestackShell, Command
 
 
-APPLICATION_ID = 'application-manager'
+APPLICATION_ID = 'genestack/application-manager'
 
 
 SCOPE_DICT = {
