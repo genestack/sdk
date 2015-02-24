@@ -2,6 +2,7 @@
   * add warning if vendor is not specified in application ID
   * remove Admin application (move it to core scripts)
   * remove optional accession param from FileUtils.create_folder()
+  * add constant SECONDARY_ACCESSION to BioMetainfo
 
 
 * version 0.1.1
