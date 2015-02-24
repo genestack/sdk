@@ -215,7 +215,7 @@ class DataImporter(object):
             parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/alignedReadsLoader', 'importFile', parent, metainfo)
 
-    def create_experiment(self, parent, name=None, description=None, metainfo=None):
+    def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
         Create experiment. name is required.
 
