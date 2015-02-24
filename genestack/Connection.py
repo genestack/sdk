@@ -77,7 +77,7 @@ class Connection:
         :rtype: None
         :raises: GenestackServerException: if login failed
         """
-        logged = self.application('signin').invoke('authenticate', email, password)
+        logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged:
             raise GenestackException("Fail to login %s" % email)
 
