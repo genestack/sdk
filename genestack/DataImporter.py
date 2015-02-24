@@ -20,7 +20,7 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 
 class DataImporter(object):
     """
-    Import files to system.
+    Import files to system. If parent is not specified, file created in special folder ``Imported files``
 
     Required and recommended values can be set by arguments directly or passed inside BioMetainfo object::
 
@@ -95,12 +95,12 @@ class DataImporter(object):
         application = self.connection.application('genestack/rawloader')
         return application.upload_file(file_path, filename)
 
-    def create_bed(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
+    def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
         Create bed file.
         name and url are required fields they can be specified by arguments or via metainfo.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -119,12 +119,12 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
         return self.__invoke_loader('genestack/bedLoader', 'importFile', parent, metainfo)
 
-    def create_vcf(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
+    def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
         Create vcf file.
         name and url are required fields they can be specified by arguments or via metainfo.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -143,12 +143,12 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
         return self.__invoke_loader('genestack/variationFileLoader', 'importFile', parent, metainfo)
 
-    def create_wig(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
+    def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
         Create vcf file.
         name and url are required fields they can be specified by arguments or via metainfo.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -161,7 +161,6 @@ class DataImporter(object):
         :return: file accession
         :rtype: str
         """
-
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
@@ -169,7 +168,7 @@ class DataImporter(object):
         return self.__invoke_loader('genestack/wigLoader', 'importFile', parent, metainfo)
 
     def create_bam(self,
-                   parent,
+                   parent=None,
                    name=None,
                    bam_link=None,
                    metainfo=None,
@@ -179,7 +178,7 @@ class DataImporter(object):
         """
         Create aligned read file.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -203,11 +202,11 @@ class DataImporter(object):
         bam_link and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, os.path.basename(bam_link), bam_link)
         return self.__invoke_loader('genestack/alignedReadsLoader', 'importFile', parent, metainfo)
 
-    def create_experiment(self, parent, name=None, description=None, metainfo=None):
+    def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
         Create experiment. name is required.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -281,12 +280,12 @@ class DataImporter(object):
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
         return self.__invoke_loader('genestack/experimentLoader', 'addSequencingAssay', parent, metainfo)
 
-    def create_unaligned_read(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+    def create_unaligned_read(self, parent=None, name=None, links=None, method=None, organism=None, metainfo=None):
         """
         Create unaligned read. Unaligned read can be created in folder.
         name and links are required fields.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -310,13 +309,13 @@ class DataImporter(object):
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
         return self.__invoke_loader('genestack/unalignedReadsLoader', 'importFile', parent, metainfo)
 
-    def create_genome_annotation(self, parent, link=None, name=None, organism=None, reference_genome=None,
+    def create_genome_annotation(self, parent=None, link=None, name=None, organism=None, reference_genome=None,
                                  strain=None, metainfo=None):
         """
         Create genome annotation.
         name and link are required.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param link: link or local path
         :type link: str
@@ -342,15 +341,15 @@ class DataImporter(object):
             metainfo.add_external_link(BioMetainfo.DATA_LINK, os.path.basename(link), link)
         return self.__invoke_loader('genestack/genome-annotation-loader', 'addGOAnnotationFile', parent, metainfo)
 
-    def create_codon_table(self, parent, metainfo=None):
+    def create_codon_table(self, parent=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
         return self.__invoke_loader('genestack/codonTableLoader', 'addCodonTable', parent, metainfo)
 
-    def create_dbnsfp(self, parent, link=None, name=None, organism=None, metainfo=None):
+    def create_dbnsfp(self, parent=None, link=None, name=None, organism=None, metainfo=None):
         """
         Create dbNSFP file.  name and link are required.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param link: link or local path
         :type link: str
@@ -372,7 +371,7 @@ class DataImporter(object):
         return self.__invoke_loader('genestack/variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
 
     def create_reference_genome(self,
-                                parent,
+                                parent=None,
                                 name=None,
                                 description='',
                                 sequence_urls=None,
@@ -385,7 +384,7 @@ class DataImporter(object):
         """
         Create reference genome.
 
-        :param parent: accession of parent folder
+        :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
