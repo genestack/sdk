@@ -48,6 +48,7 @@ class BioMetainfo(Metainfo):
     EXTRACTED_MOLECULE = 'genestack.bio:extractedMolecule'
     PLATFORM = 'genestack.bio:platform'
     SOURCE_DATA_PREFIX = 'sourceData:'
+    SECONDARY_ACCESSION = 'genestack.bio:secondaryAccession'
 
     def add_organism(self, key, value):
         """
