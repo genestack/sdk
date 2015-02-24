@@ -20,7 +20,6 @@ To work with platform you should have connection. First thing you need is to hav
 
     **Run script from commandline**:
 
-
     .. code-block:: sh
 
         # with default user
@@ -30,7 +29,6 @@ To work with platform you should have connection. First thing you need is to hav
         # with user bob@email.com that present in config with alias bob
         $ ./script.py -u bob
         bob@email.com
-
 
     In case then you need more arguments you need to add it to connection_parser. Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
 
