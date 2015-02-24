@@ -13,7 +13,6 @@ import os
 
 from Exceptions import GenestackException
 from BioMetainfo import BioMetainfo
-from FilesUtil import FilesUtil, SpecialFolders
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
@@ -38,10 +37,6 @@ class DataImporter(object):
     """
     def __init__(self, connection):
         self.connection = connection
-
-    def get_uploaded_folder(self):
-        fu = FilesUtil(self.connection)
-        return fu.get_special_folder(SpecialFolders.IMPORTED)
 
     def replace_links_to_raw_files(self, metainfo):
         all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
@@ -122,8 +117,6 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/bedLoader', 'importFile', parent, metainfo)
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -148,8 +141,6 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/variationFileLoader', 'importFile', parent, metainfo)
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -174,8 +165,6 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=os.path.basename(url), url=url)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/wigLoader', 'importFile', parent, metainfo)
 
     def create_bam(self,
@@ -211,8 +200,6 @@ class DataImporter(object):
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         bam_link and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, os.path.basename(bam_link), bam_link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/alignedReadsLoader', 'importFile', parent, metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
@@ -320,8 +307,6 @@ class DataImporter(object):
         if links:
             for link in links:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/unalignedReadsLoader', 'importFile', parent, metainfo)
 
     def create_genome_annotation(self, parent=None, link=None, name=None, organism=None, reference_genome=None,
@@ -354,14 +339,10 @@ class DataImporter(object):
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if link:
             metainfo.add_external_link(BioMetainfo.DATA_LINK, os.path.basename(link), link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/genome-annotation-loader', 'addGOAnnotationFile', parent, metainfo)
 
     def create_codon_table(self, parent=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/codonTableLoader', 'addCodonTable', parent, metainfo)
 
     def create_dbnsfp(self, parent=None, link=None, name=None, organism=None, metainfo=None):
@@ -387,8 +368,6 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link:
             metainfo.add_external_link(BioMetainfo.DATA_LINK, os.path.basename(link), link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
 
     def create_reference_genome(self,
@@ -437,6 +416,4 @@ class DataImporter(object):
         metainfo.add_string(metainfo.DESCRIPTION, description or '')
         for seq_link in sequence_urls:
             metainfo.add_external_link(SEQUENCE_KEY, 'Sequence data link', seq_link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/referenceGenomeLoader', 'importFile', parent, metainfo)
