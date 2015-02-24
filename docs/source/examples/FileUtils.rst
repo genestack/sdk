@@ -4,26 +4,35 @@ FilesUtil
 
 File utils used for common file operations: find, link, remove and share.
 
-You need to create instance:
+To work with FilesUtil you need to connection::
 
-.. literalinclude:: code/files_util.py
-    :lines: 1-6
+    >>> from genestack import get_connection
+    >>> connection = get_connection()
 
-Create folder:
+Create instance::
 
-.. literalinclude:: code/files_util.py
-    :lines: 9-11
-
-This method creates folder in user folder. You can specify any folder you want as parent:
-
-.. literalinclude:: code/files_util.py
-    :lines: 14-16
+    >>> from genestack import FilesUtil
+    >>> file_utils = FilesUtil(connection)
 
 
-Find folder:
+Create folder in user folder::
 
-.. literalinclude:: code/files_util.py
-    :lines: 20-22
+    >>> folder_accession = file_utils.create_folder("My new folder")
+    >>> print folder_accession
+    GSF000001
+
+You can specify any folder you want as parent::
+
+    >>> inner_folder_accession = file_utils.create_folder("My inner folder", parent=folder_accession)
+    >>> print inner_folder_accession
+    GSF000002
 
 
-See :doc:`../applications/FilesUtil` for more info.
+Find folder by its name::
+
+    >>> folder_accession = file_utils.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
+    >>> print folder_accession
+    GSF000002
+
+
+See :doc:`../applications/FilesUtil` for more methods.
