@@ -11,7 +11,7 @@ Changes for users
 
 - Application manager default user was changed from localhost root to config default user. To use application manager for local installation add argument ``-u root``
 
-- ``-H`` argument in scripts was changed from alias to host to real host.  If you setup your users you will never need to specify it.
+- ``-H`` argument in scripts was changed from alias to host name. After you setup users, you will not need to use this argument.
 
   Available hosts::
 
@@ -19,7 +19,7 @@ Changes for users
        platform.genestack.org
        internal-dev.genestack.com
 
-- environment.py was removed so you need to specify all users you need via ``genestack-user-setup.py``
+- environment.py was removed so you need to specify all users you need via ``genestack-user-setup.py``.  Use is added permanently so config file, you don't need to da anything about that then updating library.
 
 
 Changes for coders

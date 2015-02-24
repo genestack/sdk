@@ -5,33 +5,33 @@ from genestack import make_connection_parser
 import sys
 sys.path.append('..')
 
-files = [
-    ('genestack-application-manager', 'ApplicationManager', 'app-manager_usage.rst'),
-    ('genestack-user-setup', 'UserManagement', None)
-]
 
 template = """
-{name}
-{name_underline}
+{name}.py
+{name_underline}===
 
 {name} installed with pythonSDK and accessed as ``{name}.py``.
 
 
 Usage
 -----
-This script can be used both as shell and command line::
+This script can be used both as shell and command line:
+
+  .. code-block:: none
 
     {usage}
 
-You can get description for every ``command`` by running::
+You can get description for every ``command`` by running:
 
-  {name}.py command -h
+  .. code-block:: none
+
+    $ {name}.py command -h
 
 
 In shell mode type ``help`` to get list of available commands.
 Use ``help command`` to get command help.
 
-See :doc:`connection` for more information about connection arguments.
+See :doc:`../examples/connection` for more information about connection arguments.
 
 
 Commands
@@ -42,7 +42,7 @@ Commands
 """
 
 
-def generate_rst_doc(shell_name, class_name, footer_file_name):
+def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
     shell_module = __import__(shell_name)
     shell = getattr(shell_module, class_name)
 
@@ -52,11 +52,11 @@ def generate_rst_doc(shell_name, class_name, footer_file_name):
     script_help = get_help(shell().get_shell_parser()).replace("\n", "\n    ").replace('sphinx-build',
                                                                                        tool_file_name + '.py')
 
-    for command in sorted(shell.COMMAND_LIST):
+    for command in sorted(shell.COMMAND_LIST, key=lambda x: x.COMMAND):
         command = command()
         parser = command.get_command_parser(parser=None if command.OFFLINE else make_connection_parser())
         help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name + '.py')
-        text = ' - **%s**::\n\n    %s\n' % (command.COMMAND, help_text)
+        text = '- **%s**:\n\n  .. code-block:: none\n\n    %s\n\n' % (command.COMMAND, help_text)
         commands.append(text)
 
     if footer_file_name:
@@ -65,7 +65,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name):
     else:
         footer = ''
 
-    with open('%s.rst' % shell_name, 'w') as f:
+    with open(save_path, 'w') as f:
         f.write(template.format(
             name=tool_file_name,
             name_underline='=' * len(tool_file_name),
@@ -77,8 +77,8 @@ def generate_rst_doc(shell_name, class_name, footer_file_name):
 
 
 def main():
-    for shell_name, class_name, footer_file_name in files:
-        generate_rst_doc(shell_name, class_name, footer_file_name)
+    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('..', 'track_docs', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-user-setup', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 
 
 if __name__ == '__main__':

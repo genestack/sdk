@@ -1,4 +1,3 @@
-#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 #
@@ -8,6 +7,7 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+
 
 READS_LOCATION = 'genestack.location:reads'
 READS_LINK = 'genestack.url:reads'
