@@ -1,30 +1,61 @@
 Importers
 *********
 
-Script to load experiment with unaligned read file:
 
-    .. literalinclude:: code/import_file.py
+First step you need connection::
 
-Run script:
+    >>> from genestack import get_connection
+    >>> connection = get_connection()
 
-  .. code-block:: sh
+To import data instantiate data importer with connection::
 
-    % ./examples_code.py
+    >>> from genestack import DataImporter
+    >>> importer = DataImporter(connection)
+
+Create experiment in ``Imported files``::
+
+    >>> experiment = importer.create_experiment(name='Sample of paired-end reads from A. fumigatus WGS experiment',
+    ... description='A segment of a paired-end whole genome sequencing experiment of A. fumigatus')
+
+
+Add sequencing assay for experiment. Use local files as sources::
+
+
+    >>> assay = importer.create_sequencing_assay(experiment,
+    ...                                          name='Test paired-end sequencing of A. fumigatus',
+    ...                                          links=['ds1.gz', 'ds2.gz'],
+    ...                                          organism='Aspergillus fumigatus',
+    ...                                          method='genome variation profiling by high throughput sequencing')
     Uploading ds1.gz - 100.00%
     Uploading ds2.gz - 100.00%
-    Successfully load file with accession GSF000148
-    Start initialization of GSF000148
 
-As result you will get ``unaligned read`` file and two ``raw files`` in ``Upload`` folder.
-  Raw files are required for initialization, after initialization successfully completed you can remove them.
-  If you pass valid public url as link you will not get raw files.
+To find out file in system print result::
+
+    >>> print 'Successfully load assay with accession', assay, 'to experiment', experiment
+    Successfully load assay with accession GSF000002 to experiment GSF000001
+
+Start file initialization::
+
+    >>> from genestack import FileInitializer
+    >>> initializer = FileInitializer(connection)
+    >>> initializer.initialize([assay])
+    >>> print 'Start initialization of', assay
+    Start initialization of GSF000002
+
+As result you will have:
+
+   - ``Experiment`` folder in ``Imported files``
+   - ``Sequencing assay`` file in experiment
+   - Two ``Raw Upload`` files in ``Uploaded files`` folder. This is your local files located on genestack storage.
+     You can remove them after initialization of assay.
 
 
 Supported url formats
 =====================
-   if file is ended on .gz it is treated as gz archive. Bot packed and unpacked files will produce same result.
+   There is no difference between file and gzipped file for system, both packed and unpacked files will produce same result.
+   if protocol is not specified ``file://`` will be used
 
-* ``file://`` (default for not specified):
+* ``file://``:
     - ``test.txt.gz``
     - ``file://test.txt``
 
