@@ -262,8 +262,6 @@ class DataImporter(object):
         if links:
             for link in links:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/experimentLoader', 'addMicroarrayAssay', parent, metainfo)
 
     def create_sequencing_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
@@ -293,8 +291,6 @@ class DataImporter(object):
         if links:
             for link in links:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, os.path.basename(link), link)
-        if not parent:
-            parent = self.get_uploaded_folder()
         return self.__invoke_loader('genestack/experimentLoader', 'addSequencingAssay', parent, metainfo)
 
     def create_unaligned_read(self, parent=None, name=None, links=None, method=None, organism=None, metainfo=None):
