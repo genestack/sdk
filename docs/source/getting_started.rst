@@ -132,10 +132,11 @@ You can specify other user by adding ``-u <alias>`` to command line argument.
     parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have unicorn.')
     args = parser.parse_args()
     connection = get_connection(args)
+    email = connection.whoami()
     if args.unicorn:
-        print connection.whoami(), 'has unicorn!'
+        print '%s has unicorn!' % email
     else:
-        print connection.whoami(), 'does not have unicorn.'
+        print '%s does not have unicorn.' % email
 
 .. code-block:: sh
 
@@ -308,7 +309,7 @@ Add sequencing assay for experiment. Use local files as sources::
 
 To find out file in system print result::
 
-    >>> print 'Successfully load assay with accession', assay, 'to experiment', experiment
+    >>> print 'Successfully load assay with accession %s to experiment %s' % (assay, experiment)
     Successfully load assay with accession GSF000002 to experiment GSF000001
 
 Start file initialization::
@@ -316,7 +317,7 @@ Start file initialization::
     >>> from genestack import FileInitializer
     >>> initializer = FileInitializer(connection)
     >>> initializer.initialize([assay])
-    >>> print 'Start initialization of', assay
+    >>> print 'Start initialization of %s' % assay
     Start initialization of GSF000002
 
 As result you will have:
