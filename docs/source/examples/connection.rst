@@ -4,7 +4,7 @@ Connection
 Get connection
 ==============
 
-To work with platform you should have connection. First thing you need is to have account at genestack sight.
+To work with platform you should have connection. First thing you need is to have account at genestack platform.
 
 * Connection via arguments
 
@@ -40,7 +40,7 @@ To work with platform you should have connection. First thing you need is to hav
 
     .. code-block:: sh
 
-        $ ./script.py -u
+        $ ./script.py
         user@email.com has unicorn!
 
         $ ./script.py -u bob
@@ -72,7 +72,7 @@ To work with platform you should have connection. First thing you need is to hav
 
 * Create connection directly in code
 
-    This approach required more efforts and require so store your password as plain text.
+    This approach required more efforts and require to store your password as plain text.
 
     .. literalinclude:: code/connection.py
         :lines: 23-

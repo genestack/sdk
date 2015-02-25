@@ -42,7 +42,7 @@ User config
 User config allow to store credentials for your account on local machine to establish :doc:`examples/connection` to server.
 
 Password stored in system secure storage (See https://pypi.python.org/pypi/keyring for more information).
-If system storage in not accessible it will ask your permission to store password as plain text.
+If system storage is not accessible it will ask your permission to store password as plain text.
 
 This data is not synchronized with server, if you change password on server you need to change it here too.
 
@@ -52,8 +52,8 @@ Setup additional users
 
 If you have more then one account on genestack platform you may want to add other users.
 
-Each user needs to have alias, email, host and password. There is not limitation to number of aliases
-you can create couple of them to one account.  To add user execute ``genestack-user-setup.py add``
+Each user needs to have unique alias, email, host and password. There is not limitation to number of aliases.
+You can even create couple of them for one account. To add user execute ``genestack-user-setup.py add``
 
 
 To use script with other user add ``-u <alias>`` to your command.
