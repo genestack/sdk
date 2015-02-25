@@ -24,14 +24,14 @@ class DataImporter(object):
 
     Required and recommended values can be set by arguments directly or passed inside BioMetainfo object::
 
-       create_bed(PRIVATE, name="Bed", link='link')
+       create_bed(name="Bed", link='link')
 
        # has same effect as:
 
        metainfo = BioMetainfo()
        metainfo.add_string(BioMetainfo.NAME, 'name)
        metainfo.add_external_link(BioMetainfo.DATA_LINK, text='link name', url=url)
-       create_bed(PRIVATE, metainfo=metainfo)
+       create_bed(metainfo=metainfo)
 
     It is prohibited to pass same value both with argument and in metainfo.
     """

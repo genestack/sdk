@@ -14,12 +14,6 @@ from Connection import Application
 from SudoUtils import SudoUtils
 
 
-# Accession of private folder of current user.
-PRIVATE = 'private'
-# Accession for public folder
-PUBLIC = 'public'
-
-
 class SpecialFolders:
     """
     - IMPORTED: folder where new files are created by Data Importers
@@ -294,8 +288,7 @@ class FilesUtil(Application):
 
     def get_folder(self, parent, *names, **kwargs):
         """
-        Finds path recursively. As first argument it accepts any accession.
-        Use PRIVATE for user folder, PUBLIC for public data. Parent folder must exist.
+        Finds path recursively. As first argument it accepts any existing folder accession.
         For each path in path corresponding folder founded.  If folder is not found exception raised,
         except key ``create=True`` specified. In that case all folders will be created.
 
@@ -322,3 +315,21 @@ class FilesUtil(Application):
                     raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
                 parent = _parent_accession
         return parent
+
+    def get_home_folder(self):
+        """
+        Return accession of user home folder.
+
+        :return: accession of home folder
+        :rtype: str
+        """
+        return 'private'
+
+    def get_public_folder(self):
+        """
+        Return accession of ``Public`` folder.
+
+        :return: accession of ``Public`` folder
+        :rtype: str
+        """
+        return 'public'
