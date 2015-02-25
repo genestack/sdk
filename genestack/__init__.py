@@ -15,7 +15,7 @@ from Metainfo import Metainfo
 from BioMetainfo import BioMetainfo
 from DataImporter import DataImporter
 from FileInitializer import FileInitializer
-from FilesUtil import FilesUtil, SpecialFolders, PRIVATE, PUBLIC
+from FilesUtil import FilesUtil, SpecialFolders
 from SudoUtils import SudoUtils
 from utils import get_connection, make_connection_parser, get_user
 from CLApplications import *

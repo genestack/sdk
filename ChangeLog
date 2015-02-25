@@ -4,6 +4,7 @@
   * remove optional accession param from FileUtils.create_folder()
   * add constant SECONDARY_ACCESSION to BioMetainfo
   * make parent optional for DataImporter, use Imported folder as default.
+  * replace PRIVATE and PUBLIC constants in FilesUtils with methods.
 
 
 * version 0.1.1
