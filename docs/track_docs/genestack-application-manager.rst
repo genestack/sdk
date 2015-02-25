@@ -42,7 +42,7 @@ You can get description for every ``command`` by running:
 In shell mode type ``help`` to get list of available commands.
 Use ``help command`` to get command help.
 
-See :doc:`../examples/connection` for more information about connection arguments.
+See :ref:`Connection` for more information about connection arguments.
 
 
 Commands

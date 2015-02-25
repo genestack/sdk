@@ -16,13 +16,14 @@ Typical usages:
 All communication to server uses `HTTPS <http://en.wikipedia.org/wiki/HTTP_Secure>`_.
 
 
+If you have never used ``genestack`` before, you should read the :doc:`getting_started` guide to get familiar with ``genestack`` & its usage.
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   setup
-   examples
    api_reference
    scripts/scripts
 
