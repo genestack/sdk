@@ -170,7 +170,7 @@ class VariationCallerApplication(CLApplication):
 
 # Preprocess
 ## preprocess raw reads
-class TrimAdaptorsAndContiminations(CLApplication):
+class TrimAdaptorsAndContiminations(CLApplication):  # TODO rename to TrimAdaptorsAndContaminants
     APPLICATION_ID = 'genestack/fastq-mcf'
 
 
