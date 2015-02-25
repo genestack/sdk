@@ -221,9 +221,3 @@ settings.GenestackShell
 .. autoclass:: genestack.GenestackShell.GenestackShell
         :members:
 
-
-
-
-
-
-# from FilesUtil import , , PRIVATE, PUBLIC
