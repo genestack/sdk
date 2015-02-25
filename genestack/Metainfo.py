@@ -180,9 +180,9 @@ class Metainfo(dict):
 
         value can be any number.
 
-        Unit values can be one of next: :py:attr:`Metainfo.YEAR`, :py:attr:`Metainfo.MONTH`, :py:attr:`Metainfo.WEEK`,
-        :py:attr:`Metainfo.DAY`, :py:attr:`Metainfo.HOUR`, :py:attr:`Metainfo.MINUTE`, :py:attr:`Metainfo.SECOND`,
-        :py:attr:`Metainfo.MILLISECOND`
+        Unit values can be one of next: :py:attr:`~Metainfo.YEAR`, :py:attr:`~Metainfo.MONTH`, :py:attr:`~Metainfo.WEEK`,
+        :py:attr:`~Metainfo.DAY`, :py:attr:`~Metainfo.HOUR`, :py:attr:`~Metainfo.MINUTE`, :py:attr:`~Metainfo.SECOND`,
+        :py:attr:`~Metainfo.MILLISECOND`
 
         :param key: key
         :type key: str
