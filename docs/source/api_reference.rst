@@ -56,12 +56,13 @@ BioMetainfo
         :members:
         :show-inheritance:
 
+.. _DataImporter:
+
 DataImporter
 ************
 
 .. autoclass:: genestack.DataImporter
         :members:
-
 
 FileInitializer
 ***************
@@ -70,12 +71,16 @@ FileInitializer
         :members:
         :show-inheritance:
 
+
+.. _FilesUtil:
+
 FilesUtil
 *********
 
 .. autoclass:: genestack.FilesUtil
         :members:
         :show-inheritance:
+
 
 SpecialFolders
 **************

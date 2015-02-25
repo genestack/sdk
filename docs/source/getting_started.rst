@@ -192,3 +192,138 @@ Run script from commandline:
 
     $ ./script.py
     user@email.com
+
+Calling application methods with connection
+*******************************************
+
+To call application method you need to know application_id and method name::
+
+    from genestack import get_connection
+
+
+    connection = get_connection()
+    print connection.application('genestack/signin').invoke('whoami')
+
+
+If your application have a lot of methods you may create own class::
+
+    from genestack import Application, get_connection
+
+
+    class SignIn(Application):
+        APPLICATION_ID = 'genestack/signin'
+
+        def whoami(self):
+            return self.invoke('whoami')
+
+
+    connection = get_connection()
+    signin = SignIn(connection)
+    print signin.whoami()
+
+Calling method with arguments::
+
+    from genestack import get_connection, Metainfo, PRIVATE
+
+
+    connection = get_connection()
+    metainfo = Metainfo()
+    metainfo.add_string(Metainfo.NAME, "New folder")
+    print connection.application('genestack/filesUtil').invoke('createFolder', PRIVATE, metainfo)
+
+Number, order and type of arguments should match for python and java method.
+
+
+Using predefined wrappers
+*************************
+
+FilesUtil
+=========
+
+File utils used for common file operations: find, link, remove and share.
+
+To work with FilesUtil you need to connection::
+
+    >>> from genestack import get_connection
+    >>> connection = get_connection()
+
+Create instance::
+
+    >>> from genestack import FilesUtil
+    >>> file_utils = FilesUtil(connection)
+
+
+Create folder in user folder::
+
+    >>> folder_accession = file_utils.create_folder("My new folder")
+    >>> print folder_accession
+    GSF000001
+
+You can specify any folder you want as parent::
+
+    >>> inner_folder_accession = file_utils.create_folder("My inner folder", parent=folder_accession)
+    >>> print inner_folder_accession
+    GSF000002
+
+
+Find folder by its name::
+
+    >>> folder_accession = file_utils.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
+    >>> print folder_accession
+    GSF000002
+
+
+See :ref:`FilesUtil` for more methods.
+
+
+Importers
+*********
+
+First step you need connection::
+
+    >>> from genestack import get_connection
+    >>> connection = get_connection()
+
+To import data instantiate data importer with connection::
+
+    >>> from genestack import DataImporter
+    >>> importer = DataImporter(connection)
+
+Create experiment in ``Imported files``::
+
+    >>> experiment = importer.create_experiment(name='Sample of paired-end reads from A. fumigatus WGS experiment',
+    ... description='A segment of a paired-end whole genome sequencing experiment of A. fumigatus')
+
+
+Add sequencing assay for experiment. Use local files as sources::
+
+
+    >>> assay = importer.create_sequencing_assay(experiment,
+    ...                                          name='Test paired-end sequencing of A. fumigatus',
+    ...                                          links=['ds1.gz', 'ds2.gz'],
+    ...                                          organism='Aspergillus fumigatus',
+    ...                                          method='genome variation profiling by high throughput sequencing')
+    Uploading ds1.gz - 100.00%
+    Uploading ds2.gz - 100.00%
+
+To find out file in system print result::
+
+    >>> print 'Successfully load assay with accession', assay, 'to experiment', experiment
+    Successfully load assay with accession GSF000002 to experiment GSF000001
+
+Start file initialization::
+
+    >>> from genestack import FileInitializer
+    >>> initializer = FileInitializer(connection)
+    >>> initializer.initialize([assay])
+    >>> print 'Start initialization of', assay
+    Start initialization of GSF000002
+
+As result you will have:
+
+    - ``Experiment`` folder in ``Imported files``
+    - ``Sequencing assay`` file in experiment
+    - Two ``Raw Upload`` files in ``Uploaded files`` folder. This is your local files located on genestack storage. You can remove them after initialization of assay.
+
+
+See :ref:`DataImporter` for more methods.

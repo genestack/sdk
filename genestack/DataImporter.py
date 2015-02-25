@@ -34,6 +34,24 @@ class DataImporter(object):
        create_bed(metainfo=metainfo)
 
     It is prohibited to pass same value both with argument and in metainfo.
+
+
+    There is no difference between file and gzipped file for system, both packed and unpacked files will produce same result.
+       if protocol is not specified ``file://`` will be used
+
+    * ``file://``:
+        - ``test.txt.gz``
+        - ``file://test.txt``
+
+    * ``ftp://``
+        - ``ftp://server.com/file.txt``
+
+    * ``http://`` ``https://``
+        - ``http://server.com/file.txt``
+
+    * ``ascp://``
+        - ``ascp://<user>@<server>:file.txt``
+
     """
     def __init__(self, connection):
         self.connection = connection
