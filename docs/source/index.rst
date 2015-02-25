@@ -23,7 +23,6 @@ Contents:
 
    setup
    examples
-   applications
    api_reference
    scripts/scripts
 
