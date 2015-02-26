@@ -154,7 +154,7 @@ You can specify other user by adding ``-u <alias>`` to command line argument.
 
   if no argument specified get_connection will return connection to default user
 
-  if only ``-u <alias>`` is specified will be used user from settings. If user is not present system will switch to interactive login with default server.
+  if only ``-u <alias>`` is specified will be used user from settings. If user is not present system will switch to interactive login.
 
 * Raw input:
 
@@ -162,7 +162,7 @@ You can specify other user by adding ``-u <alias>`` to command line argument.
 
     ``-u <email>`` expects email
 
-    ``-H <host>`` server host, if it is not specified will use default host.
+    ``-H <host>`` server host, if it is not specified will use ``platform.genestack.org``.
 
     ``-p <password>`` if password is not specified user should add it in interactive mode.
 
