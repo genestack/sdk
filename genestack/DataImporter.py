@@ -35,9 +35,10 @@ class DataImporter(object):
 
     It is prohibited to pass same value both with argument and in metainfo.
 
+    Supported types of urls for external links:
 
     There is no difference between file and gzipped file for system, both packed and unpacked files will produce same result.
-       if protocol is not specified ``file://`` will be used
+    If protocol is not specified ``file://`` will be used
 
     * ``file://``:
         - ``test.txt.gz``
@@ -52,6 +53,7 @@ class DataImporter(object):
     * ``ascp://``
         - ``ascp://<user>@<server>:file.txt``
 
+    In case of local file ``Raw Upload`` file will be created.
     """
     def __init__(self, connection):
         self.connection = connection
