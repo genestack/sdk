@@ -94,9 +94,10 @@ To work with platform you should have connection. First thing you need is to hav
 Connection via arguments
 ------------------------
 
-Preferred way to get connection via helper function.  First thing you need to setup users.
-get_connection use Argparse module to get your credentials from config file. By default it uses credentials of default user.
+Preferred way to get connection via helper function: :py:func:`~genestack.get_connection`.
+It uses command line arguments parsed by :py:class:`argparse.ArgumentParser` to find your credentials in config. If not argument specified it uses credentials of default user.
 You can specify other user by adding ``-u <alias>`` to command line argument.
+
 
 **Get connection**::
 
@@ -239,7 +240,7 @@ Using predefined wrappers
 *************************
 
 FilesUtil
-=========
+---------
 
 File utils used for common file operations: find, link, remove and share.
 
