@@ -390,8 +390,8 @@ def read_jar_file(file_path):
                     vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
                     for a in applications
                 ]
-        except KeyError:
-            raise GenestackException('Unable to read applications.xml manifest from %s' % os.path.abspath(file_path))
+        except KeyError as e:
+            raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (os.path.abspath(file_path), e))
         return AppInfo(vendor, identifiers)
 
 
