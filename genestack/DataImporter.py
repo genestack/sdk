@@ -113,7 +113,7 @@ class DataImporter(object):
         """
         filename = os.path.basename(file_path)
         application = self.connection.application('genestack/rawloader')
-        return application.upload_file(file_path, filename)
+        return application.upload_chunked_file(file_path, filename)
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
