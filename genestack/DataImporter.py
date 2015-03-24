@@ -383,7 +383,7 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or BioMetainfo()
-        metainfo.add_string('genestack.bio:databaseId', 'dbNSFP')
+        metainfo.add_string(BioMetainfo.DATABASE_ID, 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link:
