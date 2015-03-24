@@ -437,3 +437,7 @@ class DataImporter(object):
         for seq_link in sequence_urls:
             metainfo.add_external_link(SEQUENCE_KEY, 'Sequence data link', seq_link)
         return self.__invoke_loader('genestack/referenceGenomeLoader', 'importFile', parent, metainfo)
+
+    def create_report_file(self, parent=None, metainfo=None):
+        metainfo = metainfo or BioMetainfo()
+        return self.__invoke_loader('genestack/reportLoader', 'importFile', parent, metainfo)
