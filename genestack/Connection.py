@@ -17,6 +17,7 @@ import json
 import requests
 from Exceptions import GenestackServerException, GenestackException
 from utils import isatty
+from chunk_upload import chunk_upload
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
@@ -47,7 +48,7 @@ class Connection:
     def __init__(self, server_url):
         self.server_url = server_url
         cj = cookielib.CookieJar()
-        self.cj = cj
+        self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
         self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
@@ -129,12 +130,12 @@ class Connection:
     def __repr__(self):
         return 'Connection("%s")' % self.server_url
 
-    def get_request(self, path, data=None, follow=True):
-        r = requests.get(self.server_url + path, params=data, allow_redirects=follow, cookies=self.cj)
+    def get_request(self, path, params=None, follow=True):
+        r = requests.get(self.server_url + path, params=params, allow_redirects=follow, cookies=self.__cookies_jar)
         return r
 
     def post_multipart(self, path, data=None, files=None, follow=True):
-        r = requests.post(self.server_url + path, data=data, files=files, allow_redirects=follow, cookies=self.cj)
+        r = requests.post(self.server_url + path, data=data, files=files, allow_redirects=follow, cookies=self.__cookies_jar)
         return r
 
 
@@ -194,7 +195,6 @@ class Application:
 
 
     def upload_chunked_file(self, file_path, token):
-        from chunk_upload import chunk_upload
         return chunk_upload(file_path, self.connection)
 
     def upload_file(self, file_path, token):

@@ -13,7 +13,6 @@ import os
 from io import BytesIO
 import time
 from Queue import Queue
-from time import sleep
 import json
 import sys
 from genestack.Connection import TTYProgress, DottedProgress
@@ -26,28 +25,27 @@ CHUNK_UPLOAD_URL = '/application/uploadChunked/genestack/rawloader/unusedToken'
 RETRY_ATTEMPTS = 5
 LAST_ATTEMPT_WAIT = 5
 NUM_THREADS = 5
-CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
 
 
 class Chunk(object):
-    def __init__(self, number, start, chunk_size, uploader):
+    def __init__(self, number, start, current_chunk_size, uploader):
         self.data = {
-            'resumableChunkSize': uploader.chunk_size,
+            'resumableChunkSize': uploader.CHUNK_SIZE,
             'resumableType': '',
             'resumableTotalSize': uploader.total_size,
             'resumableIdentifier': uploader.token,
             'resumableFilename': uploader.filename,
             'resumableRelativePath': uploader.path,
             'resumableTotalChunks': uploader.chunk_count,
-            'launchTime': uploader.lunch_time,
+            'launchTime': uploader.launch_time,
+            'resumableChunkNumber': number,
+            'resumableCurrentChunkSize': current_chunk_size
             }
 
         self.start = start
-        self.size = chunk_size
+        self.size = current_chunk_size
         self.attempts = 0
 
-        self.data['resumableChunkNumber'] = number
-        # self.data['resumableCurrentChunkSize'] = chunk_size currently unused by server
         self.__file = None
         self.uploader = uploader
 
@@ -65,11 +63,13 @@ class Chunk(object):
         return self.__file
 
 
-class UploadParamsException(GenestackException):
+class WrongUploadDataException(GenestackException):
     pass
 
 
-class ChunkUpload:
+class ChunkedUpload:
+    CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
+
     def __init__(self, connection, path):
         self.connection = connection
 
@@ -79,25 +79,24 @@ class ChunkUpload:
         self.accession = None
         self.error = None
 
-        chunk_size = CHUNK_SIZE
         modified = datetime.fromtimestamp(os.path.getmtime(path))
         total_size = os.path.getsize(path)
         self.token = '{total_size}-{name}-{date}'.format(total_size=total_size,
                                                     name=os.path.basename(path),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
-        if total_size < chunk_size * 2:
+        if total_size < self.CHUNK_SIZE * 2:
             chunk_count = 1
         else:
-            chunk_count = total_size / chunk_size
+            chunk_count = total_size / self.CHUNK_SIZE
 
 
         self.total_size = total_size
         self.filename = os.path.basename(path)
         self.path = path
         self.chunk_count = chunk_count
-        self.lunch_time = int(time.time() * 1000)
-        self.chunk_size = chunk_size
+        self.launch_time = int(time.time() * 1000)
+        self.chunk_size = self.CHUNK_SIZE
         self.chunks = []
 
         start = 0
@@ -114,15 +113,15 @@ class ChunkUpload:
             self.progress = DottedProgress(40)
 
     def is_uploaded(self, chunk):
-        r = self.connection.get_request(CHUNK_UPLOAD_URL, chunk.data)
+        r = self.connection.get_request(CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
         return r.text == '{"message":"Uploaded"}'
 
     def upload_chunk(self, chunk):
         files = {'file': chunk.get_file()}
-        r = self.connection.post_multipart(CHUNK_UPLOAD_URL, chunk.data, files=files)
+        r = self.connection.post_multipart(CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
         response = json.loads(r.text)
         if r.status_code == 400:
-            raise UploadParamsException('Error: %s' % response['error'])
+            raise WrongUploadDataException('Error: %s' % response['error'])
         if isinstance(response, dict) and 'error' in response:
             raise Exception('Error at chunk upload: %s' % response['error'])
         return response
@@ -143,7 +142,7 @@ class ChunkUpload:
                     q.all_tasks_done.notify_all()
                     q.unfinished_tasks = 0
             while True:
-                chunk, connection = q.get()
+                chunk = q.get()
                 attempts = RETRY_ATTEMPTS
                 while attempts:
                     try:
@@ -158,14 +157,14 @@ class ChunkUpload:
                                 with self.lock:
                                     self.accession = result
                                 return
-                    except UploadParamsException as e:
+                    except WrongUploadDataException as e:
                         with self.lock:
                             self.error = str(e)
                         stop()
                         return
                     except Exception as e:
                         self.update_progress(0, msg="%s. Chunk %s attempts left: %s" % (e, chunk.data['resumableChunkNumber'], attempts - 1))
-                        sleep(LAST_ATTEMPT_WAIT / 2 ** attempts)
+                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempts)
                         attempts -= 1
                         self.error = str(e)
                         continue
@@ -181,7 +180,7 @@ class ChunkUpload:
             worker.start()
 
         for chunk in self.chunks:
-            q.put((chunk, self.connection))
+            q.put(chunk)
 
         q.join()
 
@@ -192,4 +191,4 @@ class ChunkUpload:
 
 
 def chunk_upload(path, connection):
-    return ChunkUpload(connection, path).upload()
+    return ChunkedUpload(connection, path).upload()
