@@ -151,13 +151,14 @@ class ChunkedUpload:
                 attempts = RETRY_ATTEMPTS
                 while attempts:
                     try:
+                        with self.lock:
+                            self.update_progress(chunk.size)
+
                         if not self.is_uploaded(chunk):
                             result = self.upload_chunk(chunk)
                             if result == 'Chunk uploaded':
-                                self.update_progress(chunk.size)
+                                pass
                             elif result != 'Chunk skipped':
-                                with self.lock:
-                                    self.update_progress(chunk.size)
                                 stop()
                                 with self.lock:
                                     self.accession = result
