@@ -63,7 +63,7 @@ class Chunk(object):
         return self.__file
 
 
-class WrongUploadDataException(GenestackException):
+class PermanentError(GenestackException):
     pass
 
 
@@ -124,12 +124,17 @@ class ChunkedUpload:
     def upload_chunk(self, chunk):
         files = {'file': chunk.get_file()}
         r = self.connection.post_multipart(CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
-        response = json.loads(r.text)
-        if r.status_code == 400:
-            raise WrongUploadDataException('Error: %s' % response['error'])
-        if isinstance(response, dict) and 'error' in response:
-            raise Exception('Error at chunk upload: %s' % response['error'])
-        return response
+        if r.status_code in xrange(400, 600):
+            try:
+                response = json.loads(r.text)
+                if isinstance(response, dict) and 'error' in response:
+                    raise PermanentError('Error at chunk upload: %s' % response['error'])
+            except ValueError:
+                raise PermanentError('Error at chunk upload')
+        elif r.status_code == 200:
+            return json.loads(r.text)
+        else:
+            raise Exception("Fail to upload, retry.")
 
     def update_progress(self, update_size, msg=None):
         with self.output_lock:
@@ -153,17 +158,14 @@ class ChunkedUpload:
                     try:
                         with self.lock:
                             self.update_progress(chunk.size)
-
                         if not self.is_uploaded(chunk):
                             result = self.upload_chunk(chunk)
-                            if result == 'Chunk uploaded':
-                                pass
-                            elif result != 'Chunk skipped':
+                            if result != ('Chunk uploaded', 'Chunk skipped'):
                                 stop()
                                 with self.lock:
                                     self.accession = result
                                 return
-                    except WrongUploadDataException as e:
+                    except PermanentError as e:
                         with self.lock:
                             self.error = str(e)
                         stop()
