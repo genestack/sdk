@@ -31,6 +31,7 @@ class Chunk(object):
             'resumableTotalChunks': uploader.chunk_count,
             'launchTime': uploader.lunch_time,
             }
+
         self.start = start
         self.size = chunk_size
         self.attempts = 0
@@ -75,12 +76,11 @@ class ChunkUpload:
                                                     name=os.path.basename(path),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
-        if total_size <= chunk_size:
+        if total_size < chunk_size * 2:
             chunk_count = 1
         else:
             chunk_count = total_size / chunk_size
-            if total_size % chunk_size:
-                chunk_count -= 1
+
 
         self.total_size = total_size
         self.filename = os.path.basename(path)
