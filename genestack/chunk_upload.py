@@ -114,7 +114,12 @@ class ChunkedUpload:
 
     def is_uploaded(self, chunk):
         r = self.connection.get_request(CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
-        return r.text == '{"message":"Uploaded"}'
+        if r.status_code == 200:
+            return True
+        elif r.status_code == 204:
+            return False
+        else:
+            raise GenestackException("Unexpected response with status %s: %s" % (r.status_code, r.text))
 
     def upload_chunk(self, chunk):
         files = {'file': chunk.get_file()}
