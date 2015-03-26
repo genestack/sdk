@@ -195,7 +195,7 @@ class Application:
 
 
     def upload_chunked_file(self, file_path, token):
-        return chunk_upload(file_path, self.connection)
+        return chunk_upload(file_path, self.connection, self)
 
     def upload_file(self, file_path, token):
         """

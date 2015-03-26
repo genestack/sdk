@@ -20,7 +20,6 @@ import Connection
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
 
-CHUNK_UPLOAD_URL = '/application/uploadChunked/genestack/rawloader/unusedToken'
 RETRY_ATTEMPTS = 5
 LAST_ATTEMPT_WAIT = 5
 NUM_THREADS = 5
@@ -70,7 +69,8 @@ class PermanentError(GenestackException):
 class ChunkedUpload:
     CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
 
-    def __init__(self, connection, path):
+    def __init__(self, connection, path, application):
+        self.CHUNK_UPLOAD_URL = '/application/uploadChunked/%s/%s/unusedToken' % (application.vendor, application.application)
         self.connection = connection
 
         self.lock = Lock()
@@ -119,7 +119,7 @@ class ChunkedUpload:
             self.progress = Connection.DottedProgress(40)
 
     def is_uploaded(self, chunk):
-        r = self.connection.get_request(CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
+        r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
         if r.status_code == 200:
             return True
         elif r.status_code == 204:
@@ -130,7 +130,7 @@ class ChunkedUpload:
     def upload_chunk(self, chunk, chunk_file):
         chunk_file.seek(0)
         files = {'file': chunk_file}
-        r = self.connection.post_multipart(CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
+        r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
         if r.status_code in xrange(400, 600):
             try:
                 response = json.loads(r.text)
@@ -228,5 +228,5 @@ class ChunkedUpload:
             raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
 
 
-def chunk_upload(path, connection):
-    return ChunkedUpload(connection, path).upload()
+def chunk_upload(path, connection, application):
+    return ChunkedUpload(connection, path, application).upload()
