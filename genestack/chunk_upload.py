@@ -12,14 +12,13 @@ from datetime import datetime
 import os
 from io import BytesIO
 import time
-from threading import Thread, Lock
+from threading import Thread, Lock, Condition
 from Queue import Queue, Empty
 import json
 import sys
 import Connection
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
-
 
 CHUNK_UPLOAD_URL = '/application/uploadChunked/genestack/rawloader/unusedToken'
 RETRY_ATTEMPTS = 5
@@ -143,31 +142,48 @@ class ChunkedUpload:
 
     def upload(self):
         q = Queue()
+        condition = Condition()
+        self.end_task_flag = False
 
         def do_stuff(q):
+            def notify():
+                with condition:
+                    condition.notify()
+
             while True:
                 try:
                     chunk = q.get_nowait()
                 except Empty:
-                    "Print Empty"
+                    self.end_task_flag = True
+
+                if self.end_task_flag:
+                    notify()
                     return
+
                 attempts = RETRY_ATTEMPTS
                 while attempts:
+                    file_cache = [None]
                     try:
-                        chunk_file = chunk.get_file()
-                        with self.lock:
-                            self.update_progress(chunk.size)
                         if not self.is_uploaded(chunk):
-                            result = self.upload_chunk(chunk, chunk_file)
+                            if file_cache[0] is None:
+                                file_cache[0] = chunk.get_file()
+                                file_cache[0].seek(0)
+                            result = self.upload_chunk(chunk, file_cache[0])
                             if result not in ('Chunk uploaded', 'Chunk skipped'):
                                 with self.lock:
                                     self.accession = result
+                                self.update_progress(chunk.size)
+                                notify()
                                 return
+                        self.update_progress(chunk.size)
+                        notify()
                     except PermanentError as e:
                         with self.lock:
                             self.error = str(e)
+                        notify()
                         return
                     except Exception as e:
+                        print e
                         self.update_progress(0, msg="%s. Chunk %s attempts left: %s" % (e, chunk.data['resumableChunkNumber'], attempts - 1))
                         time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempts)
                         attempts -= 1
@@ -176,6 +192,7 @@ class ChunkedUpload:
                     q.task_done()
                     break
                 else:
+                    notify()
                     return
 
         for chunk in self.chunks:
@@ -184,7 +201,17 @@ class ChunkedUpload:
         threads = [Thread(target=do_stuff, args=(q,)) for _ in range(NUM_THREADS)]
         [thread.setDaemon(True) for thread in threads]
         [thread.start() for thread in threads]
-        [thread.join() for thread in threads]
+
+        with condition:
+            while True:
+                try:
+                    condition.wait()
+                except (KeyboardInterrupt, SystemExit) as e:
+                    self.end_task_flag = True
+                    with self.lock:
+                        self.error = 'Interrupted by user.'
+                if not any(x.isAlive() for x in threads):
+                    break
 
         if self.accession:
             return self.accession
