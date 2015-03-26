@@ -438,6 +438,26 @@ class DataImporter(object):
             metainfo.add_external_link(SEQUENCE_KEY, 'Sequence data link', seq_link)
         return self.__invoke_loader('genestack/referenceGenomeLoader', 'importFile', parent, metainfo)
 
-    def create_report_file(self, parent=None, metainfo=None):
+    def create_report_file(self, parent=None, name=None, links=None, metainfo=None):
+        """
+        Create report file. File can be created in folder.
+        name and links are required fields.
+
+        :param parent: accession of parent folder leave empty for ``Imported files``
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param links: url or list of urls of local file paths
+        :type links: list or str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
         metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        if links:
+            links = links if type(links) == list else [links]
+            for link in links:
+                metainfo.add_external_link(BioMetainfo.DATA_LINK, os.path.basename(link), link)
         return self.__invoke_loader('genestack/reportLoader', 'importFile', parent, metainfo)
