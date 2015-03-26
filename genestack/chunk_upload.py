@@ -12,13 +12,13 @@ from datetime import datetime
 import os
 from io import BytesIO
 import time
-from Queue import Queue
+from threading import Thread, Lock
+from Queue import Queue, Empty
 import json
 import sys
-from genestack.Connection import TTYProgress, DottedProgress
+import Connection
 from genestack.utils import isatty
-from genestack import GenestackException
-from threading import Thread, Lock
+from genestack.Exceptions import GenestackException
 
 
 CHUNK_UPLOAD_URL = '/application/uploadChunked/genestack/rawloader/unusedToken'
@@ -53,14 +53,12 @@ class Chunk(object):
         return "Chunk %s %s for %s" % (self.data['resumableChunkNumber'], self.size, self.uploader.path)
 
     def get_file(self):
-        if self.__file is None:
-            container = BytesIO()
-            with open(self.uploader.path, 'rb') as f:
-                f.seek(self.start)
-                container.write(f.read(self.size))
-            self.__file = container
-        self.__file.seek(0)
-        return self.__file
+        container = BytesIO()
+        with open(self.uploader.path, 'rb') as f:
+            f.seek(self.start)
+            container.write(f.read(self.size))
+        container.seek(0)
+        return container
 
 
 class PermanentError(GenestackException):
@@ -108,9 +106,9 @@ class ChunkedUpload:
         self.chunks.append(Chunk(x + 1, start, self.total_size - start, self))
 
         if isatty():
-            self.progress = TTYProgress()
+            self.progress = Connection.TTYProgress()
         else:
-            self.progress = DottedProgress(40)
+            self.progress = Connection.DottedProgress(40)
 
     def is_uploaded(self, chunk):
         r = self.connection.get_request(CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
@@ -121,8 +119,9 @@ class ChunkedUpload:
         else:
             raise GenestackException("Unexpected response with status %s: %s" % (r.status_code, r.text))
 
-    def upload_chunk(self, chunk):
-        files = {'file': chunk.get_file()}
+    def upload_chunk(self, chunk, chunk_file):
+        chunk_file.seek(0)
+        files = {'file': chunk_file}
         r = self.connection.post_multipart(CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
         if r.status_code in xrange(400, 600):
             try:
@@ -146,29 +145,27 @@ class ChunkedUpload:
         q = Queue()
 
         def do_stuff(q):
-            def stop():
-                with q.mutex:
-                    q.queue.clear()
-                    q.all_tasks_done.notify_all()
-                    q.unfinished_tasks = 0
             while True:
-                chunk = q.get()
+                try:
+                    chunk = q.get_nowait()
+                except Empty:
+                    "Print Empty"
+                    return
                 attempts = RETRY_ATTEMPTS
                 while attempts:
                     try:
+                        chunk_file = chunk.get_file()
                         with self.lock:
                             self.update_progress(chunk.size)
                         if not self.is_uploaded(chunk):
-                            result = self.upload_chunk(chunk)
-                            if result != ('Chunk uploaded', 'Chunk skipped'):
-                                stop()
+                            result = self.upload_chunk(chunk, chunk_file)
+                            if result not in ('Chunk uploaded', 'Chunk skipped'):
                                 with self.lock:
                                     self.accession = result
                                 return
                     except PermanentError as e:
                         with self.lock:
                             self.error = str(e)
-                        stop()
                         return
                     except Exception as e:
                         self.update_progress(0, msg="%s. Chunk %s attempts left: %s" % (e, chunk.data['resumableChunkNumber'], attempts - 1))
@@ -179,18 +176,15 @@ class ChunkedUpload:
                     q.task_done()
                     break
                 else:
-                    stop()
                     return
-
-        for _ in range(NUM_THREADS):
-            worker = Thread(target=do_stuff, args=(q,))
-            worker.setDaemon(True)
-            worker.start()
 
         for chunk in self.chunks:
             q.put(chunk)
 
-        q.join()
+        threads = [Thread(target=do_stuff, args=(q,)) for _ in range(NUM_THREADS)]
+        [thread.setDaemon(True) for thread in threads]
+        [thread.start() for thread in threads]
+        [thread.join() for thread in threads]
 
         if self.accession:
             return self.accession
