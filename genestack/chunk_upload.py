@@ -61,6 +61,9 @@ class Chunk(object):
 
 
 class PermanentError(GenestackException):
+    """
+    Exception thrown then no need to try resume upload.
+    """
     pass
 
 
@@ -82,11 +85,17 @@ class ChunkedUpload:
                                                     name=os.path.basename(path),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
+        # Last chunk can be large than CHUNK_SIZE but less then two chunks.
+        # Example: CHUNK_SIZE = 2
+        # file size 2 > 1 chunk
+        # file size 3 > 1 chunk
+        # file size 4 > 2 chunk
+        # file size 5 > 2 chunk
+
         if total_size < self.CHUNK_SIZE * 2:
             chunk_count = 1
         else:
             chunk_count = total_size / self.CHUNK_SIZE
-
 
         self.total_size = total_size
         self.filename = os.path.basename(path)
