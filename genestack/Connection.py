@@ -240,11 +240,8 @@ class FileWithCallback(file):
 class TTYProgress(object):
     def __init__(self):
         self._seen = 0.0
-        self.done = False
 
     def __call__(self, name, size, total):
-        if self.done:
-            return
         if size > 0 and total > 0:
             self._seen += size
             pct = self._seen * 100.0 / total
@@ -259,11 +256,8 @@ class DottedProgress(object):
         self.__full_length = full_length
         self.__dots = 0
         self.__seen = 0.0
-        self.done = False
 
     def __call__(self, name, size, total):
-        if self.done:
-            return
         if size > 0 and total > 0:
             if self.__seen == 0:
                 sys.stderr.write('Uploading %s: ' % name)
@@ -273,6 +267,5 @@ class DottedProgress(object):
                 self.__dots += 1
                 sys.stderr.write('.')
             if self.__dots == self.__full_length:
-                self.done = True
                 sys.stderr.write('\n')
             sys.stderr.flush()
