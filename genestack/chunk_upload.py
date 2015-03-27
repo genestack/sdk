@@ -16,6 +16,7 @@ from threading import Thread, Lock, Condition
 from Queue import Queue, Empty
 import json
 import sys
+import re
 import Connection
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
@@ -81,8 +82,9 @@ class ChunkedUpload:
 
         modified = datetime.fromtimestamp(os.path.getmtime(path))
         total_size = os.path.getsize(path)
+
         self.token = '{total_size}-{name}-{date}'.format(total_size=total_size,
-                                                    name=os.path.basename(path),
+                                                    name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
         # Last chunk can be large than CHUNK_SIZE but less then two chunks.
