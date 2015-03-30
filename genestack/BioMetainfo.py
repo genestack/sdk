@@ -38,6 +38,7 @@ class BioMetainfo(Metainfo):
     REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
     REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
     STUDY_SHORT_NAME = 'genestack.bio:shortName'
+    DATABASE_ID = 'genestack.bio:databaseId'
 
     RNASEQ_TECHNOLOGY = 'Expression profiling by high throughput sequencing'
     DNASEQ_TECHNOLOGY = 'Genome variation profiling by high throughput sequencing'
