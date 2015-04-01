@@ -72,7 +72,7 @@ class ChunkedUpload:
     CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
 
     def __init__(self, connection, path, application):
-        self.CHUNK_UPLOAD_URL = '/application/uploadChunked/%s/%s/unusedToken' % (application.vendor, application.application)
+        self.chunk_upload_url = '/application/uploadChunked/%s/%s/unusedToken' % (application.vendor, application.application)
         self.connection = connection
 
         self.lock = Lock()
@@ -165,7 +165,7 @@ class ChunkedUpload:
                     # Check if chunk is already uploaded
                     if not upload_checked:
                         try:
-                            r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
+                            r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
                             if r.status_code == 200:
                                 self.update_progress(chunk.size)
                                 q.task_done()
@@ -184,7 +184,7 @@ class ChunkedUpload:
                     file_cache.seek(0)
                     files = {'file': file_cache}
                     try:
-                        r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
+                        r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
                     except RequestException as e:
                         # check that any type of connection error occurred and retry.
                         time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
