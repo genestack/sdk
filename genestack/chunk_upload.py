@@ -20,6 +20,7 @@ import re
 import Connection
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
+from requests.exceptions import RequestException
 
 RETRY_ATTEMPTS = 5
 LAST_ATTEMPT_WAIT = 5
@@ -84,8 +85,8 @@ class ChunkedUpload:
         total_size = os.path.getsize(path)
 
         self.token = '{total_size}-{name}-{date}'.format(total_size=total_size,
-                                                    name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
-                                                    date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
+                                                         name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
+                                                         date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
         # Last chunk can be large than CHUNK_SIZE but less then two chunks.
         # Example: CHUNK_SIZE = 2
@@ -120,10 +121,8 @@ class ChunkedUpload:
         else:
             self.progress = Connection.DottedProgress(40)
 
-    def update_progress(self, update_size, msg=None):
+    def update_progress(self, update_size):
         with self.output_lock:
-            if msg and isatty():
-                sys.stderr.write('\r%s: %s\n' % (self.filename, msg))
             self.progress(self.filename, update_size, self.total_size)
 
     def upload(self):
@@ -132,11 +131,24 @@ class ChunkedUpload:
         self.end_task_flag = False
 
         def do_stuff(q):
+            """
+            Daemon look for uploading.
+            Daemon quits on next conditions:
+                - q is empty
+                - someone set self.end_task_flag to True
+                - got response form server that file is fully uploaded
+                - got permanent error (4xx, 5xx)
+                - got not 200 http response 5 times in a row ()
+
+
+            :param q: queue of chunks. It is filled before daemon start and does not updated.
+            """
             def notify():
+                self.end_task_flag = True
                 with condition:
                     condition.notify()
 
-            while True:
+            while True:  # daemon working cycle
                 try:
                     chunk = q.get_nowait()
                 except Empty:
@@ -146,54 +158,66 @@ class ChunkedUpload:
                     notify()
                     return
 
-                attempts = RETRY_ATTEMPTS
-                while attempts:
-                    file_cache = None
+                file_cache = None
+                upload_checked = False
 
+                for attempt in reversed(xrange(1, RETRY_ATTEMPTS +1)):
                     # Check if chunk is already uploaded
-                    r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
-                    if r.status_code == 200:
-                        self.update_progress(chunk.size)
-                        notify()
-                        break
+                    if not upload_checked:
+                        try:
+                            r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
+                            if r.status_code == 200:
+                                self.update_progress(chunk.size)
+                                q.task_done()
+                                break
+                            else:
+                                upload_checked = True
+                        except RequestException:
+                            # check that any type of connection error occurred and retry.
+                            time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
+                            self.error = str(e)
+                            continue
 
+                    # try to upload chunk
                     if file_cache is None:
                         file_cache = chunk.get_file()
                     file_cache.seek(0)
                     files = {'file': file_cache}
-                    r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
+                    try:
+                        r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
+                    except RequestException as e:
+                        # check that any type of connection error occurred and retry.
+                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
+                        self.error = str(e)
+                        continue
+
                     if 400 <= r.status_code < 600:
                         try:
                             response = json.loads(r.text)
                             if isinstance(response, dict) and 'error' in response:
                                 self.error = response['error']
                         except ValueError:
-                            self.error = "Got response with %s status code" % r.status_code
+                            self.error = "Got response with status code: %s" % r.status_code
                         notify()
                         return
                     elif r.status_code == 200:
-                        result = json.loads(r.text)
+                        self.update_progress(chunk.size)
+                        application_response = json.loads(r.text)
                         # FIXME after #4125
-                        if result not in ('Chunk uploaded', 'Chunk skipped'):
+                        if application_response not in ('Chunk uploaded', 'Chunk skipped'):
                             with self.lock:
-                                self.accession = result
-                            self.update_progress(chunk.size)
+                                self.accession = application_response
                             notify()
                             return
                         else:
-                            self.update_progress(chunk.size)
-                            notify()
+                            q.task_done()
                             break
                     else:
-                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempts)
-                        attempts -= 1
+                        # Not sure if sure if we should have different approach for non 200 statuses.
+                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
                         self.error = 'Http error: %s' % r.status_code
                         continue
-
-                    q.task_done()
-                    break
                 else:
-                    self.error = r.status_code
                     notify()
                     return
 
@@ -207,7 +231,7 @@ class ChunkedUpload:
         with condition:
             while True:
                 try:
-                    condition.wait(1)
+                    condition.wait(5)
                 except (KeyboardInterrupt, SystemExit):
                     self.end_task_flag = True
                     with self.lock:
