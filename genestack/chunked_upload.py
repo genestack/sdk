@@ -43,9 +43,6 @@ class Chunk(object):
 
         self.start = start
         self.size = size
-        self.attempts = 0
-
-        self.__file = None
 
     def __str__(self):
         return "Chunk %s %s for %s" % (self.data['resumableChunkNumber'], self.size, self.data['resumableRelativePath'])
@@ -90,7 +87,7 @@ class ChunkedUpload:
                                                     name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
-        # Last chunk can be large than CHUNK_SIZE but less then two chunks.
+        # Last chunk can be larger than CHUNK_SIZE but less then two chunks.
         # Example: CHUNK_SIZE = 2
         # file size 2 > 1 chunk
         # file size 3 > 1 chunk
