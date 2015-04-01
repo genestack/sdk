@@ -13,9 +13,7 @@ import os
 from io import BytesIO
 import time
 from threading import Thread, Lock, Condition
-from Queue import Queue, Empty
 import json
-import sys
 import re
 import Connection
 from genestack.utils import isatty
@@ -25,36 +23,36 @@ from requests.exceptions import RequestException
 RETRY_ATTEMPTS = 5
 LAST_ATTEMPT_WAIT = 5
 NUM_THREADS = 5
+CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
 
 
 class Chunk(object):
-    def __init__(self, number, start, current_chunk_size, uploader):
+    def __init__(self, number, start, size, chunk_size, total_size, token, filename, path, chunk_count, launch_time):
         self.data = {
-            'resumableChunkSize': uploader.CHUNK_SIZE,
+            'resumableChunkSize': chunk_size,
             'resumableType': '',
-            'resumableTotalSize': uploader.total_size,
-            'resumableIdentifier': uploader.token,
-            'resumableFilename': uploader.filename,
-            'resumableRelativePath': uploader.path,
-            'resumableTotalChunks': uploader.chunk_count,
-            'launchTime': uploader.launch_time,
+            'resumableTotalSize': total_size,
+            'resumableIdentifier': token,
+            'resumableFilename': filename,
+            'resumableRelativePath': path,
+            'resumableTotalChunks': chunk_count,
+            'launchTime': launch_time,
             'resumableChunkNumber': number,
-            'resumableCurrentChunkSize': current_chunk_size
+            'resumableCurrentChunkSize': size
             }
 
         self.start = start
-        self.size = current_chunk_size
+        self.size = size
         self.attempts = 0
 
         self.__file = None
-        self.uploader = uploader
 
     def __str__(self):
-        return "Chunk %s %s for %s" % (self.data['resumableChunkNumber'], self.size, self.uploader.path)
+        return "Chunk %s %s for %s" % (self.data['resumableChunkNumber'], self.size, self.data['resumableRelativePath'])
 
     def get_file(self):
         container = BytesIO()
-        with open(self.uploader.path, 'rb') as f:
+        with open(self.data['resumableRelativePath'], 'rb') as f:
             f.seek(self.start)
             container.write(f.read(self.size))
         container.seek(0)
@@ -69,12 +67,16 @@ class PermanentError(GenestackException):
 
 
 class ChunkedUpload:
-    CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
+    def __init__(self, application, path, chunk_size=None):
+        if chunk_size is None:
+            chunk_size = CHUNK_SIZE
+        if chunk_size <= 0:
+            raise GenestackException("Chunk size should be positive.")
 
-    def __init__(self, connection, path, application):
         self.chunk_upload_url = '/application/uploadChunked/%s/%s/unusedToken' % (application.vendor, application.application)
-        self.connection = connection
+        self.connection = application.connection
 
+        self.queue_lock = Lock()
         self.lock = Lock()
         self.output_lock = Lock()
 
@@ -84,9 +86,9 @@ class ChunkedUpload:
         modified = datetime.fromtimestamp(os.path.getmtime(path))
         total_size = os.path.getsize(path)
 
-        self.token = '{total_size}-{name}-{date}'.format(total_size=total_size,
-                                                         name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
-                                                         date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
+        token = '{total_size}-{name}-{date}'.format(total_size=total_size,
+                                                    name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
+                                                    date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
 
         # Last chunk can be large than CHUNK_SIZE but less then two chunks.
         # Example: CHUNK_SIZE = 2
@@ -95,53 +97,54 @@ class ChunkedUpload:
         # file size 4 > 2 chunk
         # file size 5 > 2 chunk
 
-        if total_size < self.CHUNK_SIZE * 2:
+        if total_size < chunk_size * 2:
             chunk_count = 1
         else:
-            chunk_count = total_size / self.CHUNK_SIZE
+            chunk_count = total_size / chunk_size
 
         self.total_size = total_size
         self.filename = os.path.basename(path)
         self.path = path
         self.chunk_count = chunk_count
-        self.launch_time = int(time.time() * 1000)
-        self.chunk_size = self.CHUNK_SIZE
-        self.chunks = []
-
-        start = 0
-        x = 0
-        for x in xrange(1, self.chunk_count):
-            end = start + self.chunk_size
-            self.chunks.append(Chunk(x, start, end - start, self))
-            start = end
-        self.chunks.append(Chunk(x + 1, start, self.total_size - start, self))
+        launch_time = int(time.time() * 1000)
 
         if isatty():
             self.progress = Connection.TTYProgress()
         else:
             self.progress = Connection.DottedProgress(40)
 
+        def _iterator():
+            start = 0
+            info = [chunk_size, total_size, token, self.filename, path, chunk_count, launch_time]
+            for x in xrange(1, chunk_count):
+                end = start + chunk_size
+                yield Chunk(x, start, end - start, *info)
+                start = end
+            yield Chunk(self.chunk_count, start, self.total_size - start, *info)
+
+        self.iterator = _iterator()
+
+    def get_next_chunk(self):
+        with self.queue_lock:
+            return next(self.iterator)
+
     def update_progress(self, update_size):
         with self.output_lock:
             self.progress(self.filename, update_size, self.total_size)
 
     def upload(self):
-        q = Queue()
         condition = Condition()
         self.end_task_flag = False
 
-        def do_stuff(q):
+        def do_stuff():
             """
             Daemon look for uploading.
             Daemon quits on next conditions:
-                - q is empty
+                - all chunk are processed
                 - someone set self.end_task_flag to True
                 - got response form server that file is fully uploaded
                 - got permanent error (4xx, 5xx)
-                - got not 200 http response 5 times in a row ()
-
-
-            :param q: queue of chunks. It is filled before daemon start and does not updated.
+                - got not 200 http response RETRY_ATTEMPTS times in a row
             """
             def notify():
                 self.end_task_flag = True
@@ -150,8 +153,8 @@ class ChunkedUpload:
 
             while True:  # daemon working cycle
                 try:
-                    chunk = q.get_nowait()
-                except Empty:
+                    chunk = self.get_next_chunk()
+                except StopIteration:
                     self.end_task_flag = True
 
                 if self.end_task_flag:
@@ -161,14 +164,13 @@ class ChunkedUpload:
                 file_cache = None
                 upload_checked = False
 
-                for attempt in reversed(xrange(1, RETRY_ATTEMPTS +1)):
+                for attempt in reversed(xrange(1, RETRY_ATTEMPTS + 1)):
                     # Check if chunk is already uploaded
                     if not upload_checked:
                         try:
                             r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
                             if r.status_code == 200:
                                 self.update_progress(chunk.size)
-                                q.task_done()
                                 break
                             else:
                                 upload_checked = True
@@ -210,7 +212,6 @@ class ChunkedUpload:
                             notify()
                             return
                         else:
-                            q.task_done()
                             break
                     else:
                         # Not sure if sure if we should have different approach for non 200 statuses.
@@ -221,10 +222,7 @@ class ChunkedUpload:
                     notify()
                     return
 
-        for chunk in self.chunks:
-            q.put(chunk)
-
-        threads = [Thread(target=do_stuff, args=(q,)) for _ in range(NUM_THREADS)]
+        threads = [Thread(target=do_stuff) for _ in range(NUM_THREADS)]
         [thread.setDaemon(True) for thread in threads]
         [thread.start() for thread in threads]
 
@@ -245,5 +243,5 @@ class ChunkedUpload:
             raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
 
 
-def chunk_upload(path, connection, application):
-    return ChunkedUpload(connection, path, application).upload()
+def chunk_upload(application, path, chunk_size=None):
+    return ChunkedUpload(application, path, chunk_size=None).upload()

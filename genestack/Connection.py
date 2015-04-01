@@ -193,9 +193,8 @@ class Application:
 
         return self.__invoke(path, to_post)
 
-
     def upload_chunked_file(self, file_path, token):
-        return chunk_upload(file_path, self.connection, self)
+        return chunk_upload(self, file_path)
 
     def upload_file(self, file_path, token):
         """
