@@ -17,7 +17,7 @@ import json
 import requests
 from Exceptions import GenestackServerException, GenestackException
 from utils import isatty
-from chunk_upload import chunk_upload
+from chunked_upload import upload_by_chunks
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
@@ -194,7 +194,7 @@ class Application:
         return self.__invoke(path, to_post)
 
     def upload_chunked_file(self, file_path, token):
-        return chunk_upload(self, file_path)
+        return upload_by_chunks(self, file_path)
 
     def upload_file(self, file_path, token):
         """

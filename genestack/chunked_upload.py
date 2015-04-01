@@ -243,5 +243,5 @@ class ChunkedUpload:
             raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
 
 
-def chunk_upload(application, path, chunk_size=None):
+def upload_by_chunks(application, path, chunk_size=None):
     return ChunkedUpload(application, path, chunk_size=None).upload()
