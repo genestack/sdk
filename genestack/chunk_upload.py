@@ -120,31 +120,6 @@ class ChunkedUpload:
         else:
             self.progress = Connection.DottedProgress(40)
 
-    def is_uploaded(self, chunk):
-        r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
-        if r.status_code == 200:
-            return True
-        elif r.status_code == 204:
-            return False
-        else:
-            raise GenestackException("Unexpected response with status %s: %s" % (r.status_code, r.text))
-
-    def upload_chunk(self, chunk, chunk_file):
-        chunk_file.seek(0)
-        files = {'file': chunk_file}
-        r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
-        if r.status_code in xrange(400, 600):
-            try:
-                response = json.loads(r.text)
-                if isinstance(response, dict) and 'error' in response:
-                    raise PermanentError('Error at chunk upload: %s' % response['error'])
-            except ValueError:
-                raise PermanentError('Error at chunk upload')
-        elif r.status_code == 200:
-            return json.loads(r.text)
-        else:
-            raise Exception("Fail to upload, retry.")
-
     def update_progress(self, update_size, msg=None):
         with self.output_lock:
             if msg and isatty():
@@ -173,36 +148,52 @@ class ChunkedUpload:
 
                 attempts = RETRY_ATTEMPTS
                 while attempts:
-                    file_cache = [None]
-                    try:
-                        if not self.is_uploaded(chunk):
-                            if file_cache[0] is None:
-                                file_cache[0] = chunk.get_file()
-                                file_cache[0].seek(0)
-                            result = self.upload_chunk(chunk, file_cache[0])
-                            if result not in ('Chunk uploaded', 'Chunk skipped'):
-                                with self.lock:
-                                    self.accession = result
-                                self.update_progress(chunk.size)
-                                notify()
-                                return
+                    file_cache = None
+
+                    # Check if chunk is already uploaded
+                    r = self.connection.get_request(self.CHUNK_UPLOAD_URL, params=chunk.data, follow=False)
+                    if r.status_code == 200:
                         self.update_progress(chunk.size)
                         notify()
-                    except PermanentError as e:
-                        with self.lock:
-                            self.error = str(e)
+                        break
+
+                    if file_cache is None:
+                        file_cache = chunk.get_file()
+                    file_cache.seek(0)
+                    files = {'file': file_cache}
+                    r = self.connection.post_multipart(self.CHUNK_UPLOAD_URL, data=chunk.data, files=files, follow=False)
+                    if 400 <= r.status_code < 600:
+                        try:
+                            response = json.loads(r.text)
+                            if isinstance(response, dict) and 'error' in response:
+                                self.error = response['error']
+                        except ValueError:
+                            self.error = "Got response with %s status code" % r.status_code
                         notify()
                         return
-                    except Exception as e:
-                        print e
-                        self.update_progress(0, msg="%s. Chunk %s attempts left: %s" % (e, chunk.data['resumableChunkNumber'], attempts - 1))
+                    elif r.status_code == 200:
+                        result = json.loads(r.text)
+                        # FIXME after #4125
+                        if result not in ('Chunk uploaded', 'Chunk skipped'):
+                            with self.lock:
+                                self.accession = result
+                            self.update_progress(chunk.size)
+                            notify()
+                            return
+                        else:
+                            self.update_progress(chunk.size)
+                            notify()
+                            break
+                    else:
                         time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempts)
                         attempts -= 1
-                        self.error = str(e)
+                        self.error = 'Http error: %s' % r.status_code
                         continue
+
                     q.task_done()
                     break
                 else:
+                    self.error = r.status_code
                     notify()
                     return
 
@@ -216,8 +207,8 @@ class ChunkedUpload:
         with condition:
             while True:
                 try:
-                    condition.wait()
-                except (KeyboardInterrupt, SystemExit) as e:
+                    condition.wait(1)
+                except (KeyboardInterrupt, SystemExit):
                     self.end_task_flag = True
                     with self.lock:
                         self.error = 'Interrupted by user.'
