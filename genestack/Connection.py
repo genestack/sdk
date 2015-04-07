@@ -90,7 +90,7 @@ class Connection:
 
         :rtype: None
         """
-        self.open('/signOut', follow=False)
+        self.application('genestack/signin').invoke('signOut')
 
     def open(self, path, data=None, follow=True):
         """
