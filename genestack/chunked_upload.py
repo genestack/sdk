@@ -202,10 +202,9 @@ class ChunkedUpload:
                     elif r.status_code == 200:
                         self.update_progress(chunk.size)
                         application_response = json.loads(r.text)
-                        # FIXME after #4125
-                        if application_response not in ('Chunk uploaded', 'Chunk skipped'):
+                        if 'applicationResult' in application_response:
                             with self.lock:
-                                self.accession = application_response
+                                self.accession = application_response['applicationResult']
                             notify()
                             return
                         else:
