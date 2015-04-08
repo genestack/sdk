@@ -246,7 +246,7 @@ class ChunkedUpload(object):
                 elif res is False:
                     upload_checked = True
                 else:
-                    self.error = res
+                    error = res
                     time.sleep(RETRY_INTERVAL)
                     continue
 
@@ -260,7 +260,6 @@ class ChunkedUpload(object):
                 time.sleep(RETRY_INTERVAL)
                 error = r
                 continue
-
             # done without errors
             if r.status_code == 200:
                 self.__update_progress(chunk.size)
@@ -283,12 +282,12 @@ class ChunkedUpload(object):
                     pass
                 self.error = error
                 return
-
             # other network errors, try again
             time.sleep(RETRY_INTERVAL)
             continue
 
         self.error = error
+        self.finished = True
 
     def upload(self):
         def do_stuff():
