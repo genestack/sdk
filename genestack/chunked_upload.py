@@ -73,7 +73,7 @@ class ChunkedUpload:
         self.chunk_upload_url = '/application/uploadChunked/%s/%s/unusedToken' % (application.vendor, application.application)
         self.connection = application.connection
 
-        self.queue_lock = Lock()
+        self.iterator_lock = Lock()
         self.lock = Lock()
         self.output_lock = Lock()
 
@@ -113,17 +113,16 @@ class ChunkedUpload:
         def _iterator():
             start = 0
             info = [chunk_size, total_size, token, self.filename, path, chunk_count, launch_time]
-            for x in xrange(1, chunk_count):
-                end = start + chunk_size
-                yield Chunk(x, start, end - start, *info)
-                start = end
-            yield Chunk(self.chunk_count, start, self.total_size - start, *info)
+            for x in xrange(1, chunk_count + 1):
+                if x == chunk_count:
+                    curren_chunk_size = self.total_size - start
+                else:
+                    curren_chunk_size = chunk_size
+                yield Chunk(x, start, curren_chunk_size, *info)
+                start += curren_chunk_size
 
         self.iterator = _iterator()
 
-    def get_next_chunk(self):
-        with self.queue_lock:
-            return next(self.iterator)
 
     def update_progress(self, update_size):
         with self.output_lock:
@@ -150,7 +149,8 @@ class ChunkedUpload:
 
             while True:  # daemon working cycle
                 try:
-                    chunk = self.get_next_chunk()
+                    with self.iterator_lock:
+                        chunk = next(self.iterator)
                 except StopIteration:
                     self.end_task_flag = True
 
