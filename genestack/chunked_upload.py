@@ -77,7 +77,8 @@ class ChunkedUpload:
         self.lock = Lock()
         self.output_lock = Lock()
 
-        self.accession = None
+        self.application_response = None
+        self.has_application_response = False
         self.error = None
 
         self.condition = Condition()
@@ -171,7 +172,8 @@ class ChunkedUpload:
                 application_response = json.loads(r.text)
                 if 'applicationResult' in application_response:
                     with self.lock:
-                        self.accession = application_response['applicationResult']
+                        self.application_response = application_response['applicationResult']
+                        self.has_application_response = True
                     with self.lock:
                         self.end_task_flag = True
                     return
@@ -246,8 +248,8 @@ class ChunkedUpload:
                     if not self.thread_counter:
                         break
 
-        if self.accession:
-            return self.accession
+        if self.has_application_response:
+            return self.application_response
         else:
             raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
 
