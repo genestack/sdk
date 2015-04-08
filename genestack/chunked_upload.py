@@ -8,20 +8,20 @@
 # actual or intended publication of such source code.
 #
 
-from datetime import datetime
 import os
-from io import BytesIO
 import time
-from threading import Thread, Lock, Condition
 import json
 import re
-import Connection
+from datetime import datetime
+from io import BytesIO
+from threading import Thread, Lock, Condition
+from requests.exceptions import RequestException
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
-from requests.exceptions import RequestException
+
 
 RETRY_ATTEMPTS = 5
-LAST_ATTEMPT_WAIT = 5
+RETRY_INTERVAL = 2  # seconds
 NUM_THREADS = 5
 CHUNK_SIZE = 1024 * 1024 * 5  # 5mb
 
@@ -89,7 +89,7 @@ class ChunkedUpload(object):
 
         self.__application_result = None
         self.__has_application_result = False
-        self.__end_task_flag = False
+        self.__finished = False
         self.__thread_counter = 0
         self.__error = None
 
@@ -120,10 +120,14 @@ class ChunkedUpload(object):
         self.chunk_count = chunk_count
         launch_time = int(time.time() * 1000)
 
+        # import from here to avoid circular imports
+        # TODO move progress functions to other module.
         if isatty():
-            self.progress = Connection.TTYProgress()
+            from Connection import TTYProgress
+            self.progress = TTYProgress()
         else:
-            self.progress = Connection.DottedProgress(40)
+            from Connection import DottedProgress
+            self.progress = DottedProgress(40)
 
         def _iterator():
             start = 0
@@ -160,13 +164,13 @@ class ChunkedUpload(object):
 
     @property
     @with_lock
-    def end_task_flag(self):
-        return self.__end_task_flag
+    def finished(self):
+        return self.__finished
 
-    @end_task_flag.setter
+    @finished.setter
     @with_lock
-    def end_task_flag(self, value):
-        self.__end_task_flag = value
+    def finished(self, value):
+        self.__finished = value
 
     @property
     @with_lock
@@ -230,10 +234,8 @@ class ChunkedUpload(object):
 
         for attempt in xrange(RETRY_ATTEMPTS):
             # check if we still try to upload.
-            if self.end_task_flag:
+            if self.finished:
                 return
-
-            sleep_time = 1
 
             # Check if chunk is already uploaded
             if not upload_checked:
@@ -245,8 +247,7 @@ class ChunkedUpload(object):
                     upload_checked = True
                 else:
                     self.error = res
-                    time.sleep(sleep_time)
-                    sleep_time *= 2
+                    time.sleep(RETRY_INTERVAL)
                     continue
 
             # try to upload chunk
@@ -256,8 +257,7 @@ class ChunkedUpload(object):
             r = self.__upload_chunk(chunk, file_cache)
             if isinstance(r, str):
                 # check that any type of connection error occurred and retry.
-                time.sleep(sleep_time)
-                sleep_time *= 2
+                time.sleep(RETRY_INTERVAL)
                 error = r
                 continue
 
@@ -268,13 +268,13 @@ class ChunkedUpload(object):
                 if 'applicationResult' in response:
                     self.application_result = response['applicationResult']
                     self.has_application_result = True
-                    self.end_task_flag = True
+                    self.finished = True
                 return
 
             error = "Got response with status code: %s" % r.status_code
             # permanent errors
             if 400 <= r.status_code < 600:
-                self.end_task_flag = True
+                self.finished = True
                 try:
                     response = json.loads(r.text)
                     if isinstance(response, dict) and 'error' in response:
@@ -285,8 +285,7 @@ class ChunkedUpload(object):
                 return
 
             # other network errors, try again
-            time.sleep(sleep_time)
-            sleep_time *= 2
+            time.sleep(RETRY_INTERVAL)
             continue
 
         self.error = error
@@ -306,7 +305,7 @@ class ChunkedUpload(object):
 
             try:
                 while True:  # daemon working cycle
-                    if self.end_task_flag:
+                    if self.finished:
                         return
                     try:
                         with self.__iterator_lock:
@@ -317,7 +316,7 @@ class ChunkedUpload(object):
             except Exception as e:
                 self.error = str(e)
             finally:
-                self.end_task_flag = True
+                self.finished = True
                 self.thread_counter -= 1
                 with self.condition:
                     self.condition.notify()
@@ -331,7 +330,7 @@ class ChunkedUpload(object):
                 try:
                     self.condition.wait()
                 except (KeyboardInterrupt, SystemExit):
-                    self.end_task_flag = True
+                    self.finished = True
                     self.error = 'Interrupted by user.'
                 if not self.thread_counter:
                     break
