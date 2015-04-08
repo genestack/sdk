@@ -217,20 +217,25 @@ class ChunkedUpload:
             with self.lock:
                 self.thread_counter += 1
 
-            while True:  # daemon working cycle
-                try:
-                    with self.iterator_lock:
-                        chunk = next(self.iterator)
-                except StopIteration:
-                    with self.lock:
-                        self.end_task_flag = True
-                if self.end_task_flag:
-                    with self.lock:
-                        self.thread_counter -= 1
-                    with self.condition:
+            try:
+                while True:  # daemon working cycle
+                    try:
+                        with self.iterator_lock:
+                            chunk = next(self.iterator)
+                    except StopIteration:
+                        with self.lock:
+                            self.end_task_flag = True
+                    if self.end_task_flag:
+                        return
+                    self.process_chunk(chunk)
+            except Exception as e:
+                with self.lock:
+                    self.error = str(e)
+            finally:
+                with self.lock:
+                    self.thread_counter -= 1
+                with self.condition:
                         self.condition.notify()
-                    return
-                self.process_chunk(chunk)
 
         threads = [Thread(target=do_stuff) for _ in range(NUM_THREADS)]
         [thread.setDaemon(True) for thread in threads]
