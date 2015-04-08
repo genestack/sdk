@@ -80,6 +80,9 @@ class ChunkedUpload:
         self.accession = None
         self.error = None
 
+        self.condition = Condition()
+        self.thread_counter = 0
+
         modified = datetime.fromtimestamp(os.path.getmtime(path))
         total_size = os.path.getsize(path)
 
@@ -128,10 +131,77 @@ class ChunkedUpload:
         with self.output_lock:
             self.progress(self.filename, update_size, self.total_size)
 
-    def upload(self):
-        condition = Condition()
-        self.end_task_flag = False
+    def process_chunk(self, chunk):
+        file_cache = None
+        upload_checked = False
 
+        for attempt in xrange(RETRY_ATTEMPTS):
+            sleep_time = 1
+
+            # Check if chunk is already uploaded
+            if not upload_checked:
+                res = self.check_chunk(chunk)
+                if res is True:
+                    self.update_progress(chunk.size)
+                    break
+                elif res is False:
+                    upload_checked = True
+                else:
+                    self.error = res
+                    time.sleep(sleep_time)
+                    sleep_time *= 2
+                    continue
+
+            # try to upload chunk
+            if file_cache is None:
+                file_cache = chunk.get_file()
+            file_cache.seek(0)
+            files = {'file': file_cache}
+
+            r = self.upload_chunk(chunk, file_cache)
+            if isinstance(r, str):
+            # check that any type of connection error occurred and retry.
+                time.sleep(sleep_time)
+                sleep_time *= 2
+                continue
+
+            # done with out errors
+            if r.status_code == 200:
+                self.update_progress(chunk.size)
+                application_response = json.loads(r.text)
+                if 'applicationResult' in application_response:
+                    with self.lock:
+                        self.accession = application_response['applicationResult']
+                    with self.lock:
+                        self.end_task_flag = True
+                    return
+                else:
+                    break
+            # permanent errors
+            if 400 <= r.status_code < 600:
+                self.error = "Got response with status code: %s" % r.status_code
+                try:
+                    response = json.loads(r.text)
+                    if isinstance(response, dict) and 'error' in response:
+                        self.error = response['error']
+                except ValueError:
+                    pass
+                with self.lock:
+                    self.end_task_flag = True
+                return
+
+            # other network errors
+            time.sleep(sleep_time)
+            sleep_time *= 2
+            self.error = 'Http error: %s' % r.status_code
+            continue
+        else:
+            with self.lock:
+                self.end_task_flag = True
+            return
+
+    def upload(self):
+        self.end_task_flag = False
         def do_stuff():
             """
             Daemon look for uploading.
@@ -142,102 +212,63 @@ class ChunkedUpload:
                 - got permanent error (4xx, 5xx)
                 - got not 200 http response RETRY_ATTEMPTS times in a row
             """
-            def notify():
-                self.end_task_flag = True
-                with condition:
-                    condition.notify()
+            with self.lock:
+                self.thread_counter += 1
 
             while True:  # daemon working cycle
                 try:
                     with self.iterator_lock:
                         chunk = next(self.iterator)
                 except StopIteration:
-                    self.end_task_flag = True
-
+                    with self.lock:
+                        self.end_task_flag = True
                 if self.end_task_flag:
-                    notify()
+                    with self.lock:
+                        self.thread_counter -= 1
+                    with self.condition:
+                        self.condition.notify()
                     return
-
-                file_cache = None
-                upload_checked = False
-
-                for attempt in reversed(xrange(1, RETRY_ATTEMPTS + 1)):
-                    # Check if chunk is already uploaded
-                    if not upload_checked:
-                        try:
-                            r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
-                            if r.status_code == 200:
-                                self.update_progress(chunk.size)
-                                break
-                            else:
-                                upload_checked = True
-                        except RequestException:
-                            # check that any type of connection error occurred and retry.
-                            time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
-                            self.error = str(e)
-                            continue
-
-                    # try to upload chunk
-                    if file_cache is None:
-                        file_cache = chunk.get_file()
-                    file_cache.seek(0)
-                    files = {'file': file_cache}
-                    try:
-                        r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
-                    except RequestException as e:
-                        # check that any type of connection error occurred and retry.
-                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
-                        self.error = str(e)
-                        continue
-
-                    if 400 <= r.status_code < 600:
-                        try:
-                            response = json.loads(r.text)
-                            if isinstance(response, dict) and 'error' in response:
-                                self.error = response['error']
-                        except ValueError:
-                            self.error = "Got response with status code: %s" % r.status_code
-                        notify()
-                        return
-                    elif r.status_code == 200:
-                        self.update_progress(chunk.size)
-                        application_response = json.loads(r.text)
-                        if 'applicationResult' in application_response:
-                            with self.lock:
-                                self.accession = application_response['applicationResult']
-                            notify()
-                            return
-                        else:
-                            break
-                    else:
-                        # Not sure if sure if we should have different approach for non 200 statuses.
-                        time.sleep(LAST_ATTEMPT_WAIT / 2 ** attempt)
-                        self.error = 'Http error: %s' % r.status_code
-                        continue
-                else:
-                    notify()
-                    return
+                self.process_chunk(chunk)
 
         threads = [Thread(target=do_stuff) for _ in range(NUM_THREADS)]
         [thread.setDaemon(True) for thread in threads]
         [thread.start() for thread in threads]
 
-        with condition:
+        with self.condition:
             while True:
                 try:
-                    condition.wait(5)
+                    self.condition.wait()
                 except (KeyboardInterrupt, SystemExit):
-                    self.end_task_flag = True
                     with self.lock:
+                        self.end_task_flag = True
                         self.error = 'Interrupted by user.'
-                if not any(x.isAlive() for x in threads):
-                    break
+                with self.lock:
+                    if not self.thread_counter:
+                        break
 
         if self.accession:
             return self.accession
         else:
             raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
 
+    def check_chunk(self, chunk):
+        try:
+            r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
+            return r.status_code == 200
+        except RequestException as e:
+            # check that any type of connection error occurred and retry.
+            return str(e)
+
+    def upload_chunk(self, chunk, chunk_file):
+        chunk_file.seek(0)
+        files = {'file': chunk_file}
+        try:
+            r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
+            return r
+        except RequestException as e:
+            # check that any type of connection error occurred and retry.
+            return str(e)
+
 
 def upload_by_chunks(application, path, chunk_size=None):
-    return ChunkedUpload(application, path, chunk_size=None).upload()
+    return ChunkedUpload(application, path, chunk_size=chunk_size).upload()
