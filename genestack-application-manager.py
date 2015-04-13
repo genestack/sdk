@@ -290,7 +290,7 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     try:
-        print('Removing applications')
+        print('Removing version for applications')
         for app_id in app_id_list:
             sys.stdout.write('%s ... ' % app_id)
             sys.stdout.flush()
