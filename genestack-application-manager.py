@@ -283,7 +283,7 @@ def mark_as_stable(application, version, app_id_list, scope):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -299,7 +299,7 @@ def remove_applications(application, version, app_id_list):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -315,7 +315,7 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -337,7 +337,7 @@ def upload_single_file(application, file_path, version, override,
         upload_token = application.invoke('getUploadToken', parameters)
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
