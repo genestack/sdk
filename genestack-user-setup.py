@@ -189,7 +189,7 @@ class Remove(Command):
 
 class RenameUser(Command):
     COMMAND = 'rename'
-    DESCRIPTION = 'Rename user'
+    DESCRIPTION = 'Rename user.'
     OFFLINE = True
 
     def update_parser(self, parent):
