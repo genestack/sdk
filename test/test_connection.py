@@ -53,7 +53,7 @@ def test_connection_to_wrong_url():
 def test_login_positive():
     connection = Connection(server_url)
     connection.login(environment.userPublic, environment.pwdPublic)
-    name = connection.application('shell').invoke('whoami')
+    name = connection.application('genestack/signin').invoke('whoami')
     assert name == environment.userPublic, "Name does not match %s and  %s" % (name, environment.userPublic)
 
 
