@@ -56,7 +56,8 @@ class Config(object):
         self.save()
         try:
             import keyring
-            keyring.delete_password(GENESTACK_SDK, user.alias)
+            if keyring.get_password(GENESTACK_SDK, user.alias):
+                keyring.delete_password(GENESTACK_SDK, user.alias)
         except ImportError:
             pass
         except Exception as e:
