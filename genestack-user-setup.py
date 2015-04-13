@@ -204,7 +204,7 @@ class List(Command):
 
 class Path(Command):
     COMMAND = 'path'
-    DESCRIPTION = 'Show path to config.'
+    DESCRIPTION = 'Show path to configuration file.'
     OFFLINE = True
 
     def run(self):
