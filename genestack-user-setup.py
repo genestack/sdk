@@ -24,16 +24,19 @@ def ask_host():
     return host or DEFAULT_HOST
 
 
-def ask_alias(existed):
-    expression = re.compile('[A-z0-9_@\-]+$')
+def validate_alias(alias):
+    expression = re.compile('[a-zA-Z0-9_@\-]+$')
+    return bool(alias and expression.match(alias))
 
+
+def ask_alias(existed):
     print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), minus (-))'
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
             print 'Alias cannot be empty.'
             continue
-        if not expression.match(alias):
+        if not validate_alias(alias):
             print 'Restricted symbols message'
             continue
         if alias in existed:
