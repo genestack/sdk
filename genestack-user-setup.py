@@ -85,7 +85,6 @@ class AddUser(Command):
         host = ask_host()
         _, user = ask_email_and_password(host, alias=alias)
         config.add_user(user)
-        config.save()
         print "User %s created" % user.alias
 
 
