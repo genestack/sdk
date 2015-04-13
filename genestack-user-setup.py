@@ -187,7 +187,7 @@ class Remove(Command):
 
 class List(Command):
     COMMAND = 'list'
-    DESCRIPTION = 'List current users.'
+    DESCRIPTION = 'List all users.'
     OFFLINE = True
 
     def run(self):
