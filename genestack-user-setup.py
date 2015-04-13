@@ -187,6 +187,39 @@ class Remove(Command):
         print "%s was removed from config" % user.alias
 
 
+class RenameUser(Command):
+    COMMAND = 'rename'
+    DESCRIPTION = 'Rename user'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>', help='Alias to be renamed', nargs='?')
+        parent.add_argument('new_alias', metavar='<new_alias>', help='New alias', nargs='?')
+
+    def run(self):
+        users = config.users
+
+        user = users.get(self.args.alias)
+
+        if not user:
+            print "Select user for rename."
+            user = select_user(users)
+        if not self.args.new_alias or not validate_alias(self.args.new_alias):
+            print "Select new alias."
+            new_alias = ask_alias(users.keys())
+        else:
+            new_alias = self.args.new_alias
+
+        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password)
+
+        config.add_user(new_user, save=False)
+        if user.alias == config.default_user.alias:
+            config.set_default_user(new_user, save=False)
+
+        config.remove_user(user)
+        print '"%s" alias changed to "%s"' % (user.alias, new_user.alias)
+
+
 class List(Command):
     COMMAND = 'list'
     DESCRIPTION = 'List current users.'
@@ -243,7 +276,7 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove]
+    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
 
     def process_command(self, command, argument_line, connection, shell=False):
         config_path = config.get_settings_file()
