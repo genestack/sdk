@@ -140,7 +140,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=get_name_from_url(url), url=url)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, get_name_from_url(url), url)
         return self.__invoke_loader('genestack/bedLoader', 'importFile', parent, metainfo)
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -164,7 +164,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=get_name_from_url(url), url=url)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, get_name_from_url(url), url)
         return self.__invoke_loader('genestack/variationFileLoader', 'importFile', parent, metainfo)
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -188,7 +188,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, text=get_name_from_url(url), url=url)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, get_name_from_url(url), url)
         return self.__invoke_loader('genestack/wigLoader', 'importFile', parent, metainfo)
 
     def create_bam(self,
