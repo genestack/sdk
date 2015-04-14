@@ -93,6 +93,7 @@ class Command(object):
         :rtype: argparse.ArgumentParser
         """
         parser = parser or ArgumentParser(description=self.DESCRIPTION)
+        parser.prog = '%s %s' % (parser.prog, self.COMMAND)
         parser.description = self.DESCRIPTION
         group = parser.add_argument_group("command arguments")
         self.update_parser(group)
