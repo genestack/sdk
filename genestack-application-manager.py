@@ -182,7 +182,7 @@ class MarkAsStable(Command):
 
 class Remove(Command):
     COMMAND = 'remove'
-    DESCRIPTION = 'Remove specific version of applications'
+    DESCRIPTION = 'Remove specific version of applications.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -201,7 +201,7 @@ class Remove(Command):
 
 class Reload(Command):
     COMMAND = 'reload'
-    DESCRIPTION = 'Reload specific version of applications'
+    DESCRIPTION = 'Reload specific version of applications.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -221,7 +221,7 @@ class Reload(Command):
 # FIXME: This class should be removed; it is written only for debug purposes:
 class Invoke(Command):
     COMMAND = 'invoke'
-    DESCRIPTION = 'Invoke method of stable application'
+    DESCRIPTION = 'Invoke method of stable application.'
 
     def update_parser(self, p):
         p.add_argument(

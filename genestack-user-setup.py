@@ -168,7 +168,7 @@ class SetDefault(Command):
 
 class Remove(Command):
     COMMAND = 'remove'
-    DESCRIPTION = 'Remove user'
+    DESCRIPTION = 'Remove user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -189,7 +189,7 @@ class Remove(Command):
 
 class RenameUser(Command):
     COMMAND = 'rename'
-    DESCRIPTION = 'Rename user'
+    DESCRIPTION = 'Rename user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -222,7 +222,7 @@ class RenameUser(Command):
 
 class List(Command):
     COMMAND = 'list'
-    DESCRIPTION = 'List current users.'
+    DESCRIPTION = 'List all users.'
     OFFLINE = True
 
     def run(self):
@@ -239,7 +239,7 @@ class List(Command):
 
 class Path(Command):
     COMMAND = 'path'
-    DESCRIPTION = 'Show path to config'
+    DESCRIPTION = 'Show path to configuration file.'
     OFFLINE = True
 
     def run(self):
