@@ -9,7 +9,7 @@ Usage
 -----
 This script can be used both as shell and command line:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
@@ -34,7 +34,7 @@ This script can be used both as shell and command line:
 
 You can get description for every ``command`` by running:
 
-  .. code-block:: none
+  .. code-block:: text
 
     $ genestack-application-manager.py command -h
 

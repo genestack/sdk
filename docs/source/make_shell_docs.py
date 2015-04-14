@@ -17,13 +17,13 @@ Usage
 -----
 This script can be used both as shell and command line:
 
-  .. code-block:: none
+  .. code-block:: text
 
     {usage}
 
 You can get description for every ``command`` by running:
 
-  .. code-block:: none
+  .. code-block:: text
 
     $ {name}.py command -h
 
