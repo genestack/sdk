@@ -93,6 +93,7 @@ class Command(object):
         :rtype: argparse.ArgumentParser
         """
         parser = parser or ArgumentParser(description=self.DESCRIPTION)
+        parser.prog = '%s %s' % (parser.prog, self.COMMAND)
         parser.description = self.DESCRIPTION
         group = parser.add_argument_group("command arguments")
         self.update_parser(group)
@@ -318,6 +319,8 @@ class GenestackShell(cmd.Cmd):
             print '=' * len(self.doc_header)
             for command_name, short_description in commands.items():
                 print '%-20s%s' % (command_name, short_description)
+            if 'quit' not in self.COMMANDS:
+                print '%-20s%s' % ('quit', 'Exit shell.')
             print '=' * len(self.doc_header)
             return
 

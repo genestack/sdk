@@ -17,13 +17,13 @@ Usage
 -----
 This script can be used both as shell and command line:
 
-  .. code-block:: none
+  .. code-block:: text
 
     {usage}
 
 You can get description for every ``command`` by running:
 
-  .. code-block:: none
+  .. code-block:: text
 
     $ {name}.py command -h
 
@@ -56,7 +56,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
         command = command()
         parser = command.get_command_parser(parser=None if command.OFFLINE else make_connection_parser())
         help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name + '.py')
-        text = '- **%s**:\n\n  .. code-block:: none\n\n    %s\n\n' % (command.COMMAND, help_text)
+        text = '- **%s**:\n\n  .. code-block:: text\n\n    %s\n\n' % (command.COMMAND, help_text)
         commands.append(text)
 
     if footer_file_name:
