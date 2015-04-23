@@ -112,7 +112,7 @@ class DataImporter(object):
         :rtype: str
         """
         filename = os.path.basename(file_path)
-        application = self.connection.application('genestack/rawloader-library')
+        application = self.connection.application('genestack/upload')
         return application.upload_file(file_path, filename)
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
