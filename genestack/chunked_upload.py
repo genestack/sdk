@@ -213,13 +213,13 @@ class ChunkedUpload(object):
             # Check if chunk is already uploaded
             if not upload_checked:
                 try:
-                    r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
+                    response = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
                 except RequestException as e:
                     error = str(e)
                     time.sleep(RETRY_INTERVAL)
                     continue
 
-                if r.status_code == 200:
+                if response.status_code == 200:
                     self.__update_progress(chunk.size)
                     return
                 else:
@@ -232,30 +232,30 @@ class ChunkedUpload(object):
             file_cache.seek(0)
             files = {'file': file_cache}
             try:
-                r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
+                response = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
             except RequestException as e:
                 # check that any type of connection error occurred and retry.
                 time.sleep(RETRY_INTERVAL)
                 error = str(e)
                 continue
             # done without errors
-            if r.status_code == 200:
+            if response.status_code == 200:
                 self.__update_progress(chunk.size)
-                response = json.loads(r.text)
-                if 'applicationResult' in response:
-                    self.application_result = response['applicationResult']
+                data = json.loads(response.text)
+                if 'applicationResult' in data:
+                    self.application_result = data['applicationResult']
                     self.has_application_result = True
                     self.finished = True
                 return
 
-            error = "Got response with status code: %s" % r.status_code
+            error = "Got response with status code: %s" % response.status_code
             # permanent errors
-            if 400 <= r.status_code < 600:
+            if 400 <= response.status_code < 600:
                 self.finished = True
                 try:
-                    response = json.loads(r.text)
-                    if isinstance(response, dict) and 'error' in response:
-                        error = response['error']
+                    data = json.loads(response.text)
+                    if isinstance(data, dict) and 'error' in data:
+                        error = data['error']
                 except ValueError:
                     pass
                 self.error = error
