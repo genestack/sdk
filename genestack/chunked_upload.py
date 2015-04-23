@@ -273,7 +273,7 @@ class ChunkedUpload(object):
             Daemon look for uploading.
             Daemon quits on next conditions:
                 - all chunk are processed
-                - someone set self.end_task_flag to True
+                - someone set self.finished to True
                 - got response form server that file is fully uploaded
                 - got permanent error (4xx, 5xx)
                 - got not 200 http response RETRY_ATTEMPTS times in a row
