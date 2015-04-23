@@ -24,16 +24,19 @@ def ask_host():
     return host or DEFAULT_HOST
 
 
-def ask_alias(existed):
-    expression = re.compile('[A-z0-9_@\-]+$')
+def validate_alias(alias):
+    expression = re.compile('[a-zA-Z0-9_@\-]+$')
+    return bool(alias and expression.match(alias))
 
+
+def ask_alias(existed):
     print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), minus (-))'
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
             print 'Alias cannot be empty.'
             continue
-        if not expression.match(alias):
+        if not validate_alias(alias):
             print 'Restricted symbols message'
             continue
         if alias in existed:
@@ -82,7 +85,6 @@ class AddUser(Command):
         host = ask_host()
         _, user = ask_email_and_password(host, alias=alias)
         config.add_user(user)
-        config.save()
         print "User %s created" % user.alias
 
 
@@ -166,7 +168,7 @@ class SetDefault(Command):
 
 class Remove(Command):
     COMMAND = 'remove'
-    DESCRIPTION = 'Remove user'
+    DESCRIPTION = 'Remove user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -185,9 +187,42 @@ class Remove(Command):
         print "%s was removed from config" % user.alias
 
 
+class RenameUser(Command):
+    COMMAND = 'rename'
+    DESCRIPTION = 'Rename user.'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>', help='Alias to be renamed', nargs='?')
+        parent.add_argument('new_alias', metavar='<new_alias>', help='New alias', nargs='?')
+
+    def run(self):
+        users = config.users
+
+        user = users.get(self.args.alias)
+
+        if not user:
+            print "Select user for rename."
+            user = select_user(users)
+        if not self.args.new_alias or not validate_alias(self.args.new_alias):
+            print "Select new alias."
+            new_alias = ask_alias(users.keys())
+        else:
+            new_alias = self.args.new_alias
+
+        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password)
+
+        config.add_user(new_user, save=False)
+        if user.alias == config.default_user.alias:
+            config.set_default_user(new_user, save=False)
+
+        config.remove_user(user)
+        print '"%s" alias changed to "%s"' % (user.alias, new_user.alias)
+
+
 class List(Command):
     COMMAND = 'list'
-    DESCRIPTION = 'List current users.'
+    DESCRIPTION = 'List all users.'
     OFFLINE = True
 
     def run(self):
@@ -204,7 +239,7 @@ class List(Command):
 
 class Path(Command):
     COMMAND = 'path'
-    DESCRIPTION = 'Show path to config'
+    DESCRIPTION = 'Show path to configuration file.'
     OFFLINE = True
 
     def run(self):
@@ -241,7 +276,7 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove]
+    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
 
     def process_command(self, command, argument_line, connection, shell=False):
         config_path = config.get_settings_file()

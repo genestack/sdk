@@ -9,7 +9,7 @@ Usage
 -----
 This script can be used both as shell and command line:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
@@ -34,7 +34,7 @@ This script can be used both as shell and command line:
 
 You can get description for every ``command`` by running:
 
-  .. code-block:: none
+  .. code-block:: text
 
     $ genestack-application-manager.py command -h
 
@@ -49,7 +49,7 @@ Commands
 --------
 - **applications**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
     
@@ -68,7 +68,7 @@ Commands
 
 - **info**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
                         <jar_file_or_folder> [<jar_file_or_folder> ...]
@@ -89,7 +89,7 @@ Commands
 
 - **install**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-o] [-s]
                         [-S <scope>]
@@ -120,7 +120,7 @@ Commands
 
 - **invoke**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <appId> <method> [<args> [<args> ...]]
@@ -145,7 +145,7 @@ Commands
 
 - **reload**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
@@ -169,7 +169,7 @@ Commands
 
 - **remove**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
                         <version> <appId> [<appId> ...]
@@ -193,7 +193,7 @@ Commands
 
 - **stable**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
                         <version> <appId> [<appId> ...]
@@ -221,7 +221,7 @@ Commands
 
 - **versions**:
 
-  .. code-block:: none
+  .. code-block:: text
 
     usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
                         <appId>
