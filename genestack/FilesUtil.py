@@ -15,6 +15,12 @@ from SudoUtils import SudoUtils
 
 
 class SpecialFolders:
+    """
+    - IMPORTED: folder where new files are created by Data Importers
+    - CREATED: default folder for files created by prepossessing and analyzing applications
+    - TEMPORARY: temporary files
+    - UPLOADED:  files there raw files are stored.
+    """
     IMPORTED = 'imported'
     CREATED = 'created'
     TEMPORARY = 'temporary'
@@ -25,7 +31,7 @@ class FilesUtil(Application):
     """
     Application for file management.
     """
-    APPLICATION_ID = 'filesUtil'
+    APPLICATION_ID = 'genestack/filesUtil'
 
     IFile = 'com.genestack.api.files.IFile'
     IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
@@ -50,13 +56,13 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raise GenestackServerException:
+        :raises: GenestackServerException: if there is not or more then one reference genome
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
     def find_file_by_name(self, name, parent=None, file_class=IFile):
         """
-        Finds file with specified name and type.
+        Finds file with specified name (ignore case!) and type.
         If no file is found None is returned.
         If more than one file is found the first one is returned.
         If the parent container is not found, the corresponding exceptions are thrown.
@@ -99,7 +105,9 @@ class FilesUtil(Application):
         Recursively search for all initialisable file in container.
 
         :param accession: accession of container
+        :type accession: str
         :return: list of accessions
+        :rtype: list
         """
         return self.invoke('collectInitializableFilesInContainer', accession)
 
@@ -108,28 +116,30 @@ class FilesUtil(Application):
         Return accessions of files linked to current container.
 
         :param container_accession:  accession of container
+        :type container_accession: str
         :return: list of accessions
+        :rtype: list
         """
         return self.invoke('getFileChildren', container_accession)
 
-    def create_folder(self, name, parent=None, accession=None, description=None, metainfo=None):
+    def create_folder(self, name, parent=None, description=None, metainfo=None):
         """
         Create folder.
 
         :param name: display name
+        :type name: str
         :param parent: if not specified create folder in 'private'
-        :param accession: new folder accession, should be unique among platform.
+        :type parent: str
         :param description: description for folder
-        :param metainfo: additional Metainfo.
-               description and accession should be specified via arguments or in metainfo, not in both places.
+        :type description: str
+        :param metainfo: additional Metainfo. Description and accession should be specified via arguments or in metainfo, not in both places.
+        :type metainfo: Metainfo
         :return: accession of created folder
         """
         metainfo = metainfo or Metainfo()
         metainfo.add_string(Metainfo.NAME, name)
         if description is not None:
             metainfo.add_string(Metainfo.DESCRIPTION, description)
-        if accession is not None:
-            metainfo.add_string(Metainfo.ACCESSION, accession)
         return self.invoke('createFolder', parent, metainfo)
 
     def find_or_create_folder(self, name, parent=None):
@@ -138,8 +148,11 @@ class FilesUtil(Application):
         If more than one folder is found the first one is returned.
 
         :param name: display name
-        :param parent: if not specified create folder in 'private'
+        :type name: str
+        :param parent: parent accession, use home folder if None
+        :type parent: str
         :return: accession of folder
+        :rtype: str
         """
         return self.invoke('findOrCreateFolder', name, parent)
 
@@ -148,7 +161,10 @@ class FilesUtil(Application):
         Link file to folder.
 
         :param accession: file accession
+        :type accession: str
         :param parent: destination accession
+        :type parent: str
+        :rtype: None
         """
         self.invoke('linkFile', accession, parent)
 
@@ -157,7 +173,10 @@ class FilesUtil(Application):
         Unlink file from folder.
 
         :param accession: file accession
+        :type accession: str
         :param parent: folder accession
+        :type parent: str
+        :rtype: None
         """
         self.invoke('unlinkFile', accession, parent)
 
@@ -166,6 +185,8 @@ class FilesUtil(Application):
         Unlink all files from current container.
 
         :param container_accession: accession of the container
+        :type container_accession: str
+        :rtype: None
         """
         self.invoke('clearContainer', container_accession)
 
@@ -174,8 +195,12 @@ class FilesUtil(Application):
         Add string value to metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
         :param value: string
+        :type value: str
+        :rtype: None
         """
         self.invoke('addMetainfoStringValue', accession_list, key, value)
 
@@ -184,8 +209,12 @@ class FilesUtil(Application):
         Replace string value to metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
         :param value: string
+        :type value: str
+        :rtype: None
         """
         self.invoke('replaceMetainfoStringValue', accession_list, key, value)
 
@@ -194,22 +223,24 @@ class FilesUtil(Application):
         Delete key from metainfo of specified files.
 
         :param accession_list: list of files to be updated
+        :type accession_list: list
         :param key: metainfo key
+        :type key: str
+        :rtype: None
         """
         self.invoke('removeMetainfoValue', accession_list, key)
 
     def get_special_folder(self, name):
         """
         Return special folder accession.
-        Available special folders:
-            SpecialFolders.IMPORTED folder where new files are created by Data Importers
-            SpecialFolders.CREATED default folder for files created by prepossessing and analyzing applications
-            SpecialFolders.TEMPORARY temporary files
-            SpecialFolders.UPLOADED  files there raw files are stored.
+
+        Available special folders is described in :class:`.SpecialFolders`
 
         :param name: special folder name
+        :type name: str
         :return: accession
-        :raise GenestackException: if folder name is unknown
+        :rtype: str
+        :raises: GenestackException: if folder name is unknown
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
                            SpecialFolders.UPLOADED)
@@ -222,13 +253,83 @@ class FilesUtil(Application):
         Share files.
 
         :param accessions: files accessions
+        :type accessions: list
         :param group: group to share
+        :type group: str
         :param destination_folder: folder there shared files to be linked. No links if folder is None
-        :param password: password for share,
-               if not specified will be asked in interactive prompt (work only if output redirected to terminal)
+        :type destination_folder: str
+        :param password: password for share, if not specified will be asked in interactive prompt (work only if output redirected to terminal)
+        :type: str
+        :rtype: None
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
-        share_utils = self.connection.application('shareutils')
+        share_utils = self.connection.application('genestack/shareutils')
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
+
+    def get_groups_to_share(self):
+        """
+        Return dict for:  group_accession: group_info_dict
+
+        Group info keys:
+        - savedFolderName:
+        - savedFolderAccession:
+        - name:   group name
+        - folderName: name of shared group folder
+        - folderAccession: accessing of shared group folder
+
+        :return: group dict
+        :rtype: dict
+
+        """
+        share_utils = self.connection.application('genestack/shareutils')
+        return share_utils.invoke('getGroupsToShare')
+
+    def get_folder(self, parent, *names, **kwargs):
+        """
+        Finds path recursively. As first argument it accepts any existing folder accession.
+        For each path in path corresponding folder founded.  If folder is not found exception raised,
+        except key ``create=True`` specified. In that case all folders will be created.
+
+        :param parent: parent accession
+        :type parent: str
+        :param names: tuple of folder names that should be founded/created
+        :type names: tuple
+        :param created: set True if missed folder should be created, default is False
+        :type created: bool
+        :return: accession of last folder in paths.
+        :rtype: str
+        :raises:  GenestackException: when paths are not specified or parent cannot be found.
+        """
+        if not names:
+            raise GenestackException("At least one path should be specified.")
+
+        create = bool(kwargs.get('create'))
+        for path in names:
+            if create:
+                parent = self.find_or_create_folder(path, parent=parent)
+            else:
+                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.IFolder)
+                if _parent_accession is None:
+                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
+                parent = _parent_accession
+        return parent
+
+    def get_home_folder(self):
+        """
+        Return accession of user home folder.
+
+        :return: accession of home folder
+        :rtype: str
+        """
+        return 'private'
+
+    def get_public_folder(self):
+        """
+        Return accession of ``Public`` folder.
+
+        :return: accession of ``Public`` folder
+        :rtype: str
+        """
+        return 'public'

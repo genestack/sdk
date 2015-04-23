@@ -12,7 +12,10 @@ from Connection import Application
 
 
 class FileInitializer(Application):
-    APPLICATION_ID = 'initializer'
+    """
+    Initialize files.
+    """
+    APPLICATION_ID = 'genestack/initializer'
 
     def initialize(self, accessions):
         """
@@ -20,27 +23,27 @@ class FileInitializer(Application):
         Missed accession and initialization failures skipped.
 
         :param accessions: list of accessions
+        :rtype: None
         """
         self.invoke('initialize', accessions)
 
     # TODO replace to getFileInfo
     def load_info(self, accessions):
         """
-        Gets the accession or list of accessions
-        and returns the list of maps(one map for one accession):
-        'accession': (str) file accession
-        'name': (str) file name if the file exists
-        'status': (str) initialization status
-
-        Status possible values: 'NoSuchFile',
-                                'NotApplicable',
-                                'NotStarted',
-                                'InProgress',
-                                'Complete',
-                                'Failed'
+        Gets list of accessions and returns the list of maps(one map for one accession):
+            - accession: (str) file accession
+            - name: (str) file name if the file exists
+            - status: (str) initialization status
+        Status possible values:
+            - NoSuchFile
+            - NotApplicable
+            - NotStarted
+            - InProgress
+            - Complete
+            - Failed
 
         :param accessions: list of accessions
-        :return list of maps
+        :return: list of maps
+        :rtype: list
         """
-
         return self.invoke('loadInfo', accessions)

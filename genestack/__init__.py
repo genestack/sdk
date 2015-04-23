@@ -7,14 +7,14 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+from version import __version__
 
-from Exceptions import *
+from Exceptions import GenestackException, GenestackServerException
 from Connection import Connection, Application
 from Metainfo import Metainfo
 from BioMetainfo import BioMetainfo
 from DataImporter import DataImporter
 from FileInitializer import FileInitializer
-from Admin import Admin
 from FilesUtil import FilesUtil, SpecialFolders
 from SudoUtils import SudoUtils
 from utils import get_connection, make_connection_parser, get_user

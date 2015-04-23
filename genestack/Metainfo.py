@@ -7,24 +7,28 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+
 import datetime
 
 from Exceptions import GenestackException
 
 
 def xstr(arg):
-    if arg is None:
-        return None
-    if isinstance(arg, basestring):
-        return arg
-    return str(arg)
+    """
+    Convert argument to string if it is not None.
+
+    :param arg:
+    :type arg: object
+    :return: string representation of item
+    :rtype: str
+    """
+    return str(arg) if arg is not None else None
 
 
 class Metainfo(dict):
     """
     Python representation of metainfo.
     """
-
     NAME = 'genestack:name'
     DESCRIPTION = 'genestack:description'
     ACCESSION = 'genestack:accession'
@@ -51,15 +55,55 @@ class Metainfo(dict):
         return {'type': type}
 
     def add_string(self, key, value):
+        """
+        Add string value.
+
+        :param key: key
+        :type key: str
+        :param value: string value
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'string')
 
     def add_boolean(self, key, value):
+        """
+        Add boolean value.
+
+        :param key: key
+        :type key: str
+        :param value: boolean value
+        :type value: bool
+        :rtype: None
+        """
         self._add_value(key, value, 'boolean')
 
     def add_integer(self, key, value):
+        """
+        Add integer value.
+
+        :param key: key
+        :type key: str
+        :param value: integer value
+        :type value: int
+        :rtype: None
+        """
         self._add_value(key, value, 'integer')
 
     def add_external_link(self, key, text, url, fmt=None):
+        """
+        Add external link. Url should be to valid source.
+        Source should be in public access in www or local file.
+        Local files will be uploaded if import file with :py:class:`~genestack.DataImporter.DataImporter`
+
+        :param key: key
+        :type key: str
+        :param text: url text for display purposes
+        :type text: str
+        :param fmt: format for unaligned read link
+        :type fmt: dict
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('externalLink')
         result['text'] = xstr(text)
         result['url'] = xstr(url)
@@ -67,6 +111,20 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_person(self, key, name, phone=None, email=None):
+        """
+        Add person. Name is required. All other fields is optional.
+        All fields will be visible for all who can access this metainfo.
+
+        :param key: key
+        :type key: str
+        :param name: full name
+        :type name: str
+        :param phone: phone number
+        :type phone: str
+        :param email: contact email
+        :type email: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('person')
         result['name'] = xstr(name)
         result['phone'] = xstr(phone)
@@ -74,7 +132,35 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
-                        postal_code=None, state=None, phone=None, email=None, url=None):
+                         postal_code=None, state=None, phone=None, email=None, url=None):
+        """
+        Add organization. Name is required. All other fields is optional.
+        All fields will be visible for all who can access this metainfo.
+
+        :param key: key
+        :type key: str
+        :param name: name
+        :type name: str
+        :param department: department
+        :type department: str
+        :param country: country
+        :type country: str
+        :param city: city
+        :type city: str
+        :param street: street
+        :type street: str
+        :param postal_code: postal/zip code
+        :type postal_code: str
+        :param state: state
+        :type state: str
+        :param phone: phone
+        :type phone: str
+        :param email: email
+        :type email: str
+        :param url: organisation web page
+        :type url: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('organization')
         result['name'] = xstr(name)
         result['department'] = xstr(department)
@@ -89,18 +175,61 @@ class Metainfo(dict):
         self.setdefault(key, []).append(result)
 
     def add_time(self, key, value, unit):
+        """
+        Add time value (for example age).
+
+        value can be any number.
+
+        Unit values can be one of next:
+            :py:attr:`~genestack.Metainfo.YEAR`,
+            :py:attr:`~genestack.Metainfo.MONTH`,
+            :py:attr:`~genestack.Metainfo.WEEK`,
+            :py:attr:`~genestack.Metainfo.DAY`,
+            :py:attr:`~genestack.Metainfo.HOUR`,
+            :py:attr:`~genestack.Metainfo.MINUTE`,
+            :py:attr:`~genestack.Metainfo.SECOND`,
+            :py:attr:`~genestack.Metainfo.MILLISECOND`
+
+        :param key: key
+        :type key: str
+        :param unit: unit
+        :type unit: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('time')
         result['value'] = xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
-    def add_file_reference(self, key, value):
+    def add_file_reference(self, key, accession):
+        """
+        Add reference to other file.
+
+        :param key: key
+        :type key: str
+        :param accession: accession for referenced file
+        :type accession: str
+        :rtype: None
+        """
         result = Metainfo._create_dict_with_type('file')
-        result['accession'] = xstr(value)
+        result['accession'] = xstr(accession)
         self.setdefault(key, []).append(result)
 
-    # This method takes time as returned from time.time() function.
     def add_date_time(self, key, time):
+        """
+        Add date to metainfo.
+        Time can be passed in one of the next formats:
+
+         - :py:class:`datetime.datetime`
+         - :py:class:`datetime.date`
+         - :py:class:`str` in format: ``'%Y-%m-%d %H:%M:%S'`` or ``'%Y-%m-%d'``
+         - number of seconds since the epoch as a floating point number
+
+        :param key: key
+        :type key: str
+        :param value: time value
+        :rtype: None
+        """
         date_time_format = '%Y-%m-%d %H:%M:%S'
         date_format = '%Y-%m-%d'
         result = Metainfo._create_dict_with_type('datetime')
@@ -130,10 +259,3 @@ class Metainfo(dict):
 
         result['date'] = xstr(milliseconds)
         self.setdefault(key, []).append(result)
-
-    def get_string_value(self, key):
-        values = self.get(key)
-        if values is not None:
-            if len(values) > 0:
-                value = values[0].get('value')
-                return xstr(value)

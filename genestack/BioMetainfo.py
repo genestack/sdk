@@ -11,11 +11,11 @@
 from Metainfo import Metainfo
 
 
-def xstr(arg):
-    return str(arg) if arg is not None else None
-
-
 class BioMetainfo(Metainfo):
+    """
+    MetainfoRepresentation with additional methods for bio metadata.  :py:class:`BioMetainfo` is a subclass of the :py:class:`~genestack.Metainfo.Metainfo`.
+    """
+
     METHOD = 'genestack.bio:method'
     ORGANISM = 'genestack.bio:organism'
     STRAIN = 'genestack.bio:strain/breed/cultivar'
@@ -38,6 +38,7 @@ class BioMetainfo(Metainfo):
     REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
     REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
     STUDY_SHORT_NAME = 'genestack.bio:shortName'
+    DATABASE_ID = 'genestack.bio:databaseId'
 
     RNASEQ_TECHNOLOGY = 'Expression profiling by high throughput sequencing'
     DNASEQ_TECHNOLOGY = 'Genome variation profiling by high throughput sequencing'
@@ -48,9 +49,28 @@ class BioMetainfo(Metainfo):
     EXTRACTED_MOLECULE = 'genestack.bio:extractedMolecule'
     PLATFORM = 'genestack.bio:platform'
     SOURCE_DATA_PREFIX = 'sourceData:'
+    SECONDARY_ACCESSION = 'genestack.bio:secondaryAccession'
 
     def add_organism(self, key, value):
+        """
+        Add organism value.
+
+        :param key: key
+        :type key: str
+        :param value: organism name
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'Organism')
 
     def add_ethnic_group(self, key, value):
+        """
+        Add ethnic group value.
+
+        :param key: key
+        :type key: str
+        :param value: organism name
+        :type value: str
+        :rtype: None
+        """
         self._add_value(key, value, 'EthnicGroup')

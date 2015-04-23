@@ -8,6 +8,7 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+
 from argparse import ArgumentParser
 
 import os
@@ -23,16 +24,19 @@ def ask_host():
     return host or DEFAULT_HOST
 
 
-def ask_alias(existed):
-    expression = re.compile('[A-z0-9_@\-]+$')
+def validate_alias(alias):
+    expression = re.compile('[a-zA-Z0-9_@\-]+$')
+    return bool(alias and expression.match(alias))
 
-    print 'Alias can be only alphanum @ _ -'
+
+def ask_alias(existed):
+    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), minus (-))'
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
             print 'Alias cannot be empty.'
             continue
-        if not expression.match(alias):
+        if not validate_alias(alias):
             print 'Restricted symbols message'
             continue
         if alias in existed:
@@ -48,7 +52,7 @@ def ask_email_and_password(host, alias=None):
         if user_login:
             res = raw_input('Please specify your user login(email) [%s]: ' % user_login).strip()
             if res:
-               user_login = res
+                user_login = res
         else:
             user_login = raw_input('Please specify your user login(email): ').strip()
             if not user_login:
@@ -81,7 +85,7 @@ class AddUser(Command):
         host = ask_host()
         _, user = ask_email_and_password(host, alias=alias)
         config.add_user(user)
-        config.save()
+        print "User %s created" % user.alias
 
 
 def select_user(users, selected=None):
@@ -140,7 +144,6 @@ class SetPassword(Command):
                 continue
         config.change_password(user.alias, user.password)
         print 'Password was changed.'
-        config.save()
 
 
 class SetDefault(Command):
@@ -153,21 +156,73 @@ class SetDefault(Command):
 
     def run(self):
         users = config.users
-
         user = users.get(self.args.alias)
         if not user:
             user = select_user(users, config.default_user)
         if user.alias != config.default_user.alias:
             print 'Set "%s" as default user.' % user.alias
             config.set_default_user(user)
-            config.save()
         else:
             print "Default user was not changed."
 
 
+class Remove(Command):
+    COMMAND = 'remove'
+    DESCRIPTION = 'Remove user.'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
+
+    def run(self):
+        users = config.users
+
+        user = users.get(self.args.alias)
+        if not user:
+            user = select_user(users, config.default_user)
+        if user.alias == config.default_user.alias:
+            print 'Cant delete default user'
+            return
+        config.remove_user(user)
+        print "%s was removed from config" % user.alias
+
+
+class RenameUser(Command):
+    COMMAND = 'rename'
+    DESCRIPTION = 'Rename user.'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>', help='Alias to be renamed', nargs='?')
+        parent.add_argument('new_alias', metavar='<new_alias>', help='New alias', nargs='?')
+
+    def run(self):
+        users = config.users
+
+        user = users.get(self.args.alias)
+
+        if not user:
+            print "Select user for rename."
+            user = select_user(users)
+        if not self.args.new_alias or not validate_alias(self.args.new_alias):
+            print "Select new alias."
+            new_alias = ask_alias(users.keys())
+        else:
+            new_alias = self.args.new_alias
+
+        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password)
+
+        config.add_user(new_user, save=False)
+        if user.alias == config.default_user.alias:
+            config.set_default_user(new_user, save=False)
+
+        config.remove_user(user)
+        print '"%s" alias changed to "%s"' % (user.alias, new_user.alias)
+
+
 class List(Command):
     COMMAND = 'list'
-    DESCRIPTION = 'List current users.'
+    DESCRIPTION = 'List all users.'
     OFFLINE = True
 
     def run(self):
@@ -184,7 +239,7 @@ class List(Command):
 
 class Path(Command):
     COMMAND = 'path'
-    DESCRIPTION = 'Show path to config'
+    DESCRIPTION = 'Show path to configuration file.'
     OFFLINE = True
 
     def run(self):
@@ -202,7 +257,8 @@ class Init(Command):
         group = parser.add_argument_group("command arguments")
         self.update_parser(group)
         group.add_argument('-H', '--host', default=DEFAULT_HOST,
-                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST, metavar='<host>')
+                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST,
+                           metavar='<host>')
         return parser
 
     def run(self):
@@ -213,20 +269,18 @@ class Init(Command):
         print "If you have not genestack account you need to create it."
 
         connection, user = ask_email_and_password(self.args.host)
-        config.add_user(user)
-        config.set_default_user(user)
-        config.save()
+        config.add_user(user)  # adding first user make him default.
         print "Initialization finished. Config created at %s" % config_path
         return connection
 
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path]
+    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
 
     def process_command(self, command, argument_line, connection, shell=False):
         config_path = config.get_settings_file()
-        if not shell and not isinstance(command, (Init, Path, List)) and not os.path.exists(config_path):
+        if not shell and not isinstance(command, (Init, Path, List, AddUser)) and not os.path.exists(config_path):
             print "Config is not present, please do init. Exiting."
             exit(1)
         return GenestackShell.process_command(self, command, argument_line, connection, shell=shell)

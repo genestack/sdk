@@ -20,7 +20,7 @@ from genestack import GenestackException
 from genestack.GenestackShell import GenestackShell, Command
 
 
-APPLICATION_ID = 'application-manager'
+APPLICATION_ID = 'genestack/application-manager'
 
 
 SCOPE_DICT = {
@@ -150,7 +150,7 @@ class ListApplications(Command):
 
 class MarkAsStable(Command):
     COMMAND = 'stable'
-    description = 'Mark applications of the specified version as stable.'
+    DESCRIPTION = 'Mark applications of the specified version as stable.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -182,7 +182,7 @@ class MarkAsStable(Command):
 
 class Remove(Command):
     COMMAND = 'remove'
-    DESCRIPTION = 'Remove specific version of applications'
+    DESCRIPTION = 'Remove specific version of applications.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -201,7 +201,7 @@ class Remove(Command):
 
 class Reload(Command):
     COMMAND = 'reload'
-    DESCRIPTION = 'Reload specific version of applications'
+    DESCRIPTION = 'Reload specific version of applications.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -221,7 +221,7 @@ class Reload(Command):
 # FIXME: This class should be removed; it is written only for debug purposes:
 class Invoke(Command):
     COMMAND = 'invoke'
-    DESCRIPTION = 'Invoke method of stable application'
+    DESCRIPTION = 'Invoke method of stable application.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -283,14 +283,14 @@ def mark_as_stable(application, version, app_id_list, scope):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
 
 def remove_applications(application, version, app_id_list):
     try:
-        print('Removing applications')
+        print('Removing application(s) with version')
         for app_id in app_id_list:
             sys.stdout.write('%s ... ' % app_id)
             sys.stdout.flush()
@@ -299,7 +299,7 @@ def remove_applications(application, version, app_id_list):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -315,7 +315,7 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.flush()
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -337,7 +337,7 @@ def upload_single_file(application, file_path, version, override,
         upload_token = application.invoke('getUploadToken', parameters)
     except Exception as e:
         sys.stdout.flush()
-        sys.stderr.write('Exception received: %s\n' % e)
+        sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
@@ -390,8 +390,8 @@ def read_jar_file(file_path):
                     vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
                     for a in applications
                 ]
-        except KeyError:
-            raise GenestackException('Unable to read applications.xml manifest from JAR')
+        except KeyError as e:
+            raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (os.path.abspath(file_path), e))
         return AppInfo(vendor, identifiers)
 
 
