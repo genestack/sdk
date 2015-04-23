@@ -308,14 +308,14 @@ class ChunkedUpload(object):
                     self.condition.wait()
                 except (KeyboardInterrupt, SystemExit):
                     self.finished = True
-                    self.error = 'Interrupted by user.'
+                    self.error = 'Interrupted by user'
                 if not self.thread_counter:
                     break
 
         if self.has_application_result:
             return self.application_result
         else:
-            raise GenestackException('Fail to upload %s. %s' % (self.path, self.error or ''))
+            raise GenestackException('Fail to upload %s: %s' % (self.path, self.error or 'unknown error'))
 
 
 def upload_by_chunks(application, path, chunk_size=None):
