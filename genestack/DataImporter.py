@@ -77,7 +77,7 @@ class DataImporter(object):
 
     def load_raw(self, file_path):
         filename = os.path.basename(file_path)
-        application = self.connection.application('rawloader')
+        application = self.connection.application('rawloader-library')
         return application.upload_file(file_path, filename)
 
     def create_bed(self, parent, name=None, reference_genome=None, url=None, metainfo=None):
