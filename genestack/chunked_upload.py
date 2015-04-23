@@ -276,14 +276,12 @@ class ChunkedUpload(object):
                 - someone set self.finished to True
                 - got response form server that file is fully uploaded
                 - got permanent error (4xx, 5xx)
-                - got not 200 http response RETRY_ATTEMPTS times in a row
+                - number of RETRY_ATTEMPTS was exceeded for a single chunk
             """
             self.thread_counter += 1
 
             try:
-                while True:  # daemon working cycle
-                    if self.finished:
-                        return
+                while not self.finished:  # daemon working cycle
                     try:
                         with self.__iterator_lock:
                             chunk = next(self.iterator)
@@ -293,7 +291,6 @@ class ChunkedUpload(object):
             except Exception as e:
                 self.error = str(e)
             finally:
-                self.finished = True
                 self.thread_counter -= 1
                 with self.condition:
                     self.condition.notify()
