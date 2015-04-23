@@ -195,33 +195,6 @@ class ChunkedUpload(object):
         with self.__output_lock:
             self.progress(self.filename, update_size, self.total_size)
 
-    def __check_chunk(self, chunk):
-        """
-        Check if chunk is already uploaded,
-            - return True if file uploaded
-            - return False is file is not uploaded
-            - return string in case of connection error.
-        """
-        try:
-            r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
-            return r.status_code == 200
-        except RequestException as e:
-            # check that any type of connection error occurred and retry.
-            return str(e)
-
-    def __upload_chunk(self, chunk, chunk_file):
-        """
-        Upload data to server. Return response or string if got connection troubles.
-        """
-        chunk_file.seek(0)
-        files = {'file': chunk_file}
-        try:
-            r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
-            return r
-        except RequestException as e:
-            # check that any type of connection error occurred and retry.
-            return str(e)
-
     def __process_chunk(self, chunk):
         """
         Try to upload chunk in several attempts.
@@ -239,26 +212,31 @@ class ChunkedUpload(object):
 
             # Check if chunk is already uploaded
             if not upload_checked:
-                res = self.__check_chunk(chunk)
-                if res is True:
-                    self.__update_progress(chunk.size)
-                    return
-                elif res is False:
-                    upload_checked = True
-                else:
-                    error = res
+                try:
+                    r = self.connection.get_request(self.chunk_upload_url, params=chunk.data, follow=False)
+                except RequestException as e:
+                    error = str(e)
                     time.sleep(RETRY_INTERVAL)
                     continue
+
+                if r.status_code == 200:
+                    self.__update_progress(chunk.size)
+                    return
+                else:
+                    upload_checked = True
 
             # try to upload chunk
             if file_cache is None:
                 file_cache = chunk.get_file()
 
-            r = self.__upload_chunk(chunk, file_cache)
-            if isinstance(r, str):
+            file_cache.seek(0)
+            files = {'file': file_cache}
+            try:
+                r = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
+            except RequestException as e:
                 # check that any type of connection error occurred and retry.
                 time.sleep(RETRY_INTERVAL)
-                error = r
+                error = str(e)
                 continue
             # done without errors
             if r.status_code == 200:
