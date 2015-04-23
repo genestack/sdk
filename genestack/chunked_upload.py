@@ -19,7 +19,6 @@ from requests.exceptions import RequestException
 from genestack.utils import isatty
 from genestack.Exceptions import GenestackException
 
-
 RETRY_ATTEMPTS = 5
 RETRY_INTERVAL = 2  # seconds
 NUM_THREADS = 5
@@ -90,18 +89,20 @@ class ChunkedUpload(object):
         self.__application_result = None
         self.__has_application_result = False
         self.__finished = False
-        self.__thread_counter = 0
         self.__error = None
+        self.thread_counter = 0
 
         self.condition = Condition()
 
         modified = datetime.fromtimestamp(os.path.getmtime(path))
         total_size = os.path.getsize(path)
 
+        # TODO change according to javascript token
         token = '{total_size}-{name}-{date}'.format(total_size=total_size,
                                                     name=re.sub('[^A-z0-9_-]', '_', os.path.basename(path)),
                                                     date=modified.strftime('%a_%b_%d_%Y_%H_%M_%S'))
-
+        self.token = token
+        self.path = path
         # Last chunk can be larger than CHUNK_SIZE but less then two chunks.
         # Example: CHUNK_SIZE = 2
         # file size 2 > 1 chunk
@@ -181,16 +182,6 @@ class ChunkedUpload(object):
     def error(self, value):
         self.__error = value
 
-    @property
-    @with_lock
-    def thread_counter(self):
-        return self.__thread_counter
-
-    @thread_counter.setter
-    @with_lock
-    def thread_counter(self, value):
-        self.__thread_counter = value
-
     def __update_progress(self, update_size):
         with self.__output_lock:
             self.progress(self.filename, update_size, self.total_size)
@@ -206,10 +197,6 @@ class ChunkedUpload(object):
         error = None
 
         for attempt in xrange(RETRY_ATTEMPTS):
-            # check if we still try to upload.
-            if self.finished:
-                return
-
             # Check if chunk is already uploaded
             if not upload_checked:
                 try:
@@ -230,9 +217,11 @@ class ChunkedUpload(object):
                 file_cache = chunk.get_file()
 
             file_cache.seek(0)
-            files = {'file': file_cache}
             try:
-                response = self.connection.post_multipart(self.chunk_upload_url, data=chunk.data, files=files, follow=False)
+                response = self.connection.post_multipart(self.chunk_upload_url,
+                                                          data=chunk.data,
+                                                          files={'file': file_cache},
+                                                          follow=False)
             except RequestException as e:
                 # check that any type of connection error occurred and retry.
                 time.sleep(RETRY_INTERVAL)
@@ -278,8 +267,8 @@ class ChunkedUpload(object):
                 - got permanent error (4xx, 5xx)
                 - number of RETRY_ATTEMPTS was exceeded for a single chunk
             """
-            self.thread_counter += 1
-
+            with self.condition:
+                self.thread_counter += 1
             try:
                 while not self.finished:  # daemon working cycle
                     try:
@@ -291,11 +280,11 @@ class ChunkedUpload(object):
             except Exception as e:
                 self.error = str(e)
             finally:
-                self.thread_counter -= 1
                 with self.condition:
+                    self.thread_counter -= 1
                     self.condition.notify()
 
-        threads = [Thread(target=do_stuff) for _ in range(NUM_THREADS)]
+        threads = [Thread(target=do_stuff) for _ in range(min(NUM_THREADS, self.chunk_count))]
         [thread.setDaemon(True) for thread in threads]
         [thread.start() for thread in threads]
 
@@ -304,11 +293,11 @@ class ChunkedUpload(object):
                 try:
                     self.condition.wait()
                 except (KeyboardInterrupt, SystemExit):
-                    self.finished = True
                     self.error = 'Interrupted by user'
+                    self.finished = True
+                    break
                 if not self.thread_counter:
                     break
-
         if self.has_application_result:
             return self.application_result
         else:
