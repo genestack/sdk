@@ -312,15 +312,13 @@ class GenestackShell(cmd.Cmd):
             return
 
         if not line:
-            commands = {}
+            commands = {'quit': 'Exit shell.'}
             for name, value in self.COMMANDS.items():
                 commands[name] = value().get_short_description()
             print self.doc_header
             print '=' * len(self.doc_header)
-            for command_name, short_description in commands.items():
+            for command_name, short_description in sorted(commands.items()):
                 print '%-20s%s' % (command_name, short_description)
-            if 'quit' not in self.COMMANDS:
-                print '%-20s%s' % ('quit', 'Exit shell.')
             print '=' * len(self.doc_header)
             return
 
