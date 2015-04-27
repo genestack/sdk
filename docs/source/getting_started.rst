@@ -19,7 +19,7 @@ Install via pip:
 
 If you want you can install manually
 
-Ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ is installed
+Ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
 
 
 .. code-block:: sh

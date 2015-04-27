@@ -1,11 +1,15 @@
-* version ?
+* version 0.1.2
+  * improve console output for shell based scripts
+  * add chunked upload feature
+    * new dependency `requests` was added
+    * upload speed improved for files more then 5mb
+    * upload can be resumed in case of interrupt
   * add warning if vendor is not specified in application ID
   * remove Admin application (move it to core scripts)
   * remove optional accession param from FileUtils.create_folder()
   * add constant SECONDARY_ACCESSION to BioMetainfo
   * make parent optional for DataImporter, use Imported folder as default.
   * replace PRIVATE and PUBLIC constants in FilesUtils with methods.
-
 
 * version 0.1.1
   * remove login and logout from Admin
