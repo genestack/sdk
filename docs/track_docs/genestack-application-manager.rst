@@ -51,7 +51,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager.py applications [-h] [-H <host>] [-u <user>] [-p <password>]
     
     Show information about available applications.
     
@@ -70,8 +70,8 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-f] [-F] [--vendor]
-                        <jar_file_or_folder> [<jar_file_or_folder> ...]
+    usage: genestack-application-manager.py info [-h] [-f] [-F] [--vendor]
+                             <jar_file_or_folder> [<jar_file_or_folder> ...]
     
     Read and show info from applications JAR file.
     
@@ -91,9 +91,10 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-o] [-s]
-                        [-S <scope>]
-                        <version> <jar_file_or_folder> [<jar_file_or_folder> ...]
+    usage: genestack-application-manager.py install [-h] [-H <host>] [-u <user>] [-p <password>] [-o]
+                                [-s] [-S <scope>]
+                                <version> <jar_file_or_folder>
+                                [<jar_file_or_folder> ...]
     
     Upload and install JAR files to Genestack system.
     
@@ -122,10 +123,10 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <appId> <method> [<args> [<args> ...]]
+    usage: genestack-application-manager.py invoke [-h] [-H <host>] [-u <user>] [-p <password>]
+                               <appId> <method> [<args> [<args> ...]]
     
-    Invoke method of stable application
+    Invoke method of stable application.
     
     command arguments:
       <appId>               application identifier
@@ -147,10 +148,10 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <version> <appId> [<appId> ...]
+    usage: genestack-application-manager.py reload [-h] [-H <host>] [-u <user>] [-p <password>]
+                               <version> <appId> [<appId> ...]
     
-    Reload specific version of applications
+    Reload specific version of applications.
     
     command arguments:
       <version>             applications version
@@ -171,10 +172,10 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>]
-                        <version> <appId> [<appId> ...]
+    usage: genestack-application-manager.py remove [-h] [-H <host>] [-u <user>] [-p <password>]
+                               <version> <appId> [<appId> ...]
     
-    Remove specific version of applications
+    Remove specific version of applications.
     
     command arguments:
       <version>             applications version
@@ -195,8 +196,9 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-S <scope>]
-                        <version> <appId> [<appId> ...]
+    usage: genestack-application-manager.py stable [-h] [-H <host>] [-u <user>] [-p <password>]
+                               [-S <scope>]
+                               <version> <appId> [<appId> ...]
     
     Mark applications of the specified version as stable.
     
@@ -223,8 +225,9 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-h] [-H <host>] [-u <user>] [-p <password>] [-s] [-o]
-                        <appId>
+    usage: genestack-application-manager.py versions [-h] [-H <host>] [-u <user>] [-p <password>] [-s]
+                                 [-o]
+                                 <appId>
     
     Show information about available applications.
     
