@@ -17,9 +17,7 @@ Install via pip:
 
     $ sudo pip install .
 
-If you want you can install manually
-
-Ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
+If you want you can install manually. In that case ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
 
 
 .. code-block:: sh
