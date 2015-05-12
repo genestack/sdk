@@ -100,7 +100,11 @@ class DataImporter(object):
     def __invoke_loader(self, application, method, parent, metainfo):
         self.replace_links_to_raw_files(metainfo)
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
-        return fileinfo['Accession']
+        # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
+        try:
+            return fileinfo['accession']
+        except:
+            return fileinfo['Accession']
 
     def load_raw(self, file_path):
         """
