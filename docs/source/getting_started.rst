@@ -11,18 +11,12 @@ Installing genestack
 Installing
 ----------
 
-Install via pip:
-
 .. code-block:: sh
 
     $ sudo pip install .
 
-If you want you can install manually. In that case ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
+.. note:: If you want you to install manually ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
 
-
-.. code-block:: sh
-
-    $ sudo python setup.py install
 
 Test your installation:
 
