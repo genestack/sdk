@@ -51,14 +51,29 @@ class CLApplication(Application):
             self.rename_file(app_file, name)
 
         if calculate_checksums:
-            self.connection.application('genestack/bio-test-preprocess').invoke(
-                '%s' % CALCULATE_CHECKSUMS, app_file
-            )
+            # hack to support both master and stable
+            try:
+
+                self.connection.application('genestack/bio-test-cla').invoke(
+                    '%s' % CALCULATE_CHECKSUMS, app_file
+                )
+            except:
+                # old version
+                self.connection.application('genestack/bio-test-preprocess').invoke(
+                    '%s' % CALCULATE_CHECKSUMS, app_file
+                )
 
         if expected_checksums:
-            self.connection.application('genestack/bio-test-preprocess').invoke(
-                'addCheckSums', app_file, expected_checksums or []
-            )
+            # hack to support both master and stable
+            try:
+                self.connection.application('genestack/bio-test-cla').invoke(
+                    'addCheckSums', app_file, expected_checksums or []
+                )
+            except:
+                # old version
+                self.connection.application('bio-test-preprocess').invoke(
+                    'addCheckSums', app_file, expected_checksums or []
+                )
 
         if initialize:
             self.start(app_file)

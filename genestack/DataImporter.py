@@ -104,7 +104,11 @@ class DataImporter(object):
     def __invoke_loader(self, application, method, parent, metainfo):
         self.replace_links_to_raw_files(metainfo)
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
-        return fileinfo['Accession']
+        # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
+        try:
+            return fileinfo['accession']
+        except:
+            return fileinfo['Accession']
 
     def load_raw(self, file_path):
         """
@@ -115,9 +119,11 @@ class DataImporter(object):
         :return: accession
         :rtype: str
         """
-        filename = os.path.basename(file_path)
-        application = self.connection.application('genestack/rawloader')
-        return application.upload_file(file_path, filename)
+        # FIXME: Use only genestack/upload after Dotorg is compatible with this change
+        try:
+            return self.connection.application('genestack/upload').upload_chunked_file(file_path)
+        except GenestackException:
+            return self.connection.application('genestack/rawloader').upload_chunked_file(file_path)
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """

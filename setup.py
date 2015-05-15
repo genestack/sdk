@@ -22,5 +22,5 @@ setup(
     author_email='',
     description='Genestack API',
     scripts=['genestack-user-setup.py', 'genestack-application-manager.py'],
-    install_requires=['keyring']
+    install_requires=['keyring', 'requests']
 )
