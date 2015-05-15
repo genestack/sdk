@@ -156,14 +156,12 @@ class Application:
         self.connection = connection
         parts = application_id.split('/')
         if len(parts) == 1:
-            self.vendor = 'genestack'
-            self.application = application_id
-            print 'Deprecation warning: use "genestack/%(id)s" instead of "%(id)s"' % {'id': application_id}
+            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % application_id)
         elif len(parts) == 2:
             self.vendor = parts[0]
             self.application = parts[1]
         else:
-            raise GenestackException('Invalid application ID: %s' % application_id)
+            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % application_id)
 
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
