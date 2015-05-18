@@ -155,9 +155,7 @@ class Application:
 
         self.connection = connection
         parts = application_id.split('/')
-        if len(parts) == 1:
-            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % application_id)
-        elif len(parts) == 2:
+        if len(parts) == 2:
             self.vendor = parts[0]
             self.application = parts[1]
         else:
