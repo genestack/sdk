@@ -149,6 +149,8 @@ class Application:
     APPLICATION_ID = None
 
     def __init__(self, connection, application_id=None):
+        if application_id and self.APPLICATION_ID:
+            raise GenestackException("Application ID specified both as argument and as class variable")
         application_id = application_id or self.APPLICATION_ID
         if not application_id:
             raise GenestackException('Application ID was not specified')
