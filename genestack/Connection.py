@@ -43,7 +43,6 @@ class Connection:
 
     Connection is not logged by default. To access applications methods you need to :attr:`login`.
     """
-    DEFAULT_VENDOR = 'genestack'
 
     def __init__(self, server_url):
         self.server_url = server_url
@@ -151,17 +150,15 @@ class Application:
     def __init__(self, connection, application_id=None):
         if application_id and self.APPLICATION_ID:
             raise GenestackException("Application ID specified both as argument and as class variable")
-        application_id = application_id or self.APPLICATION_ID
-        if not application_id:
+        self.application_id = application_id or self.APPLICATION_ID
+        if not self.application_id:
             raise GenestackException('Application ID was not specified')
 
         self.connection = connection
-        parts = application_id.split('/')
-        if len(parts) == 2:
-            self.vendor = parts[0]
-            self.application = parts[1]
-        else:
-            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % application_id)
+
+        # validation of application ID
+        if len(self.application_id.split('/')) != 2:
+            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
@@ -187,7 +184,7 @@ class Application:
         if params:
             to_post['parameters'] = json.dumps(params)
 
-        path = '/application/invoke/%s/%s' % (self.vendor, self.application)
+        path = '/application/invoke/%s' % self.application_id
 
         return self.__invoke(path, to_post)
 
@@ -211,8 +208,8 @@ class Application:
 
         file_to_upload = FileWithCallback(file_path, 'rb', progress)
         filename = os.path.basename(file_path)
-        path = '/application/upload/%s/%s/%s/%s' % (
-            self.vendor, self.application, token, urllib.quote(filename)
+        path = '/application/upload/%s/%s/%s' % (
+            self.application_id, token, urllib.quote(filename)
         )
         return self.__invoke(path, file_to_upload)
 
