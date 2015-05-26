@@ -1,5 +1,5 @@
 * version ???
-  * drop support for short application ID
+  * application ID without vendor is not supported by Connection
 
 * version 0.1.2
   * improve console output for shell based scripts
