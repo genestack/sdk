@@ -10,7 +10,7 @@
 
 import datetime
 import os
-from urlparse import urlparse
+from urlparse import urlparse, unquote
 
 from Exceptions import GenestackException
 
@@ -107,7 +107,7 @@ class Metainfo(dict):
         :rtype: None
         """
         if not text:
-            text = os.path.basename(urlparse(url).path)
+            text = os.path.basename(urlparse(unquote(url)).path)
         result = Metainfo._create_dict_with_type('externalLink')
         result['text'] = xstr(text)
         result['url'] = xstr(url)
