@@ -9,6 +9,8 @@
 # actual or intended publication of such source code.
 #
 from datetime import datetime
+from itertools import groupby
+from operator import itemgetter
 
 import os
 import sys
@@ -75,15 +77,14 @@ def upload_files(connection):
     folder_name = datetime.strftime(datetime.now(), 'Upload %d.%m.%y %H:%M:%S')
     new_folder = fu.create_folder(folder_name, parent=upload,
                                   description='Files uploaded by genestack-uploader')
-
     accessions = []
     for f in files:
         accession = importer.load_raw(f)
         fu.link_file(accession, new_folder)
         fu.unlink_file(accession, upload)
         accessions.append(accession)
-    print "Done", len(accessions)
-    return new_folder, folder_name
+    fi = fu.invoke('getInfos', accessions)
+    return new_folder, folder_name, fi
 
 
 if __name__ == '__main__':
@@ -91,4 +92,42 @@ if __name__ == '__main__':
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
     connection = get_connection(args)
-    print 'Files were uploaded to %s / %s' % upload_files(connection)
+    new_folder, folder_name, file_infos = upload_files(connection)
+    print 'Files were uploaded to %s / %s' % (new_folder, folder_name)
+
+    # Files Recognition
+    application = connection.application('genestack/upload')
+    recognised_files = application.invoke('recognizeGroups', file_infos)
+
+    recognized_accessions = set()
+    for x in recognised_files:
+        for sources in x['sourceFileInfos'].values():
+            for source in sources:
+                for info in sources:
+                    recognized_accessions.add(info['accession'])
+
+    created_files = application.invoke('createFiles', recognised_files)
+    groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
+    for name, group in groupby(groups, key=itemgetter('kind')):
+        print name
+        for f in group:
+            print '\t%s / %s' % (f['accession'], f['name'])
+
+    unrecognized_file_infos = [info for info in file_infos if info['accession'] not in recognized_accessions]
+
+    if unrecognized_file_infos:
+
+        print 'Unrecognized Raw Files'
+        for info in unrecognized_file_infos:
+            print '\t%s / %s' % (info['accession'], info['name'])
+
+        # move unrecognized files to new folder
+        fu = FilesUtil(connection)
+        unrecognized_folder = fu.create_folder("Unrecognized files", parent=new_folder)
+        for info in unrecognized_file_infos:
+            fu.link_file(info['accession'], unrecognized_folder)
+            fu.unlink_file(info['accession'], new_folder)
+        print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
+
+
+
