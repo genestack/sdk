@@ -115,11 +115,7 @@ class DataImporter(object):
         :return: accession
         :rtype: str
         """
-        # FIXME: Use only genestack/upload after Dotorg is compatible with this change
-        try:
-            return self.connection.application('genestack/upload').upload_chunked_file(file_path)
-        except GenestackException:
-            return self.connection.application('genestack/rawloader').upload_chunked_file(file_path)
+        return self.connection.application('genestack/upload').upload_chunked_file(file_path)
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
