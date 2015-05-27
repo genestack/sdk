@@ -8,42 +8,40 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
-from datetime import datetime
-from itertools import groupby
-from operator import itemgetter
 
 import os
 import sys
+from datetime import datetime
+from itertools import groupby
+from operator import itemgetter
+from argparse import RawTextHelpFormatter
 from genestack import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
 
 
 # Formatting are removed when use -h
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
 
-File collection:
-
+- Collect files:
   Path to folders and files can be specified as arguments.
   All paths must be valid. All files from folder added recursively. There is not limit to number of files.
 
-Upload:
-
+- Upload:
   Files put to folder inside 'Raw uploads' It named by current user date. Files upload one by one, each file uploaded in multiple threads.
   In case of network errors it attempts to retry until number of retry excited. In that case whole upload stops.
   Uploaded data does not lost and you can continue download this file from point you stop.
 
   This script does not track recently uploaded files: if you rerun script with same arguments it will recreate all files again.
 
-Recognition:
-
+- Recognition:
   Recognition done only if all files were uploaded successfully. It works over all files.
   Files that was not recognized linked to subfolder 'Unrecognized files'
-
   Recognition of big number of files may cause server timeouts.
 '''
-# TODO break recognitions to file groups (group for each folder path in arguments and group for files path)
+
 
 parser = make_connection_parser()
 parser.description = DESCRIPTION
+parser.formatter_class = RawTextHelpFormatter
 group = parser.add_argument_group("command arguments")
 group.add_argument('paths',
                    help='path to files or folders',
