@@ -333,3 +333,38 @@ class FilesUtil(Application):
         :rtype: str
         """
         return 'public'
+
+    def get_infos(self, accession_list):
+        """
+        Return file info maps for listed accessions.
+        Fail on invalid accessions.
+        Infos returned in same order as in accession_list.
+
+        File info object have next keys and subkeys:
+           - accession
+           - kind
+           - owner
+           - name
+           - typeKey
+           - application
+             - id
+           - initializationStatus
+             - displayString
+             - isError
+             - id
+           - permissionsByGroup (value for each key is map that use group accession as its key)
+             - displayStrings
+             - groupNames
+             - ids
+           - time
+             - fileCreation
+             - lastMetainfoModification
+
+
+        :param accession_list: list of valid accessions.
+        :type accession_list: list
+        :return: list of file info maps.
+        :rtype: list
+        """
+        return self.invoke('getInfos', accession_list)
+
