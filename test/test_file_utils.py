@@ -105,7 +105,7 @@ def test_get_path_create_paths(files_utils):
 
 def test_get_infos(files_utils):
     specila_folder = files_utils.get_special_folder(SpecialFolders.CREATED)
-    infos = files_utils.get_infos([specila_folder])
+    infos = files_utils.get_compleate_infos([specila_folder])
     assert len(infos) == 1
     info = infos[0]
     assert info['name'] == 'Created files'
