@@ -334,7 +334,7 @@ class FilesUtil(Application):
         """
         return 'public'
 
-    def get_compleate_infos(self, accession_list):
+    def get_complete_infos(self, accession_list):
         """
         Return file complete info maps for listed accessions.
         Fail on invalid accessions.
@@ -348,6 +348,7 @@ class FilesUtil(Application):
            - typeKey
            - application
              - id
+             - name
            - initializationStatus
              - displayString
              - isError
@@ -357,6 +358,10 @@ class FilesUtil(Application):
              - groupNames
              - ids
            - time
+             - fileCreation
+             - initializationQueued
+             - initializationStart
+             - initializationEnd
              - fileCreation
              - lastMetainfoModification
 
@@ -379,6 +384,7 @@ class FilesUtil(Application):
            - name
            - application
              - id
+             - name
            - initializationStatus
              - isError
              - id
@@ -386,6 +392,11 @@ class FilesUtil(Application):
              - groupNames
              - ids
            - time
+             - time
+             - fileCreation
+             - initializationQueued
+             - initializationStart
+             - initializationEnd
              - fileCreation
              - lastMetainfoModification
 
