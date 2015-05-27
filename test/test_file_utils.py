@@ -103,7 +103,7 @@ def test_get_path_create_paths(files_utils):
     assert f1 == f2
 
 
-def test_get_infos(files_utils):
+def test_get_complete_infos(files_utils):
     specila_folder = files_utils.get_special_folder(SpecialFolders.CREATED)
     infos = files_utils.get_compleate_infos([specila_folder])
     assert len(infos) == 1
@@ -122,6 +122,22 @@ def test_get_infos(files_utils):
     assert set(info) == {'name', 'accession', 'application', 'kind',
                          'owner', 'typeKey', 'permissionsByGroup', 'time', 'initializationStatus'}
 
+
+def test_get_infos(files_utils):
+    specila_folder = files_utils.get_special_folder(SpecialFolders.CREATED)
+    infos = files_utils.get_infos([specila_folder])
+    assert len(infos) == 1
+    info = infos[0]
+    assert info['name'] == 'Created files'
+    assert info['accession'] == specila_folder
+    assert info['application'] == {'id': None}
+    assert info['owner'] == 'Tester'
+    assert info['permissionsByGroup'] == {'groupNames': {'GSG000001': 'WORLD'},
+                                          'ids': {'GSG000001': []}}
+    assert set(info['time']) == {'fileCreation', 'lastMetainfoModification'}
+    assert info['initializationStatus'] == {'id': 'NotApplicable', 'isError': False}
+    assert set(info) == {'name', 'accession', 'application',
+                         'owner', 'permissionsByGroup', 'time', 'initializationStatus'}
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])

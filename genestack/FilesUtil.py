@@ -367,3 +367,31 @@ class FilesUtil(Application):
         """
         return self.invoke('getCompleteInfos', accession_list)
 
+    def get_infos(self, accession_list):
+        """
+        Return file complete info maps for listed accessions.
+        Fail on invalid accessions.
+        Complete infos returned in same order as in accession_list.
+
+        File complete info object have next keys with subkeys:
+           - accession
+           - owner
+           - name
+           - application
+             - id
+           - initializationStatus
+             - isError
+             - id
+           - permissionsByGroup (value for each key is map that use group accession as its key)
+             - groupNames
+             - ids
+           - time
+             - fileCreation
+             - lastMetainfoModification
+
+        :param accession_list: list of valid accessions.
+        :type accession_list: list
+        :return: list of file info maps.
+        :rtype: list
+        """
+        return self.invoke('getInfos', accession_list)
