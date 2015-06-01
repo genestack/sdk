@@ -114,23 +114,21 @@ def upload_files(connection, files):
     folder_name = datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
     new_folder = fu.create_folder(folder_name, parent=upload,
                                   description='Files uploaded by genestack-uploader')
-    accessions = []
+    accession_file_map = {}
     for f in files:
         accession = importer.load_raw(f)
         fu.link_file(accession, new_folder)
         fu.unlink_file(accession, upload)
-        accessions.append(accession)
-    return new_folder, folder_name, accessions
+        accession_file_map[accession] = f
+    return new_folder, folder_name, accession_file_map
 
 
-def recognize_files(connection, accessions, new_folder):
+def recognize_files(connection, accession_file_map, new_folder):
     # Files Recognition
     fu = FilesUtil(connection)
-    file_infos = fu.invoke('getInfos', accessions)
 
     application = connection.application('genestack/upload')
-    # TODO: why not to tell Java only accessions here? Java could get FileInfos by itself. In this case we can remove call to `getInfos`.
-    recognised_files = application.invoke('recognizeGroups', file_infos)
+    recognised_files = application.invoke('recognizeGroupsByAccession', accession_file_map.keys())
 
     recognized_accessions = set()
     for x in recognised_files:
@@ -146,17 +144,17 @@ def recognize_files(connection, accessions, new_folder):
         for f in group:
             print '\t%s / %s' % (f['accession'], f['name'])
 
-    unrecognized_file_infos = [info for info in file_infos if info['accession'] not in recognized_accessions]
+    unrecognized_file_infos = set(accession_file_map) - recognized_accessions
 
     if unrecognized_file_infos:
         print 'Unrecognized Raw Files'
-        for info in unrecognized_file_infos:
-            print '\t%s / %s' % (info['accession'], info['name'])
+        for accession in unrecognized_file_infos:
+            print '\t%s / %s' % (accession, accession_file_map[accession])
         # move unrecognized files to new folder
         unrecognized_folder = fu.create_folder("Unrecognized files", parent=new_folder)
-        for info in unrecognized_file_infos:
-            fu.link_file(info['accession'], unrecognized_folder)
-            fu.unlink_file(info['accession'], new_folder)
+        for accession in unrecognized_file_infos:
+            fu.link_file(accession, unrecognized_folder)
+            fu.unlink_file(accession, new_folder)
         print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
 
 
