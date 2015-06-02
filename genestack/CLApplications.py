@@ -185,7 +185,13 @@ class VariationCallerApplication(CLApplication):
 
 # Preprocess
 ## preprocess raw reads
-class TrimAdaptorsAndContiminations(CLApplication):  # TODO rename to TrimAdaptorsAndContaminants
+
+# TODO remove this class, this old name leaved here for compatibility
+class TrimAdaptorsAndContiminations(CLApplication):
+    APPLICATION_ID = 'genestack/fastq-mcf'
+
+
+class TrimAdaptorsAndContaminants(CLApplication):
     APPLICATION_ID = 'genestack/fastq-mcf'
 
 
@@ -216,3 +222,52 @@ class MarkDuplicated(CLApplication):
 
 class RemoveDuplicates(CLApplication):
     APPLICATION_ID = 'genestack/removeDuplicates'
+
+
+# Unsorted
+class BowtieApplication(CLApplication):
+    APPLICATION_ID = 'genestack/bowtie'
+
+
+class BsmapApplicationWG(CLApplication):
+    APPLICATION_ID = 'genestack/bsmapWG'
+
+
+class BWAApplication(CLApplication):
+    APPLICATION_ID = 'genestack/bwaMapper'
+
+
+class MarkDuplicated(CLApplication):
+    APPLICATION_ID = 'genestack/markDuplicates'
+
+
+class RemoveDuplicated(CLApplication):
+    APPLICATION_ID = 'genestack/removeDuplicates'
+
+
+class MethratioApplication(CLApplication):
+    APPLICATION_ID = 'genestack/methratio'
+
+
+class HTSeqCountsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/htseq'
+
+
+class ConcatenateVariantsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/concatenate-variants'
+
+
+class VariationMergerApplication(CLApplication):
+    APPLICATION_ID = 'genestack/merge-vcf'
+
+
+class CuffquantApplication(CLApplication):
+    APPLICATION_ID = 'genestack/cuffquant'
+
+
+class MergeMappedReadsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/samtools-merge'
+
+
+class VariantsAssociationAnalysisApplication(CLApplication):
+    APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
