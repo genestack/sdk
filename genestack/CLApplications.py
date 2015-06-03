@@ -250,7 +250,7 @@ class MethratioApplication(CLApplication):
 
 
 class HTSeqCountsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/htseq'
+    APPLICATION_ID = 'genestack/htseqCount'
 
 
 class ConcatenateVariantsApplication(CLApplication):
