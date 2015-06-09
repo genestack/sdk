@@ -6,6 +6,9 @@
 # actual or intended publication of such source code.
 #
 
+import sys
+sys.path.insert(0, '../')
+
 import pytest
 from genestack import Metainfo, GenestackException
 from datetime import date, datetime
