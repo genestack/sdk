@@ -249,10 +249,6 @@ class MethratioApplication(CLApplication):
     APPLICATION_ID = 'genestack/methratio'
 
 
-class HTSeqCountsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/htseqCount'
-
-
 class ConcatenateVariantsApplication(CLApplication):
     APPLICATION_ID = 'genestack/concatenate-variants'
 
