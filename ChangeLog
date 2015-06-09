@@ -1,5 +1,7 @@
-* version ???
+* version 0.1.6
   * application ID without vendor is not supported by Connection
+  * add more classes for CLA
+
 
 * version 0.1.2
   * improve console output for shell based scripts
