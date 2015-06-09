@@ -200,7 +200,7 @@ class Config(object):
             top.appendChild(store_raw_element)
             store_raw_element.appendChild(document.createTextNode(str(self.store_raw)))
         with open(config_path, 'w') as f:
-            document.writexml(f, indent='', addindent='\t', newl='\n')
+            document.writexml(f, indent='', addindent='    ', newl='\n')
 
 config = Config()
 config.load()
