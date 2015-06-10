@@ -1,5 +1,9 @@
-* version ???
+* version 0.1.6
   * application ID without vendor is not supported by Connection
+  * add more classes for CLA
+  * change signature of add_external_link, now text argument is optional. Order of arguments changed need to update all files.
+  * drop support for short application ID
+  * add `get_infos` and `get_complete_infos` methods to `FilesUtils`.
 
 * version 0.1.2
   * improve console output for shell based scripts

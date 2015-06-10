@@ -9,6 +9,8 @@
 #
 
 import datetime
+import os
+from urlparse import urlparse, unquote
 
 from Exceptions import GenestackException
 
@@ -90,7 +92,7 @@ class Metainfo(dict):
         """
         self._add_value(key, value, 'integer')
 
-    def add_external_link(self, key, text, url, fmt=None):
+    def add_external_link(self, key, url, text=None, fmt=None):
         """
         Add external link. Url should be to valid source.
         Source should be in public access in www or local file.
@@ -104,6 +106,8 @@ class Metainfo(dict):
         :type fmt: dict
         :rtype: None
         """
+        if not text:
+            text = os.path.basename(urlparse(unquote(url)).path)
         result = Metainfo._create_dict_with_type('externalLink')
         result['text'] = xstr(text)
         result['url'] = xstr(url)
