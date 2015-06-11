@@ -20,6 +20,12 @@ from genestack import GenestackException
 from genestack.GenestackShell import GenestackShell, Command
 
 
+def validate_application_id(app_id):
+    if len(app_id.split('/')) != 2:
+        sys.stderr.write('Invalid application ID, expect "{vendor}/{application}" got: %s\n' % app_id)
+        return False
+    return True
+
 APPLICATION_ID = 'genestack/application-manager'
 
 
@@ -120,6 +126,8 @@ class ListVersions(Command):
 
     def run(self):
         app_id = self.args.app_id
+        if not validate_application_id(app_id):
+            return
         stable_versions = None
         if self.args.show_stable:
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
@@ -171,11 +179,14 @@ class MarkAsStable(Command):
         )
 
     def run(self):
+        apps_ids = self.args.app_id_list
+        if not all(map(validate_application_id, apps_ids)):
+            return
         version = self.args.version
         if version == '-':
             version = None
         return mark_as_stable(
-            self.connection.application(APPLICATION_ID), version, self.args.app_id_list,
+            self.connection.application(APPLICATION_ID), version, apps_ids,
             self.args.scope
         )
 
@@ -194,8 +205,11 @@ class Remove(Command):
         )
 
     def run(self):
+        apps_ids = self.args.app_id_list
+        if not all(map(validate_application_id, apps_ids)):
+            return
         return remove_applications(
-            self.connection.application(APPLICATION_ID), self.args.version, self.args.app_id_list
+            self.connection.application(APPLICATION_ID), self.args.version, apps_ids
         )
 
 
@@ -213,8 +227,11 @@ class Reload(Command):
         )
 
     def run(self):
+        apps_ids = self.args.app_id_list
+        if not all(map(validate_application_id, apps_ids)):
+            return
         return reload_applications(
-            self.connection.application(APPLICATION_ID), self.args.version, self.args.app_id_list
+            self.connection.application(APPLICATION_ID), self.args.version, apps_ids
         )
 
 
