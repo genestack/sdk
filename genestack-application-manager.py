@@ -37,6 +37,10 @@ SCOPE_DICT = {
 DEFAULT_SCOPE = 'user'
 
 
+def strip_appid_list(app_ids):
+    return [x.strip(',; \t') for x in app_ids]
+
+
 class Info(Command):
     COMMAND = 'info'
     DESCRIPTION = 'Read and show info from applications JAR file.'
@@ -179,7 +183,7 @@ class MarkAsStable(Command):
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
+        apps_ids = strip_appid_list(self.args.app_id_list)
         if not all(map(validate_application_id, apps_ids)):
             return
         version = self.args.version
@@ -205,7 +209,7 @@ class Remove(Command):
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
+        apps_ids = strip_appid_list(self.args.app_id_list)
         if not all(map(validate_application_id, apps_ids)):
             return
         return remove_applications(
@@ -227,7 +231,7 @@ class Reload(Command):
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
+        apps_ids = strip_appid_list(self.args.app_id_list)
         if not all(map(validate_application_id, apps_ids)):
             return
         return reload_applications(
