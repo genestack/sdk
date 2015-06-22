@@ -224,6 +224,11 @@ class RemoveDuplicates(CLApplication):
     APPLICATION_ID = 'genestack/removeDuplicates'
 
 
+# analize
+class VariationCaller2Application(CLApplication):
+    APPLICATION_ID = 'genestack/variationCaller-v2'
+
+
 # Unsorted
 class BowtieApplication(CLApplication):
     APPLICATION_ID = 'genestack/bowtie'
@@ -267,3 +272,4 @@ class MergeMappedReadsApplication(CLApplication):
 
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
+
