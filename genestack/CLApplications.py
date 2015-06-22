@@ -184,7 +184,7 @@ class VariationCallerApplication(CLApplication):
 
 
 # Preprocess
-## preprocess raw reads
+# preprocess raw reads
 
 # TODO remove this class, this old name leaved here for compatibility
 class TrimAdaptorsAndContiminations(CLApplication):
@@ -215,7 +215,7 @@ class TrimLowQualityBases(CLApplication):
     APPLICATION_ID = 'genestack/trim-low-quality-bases'
 
 
-## preprocess mapped reads
+# preprocess mapped reads
 class MarkDuplicated(CLApplication):
     APPLICATION_ID = 'genestack/markDuplicates'
 
@@ -242,16 +242,8 @@ class BWAApplication(CLApplication):
     APPLICATION_ID = 'genestack/bwaMapper'
 
 
-class MarkDuplicated(CLApplication):
-    APPLICATION_ID = 'genestack/markDuplicates'
-
-
 class RemoveDuplicated(CLApplication):
     APPLICATION_ID = 'genestack/removeDuplicates'
-
-
-class MethratioApplication(CLApplication):
-    APPLICATION_ID = 'genestack/methratio'
 
 
 class ConcatenateVariantsApplication(CLApplication):
@@ -272,4 +264,5 @@ class MergeMappedReadsApplication(CLApplication):
 
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
+
 
