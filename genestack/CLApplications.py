@@ -159,6 +159,10 @@ class UnalignedReadsQC(CLApplication):
     APPLICATION_ID = 'genestack/unalignedreads-qc'
 
 
+class FastQCApplicaton(CLApplication):
+    APPLICATION_ID = 'genestack/fastqc-report'
+
+
 class AlignedReadsQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc'
 
