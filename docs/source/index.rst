@@ -1,10 +1,10 @@
-Welcome to python SDK's documentation
-=====================================
+Welcome to Python Client Library Documentation
+==============================================
 
 
-Python SDK will help you to automate server interactions.
+Python Client Library will help you to automate server interactions.
 
-What can be done with python SDK? Anything you can do via browser.
+What can be done with Python Client Library? Anything you can do via browser.
 You can call same methods with same arguments that you call from browser and get output in json format.
 
 Typical usages:

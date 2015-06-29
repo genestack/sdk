@@ -10,7 +10,7 @@ template = """
 {name}.py
 {name_underline}===
 
-{name} installed with pythonSDK and accessed as ``{name}.py``.
+{name} installed with Python Client Library and accessed as ``{name}.py``.
 
 
 Usage

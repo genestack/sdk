@@ -2,7 +2,7 @@
 genestack-application-manager.py
 ================================
 
-genestack-application-manager installed with pythonSDK and accessed as ``genestack-application-manager.py``.
+genestack-application-manager installed with Python Client Library and accessed as ``genestack-application-manager.py``.
 
 
 Usage

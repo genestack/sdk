@@ -1,4 +1,4 @@
-# PythonSDK
+# Python Client Library
 
 ### Documentation
 
@@ -22,6 +22,7 @@
  - `cd docs`
  - `make html`
 
- **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell scripts(genestack-user-setup.rst, genestack-application-manager.rst). 
+ **Note!** Make docs use script `make_shell_docs.py` that generates documentation files for shell scripts:
+    (genestack-user-setup.rst, genestack-application-manager.rst, genestack-uploader.py)
  app-manager_usage.rst is not included to index, it is required for `make_shell_docs.py`
 

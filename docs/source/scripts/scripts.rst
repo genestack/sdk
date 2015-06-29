@@ -1,7 +1,7 @@
 Scripts
 #######
 
-Scripts installed with pythonSDK.
+Scripts installed with Python Client Library.
 
 
 .. toctree::

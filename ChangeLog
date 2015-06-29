@@ -1,3 +1,6 @@
+* version 0.1.7
+  * Rename pythonSDK to Python Client Library
+
 * version 0.1.6
   * application ID without vendor is not supported by Connection
   * add more classes for CLA
