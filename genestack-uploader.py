@@ -93,6 +93,7 @@ def get_files(paths):
     for path in paths:
         if os.path.isfile(path):
             files_list.append(path)
+            total_size += os.path.getsize(path)
             continue
         for base, folders, files in os.walk(path, followlinks=False):
             for f in files:
@@ -162,6 +163,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
+    exit(1)
     connection = get_connection(args)
     new_folder, folder_name, accessions = upload_files(connection, files)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
