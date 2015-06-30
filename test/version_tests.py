@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+
 #
 # Copyright (c) 2011-2015 Genestack Limited
 # All Rights Reserved
@@ -6,17 +9,19 @@
 # actual or intended publication of such source code.
 #
 
+import os
 import sys
-sys.path.insert(0, '../')
 
 import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack import GenestackException, get_connection
 from genestack.version import __version__
 
 
 def test_current_version():
     connection = get_connection()
-    assert connection.check_version(__version__) == None
+    assert connection.check_version(__version__) == ''
 
 
 def test_too_old():
