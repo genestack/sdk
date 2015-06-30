@@ -112,8 +112,8 @@ class Connection:
             return ''
 
         compatible = StrictVersion(version_map[COMPATIBLE])
-        if my_verison > compatible:
-            return 'New version "%s" is already present, please update.' % my_verison
+        if my_verison >= compatible:
+            return 'Newer version "%s" available, please update.' % latest_version
         else:
             raise GenestackException('Your version "%s" is too old, please update to %s' % (my_verison, latest_version))
 
