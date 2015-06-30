@@ -18,6 +18,8 @@ import requests
 from Exceptions import GenestackServerException, GenestackException
 from utils import isatty
 from chunked_upload import upload_by_chunks
+from version import __version__
+from distutils.version import StrictVersion
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
@@ -82,6 +84,38 @@ class Connection:
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
             raise GenestackException("Fail to login %s" % email)
+        version_msg = self.check_version(__version__)
+        if version_msg:
+            print 'Warning: %s' % version_msg
+
+    def check_version(self, version):
+        """
+        Check version required by server.
+        Server output contain latest and minimum compatible versions.
+        Return message about version compatibility.
+        If version is not compatible exception raised.
+
+        :param version: version in format suitable for distutils.version.StrictVersion
+        :return: user friendly message.
+        """
+        version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
+        LATEST = 'latest'
+        COMPATIBLE = 'compatible'
+
+        latest_version = StrictVersion(version_map[LATEST])
+        my_verison = StrictVersion(version)
+
+        if latest_version < my_verison:
+            return 'You use version from future'
+
+        if latest_version == my_verison:
+            return ''
+
+        compatible = StrictVersion(version_map[COMPATIBLE])
+        if my_verison >= compatible:
+            return 'Newer version "%s" available, please update.' % latest_version
+        else:
+            raise GenestackException('Your version "%s" is too old, please update to %s' % (my_verison, latest_version))
 
     def logout(self):
         """
