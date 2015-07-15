@@ -192,7 +192,8 @@ class DataImporter(object):
     def create_bam(self,
                    parent=None,
                    name=None,
-                   bam_link=None,
+                   bam_link=None,  # deprecated
+                   url=None,
                    metainfo=None,
                    organism=None,
                    strain=None,
@@ -204,7 +205,7 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param bam_link: link to bam file, index will be created at initialization stage
+        :param url: url of bam file, index will be created at initialization stage
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
         :param organism: organism
@@ -221,7 +222,11 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        bam_link and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, bam_link)
+        if bam_link:
+            print '`bam_link` argument is deprecated use `url` instead.'
+            assert not url, 'Using both `url` and `bam_link` is prohibited.'
+            url = bam_link
+        url and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, url)
         return self.__invoke_loader('genestack/alignedReadsLoader', 'importFile', parent, metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
@@ -244,7 +249,10 @@ class DataImporter(object):
         description and metainfo.add_string(BioMetainfo.DESCRIPTION, description)
         return self.__invoke_loader('genestack/experimentLoader', 'addExperiment', parent, metainfo)
 
-    def create_microarray_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+    def create_microarray_assay(self, parent, name=None,
+                                links=None,  # deprecated
+                                urls=None,
+                                method=None, organism=None, metainfo=None):
         """
         Create microarray assay in experiment folder. If parent is not experiment exception will be raised.
         name and links are required fields.
@@ -253,8 +261,8 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param links: list of urls of local file paths
-        :type links: list
+        :param urls: list of urls
+        :type urls: list
         :param method: method
         :type method: str
         :param organism: organism
@@ -269,11 +277,19 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            for link in links:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, link)
+            print '`links` argument is deprecated use `urls` instead.'
+            assert not urls, 'Using both `urls` and `links` is prohibited.'
+            urls = links
+
+        if urls:
+            for url in urls:
+                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
         return self.__invoke_loader('genestack/experimentLoader', 'addMicroarrayAssay', parent, metainfo)
 
-    def create_sequencing_assay(self, parent, name=None, links=None, method=None, organism=None, metainfo=None):
+    def create_sequencing_assay(self, parent, name=None,
+                                links=None,  # deprecated
+                                urls=None,
+                                method=None, organism=None, metainfo=None):
         """
         Create sequencing assay in experiment folder. If parent is not experiment exception will be raised.
         name and links are required fields.
@@ -282,8 +298,8 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param links: list of urls of local file paths
-        :type links: list
+        :param urls: list of urls
+        :type urls: list
         :param method: method
         :type method: str
         :param organism: organism
@@ -298,11 +314,19 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            for link in links:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, link)
+            print '`links` argument is deprecated use `urls` instead.'
+            assert not urls, 'Using both `urls` and `links` is prohibited.'
+            urls = links
+
+        if urls:
+            for url in urls:
+                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
         return self.__invoke_loader('genestack/experimentLoader', 'addSequencingAssay', parent, metainfo)
 
-    def create_unaligned_read(self, parent=None, name=None, links=None, method=None, organism=None, metainfo=None):
+    def create_unaligned_read(self, parent=None, name=None,
+                              links=None,  # deprecated
+                              urls=None,
+                              method=None, organism=None, metainfo=None):
         """
         Create unaligned read. Unaligned read can be created in folder.
         name and links are required fields.
@@ -311,8 +335,8 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param links: list of urls of local file paths
-        :type links: list
+        :param urls: list of urls
+        :type urls: list
         :param method: method
         :type method: str
         :param organism: organism
@@ -327,11 +351,19 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            for link in links:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, link)
+            print '`links` argument is deprecated use `urls` instead.'
+            assert not urls, 'Using both `urls` and `links` is prohibited.'
+            urls = links
+
+        if urls:
+            for url in urls:
+                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
         return self.__invoke_loader('genestack/unalignedReadsLoader', 'importFile', parent, metainfo)
 
-    def create_genome_annotation(self, parent=None, link=None, name=None, organism=None, reference_genome=None,
+    def create_genome_annotation(self, parent=None,
+                                 link=None,  # deprecated
+                                 url=None,
+                                 name=None, organism=None, reference_genome=None,
                                  strain=None, metainfo=None):
         """
         Create genome annotation.
@@ -339,8 +371,8 @@ class DataImporter(object):
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
-        :param link: link or local path
-        :type link: str
+        :param url: url or local path
+        :type url: str
         :param name: name of the file
         :type name: str
         :param organism: organism
@@ -360,21 +392,28 @@ class DataImporter(object):
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if link:
-            metainfo.add_external_link(BioMetainfo.DATA_LINK, link)
+            print '`link` argument is deprecated use `url` instead.'
+            assert not url, 'Using both `url` and `link` is prohibited.'
+            url = link
+        if url:
+            metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/genome-annotation-loader', 'addGOAnnotationFile', parent, metainfo)
 
     def create_codon_table(self, parent=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
         return self.__invoke_loader('genestack/codonTableLoader', 'addCodonTable', parent, metainfo)
 
-    def create_dbnsfp(self, parent=None, link=None, name=None, organism=None, metainfo=None):
+    def create_dbnsfp(self, parent=None,
+                      link=None,  # deprecated
+                      url=None,
+                      name=None, organism=None, metainfo=None):
         """
         Create dbNSFP file.  name and link are required.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
-        :param link: link or local path
-        :type link: str
+        :param url: url or local path
+        :type url: str
         :param name: name of the file
         :type name: str
         :param organism: organism
@@ -389,7 +428,12 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link:
-            metainfo.add_external_link(BioMetainfo.DATA_LINK, link)
+            print '`link` argument is deprecated use `url` instead.'
+            assert not url, 'Using both `url` and `link` is prohibited.'
+            url = link
+
+        if url:
+            metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
 
     def create_reference_genome(self,
@@ -440,7 +484,10 @@ class DataImporter(object):
             metainfo.add_external_link(SEQUENCE_KEY, seq_link, text='Sequence data link')
         return self.__invoke_loader('genestack/referenceGenomeLoader', 'importFile', parent, metainfo)
 
-    def create_report_file(self, parent=None, name=None, links=None, metainfo=None):
+    def create_report_file(self, parent=None, name=None,
+                           links=None,  # deprecated
+                           urls=None,
+                           metainfo=None):
         """
         Create report file. File can be created in folder.
         name and links are required fields.
@@ -449,8 +496,8 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param links: url or list of urls of local file paths
-        :type links: list or str
+        :param urls: url or list of urls of local file paths
+        :type urls: list or str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
         :return: file accession
@@ -459,7 +506,14 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         if links:
-            links = links if type(links) == list else [links]
-            for link in links:
-                metainfo.add_external_link(BioMetainfo.DATA_LINK, link)
+            print '`links` argument is deprecated use `urls` instead.'
+            assert not urls, 'Using both `urls` and `links` is prohibited.'
+            urls = links
+
+        if urls:
+            if not type(urls) == list:
+                print "Passing not list as urls argument is deprecated."
+            urls = links if type(links) == list else [links]
+            for url in urls:
+                metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/reportLoader', 'importFile', parent, metainfo)
