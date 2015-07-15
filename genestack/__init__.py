@@ -17,6 +17,7 @@ from DataImporter import DataImporter
 from FileInitializer import FileInitializer
 from FilesUtil import FilesUtil, SpecialFolders
 from SudoUtils import SudoUtils
+from TaskLogViewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
 from CLApplications import *
 
