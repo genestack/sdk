@@ -20,7 +20,7 @@ setup(
     license='',
     author='Genestack Limited',
     author_email='',
-    description='Genestack API',
-    scripts=['genestack-user-setup.py', 'genestack-application-manager.py', 'genestack-uploader.py'],
+    description='Genestack Python Client Library',
+    scripts=['genestack-user-setup.py', 'genestack-application-manager.py', 'genestack-uploader.py', 'genestack-shell'],
     install_requires=['keyring', 'requests[security]']
 )
