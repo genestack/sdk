@@ -1,5 +1,5 @@
-Getting Started with Python Client Library
-##########################################
+Getting Started with Genestack Python Client Library
+####################################################
 
 Installing genestack
 ********************

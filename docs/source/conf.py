@@ -12,6 +12,8 @@
 # serve to show the default.
 import sys
 
+import sphinx_rtd_theme
+
 sys.path.insert(0, '../../')  # Use Python Client Library from current repository
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -43,8 +45,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python Client Library'
-copyright = u'2015, genestack'
+project = u'Genestack Python Client Library'
+copyright = u'2015, Genestack'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -102,7 +104,8 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -194,8 +197,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'python_client_library.tex', u'Python Client Library Documentation',
-   u'genestack', 'manual'),
+  ('index', 'python_client_library.tex', u'Genestack Python Client Library Documentation',
+   u'Genestack Limited', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -224,8 +227,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'python_client_library', u'Python Client Library Documentation',
-     [u'genestack'], 1)
+    ('index', 'python_client_library', u'Genestack Python Client Library Documentation',
+     [u'Genestack Limited'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -238,8 +241,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'python_client_library', u'Python Client Library Documentation',
-   u'genestack', 'python-client-library', 'One line description of project.',
+  ('index', 'python_client_library', u'Genestack Python Client Library Documentation',
+   u'Genestack Limited', 'genestack-python-client-library', 'Genestack Python Client Library Documentation',
    'Miscellaneous'),
 ]
 
@@ -259,10 +262,10 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Python Client Library'
-epub_author = u'genestack'
-epub_publisher = u'genestack'
-epub_copyright = u'2015, genestack'
+epub_title = u'Genestack Python Client Library Documentation'
+epub_author = u'Genestack Limited'
+epub_publisher = u'Genestack Limited'
+epub_copyright = u'2015, Genestack Limited'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
