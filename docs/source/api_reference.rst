@@ -71,7 +71,6 @@ FileInitializer
         :members:
         :show-inheritance:
 
-
 .. _FilesUtil:
 
 FilesUtil
@@ -226,3 +225,10 @@ settings.GenestackShell
 .. autoclass:: genestack.GenestackShell.GenestackShell
         :members:
 
+.. _TaskLogViewer:
+
+TaskLogViewer
+*************
+
+.. autoclass:: genestack.TaskLogViewer
+        :members:
