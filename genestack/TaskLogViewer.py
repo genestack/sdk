@@ -32,7 +32,7 @@ class TaskLogViewer(Application):
 
         :param accession: file accession
         :param log_type: stdout or stderr
-        :param follow: do not stop when end of log reached, wait for more
+        :param follow: if enabled, wait and display new lines as they appear (similar to ``tail --follow``)
         """
         if not log_type:
             log_type = self.STDOUT
