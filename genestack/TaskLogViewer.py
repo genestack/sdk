@@ -24,8 +24,6 @@ class TaskLogViewer(Application):
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
 
-    WAITING_MESSAGE = 'Waiting for log... '
-
     def view_log(self, accession, log_type=STDOUT, follow=True):
         """
         View `limit` bytes from `offset` of file's last task initialization logs
