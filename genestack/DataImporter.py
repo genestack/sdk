@@ -223,7 +223,7 @@ class DataImporter(object):
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if bam_link:
-            os.stderr.write('`bam_link` argument is deprecated use `url` instead.\n')
+            os.stderr.write('`bam_link` argument is deprecated, use `url` instead.\n')
             assert not url, 'Using both `url` and `bam_link` is prohibited.'
             url = bam_link
         url and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, url)
@@ -277,7 +277,7 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            os.stderr.write('`links` argument is deprecated use `urls` instead.\n')
+            os.stderr.write('`links` argument is deprecated, use `urls` instead.\n')
             assert not urls, 'Using both `urls` and `links` is prohibited.'
             urls = links
 
@@ -314,7 +314,7 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            os.stderr.write('`links` argument is deprecated use `urls` instead.\n')
+            os.stderr.write('`links` argument is deprecated, use `urls` instead.\n')
             assert not urls, 'Using both `urls` and `links` is prohibited.'
             urls = links
 
@@ -351,7 +351,7 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if links:
-            os.stderr.write('`links` argument is deprecated use `urls` instead.\n')
+            os.stderr.write('`links` argument is deprecated, use `urls` instead.\n')
             assert not urls, 'Using both `urls` and `links` is prohibited.'
             urls = links
 
@@ -392,7 +392,7 @@ class DataImporter(object):
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if link:
-            os.stderr.write('`link` argument is deprecated use `url` instead.\n')
+            os.stderr.write('`link` argument is deprecated, use `url` instead.\n')
             assert not url, 'Using both `url` and `link` is prohibited.'
             url = link
         if url:
@@ -428,7 +428,7 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if link:
-            os.stderr.write('`link` argument is deprecated use `url` instead.\n')
+            os.stderr.write('`link` argument is deprecated, use `url` instead.\n')
             assert not url, 'Using both `url` and `link` is prohibited.'
             url = link
 
@@ -506,7 +506,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         if links:
-            os.stderr.write('`links` argument is deprecated use `urls` instead.\n')
+            os.stderr.write('`links` argument is deprecated, use `urls` instead.\n')
             assert not urls, 'Using both `urls` and `links` is prohibited.'
             urls = links
 
