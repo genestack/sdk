@@ -8,7 +8,9 @@
 # actual or intended publication of such source code.
 #
 
-import time, sys, itertools
+import time
+import sys
+import itertools
 from genestack import GenestackException
 
 from Connection import Application
@@ -16,16 +18,16 @@ from Connection import Application
 
 class TaskLogViewer(Application):
     """
-    View file initialization task logs
+    View file initialization task logs.
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
 
-    def view_log(self, accession, logType="stdout", follow=True):
+    def view_log(self, accession, log_type='stdout', follow=True):
         """
         View `limit` bytes from `offset` of file's last task initialization logs
 
         :param accession: file accession
-        :param logType: stdout or stderr
+        :param log_type: stdout or stderr
         :param follow: do not stop when end of log reached, wait for more
         :rtype: str
         """
@@ -35,16 +37,16 @@ class TaskLogViewer(Application):
         spinner = itertools.cycle(['-', '/', '|', '\\'])
 
         while True:
-            log_chunk = self.invoke('getFileInitializationLog', accession, logType, offset, limit)
+            log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, limit)
             if not log_chunk:
                 raise GenestackException('File %s not found or have no tasks.' % accession)
 
-            if log_chunk['content'] == None and not follow:
+            if log_chunk['content'] is None and not follow:
                 break
-            elif log_chunk['content'] == None and log_chunk['isTerminal']:
+            elif log_chunk['content'] is None and log_chunk['isTerminal']:
                 print 'This log is empty (perhaps there was no log produced)'
                 break
-            elif log_chunk['content'] == None and not log_chunk['isTerminal']:
+            elif log_chunk['content'] is None and not log_chunk['isTerminal']:
                 if follow:
                     sys.stdout.write('\r')
                     sys.stdout.flush()
@@ -57,7 +59,7 @@ class TaskLogViewer(Application):
                 else:
                     print 'No log produced yet...'
                     break
-            elif log_chunk['content'] != None:
+            elif log_chunk['content'] is not None:
                 sys.stdout.write('\r')
                 sys.stdout.flush()
                 sys.stdout.write(log_chunk['content'])
