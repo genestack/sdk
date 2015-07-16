@@ -319,5 +319,23 @@ As result you will have:
     - ``Sequencing assay`` file in experiment
     - Two ``Raw Upload`` files in ``Uploaded files`` folder. This is your local files located on genestack storage. You can remove them after initialization of assay.
 
-
 See :ref:`DataImporter` for more methods.
+
+TaskLogViewer
+*************
+
+Create connection and viewer::
+
+    >>> from genestack import get_connection
+    >>> connection = get_connection()
+    >>> from genestack import TaskLogViewer
+    >>> log_viewer = DataImporter(connection)
+
+Check stderr log for file::
+
+    >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
+    This log is empty (perhaps there was no log produced)
+
+
+See :ref:`TaskLogViewer` for more info.
+
