@@ -14,9 +14,6 @@ from genestack import GenestackException
 
 from Connection import Application
 
-STDERR = 'stderr'
-STDOUT = 'stdout'
-
 
 class TaskLogViewer(Application):
     """
@@ -24,15 +21,24 @@ class TaskLogViewer(Application):
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
 
-    def view_log(self, accession, log_type=STDOUT, follow=True):
+    STDERR = 'stderr'
+    STDOUT = 'stdout'
+
+    def view_log(self, accession, log_type=None, follow=True):
         """
-        View `limit` bytes from `offset` of file's last task initialization logs
+        View file's last task initialization logs. Raise exception if file is not found or have no tasks.
+        By default `stdout` log shown, also you can view `stderr` log.
+        `follow=True` will wait until initialization is finished printing incoming log to console.
 
         :param accession: file accession
         :param log_type: stdout or stderr
         :param follow: do not stop when end of log reached, wait for more
         :rtype: str
         """
+
+        if not log_type:
+            log_type = self.STDOUT
+
         offset = -1
         limit = 128000
 
