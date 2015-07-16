@@ -1,4 +1,5 @@
 import os
+import imp
 from genestack.GenestackShell import get_help
 from genestack import make_connection_parser
 
@@ -43,7 +44,10 @@ Commands
 
 
 def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
-    shell_module = __import__(shell_name)
+    try:
+        shell_module = __import__(shell_name)
+    except ImportError:
+        shell_module = imp.load_source(shell_name, os.path.join(os.path.dirname(__file__), '..', '..', shell_name))
     shell = getattr(shell_module, class_name)
 
     tool_file_name = os.path.basename(shell_name)
@@ -78,6 +82,7 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
 
 def main():
     generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('..', 'track_docs', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-shell', 'Shell', None, os.path.join('..', 'track_docs', 'genestack-shell.rst'))
     generate_rst_doc('genestack-user-setup', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 
 
