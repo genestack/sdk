@@ -1,6 +1,8 @@
 * version 0.1.7
   * Rename pythonSDK to Python Client Library
   * Add TaskLogViewer application binding.
+  * Rename arguments with `link` in name to `url` in DataImporter fro consistency (old arguments still present, for compatibility,
+                                                                will be removed on next release.)
 
 * version 0.1.6
   * application ID without vendor is not supported by Connection
