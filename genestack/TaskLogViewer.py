@@ -16,11 +16,15 @@ from genestack import GenestackException
 from Connection import Application
 
 
+
+
 class TaskLogViewer(Application):
     """
     View file initialization task logs.
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
+
+    WAITING_MESSAGE = 'Waiting for log... '
 
     def view_log(self, accession, log_type='stdout', follow=True):
         """
@@ -36,6 +40,8 @@ class TaskLogViewer(Application):
 
         spinner = itertools.cycle(['-', '/', '|', '\\'])
 
+        has_waiting_message = False
+
         while True:
             log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, limit)
             if not log_chunk:
@@ -48,20 +54,25 @@ class TaskLogViewer(Application):
                 break
             elif log_chunk['content'] is None and not log_chunk['isTerminal']:
                 if follow:
-                    sys.stdout.write('\r')
-                    sys.stdout.flush()
-                    sys.stdout.write('Waiting for log... ')
+                    if has_waiting_message:
+                        sys.stdout.write('\b' * (len(self.WAITING_MESSAGE)))
+                    has_waiting_message = True
+                    sys.stdout.write(self.WAITING_MESSAGE)
                     for _ in range(5):
                         sys.stdout.write(spinner.next())
-                        sys.stdout.flush()
                         sys.stdout.write('\b')
+                        sys.stdout.flush()
                         time.sleep(0.06)
                 else:
                     print 'No log produced yet...'
                     break
             elif log_chunk['content'] is not None:
-                sys.stdout.write('\r')
-                sys.stdout.flush()
+                if has_waiting_message:
+                    has_waiting_message = False
+                    sys.stdout.write(' ')  # remove spinner char
+                    sys.stdout.write('\b' * (len(self.WAITING_MESSAGE) + 1))
+                    sys.stdout.write(' ' * (len(self.WAITING_MESSAGE) + 1))
+                    sys.stdout.write('\b' * (len(self.WAITING_MESSAGE) + 1))
                 sys.stdout.write(log_chunk['content'])
                 sys.stdout.flush()
             if log_chunk['isTerminal'] or not follow:
