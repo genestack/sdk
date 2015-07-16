@@ -10,7 +10,6 @@
 
 import time
 import sys
-import itertools
 from genestack import GenestackException
 
 from Connection import Application
