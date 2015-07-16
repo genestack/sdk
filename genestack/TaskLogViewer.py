@@ -9,6 +9,7 @@
 #
 
 import time, sys, itertools
+from genestack import GenestackException
 
 from Connection import Application
 
@@ -35,6 +36,9 @@ class TaskLogViewer(Application):
 
         while True:
             log_chunk = self.invoke('getFileInitializationLog', accession, logType, offset, limit)
+            if not log_chunk:
+                raise GenestackException('File %s not found or have no tasks.' % accession)
+
             if log_chunk['content'] == None and not follow:
                 break
             elif log_chunk['content'] == None and log_chunk['isTerminal']:
