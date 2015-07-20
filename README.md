@@ -10,8 +10,8 @@
   docs/                             - folder with documentation sources
   genestack/                        - folder with genestack library
   tests/                            - developer tests, require pytest to run.
-  genestack-application-manager.py  - script to connect to application-manager (installed as script with genestack)
-  genestack-user-setup.py           - script to setup user (installed as script with genestack)
+  genestack-application-manager  - script to connect to application-manager (installed as script with genestack)
+  genestack-user-setup           - script to setup user (installed as script with genestack)
   local_settings_sample.xml         - sample settings file for local developer
   setup.py                          - installation setup for genestack library
   ```
