@@ -23,10 +23,11 @@
  - `cd docs`
  - `make html`
 
- **Note!** `make` use script `make_shell_docs.py` that generates `*.rst` files for shell scripts:
-     - used for documentation creation (docs/source/scripts/):
-        - `genestack-user-setup.rst`
-     - shown in track, by link from repository (docs/track_docs/):
-        - `genestack-application-manager.rst` 
-        - `genestack-shell.rst`
-   `app-manager_usage.rst` is not included to docs itself, it is used in `make_shell_docs.py` 
+**Note!** `make` use script `make_shell_docs.py` that generates `*.rst` files for shell scripts:
+ - used for documentation creation (docs/source/scripts/):
+   - `genestack-user-setup.rst`
+ - shown in track, by link from repository (docs/track_docs/):
+     - `genestack-application-manager.rst` 
+     - `genestack-shell.rst`
+   
+  `app-manager_usage.rst` is not included to docs itself, it is used in `make_shell_docs.py` 
