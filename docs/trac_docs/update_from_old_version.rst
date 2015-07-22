@@ -5,7 +5,7 @@ Changes from genestack-python epoch
 Changes for users
 -----------------
 
-- Application manager script was renamed from ``app-manager.py`` to ``genestack-application-manager.py``, now this script installed by setup.
+- Application manager script was renamed from ``app-manager.py`` to ``genestack-application-manager``, now this script installed by setup.
 
 - Application manager commands ``list versions`` and ``list applications`` were replaced by ``versions`` and ``applications``. See https://trac.genestack.com/wiki/DevStuff/ApplicationsManager
 
@@ -19,13 +19,13 @@ Changes for users
        platform.genestack.org
        internal-dev.genestack.com
 
-- environment.py was removed so you need to specify all users you need via ``genestack-user-setup.py``.  Use is added permanently so config file, you don't need to da anything about that then updating library.
+- environment.py was removed so you need to specify all users you need via ``genestack-user-setup``.  Use is added permanently so config file, you don't need to da anything about that then updating library.
 
 
 Changes for coders
 ------------------
 
-- Connection mechanism was changed. ``enviroment.py`` was removed. It is replaced by genestack-user-setup.py script.
+- Connection mechanism was changed. ``enviroment.py`` was removed. It is replaced by genestack-user-setup script.
   There are two ways to specify your login params on script launch:
     1) via alias from settings ``script.py -u <alias>`` Login host and password will be used from settings. If -u is not specified default user will be used.
     2) via full connection parametrs  ``script.py -u <email> -H host [-p password]`` then system will not use any information from setup.

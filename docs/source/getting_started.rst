@@ -35,7 +35,7 @@ Run init script:
 
 .. code-block:: sh
 
-    $ genestack-user-setup.py init
+    $ genestack-user-setup init
 
 Input email and password for genestack platform. If your email and password match setup is finished.
 
@@ -43,7 +43,7 @@ To check result execute:
 
 .. code-block:: sh
 
-    $ genestack-user-setup.py list
+    $ genestack-user-setup list
     user@email.com (default):
     email     user@email.com
     host      platform.genestack.org
@@ -69,7 +69,7 @@ You can even create couple of them for one account. To add user execute:
 
 .. code-block:: sh
 
-    $ genestack-user-setup.py add
+    $ genestack-user-setup add
 
 .. note::
 
