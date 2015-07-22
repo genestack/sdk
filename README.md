@@ -26,7 +26,7 @@
 **Note!** `make` use script `make_shell_docs.py` that generates `*.rst` files for shell scripts:
  - used for documentation creation (docs/source/scripts/):
    - `genestack-user-setup.rst`
- - shown in track, by link from repository (docs/track_docs/):
+ - shown in Trac, by link from repository (docs/track_docs/):
      - `genestack-application-manager.rst` 
      - `genestack-shell.rst`
    
