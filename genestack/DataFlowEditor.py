@@ -20,7 +20,7 @@ class DataFlowEditor(Application):
         else:
             raise GenestackException("Unknown response type: %s" % response['type'])
         if name:
-                FilesUtil(self.connection).replace_metainfo_string_value([accession], Metainfo.NAME, name)
+            FilesUtil(self.connection).replace_metainfo_string_value([accession], Metainfo.NAME, name)
         return accession
 
     def add_files(self, page_accession, node_accession, files):
