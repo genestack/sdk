@@ -11,6 +11,7 @@ class DataFlowEditor(Application):
     def create_dataflow(self, accession, name=None):
         """
         Creates dataflow based on file provenance.
+        Nodes of dataflow can be accessed by accession of corresponding file in provenance.
 
         :param accession: file accession
         :type accession: str
@@ -44,7 +45,7 @@ class DataFlowEditor(Application):
 
         :param page_accession: accession of dataflow
         :type page_accession: str
-        :param node_accession: accession of first file in node
+        :param node_accession: accession of origin file in node
         :type node_accession: str
         :param files: list of accession of files to add
         :type files: list
@@ -59,7 +60,7 @@ class DataFlowEditor(Application):
 
         :param page_accession: accession of dataflow
         :type page_accession: str
-        :param node_accession: accession of first file in node
+        :param node_accession: accession of origin file in node
         :type node_accession: str
         :rtype None
         """
