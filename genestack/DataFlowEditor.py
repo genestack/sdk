@@ -9,6 +9,17 @@ class DataFlowEditor(Application):
         self.__cache = {}
 
     def create_dataflow(self, accession, name=None):
+        """
+        Creates dataflow based on file provenance.
+
+        :param accession: file accession
+        :type accession: str
+        :param name: dataflow name
+        :type name: str
+        :return: accession of created dataflow file
+        :rtype: str
+        :raise GenestackException:
+        """
         response = self.invoke('initializeApplicationState', 'createFromSources', accession)
 
         if response['type'] == 'newPage':
@@ -24,10 +35,30 @@ class DataFlowEditor(Application):
         return accession
 
     def add_files(self, page_accession, node_accession, files):
+        """
+        Add files to node.
+
+        :param page_accession: accession of dataflow
+        :type page_accession: str
+        :param node_accession: accession of first file in node
+        :type node_accession: str
+        :param files: list of accession of files to add
+        :type files: list
+        :rtype None
+        """
         node = self.__get_node_by_accession(page_accession, node_accession)
         self.invoke('addFiles', files, node, page_accession)
 
     def clear_files(self, page_accession, node_accession):
+        """
+        Remove all files from node.
+
+        :param page_accession: accession of dataflow
+        :type page_accession: str
+        :param node_accession: accession of first file in node
+        :type node_accession: str
+        :rtype None
+        """
         node = self.__get_node_by_accession(page_accession, node_accession)
         self.invoke('clearFile', node, page_accession)
 
@@ -41,7 +72,7 @@ class DataFlowEditor(Application):
 
     def __get_node_by_accession(self, page_accession, accession):
         """
-        Return node id by its originalAccessions.
+        Return node id by its accession.
         """
         for node, node_data in self.__get_graph(page_accession)['fullGraph'].items():
             if accession in node_data['userData']['originalAccessions']:
