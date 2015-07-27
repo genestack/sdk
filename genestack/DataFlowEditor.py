@@ -54,7 +54,7 @@ class DataFlowEditor(Application):
         node = self.__get_node_by_accession(page_accession, node_accession)
         self.invoke('addFiles', files, node, page_accession)
 
-    def clear_files(self, page_accession, node_accession):
+    def clear_node(self, page_accession, node_accession):
         """
         Remove all files from node.
 
