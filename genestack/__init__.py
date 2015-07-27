@@ -20,4 +20,5 @@ from SudoUtils import SudoUtils
 from TaskLogViewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
 from CLApplications import *
+from DataFlowEditor import DataFlowEditor
 
