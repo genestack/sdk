@@ -26,12 +26,12 @@ class DataFlowEditor(Application):
         if response['type'] == 'newPage':
             accession = response['fileInfo']['accession']
         elif response['type'] == 'existingPages':
-            # If file already exists we expcet to get last created files
-            # Existing page cotains files from first to last or MAX QUERY
-            # In case if there more files then MAX QUERY (100 at current time)
-            #    Last file in response will not be real last. (It is almost impossible use case)
+            # If file already exists we expect to get the last created file.
+            # Existing page contains files from first to last (or MAX QUERY)
+            # TODO: in case there are more files then MAX QUERY (100 ATM),
+            # the last file in response will not be really last
+            # (it is almost impossible use case, though)
             file_info = response['fileInfos'][-1]
-
             accession = file_info['accession']
         else:
             raise GenestackException("Unknown response type: %s" % response['type'])
