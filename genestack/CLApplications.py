@@ -113,7 +113,7 @@ class CLApplication(Application):
         :type accession: str
         :param params: list of commandlines to be set
         :type params: list
-        :rtype: None
+        :return: None
         """
         self.invoke('changeCommandLineArguments', accession, params if isinstance(params, list) else [params])
 
@@ -124,7 +124,7 @@ class CLApplication(Application):
 
         :param accession: file accession
         :type accession: str
-        :rtype: None
+        :return: None
         """
         self.invoke('start', accession)
 
@@ -156,7 +156,7 @@ class CLApplication(Application):
         :param key: key for source files
         :param accession_to_remove: accession to remove
         :param accession_to_add: accession to add
-        :rtype: None
+        :return: None
         """
         self.invoke('replaceFileReference', accession, key, accession_to_remove, accession_to_add)
 
