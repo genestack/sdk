@@ -151,42 +151,6 @@ class TestCLApplication(CLApplication):
     APPLICATION_ID = 'genestack/testcla'
 
 
-class BsmapApplication(CLApplication):
-    APPLICATION_ID = 'genestack/bsmap'
-
-
-class UnalignedReadsQC(CLApplication):
-    APPLICATION_ID = 'genestack/unalignedreads-qc'
-
-
-class FastQCApplicaton(CLApplication):
-    APPLICATION_ID = 'genestack/fastqc-report'
-
-
-class AlignedReadsQC(CLApplication):
-    APPLICATION_ID = 'genestack/alignedreads-qc'
-
-
-class MethratioApplication(CLApplication):
-    APPLICATION_ID = 'genestack/methratio'
-
-
-class HTSeqCountsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/htseqCount'
-
-
-class NormalizationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/normalization'
-
-
-class TophatApplication(CLApplication):
-    APPLICATION_ID = 'genestack/tophat'
-
-
-class VariationCallerApplication(CLApplication):
-    APPLICATION_ID = 'genestack/variationCaller'
-
-
 # Preprocess
 # preprocess unaligned reads
 
@@ -215,20 +179,32 @@ class TrimLowQualityBases(CLApplication):
 
 
 # preprocess mapped reads
+
 class MarkDuplicated(CLApplication):
     APPLICATION_ID = 'genestack/markDuplicates'
 
 
-class RemoveDuplicates(CLApplication):
+class RemoveDuplicated(CLApplication):
     APPLICATION_ID = 'genestack/removeDuplicates'
 
 
-# analize
-class VariationCaller2Application(CLApplication):
-    APPLICATION_ID = 'genestack/variationCaller-v2'
+class MergeMappedReadsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/merge-mapped-reads'
 
 
-# Unsorted
+# preprocess variants
+
+class VariationMergerApplication(CLApplication):
+    APPLICATION_ID = 'genestack/merge-vcf'
+
+
+class ConcatenateVariantsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/concatenate-variants'
+
+
+# Analise
+# analyse unaligned reads
+
 class BowtieApplication(CLApplication):
     APPLICATION_ID = 'genestack/bowtie'
 
@@ -241,27 +217,55 @@ class BWAApplication(CLApplication):
     APPLICATION_ID = 'genestack/bwaMapper'
 
 
-class RemoveDuplicated(CLApplication):
-    APPLICATION_ID = 'genestack/removeDuplicates'
+class BsmapApplication(CLApplication):
+    APPLICATION_ID = 'genestack/bsmap'
 
 
-class ConcatenateVariantsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/concatenate-variants'
+class TophatApplication(CLApplication):
+    APPLICATION_ID = 'genestack/tophat'
 
 
-class VariationMergerApplication(CLApplication):
-    APPLICATION_ID = 'genestack/merge-vcf'
-
+# analyse mapped reads
 
 class CuffquantApplication(CLApplication):
     APPLICATION_ID = 'genestack/cuffquant'
 
 
-class MergeMappedReadsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/samtools-merge'
+class MethratioApplication(CLApplication):
+    APPLICATION_ID = 'genestack/methratio'
 
+
+class HTSeqCountsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/htseqCount'
+
+
+class VariationCallerApplication(CLApplication):
+    APPLICATION_ID = 'genestack/variationCaller'
+
+
+class VariationCaller2Application(CLApplication):
+    APPLICATION_ID = 'genestack/variationCaller-v2'
+
+
+class NormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/normalization'
+
+
+# analyse variants
 
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
 
 
+# Explore apps
+
+class UnalignedReadsQC(CLApplication):
+    APPLICATION_ID = 'genestack/unalignedreads-qc'
+
+
+class FastQCApplicaton(CLApplication):
+    APPLICATION_ID = 'genestack/fastqc-report'
+
+
+class AlignedReadsQC(CLApplication):
+    APPLICATION_ID = 'genestack/alignedreads-qc'
