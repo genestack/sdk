@@ -188,12 +188,7 @@ class VariationCallerApplication(CLApplication):
 
 
 # Preprocess
-# preprocess raw reads
-
-# TODO remove this class, this old name leaved here for compatibility
-class TrimAdaptorsAndContiminations(CLApplication):
-    APPLICATION_ID = 'genestack/fastq-mcf'
-
+# preprocess unaligned reads
 
 class TrimAdaptorsAndContaminants(CLApplication):
     APPLICATION_ID = 'genestack/fastq-mcf'
