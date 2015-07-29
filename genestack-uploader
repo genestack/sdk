@@ -15,7 +15,7 @@ from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
 from argparse import RawTextHelpFormatter
-from genestack_cli import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
+from genestack_client import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
 
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
