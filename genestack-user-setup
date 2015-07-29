@@ -14,9 +14,9 @@ from argparse import ArgumentParser
 import os
 import re
 from getpass import getpass
-from genestack import GenestackException, get_connection
-from genestack.GenestackShell import GenestackShell, Command
-from genestack.settings import DEFAULT_HOST, User, config
+from genestack_cli import GenestackException, get_connection
+from genestack_cli.GenestackShell import GenestackShell, Command
+from genestack_cli.settings import DEFAULT_HOST, User, config
 
 
 def ask_host():

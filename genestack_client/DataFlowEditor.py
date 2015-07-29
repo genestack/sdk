@@ -1,4 +1,4 @@
-from genestack import Application, FilesUtil, Metainfo, GenestackException
+from genestack_client import Application, FilesUtil, Metainfo, GenestackException
 
 
 class DataFlowEditor(Application):
