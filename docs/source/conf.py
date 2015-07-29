@@ -55,7 +55,7 @@ copyright = u'2015, Genestack'
 # The short X.Y version.
 import sys
 sys.path.append('..')
-from genestack_clientent import __version__
+from genestack_client import __version__
 
 
 version = '.'.join(__version__.split('.')[:2])

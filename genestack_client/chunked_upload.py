@@ -16,8 +16,8 @@ from datetime import datetime
 from io import BytesIO
 from threading import Thread, Lock, Condition
 from requests.exceptions import RequestException
-from genestack_clientent.utils import isatty
-from genestack_clientent.Exceptions import GenestackException
+from genestack_client.utils import isatty
+from genestack_client.Exceptions import GenestackException
 
 RETRY_ATTEMPTS = 5
 RETRY_INTERVAL = 2  # seconds

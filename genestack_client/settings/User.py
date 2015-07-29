@@ -9,8 +9,8 @@
 #
 
 from getpass import getpass
-from genestack_clientent import GenestackException, Connection
-from genestack_clientent.utils import isatty
+from genestack_client import GenestackException, Connection
+from genestack_client.utils import isatty
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -33,7 +33,7 @@ class User(object):
         If no ``host`` specified DEFAULT_HOST be used.
 
         If you login interactively no ``email`` or ``password`` required.
-        alias is used to find user in :py:func:`~genestack_clientent.utils.get_user`
+        alias is used to find user in :py:func:`~genestack_client.utils.get_user`
 
 
         :param email: email
