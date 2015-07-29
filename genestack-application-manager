@@ -16,8 +16,8 @@ import zipfile
 import xml.dom.minidom as minidom
 import json
 from collections import namedtuple
-from genestack import GenestackException
-from genestack.GenestackShell import GenestackShell, Command
+from genestack_cli import GenestackException
+from genestack_cli.GenestackShell import GenestackShell, Command
 
 
 def validate_application_id(app_id):

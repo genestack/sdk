@@ -9,8 +9,8 @@
 #
 
 from getpass import getpass
-from genestack import GenestackException, Connection
-from genestack.utils import isatty
+from genestack_cli import GenestackException, Connection
+from genestack_cli.utils import isatty
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -33,7 +33,7 @@ class User(object):
         If no ``host`` specified DEFAULT_HOST be used.
 
         If you login interactively no ``email`` or ``password`` required.
-        alias is used to find user in :py:func:`~genestack.utils.get_user`
+        alias is used to find user in :py:func:`~genestack_cli.utils.get_user`
 
 
         :param email: email
@@ -59,7 +59,7 @@ class User(object):
         :param interactive: ask email or/and password interactively.
         :type interactive: bool
         :return: logged connection
-        :rtype: :py:class:`~genestack.Connection.Connection`
+        :rtype: :py:class:`~genestack_cli.Connection.Connection`
         """
         connection = Connection(_get_server_url(self.host))
         if self.email and self.password:

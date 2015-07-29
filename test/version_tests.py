@@ -15,8 +15,8 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack import GenestackException, get_connection
-from genestack.version import __version__
+from genestack_cli import GenestackException, get_connection
+from genestack_cli.version import __version__
 
 
 def test_current_version():

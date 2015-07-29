@@ -55,7 +55,7 @@ def get_user(args=None):
     :param args: result of commandline parse
     :type args: argparse.Namespace
     :return: user
-    :rtype: :py:class:`~genestack.settings.User.User`
+    :rtype: :py:class:`~genestack_cli.settings.User.User`
     """
 
     from settings import config, User
@@ -74,12 +74,12 @@ def get_user(args=None):
 
 def get_connection(args=None):
     """
-    Shortcut to :py:func:`get_user` . :py:meth:`~genestack.settings.User.User.get_connection`
+    Shortcut to :py:func:`get_user` . :py:meth:`~genestack_cli.settings.User.User.get_connection`
 
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: :py:class:`~genestack.Connection.Connection`
+    :rtype: :py:class:`~genestack_cli.Connection.Connection`
     """
     user = get_user(args)
     return user.get_connection(interactive=True)

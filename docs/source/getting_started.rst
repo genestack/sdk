@@ -4,7 +4,7 @@ Getting Started with Genestack Python Client Library
 Installing genestack
 ********************
 
-- clone `repo <https://github.com/genestack/pythonSDK/>`_ or download and unpack  `latest release <https://github.com/genestack/pythonSDK/releases/latest/>`_
+- clone `repo <https://github.com/genestack/python-client/>`_ or download and unpack  `latest release <https://github.com/genestack/python-client/releases/latest/>`_
 - navigate to repository folder or unpacked folder
 
 
@@ -22,7 +22,7 @@ Test your installation:
 
 .. code-block:: sh
 
-    $ python -c 'import genestack; print genestack.__version__'
+    $ python -c 'import genestack_cli; print genestack_cli.__version__'
 
 
 Configuring Credentials
@@ -93,7 +93,7 @@ You can specify other user by adding ``-u <alias>`` to command line argument.
 
 **Get connection**::
 
-    from genestack import get_connection
+    from genestack_cli import get_connection
 
     connection = get_connection()
     print connection.whoami()
@@ -118,7 +118,7 @@ You can specify other user by adding ``-u <alias>`` to command line argument.
 
 **Connection with additional script arguments**::
 
-    from genestack import get_connection, make_connection_parser
+    from genestack_cli import get_connection, make_connection_parser
 
     # create instance of argparse.ArgumentParser with predefined arguments for connection
     parser = make_connection_parser()
@@ -170,7 +170,7 @@ This approach required more efforts and require to store your password as plain 
 
 .. code-block:: python
 
-    from genestack import Connection
+    from genestack_cli import Connection
 
     # crease connection object for server
     connection = Connection('https://platform.genestack.org/endpoint')
@@ -192,7 +192,7 @@ Calling application methods with connection
 
 To call application method you need to know application_id and method name::
 
-    from genestack import get_connection
+    from genestack_cli import get_connection
 
 
     connection = get_connection()
@@ -201,7 +201,7 @@ To call application method you need to know application_id and method name::
 
 If your application have a lot of methods you may create own class::
 
-    from genestack import Application, get_connection
+    from genestack_cli import Application, get_connection
 
 
     class SignIn(Application):
@@ -217,7 +217,7 @@ If your application have a lot of methods you may create own class::
 
 Calling method with arguments::
 
-    from genestack import get_connection, Metainfo, PRIVATE
+    from genestack_cli import get_connection, Metainfo, PRIVATE
 
 
     connection = get_connection()
@@ -238,12 +238,12 @@ File utils used for common file operations: find, link, remove and share.
 
 To work with FilesUtil you need to connection::
 
-    >>> from genestack import get_connection
+    >>> from genestack_cli import get_connection
     >>> connection = get_connection()
 
 Create instance::
 
-    >>> from genestack import FilesUtil
+    >>> from genestack_cli import FilesUtil
     >>> file_utils = FilesUtil(connection)
 
 
@@ -275,12 +275,12 @@ Importers
 
 First step you need connection::
 
-    >>> from genestack import get_connection
+    >>> from genestack_cli import get_connection
     >>> connection = get_connection()
 
 To import data instantiate data importer with connection::
 
-    >>> from genestack import DataImporter
+    >>> from genestack_cli import DataImporter
     >>> importer = DataImporter(connection)
 
 Create experiment in ``Imported files``::
@@ -307,7 +307,7 @@ To find out file in system print result::
 
 Start file initialization::
 
-    >>> from genestack import FileInitializer
+    >>> from genestack_cli import FileInitializer
     >>> initializer = FileInitializer(connection)
     >>> initializer.initialize([assay])
     >>> print 'Start initialization of %s' % assay
@@ -326,9 +326,9 @@ TaskLogViewer
 
 Create connection and viewer::
 
-    >>> from genestack import get_connection
+    >>> from genestack_cli import get_connection
     >>> connection = get_connection()
-    >>> from genestack import TaskLogViewer
+    >>> from genestack_cli import TaskLogViewer
     >>> log_viewer = DataImporter(connection)
 
 Check stderr log for file::

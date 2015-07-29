@@ -10,12 +10,12 @@
 #
 
 from distutils.core import setup
-exec(open('genestack/version.py').read())
+exec(open('genestack_cli/version.py').read())
 
 setup(
-    name='genestack',
+    name='genestack_cli',
     version=__version__,
-    packages=['genestack', 'genestack.settings'],
+    packages=['genestack_cli', 'genestack_cli.settings'],
     url='',
     license='',
     author='Genestack Limited',

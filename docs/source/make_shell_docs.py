@@ -1,7 +1,7 @@
 import os
 import imp
-from genestack.GenestackShell import get_help
-from genestack import make_connection_parser
+from genestack_cli.GenestackShell import get_help
+from genestack_cli import make_connection_parser
 
 import sys
 sys.path.append('..')
@@ -78,8 +78,8 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
 
 
 def main():
-    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('..', 'trac_docs', 'genestack-application-manager.rst'))
-    generate_rst_doc('genestack-shell', 'Shell', None, os.path.join('..', 'trac_docs', 'genestack-shell.rst'))
+    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('scripts', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-shell', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
     generate_rst_doc('genestack-user-setup', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 
 

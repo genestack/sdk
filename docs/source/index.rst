@@ -1,5 +1,5 @@
-Welcome to Genestack Python Client Library
-==========================================
+Genestack Python Client
+=======================
 
 
 Genestack Python Client Library will help you to automate server interactions.
