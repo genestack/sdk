@@ -392,6 +392,31 @@ class DataImporter(object):
             metainfo.add_external_link(BioMetainfo.DATA_LINK, link)
         return self.__invoke_loader('genestack/variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
 
+    def create_GWASCatalog(self, parent=None, link=None, name=None, organism=None, metainfo=None):
+        """
+        Create GWASCatalog file.  name and link are required.
+
+        :param parent: accession of parent folder leave empty for ``Imported files``
+        :type parent: str
+        :param link: link or local path
+        :type link: str
+        :param name: name of the file
+        :type name: str
+        :param organism: organism
+        :type organism: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or BioMetainfo()
+        metainfo.add_string(BioMetainfo.DATABASE_ID, 'GWAS Catalog 1.0')
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        if link:
+            metainfo.add_external_link(BioMetainfo.DATA_LINK, link)
+        return self.__invoke_loader('genestack/variationDatabaseLoader', 'addGWASCatalogue', parent, metainfo)
+
     def create_reference_genome(self,
                                 parent=None,
                                 name=None,
