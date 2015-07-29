@@ -87,7 +87,7 @@ class Command(object):
         To add new argument to command overwrite :py:meth:`update_parser` method
 
         :param parser: base argument parser, for OFFLINE commands and commands inside shell it will be None,
-            for other cases it will be result of :py:func:`~genestack_cli.utils.make_connection_parser`
+            for other cases it will be result of :py:func:`~genestack_clientent.utils.make_connection_parser`
         :type parser: argparse.ArgumentParser
         :return: parser
         :rtype: argparse.ArgumentParser
@@ -114,7 +114,7 @@ class Command(object):
         Set connection to command.
 
         :param conn: connection
-        :type conn: genestack_cli.Connection.Connection
+        :type conn: genestack_clientent.Connection.Connection
         """
         self.connection = conn
 
@@ -277,7 +277,7 @@ class GenestackShell(cmd.Cmd):
         :param argument_line: argument string for command
         :type argument_line: str
         :param connection: connection, for OFFLINE command can be None
-        :param connection: genestack_cli.Connection.Connection
+        :param connection: genestack_clientent.Connection.Connection
         :param shell: flag if shell mode
         :type shell: bool
         """

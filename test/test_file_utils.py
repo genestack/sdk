@@ -16,7 +16,7 @@ import pytest
 
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack_cli import (FilesUtil, GenestackException, GenestackServerException, get_connection,
+from genestack_client import (FilesUtil, GenestackException, GenestackServerException, get_connection,
                        make_connection_parser, SpecialFolders)
 
 @pytest.fixture(scope='module')

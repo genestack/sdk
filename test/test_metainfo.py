@@ -16,7 +16,7 @@ from datetime import date, datetime
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack_cli import Metainfo, GenestackException
+from genestack_client import Metainfo, GenestackException
 
 
 @pytest.fixture

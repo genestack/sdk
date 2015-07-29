@@ -15,9 +15,9 @@ from urllib2 import URLError
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack_cli import Connection, GenestackException
-from genestack_cli import get_user
-from genestack_cli.settings.User import _get_server_url
+from genestack_client import Connection, GenestackException
+from genestack_client import get_user
+from genestack_client.settings.User import _get_server_url
 
 
 wrong_url = 'http://localhost:9999/aaaaz'

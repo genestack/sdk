@@ -10,7 +10,7 @@
 
 import time
 import sys
-from genestack_cli import GenestackException
+from genestack_clientent import GenestackException
 
 from Connection import Application
 
