@@ -8,6 +8,7 @@
 # actual or intended publication of such source code.
 #
 
+from urllib import quote
 from urlparse import urlparse
 import os
 import sys
@@ -59,7 +60,7 @@ class DataImporter(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def replace_links_to_raw_files(self, metainfo):
+    def __process_links(self, metainfo):
         all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
         for key, external_link_list in all_links:
             links = [x['url'] for x in external_link_list]
@@ -70,6 +71,9 @@ class DataImporter(object):
                     # Or put it to special metaKey?
                     raw = self.load_raw(external_link['url'])
                     metainfo.add_file_reference(key, raw)
+            else:
+                for x in external_link_list:
+                    x['url'] = quote(x['url'], safe='/:')
 
     @staticmethod
     def __are_files_local(links):
@@ -99,7 +103,8 @@ class DataImporter(object):
         return None
 
     def __invoke_loader(self, application, method, parent, metainfo):
-        self.replace_links_to_raw_files(metainfo)
+        self.__process_links(metainfo)
+
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
         # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
         try:
