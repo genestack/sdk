@@ -10,7 +10,7 @@
 
 import os
 import platform
-from genestack import GenestackException
+from genestack_client import GenestackException
 from xml.dom.minidom import getDOMImplementation, parse
 from User import User
 from copy import deepcopy
@@ -86,7 +86,7 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            print 'Warning: config is not present. You can setup it via: genestack-user-setup.py init'
+            print 'Warning: config is not present. You can setup it via: genestack-user-setup init'
             return  # check that this return handled everywhere
 
         def get_text(parent, tag):

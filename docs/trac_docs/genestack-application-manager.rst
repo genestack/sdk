@@ -1,8 +1,8 @@
 
-genestack-application-manager.py
+genestack-application-manager
 ================================
 
-genestack-application-manager installed with pythonSDK and accessed as ``genestack-application-manager.py``.
+genestack-application-manager installed with Python Client Library and accessed as ``genestack-application-manager``.
 
 
 Usage
@@ -11,7 +11,7 @@ This script can be used both as shell and command line:
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
+    usage: genestack-application-manager [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
     Application manager is a script that lets you to add new applications into the
     system, remove your uploaded applications from the system, list available
@@ -36,7 +36,7 @@ You can get description for every ``command`` by running:
 
   .. code-block:: text
 
-    $ genestack-application-manager.py command -h
+    $ genestack-application-manager command -h
 
 
 In shell mode type ``help`` to get list of available commands.
@@ -51,7 +51,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py applications [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager applications [-h] [-H <host>] [-u <user>] [-p <password>]
     
     Show information about available applications.
     
@@ -70,7 +70,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py info [-h] [-f] [-F] [--vendor]
+    usage: genestack-application-manager info [-h] [-f] [-F] [--vendor]
                              <jar_file_or_folder> [<jar_file_or_folder> ...]
     
     Read and show info from applications JAR file.
@@ -91,7 +91,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py install [-h] [-H <host>] [-u <user>] [-p <password>] [-o]
+    usage: genestack-application-manager install [-h] [-H <host>] [-u <user>] [-p <password>] [-o]
                                 [-s] [-S <scope>]
                                 <version> <jar_file_or_folder>
                                 [<jar_file_or_folder> ...]
@@ -123,7 +123,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py invoke [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager invoke [-h] [-H <host>] [-u <user>] [-p <password>]
                                <appId> <method> [<args> [<args> ...]]
     
     Invoke method of stable application.
@@ -148,7 +148,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py reload [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager reload [-h] [-H <host>] [-u <user>] [-p <password>]
                                <version> <appId> [<appId> ...]
     
     Reload specific version of applications.
@@ -172,7 +172,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py remove [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager remove [-h] [-H <host>] [-u <user>] [-p <password>]
                                <version> <appId> [<appId> ...]
     
     Remove specific version of applications.
@@ -196,7 +196,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py stable [-h] [-H <host>] [-u <user>] [-p <password>]
+    usage: genestack-application-manager stable [-h] [-H <host>] [-u <user>] [-p <password>]
                                [-S <scope>]
                                <version> <appId> [<appId> ...]
     
@@ -225,7 +225,7 @@ Commands
 
   .. code-block:: text
 
-    usage: genestack-application-manager.py versions [-h] [-H <host>] [-u <user>] [-p <password>] [-s]
+    usage: genestack-application-manager versions [-h] [-H <host>] [-u <user>] [-p <password>] [-s]
                                  [-o]
                                  <appId>
     
@@ -259,7 +259,7 @@ Installing applications
 
 - If you want to install new JAR file with applications, you simply execute::
 
-        genestack-application-manager.py -r root install my-version path/to/file.jar
+        genestack-application-manager -r root install my-version path/to/file.jar
 
 
 - If you have your JAR file inside some folder, and this is the only JAR file inside the folder and all its subfolders,
@@ -268,24 +268,24 @@ Installing applications
   **NOTE**: when you specify folder path instead of JAR path, then the folder and all its subfolders are searched for JAR files; if only one JAR is found — it is installed, otherwise error is reported.
   ::
 
-    genestack-application-manager.py -r root install my-version path/to/folder
+    genestack-application-manager -r root install my-version path/to/folder
 
 
 - If you want to install new JAR and also mark all applications from that JAR as stable for your current user, then you can use ``-s`` key of ``install`` command (application manager has default stable scope "user")::
 
-    genestack-application-manager.py install -s my-version path/to/file.jar
+    genestack-application-manager install -s my-version path/to/file.jar
 
 - If you want to make applications globally stable, you should specify ``system`` scope with ``-S`` key::
 
-    genestack-application-manager.py install -s -S system my-version path/to/file.jar
+    genestack-application-manager install -s -S system my-version path/to/file.jar
 
 - Otherwise, you can use ``stable`` command after installing JAR file::
 
     JAR=path/to/file.jar
     VERSION=my-version
-    genestack-application-manager.py install $VERSION $JAR
-    for A in $(genestack-application-manager.py info $JAR | tail -n+3); do
-        genestack-application-manager.py stable -S system $VERSION $A
+    genestack-application-manager install $VERSION $JAR
+    for A in $(genestack-application-manager info $JAR | tail -n+3); do
+        genestack-application-manager stable -S system $VERSION $A
     done
 
 - If you want to reinstall your applications later with the same version (no matter if this version was marked as stable),
@@ -296,31 +296,31 @@ Installing applications
   - key ``-o`` removes global stable mark, so if you overwrite globally stable version, then after that no globally stable version will be available.
   ::
 
-    genestack-application-manager.py install -o my-version path/to/file.jar
+    genestack-application-manager install -o my-version path/to/file.jar
 
 - Sometimes you need to upload JAR file with many applications and mark as stable only one application from that JAR.
   In this case you should use ``install`` and ``stable`` commands::
 
-    genestack-application-manager.py install my-version path/to/file.jar
-    genestack-application-manager.py stable my-version vendor/appIdFromJarFile
+    genestack-application-manager install my-version path/to/file.jar
+    genestack-application-manager stable my-version vendor/appIdFromJarFile
 
 Removing all your applications
 ------------------------------
 
 - If you want to remove all your applications, just enter the following command::
 
-    for A in $(genestack-application-manager.py applications); do
-        for V in $(genestack-application-manager.py versions -o $A); do
-            genestack-application-manager.py remove $V $A
+    for A in $(genestack-application-manager applications); do
+        for V in $(genestack-application-manager versions -o $A); do
+            genestack-application-manager remove $V $A
         done
     done
 
 - If you want to remove only those your applications that were loaded from specific JAR file, then::
 
     JAR=path/to/file.jar
-    for A in $(genestack-application-manager.py info $JAR | tail -n+3); do
-        for V in $(genestack-application-manager.py versions -o $A); do
-            genestack-application-manager.py remove $V $A
+    for A in $(genestack-application-manager info $JAR | tail -n+3); do
+        for V in $(genestack-application-manager versions -o $A); do
+            genestack-application-manager remove $V $A
         done
     done
 

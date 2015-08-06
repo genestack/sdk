@@ -15,7 +15,7 @@ from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
 from argparse import RawTextHelpFormatter
-from genestack import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
+from genestack_client import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
 
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
@@ -93,6 +93,7 @@ def get_files(paths):
     for path in paths:
         if os.path.isfile(path):
             files_list.append(path)
+            total_size += os.path.getsize(path)
             continue
         for base, folders, files in os.walk(path, followlinks=False):
             for f in files:
@@ -149,7 +150,7 @@ def recognize_files(connection, accession_file_map, new_folder):
     if unrecognized_file_infos:
         print 'Unrecognized Raw Files'
         for accession in unrecognized_file_infos:
-            print '\t%s / %s' % (accession, accession_file_map[accession])
+            print '\t%s / %s' % (accession, accession_file_map[accession].decode('utf-8'))
         # move unrecognized files to new folder
         unrecognized_folder = fu.create_folder("Unrecognized files", parent=new_folder)
         for accession in unrecognized_file_infos:

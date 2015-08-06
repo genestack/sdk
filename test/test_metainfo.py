@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+
 #
 # Copyright (c) 2011-2015 Genestack Limited
 # All Rights Reserved
@@ -6,12 +9,14 @@
 # actual or intended publication of such source code.
 #
 
+import os
 import sys
-sys.path.insert(0, '../')
+from datetime import date, datetime
 
 import pytest
-from genestack import Metainfo, GenestackException
-from datetime import date, datetime
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from genestack_client import Metainfo, GenestackException
 
 
 @pytest.fixture

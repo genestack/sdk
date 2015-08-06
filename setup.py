@@ -10,17 +10,17 @@
 #
 
 from distutils.core import setup
-exec(open('genestack/version.py').read())
+exec(open('genestack_client/version.py').read())
 
 setup(
-    name='genestack',
+    name='genestack_client',
     version=__version__,
-    packages=['genestack', 'genestack.settings'],
+    packages=['genestack_client', 'genestack_client.settings'],
     url='',
     license='',
     author='Genestack Limited',
     author_email='',
-    description='Genestack API',
-    scripts=['genestack-user-setup.py', 'genestack-application-manager.py', 'genestack-uploader.py'],
-    install_requires=['keyring', 'requests']
+    description='Genestack Python Client Library',
+    scripts=['genestack-user-setup', 'genestack-application-manager', 'genestack-uploader', 'genestack-shell'],
+    install_requires=['keyring', 'requests[security]']
 )

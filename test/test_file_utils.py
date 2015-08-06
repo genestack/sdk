@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+
 #
 # Copyright (c) 2011-2015 Genestack Limited
 # All Rights Reserved
@@ -6,14 +9,14 @@
 # actual or intended publication of such source code.
 #
 
+import os
 import sys
-sys.path.insert(0, '../')
-
 from uuid import uuid4
-
 import pytest
 
-from genestack import (FilesUtil, GenestackException, GenestackServerException, get_connection,
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from genestack_client import (FilesUtil, GenestackException, GenestackServerException, get_connection,
                        make_connection_parser, SpecialFolders)
 
 @pytest.fixture(scope='module')

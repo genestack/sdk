@@ -1,16 +1,17 @@
 import os
-from genestack.GenestackShell import get_help
-from genestack import make_connection_parser
+import imp
+from genestack_client.GenestackShell import get_help
+from genestack_client import make_connection_parser
 
 import sys
 sys.path.append('..')
 
 
 template = """
-{name}.py
+{name}
 {name_underline}===
 
-{name} installed with pythonSDK and accessed as ``{name}.py``.
+{name} installed with Python Client Library and accessed as ``{name}``.
 
 
 Usage
@@ -25,7 +26,7 @@ You can get description for every ``command`` by running:
 
   .. code-block:: text
 
-    $ {name}.py command -h
+    $ {name} command -h
 
 
 In shell mode type ``help`` to get list of available commands.
@@ -43,19 +44,19 @@ Commands
 
 
 def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
-    shell_module = __import__(shell_name)
+    shell_module = imp.load_source(shell_name, os.path.join(os.path.dirname(__file__), '..', '..', shell_name))
     shell = getattr(shell_module, class_name)
 
     tool_file_name = os.path.basename(shell_name)
     commands = []
 
     script_help = get_help(shell().get_shell_parser()).replace("\n", "\n    ").replace('sphinx-build',
-                                                                                       tool_file_name + '.py')
+                                                                                       tool_file_name)
 
     for command in sorted(shell.COMMAND_LIST, key=lambda x: x.COMMAND):
         command = command()
         parser = command.get_command_parser(parser=None if command.OFFLINE else make_connection_parser())
-        help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name + '.py')
+        help_text = get_help(parser).replace("\n", "\n    ").replace('sphinx-build', tool_file_name)
         text = '- **%s**:\n\n  .. code-block:: text\n\n    %s\n\n' % (command.COMMAND, help_text)
         commands.append(text)
 
@@ -77,7 +78,8 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
 
 
 def main():
-    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('..', 'track_docs', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_header.txt', os.path.join('scripts', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-shell', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
     generate_rst_doc('genestack-user-setup', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 
 

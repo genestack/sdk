@@ -9,50 +9,50 @@ API reference
 GenestackException
 ******************
 
-.. autoclass:: genestack.GenestackException
+.. autoclass:: genestack_client.GenestackException
         :members:
 
 
 GenestackServerException
 ************************
 
-.. autoclass:: genestack.GenestackServerException
+.. autoclass:: genestack_client.GenestackServerException
         :members:
 
 
 Connection
 **********
 
-.. autoclass:: genestack.Connection
+.. autoclass:: genestack_client.Connection
         :members:
 
 Application
 ***********
 
-.. autoclass:: genestack.Application
+.. autoclass:: genestack_client.Application
         :members:
 
 
 Metainfo
 ********
 
-.. autoclass:: genestack.Metainfo
+.. autoclass:: genestack_client.Metainfo
         :members:
         :show-inheritance:
 
-        .. autoattribute:: genestack.Metainfo.YEAR
-        .. autoattribute:: genestack.Metainfo.MONTH
-        .. autoattribute:: genestack.Metainfo.WEEK
-        .. autoattribute:: genestack.Metainfo.DAY
-        .. autoattribute:: genestack.Metainfo.HOUR
-        .. autoattribute:: genestack.Metainfo.MINUTE
-        .. autoattribute:: genestack.Metainfo.SECOND
-        .. autoattribute:: genestack.Metainfo.MILLISECOND
+        .. autoattribute:: genestack_client.Metainfo.YEAR
+        .. autoattribute:: genestack_client.Metainfo.MONTH
+        .. autoattribute:: genestack_client.Metainfo.WEEK
+        .. autoattribute:: genestack_client.Metainfo.DAY
+        .. autoattribute:: genestack_client.Metainfo.HOUR
+        .. autoattribute:: genestack_client.Metainfo.MINUTE
+        .. autoattribute:: genestack_client.Metainfo.SECOND
+        .. autoattribute:: genestack_client.Metainfo.MILLISECOND
 
 BioMetainfo
 ***********
 
-.. autoclass:: genestack.BioMetainfo
+.. autoclass:: genestack_client.BioMetainfo
         :members:
         :show-inheritance:
 
@@ -61,23 +61,22 @@ BioMetainfo
 DataImporter
 ************
 
-.. autoclass:: genestack.DataImporter
+.. autoclass:: genestack_client.DataImporter
         :members:
 
 FileInitializer
 ***************
 
-.. autoclass:: genestack.FileInitializer
+.. autoclass:: genestack_client.FileInitializer
         :members:
         :show-inheritance:
-
 
 .. _FilesUtil:
 
 FilesUtil
 *********
 
-.. autoclass:: genestack.FilesUtil
+.. autoclass:: genestack_client.FilesUtil
         :members:
         :show-inheritance:
 
@@ -85,144 +84,139 @@ FilesUtil
 SpecialFolders
 **************
 
-.. autoclass:: genestack.SpecialFolders
+.. autoclass:: genestack_client.SpecialFolders
         :members:
 
 SudoUtils
 *********
 
-.. autoclass:: genestack.SudoUtils
+.. autoclass:: genestack_client.SudoUtils
         :members:
         :show-inheritance:
 
 
 CLApplication
 *************
-.. autoclass:: genestack.CLApplication
+.. autoclass:: genestack_client.CLApplication
         :members:
 
 
 TestCLApplication
 =================
 
-.. autoclass:: genestack.TestCLApplication
+.. autoclass:: genestack_client.TestCLApplication
         :members:
 
 BsmapApplication
 ================
 
-.. autoclass:: genestack.BsmapApplication
+.. autoclass:: genestack_client.BsmapApplication
         :members:
 
 UnalignedReadsQC
 ================
 
-.. autoclass:: genestack.UnalignedReadsQC
+.. autoclass:: genestack_client.UnalignedReadsQC
         :members:
 
 MethratioApplication
 ====================
 
-.. autoclass:: genestack.MethratioApplication
+.. autoclass:: genestack_client.MethratioApplication
         :members:
 
 HTSeqCountsApplication
 ======================
 
-.. autoclass:: genestack.HTSeqCountsApplication
+.. autoclass:: genestack_client.HTSeqCountsApplication
         :members:
 
 NormalizationApplication
 ========================
 
-.. autoclass:: genestack.NormalizationApplication
+.. autoclass:: genestack_client.NormalizationApplication
         :members:
 
 TophatApplication
 =================
 
-.. autoclass:: genestack.TophatApplication
+.. autoclass:: genestack_client.TophatApplication
         :members:
 
 VariationCallerApplication
 ==========================
 
-.. autoclass:: genestack.VariationCallerApplication
-        :members:
-
-TrimAdaptorsAndContiminations
-=============================
-
-.. autoclass:: genestack.TrimAdaptorsAndContiminations
+.. autoclass:: genestack_client.VariationCallerApplication
         :members:
 
 FilterByQuality
 ===============
 
-.. autoclass:: genestack.FilterByQuality
+.. autoclass:: genestack_client.FilterByQuality
         :members:
 
 TrimToFixedLength
 =================
 
-.. autoclass:: genestack.TrimToFixedLength
+.. autoclass:: genestack_client.TrimToFixedLength
         :members:
 
 SubsampleReads
 ==============
 
-.. autoclass:: genestack.SubsampleReads
+.. autoclass:: genestack_client.SubsampleReads
         :members:
 
 FilterDuplicatedReads
 =====================
 
-.. autoclass:: genestack.FilterDuplicatedReads
+.. autoclass:: genestack_client.FilterDuplicatedReads
         :members:
 
 TrimLowQualityBases
 ===================
 
-.. autoclass:: genestack.TrimLowQualityBases
+.. autoclass:: genestack_client.TrimLowQualityBases
         :members:
 
 MarkDuplicated
 ==============
 
-.. autoclass:: genestack.MarkDuplicated
-        :members:
-
-RemoveDuplicates
-================
-
-.. autoclass:: genestack.RemoveDuplicates
+.. autoclass:: genestack_client.MarkDuplicated
         :members:
 
 get_connection
 **************
 
-.. autofunction:: genestack.get_connection
+.. autofunction:: genestack_client.get_connection
 
 make_connection_parser
 **********************
 
-.. autofunction:: genestack.make_connection_parser
+.. autofunction:: genestack_client.make_connection_parser
 
 get_user
 ********
 
-.. autofunction:: genestack.get_user
+.. autofunction:: genestack_client.get_user
 
 
 settings.User
 *************
 
-.. autoclass:: genestack.settings.User
+.. autoclass:: genestack_client.settings.User
         :members:
 
 settings.GenestackShell
 ***********************
 
-.. autoclass:: genestack.GenestackShell.GenestackShell
+.. autoclass:: genestack_client.GenestackShell.GenestackShell
         :members:
 
+.. _TaskLogViewer:
+
+TaskLogViewer
+*************
+
+.. autoclass:: genestack_client.TaskLogViewer
+        :members:

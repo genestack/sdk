@@ -9,16 +9,15 @@
 # actual or intended publication of such source code.
 #
 
+import os
 import sys
-sys.path.insert(0, '../')
-
 from urllib2 import URLError
-
 import pytest
 
-from genestack import Connection, GenestackException
-from genestack import get_user
-from settings.User import _get_server_url
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from genestack_client import Connection, GenestackException
+from genestack_client import get_user
+from genestack_client.settings.User import _get_server_url
 
 
 wrong_url = 'http://localhost:9999/aaaaz'

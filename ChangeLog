@@ -1,3 +1,13 @@
+* version 0.1.8
+  * Rename pythonSDK to Python Client Library
+
+* version 0.1.7
+  * Add TaskLogViewer application binding.
+  * Rename arguments with `link` in name to `url` in DataImporter fro consistency (old arguments still present, for compatibility,
+                                                                will be removed on next release.)
+  * Remove extension from all installable scripts `genestack-application-manager.py` -> `genestack-application-manager`
+  * Server version checked at login. If version is not compatible raise exception.
+
 * version 0.1.6
   * application ID without vendor is not supported by Connection
   * add more classes for CLA
