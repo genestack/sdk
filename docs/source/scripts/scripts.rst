@@ -8,3 +8,5 @@ Scripts installed with Python Client Library.
    :maxdepth: 2
 
    genestack-user-setup
+   genestack-application-manager
+   genestack-shell

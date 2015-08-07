@@ -265,6 +265,9 @@ class NormalizationApplication(CLApplication):
 
 # analyse variants
 
+class EffectPredictionApplication(CLApplication):
+    APPLICATION_ID = 'genestack/snpeff'
+
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
 

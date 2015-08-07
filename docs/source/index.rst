@@ -1,5 +1,5 @@
-Welcome to Genestack Python Client Library
-==========================================
+Genestack Python Client
+=======================
 
 
 Genestack Python Client Library will help you to automate server interactions.
@@ -15,7 +15,7 @@ Typical usages:
 
 All communications with the server use `HTTPS <http://en.wikipedia.org/wiki/HTTP_Secure>`_.
 
-If you have never used ``genestack`` before, you should read the :doc:`getting_started` guide to get familiar with ``genestack`` & its usage.
+If you have never used ``genestack_client`` before, you should read the :doc:`getting_started` guide to get familiar with ``genestack_client`` & its usage.
 
 
 Contents:

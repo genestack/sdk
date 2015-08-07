@@ -96,7 +96,7 @@ class Metainfo(dict):
         """
         Add external link. Url should be to valid source.
         Source should be in public access in www or local file.
-        Local files will be uploaded if import file with :py:class:`~genestack.DataImporter.DataImporter`
+        Local files will be uploaded if import file with :py:class:`~genestack_client.DataImporter.DataImporter`
 
         :param key: key
         :type key: str
@@ -185,14 +185,14 @@ class Metainfo(dict):
         value can be any number.
 
         Unit values can be one of next:
-            :py:attr:`~genestack.Metainfo.YEAR`,
-            :py:attr:`~genestack.Metainfo.MONTH`,
-            :py:attr:`~genestack.Metainfo.WEEK`,
-            :py:attr:`~genestack.Metainfo.DAY`,
-            :py:attr:`~genestack.Metainfo.HOUR`,
-            :py:attr:`~genestack.Metainfo.MINUTE`,
-            :py:attr:`~genestack.Metainfo.SECOND`,
-            :py:attr:`~genestack.Metainfo.MILLISECOND`
+            :py:attr:`~genestack_client.Metainfo.YEAR`,
+            :py:attr:`~genestack_client.Metainfo.MONTH`,
+            :py:attr:`~genestack_client.Metainfo.WEEK`,
+            :py:attr:`~genestack_client.Metainfo.DAY`,
+            :py:attr:`~genestack_client.Metainfo.HOUR`,
+            :py:attr:`~genestack_client.Metainfo.MINUTE`,
+            :py:attr:`~genestack_client.Metainfo.SECOND`,
+            :py:attr:`~genestack_client.Metainfo.MILLISECOND`
 
         :param key: key
         :type key: str

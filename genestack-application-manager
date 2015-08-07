@@ -16,8 +16,8 @@ import zipfile
 import xml.dom.minidom as minidom
 import json
 from collections import namedtuple
-from genestack import GenestackException
-from genestack.GenestackShell import GenestackShell, Command
+from genestack_client import GenestackException
+from genestack_client.GenestackShell import GenestackShell, Command
 
 
 def validate_application_id(app_id):
@@ -307,7 +307,7 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     try:
-        print('Removing application(s) with version')
+        print('Removing application(s) with version "%s"' % version)
         for app_id in app_id_list:
             sys.stdout.write('%s ... ' % app_id)
             sys.stdout.flush()
