@@ -39,12 +39,18 @@ class DataImporter(object):
 
     Supported types of urls for external links:
 
-    There is no difference between file and gzipped file for system, both packed and unpacked files will produce same result.
+    There is no difference between file and gzipped file for system,
+    both packed and unpacked files will produce same result.
+
     If protocol is not specified ``file://`` will be used
+    Special characters should be escaped except ``s3://``. Links to s3 should be given in same way like it used in s3cmd.
+
+    Supported protocols:
 
     * ``file://``:
         - ``test.txt.gz``
         - ``file://test.txt``
+        - ``file%20name.gz``
 
     * ``ftp://``
         - ``ftp://server.com/file.txt``
@@ -54,6 +60,10 @@ class DataImporter(object):
 
     * ``ascp://``
         - ``ascp://<user>@<server>:file.txt``
+
+    * ``s3://``
+        -  ``s3://bucket/file.gz``
+        -  ``s3://bucket/file name.gz``
 
     In case of local file ``Raw Upload`` file will be created.
     """
