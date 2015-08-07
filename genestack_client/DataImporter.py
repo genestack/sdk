@@ -73,7 +73,8 @@ class DataImporter(object):
                     metainfo.add_file_reference(key, raw)
             else:
                 for x in external_link_list:
-                    x['url'] = quote(x['url'], safe='/:')
+                    if x['url'].startswith('s3://'):
+                        x['url'] = 's3://%s' % quote(x['url'][5:])
 
     @staticmethod
     def __are_files_local(links):
