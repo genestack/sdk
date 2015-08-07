@@ -1,8 +1,10 @@
 * version 0.1.9
-  * percent encode incoming urls in DataImporter
+  * percent encode incoming urls for s3 in DataImporter
+
+* version 0.1.8
+  * rename pythonSDK to Python Client Library, `genestack` -> 'genestack-client'
 
 * version 0.1.7
-  * rename pythonSDK to Python Client Library
   * add TaskLogViewer application binding
   * rename arguments with `link` in name to `url` in DataImporter fro consistency (old arguments still present, for compatibility,
                                                                 will be removed on next release.)
