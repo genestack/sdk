@@ -8,6 +8,7 @@
 # actual or intended publication of such source code.
 #
 
+from urllib import quote
 from urlparse import urlparse
 import os
 import sys
@@ -38,12 +39,18 @@ class DataImporter(object):
 
     Supported types of urls for external links:
 
-    There is no difference between file and gzipped file for system, both packed and unpacked files will produce same result.
+    There is no difference between file and gzipped file for system,
+    both packed and unpacked files will produce same result.
+
     If protocol is not specified ``file://`` will be used
+    Special characters should be escaped except ``s3://``. Links to s3 should be given in same way like it used in s3cmd.
+
+    Supported protocols:
 
     * ``file://``:
         - ``test.txt.gz``
         - ``file://test.txt``
+        - ``file%20name.gz``
 
     * ``ftp://``
         - ``ftp://server.com/file.txt``
@@ -54,12 +61,16 @@ class DataImporter(object):
     * ``ascp://``
         - ``ascp://<user>@<server>:file.txt``
 
+    * ``s3://``
+        -  ``s3://bucket/file.gz``
+        -  ``s3://bucket/file name.gz``
+
     In case of local file ``Raw Upload`` file will be created.
     """
     def __init__(self, connection):
         self.connection = connection
 
-    def replace_links_to_raw_files(self, metainfo):
+    def __process_links(self, metainfo):
         all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
         for key, external_link_list in all_links:
             links = [x['url'] for x in external_link_list]
@@ -70,6 +81,10 @@ class DataImporter(object):
                     # Or put it to special metaKey?
                     raw = self.load_raw(external_link['url'])
                     metainfo.add_file_reference(key, raw)
+            else:
+                for x in external_link_list:
+                    if x['url'].startswith('s3://'):
+                        x['url'] = 's3://%s' % quote(x['url'][5:])
 
     @staticmethod
     def __are_files_local(links):
@@ -99,7 +114,8 @@ class DataImporter(object):
         return None
 
     def __invoke_loader(self, application, method, parent, metainfo):
-        self.replace_links_to_raw_files(metainfo)
+        self.__process_links(metainfo)
+
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
         # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
         try:
