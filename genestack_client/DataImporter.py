@@ -115,7 +115,6 @@ class DataImporter(object):
 
     def __invoke_loader(self, application, method, parent, metainfo):
         self.__process_links(metainfo)
-
         fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
         # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
         try:
