@@ -68,9 +68,9 @@ To check the result, you can run:
 Setting up additional users
 ---------------------------
 
-If you have multiple accounts on Genestack (or you are using multiple instances of Genestack), you can define multiple users with the ``genestack-user-setup``.
+If you have multiple accounts on Genestack (or you are using multiple instances of Genestack), you can define multiple identities with the ``genestack-user-setup``.
 
-Each user must have a unique alias, email address, host address and password. Typically, the host name will either be ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.com`` if you are working on the community version of the Genestack platform. There is no limitation to the number of users you can store locally, and you can even use different aliases for the same account. To add a new user, type in:
+Each user must have a unique alias, email address, host address and password. Typically, the host name will either be ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.com`` if you are working on the community edition of Genestack. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
 
 .. code-block:: sh
 
@@ -278,7 +278,7 @@ See :ref:`FilesUtil` for more methods.
 
 
 Importers
-*********
+---------
 
 As always, we start by creating a connection::
 
@@ -329,7 +329,7 @@ As a result you should have
 See :ref:`DataImporter` for more info.
 
 TaskLogViewer
-*************
+-------------
 
 The Task Log Viewer allows you to access the contents of initialization logs programatically. 
 

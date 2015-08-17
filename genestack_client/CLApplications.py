@@ -15,9 +15,9 @@ CALCULATE_CHECKSUMS = 'markKeyForCountChecksum'
 
 class CLApplication(Application):
     """
-    Base class to interact with CommandLine Applications.
-    Application_ID is required you can pass it as init argument or overwrite it in children.
-    Source files and params depends on application.
+    Base class to interact with Genestack command-line applications.
+    The APPLICATION_ID is mandatory. You can either pass it as argument to the class constructor or override it in a children class.
+    Source files and parameters are application-specific.
 
     """
     APPLICATION_ID = None
@@ -28,20 +28,20 @@ class CLApplication(Application):
     def create_file(self, source_files, name=None, params=None, calculate_checksums=False, expected_checksums=None,
                     initialize=False):
         """
-        Creates application native file and returns its accession.
-        If source file is not found or is not of source file type, the corresponding exceptions are thrown.
+        Creates a native file with the application and return its accession.
+        If a source file is not found or is not of the expected type, a corresponding exception will be thrown.
 
-        :param source_files: list of source file accessions
+        :param source_files: list of source files accessions
         :type source_files: list
-        :param name: if name is specified created file will be renamed
+        :param name: if a name is provided, the created file will be renamed
         :type name: str
-        :param params: is command arguments to be set, if None then arguments stay default.
+        :param params: custom command-line arguments strings; if None, the application defaults will be used.
         :param params: list
-        :param calculate_checksums: flag that used in initialization script to count checsums of created files
+        :param calculate_checksums: a flag used in the initialization script to compute checksums for the created files
         :type calculate_checksums: bool
-        :param expected_checksums: List of expected checksums in any order
+        :param expected_checksums: List of expected checksums, in any order
         :type expected_checksums: list
-        :param initialize: flag if initialization should be started immediately
+        :param initialize: should initialization should be started immediately after the file is created
         :return: accession of created file
         :rtype: str
         """
@@ -88,12 +88,11 @@ class CLApplication(Application):
 
     def change_command_line_arguments(self, accession, params):
         """
-        Changes command arguments in file metainfo.
-        params is list of commindlines, each commnaline is string with commands separated with spaces.
+        Change the command-line arguments strings in file metainfo.
+        "params" is a list of command-line strings. Each commnaline is string with commands separated with spaces.
 
-        If file is not found or is not of file type
-        or is already initialized,
-        the corresponding exceptions are thrown.
+        If the file is not found, does not have the right file type
+        or is already initialized, the corresponding exceptions are thrown.
 
         :param accession: file accession
         :type accession: str
@@ -105,8 +104,8 @@ class CLApplication(Application):
 
     def start(self, accession):
         """
-        Starts file initialization.
-        If native file is not found or is not of native file type, the corresponding exceptions are thrown.
+        Start file initialization.
+        If the file is not found or is not of the right file type, the corresponding exception is thrown.
 
         :param accession: file accession
         :type accession: str
@@ -117,7 +116,7 @@ class CLApplication(Application):
     # TODO move to filesUtils, why we return name?
     def rename_file(self, accession, name):
         """
-        Renames file and returns its new name.
+        Rename a file and returns its new name.
 
         :param accession: file accession
         :type accession: str
@@ -131,9 +130,9 @@ class CLApplication(Application):
 
     def replace_file_reference(self, accession, key, accession_to_remove, accession_to_add):
         """
-        Replaces file reference for the file.
+        Replace a file reference on the file.
 
-        If file is not found or is not of native file type,
+        If the file is not found or is not of the right file type,
         the corresponding exceptions are thrown.
         If accession_to_remove or accession_to_add is not found,
         the corresponding exceptions are thrown.

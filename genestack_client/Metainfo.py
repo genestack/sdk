@@ -29,7 +29,7 @@ def xstr(arg):
 
 class Metainfo(dict):
     """
-    Python representation of metainfo.
+    A Python representation of metainfo objects.
     """
     NAME = 'genestack:name'
     DESCRIPTION = 'genestack:description'
@@ -58,7 +58,7 @@ class Metainfo(dict):
 
     def add_string(self, key, value):
         """
-        Add string value.
+        Add a string value.
 
         :param key: key
         :type key: str
@@ -70,7 +70,7 @@ class Metainfo(dict):
 
     def add_boolean(self, key, value):
         """
-        Add boolean value.
+        Add a boolean value.
 
         :param key: key
         :type key: str
@@ -82,7 +82,7 @@ class Metainfo(dict):
 
     def add_integer(self, key, value):
         """
-        Add integer value.
+        Add an integer value.
 
         :param key: key
         :type key: str
@@ -94,15 +94,15 @@ class Metainfo(dict):
 
     def add_external_link(self, key, url, text=None, fmt=None):
         """
-        Add external link. Url should be to valid source.
-        Source should be in public access in www or local file.
-        Local files will be uploaded if import file with :py:class:`~genestack_client.DataImporter.DataImporter`
+        Add an external link. The URL should point to a valid source file.
+        The source should be either a publicly available file on the web, or a local file.
+        Local files will be uploaded if imported with :py:class:`~genestack_client.DataImporter.DataImporter`
 
         :param key: key
         :type key: str
-        :param text: url text for display purposes
+        :param text: URL text for display purposes
         :type text: str
-        :param fmt: format for unaligned read link
+        :param fmt: format for an unaligned reads link
         :type fmt: dict
         :rtype: None
         """
@@ -116,8 +116,8 @@ class Metainfo(dict):
 
     def add_person(self, key, name, phone=None, email=None):
         """
-        Add person. Name is required. All other fields is optional.
-        All fields will be visible for all who can access this metainfo.
+        Add a person. The name is required, and all other fields are optional.
+        All fields will be visible to anyone who has access to this metainfo.
 
         :param key: key
         :type key: str
@@ -138,8 +138,8 @@ class Metainfo(dict):
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
                          postal_code=None, state=None, phone=None, email=None, url=None):
         """
-        Add organization. Name is required. All other fields is optional.
-        All fields will be visible for all who can access this metainfo.
+        Add an organization. The name is required, and all other fields are optional.
+        All fields will be visible to anyone who has access to this metainfo.
 
         :param key: key
         :type key: str
@@ -180,11 +180,11 @@ class Metainfo(dict):
 
     def add_time(self, key, value, unit):
         """
-        Add time value (for example age).
+        Add a time value (like an age, or the duration of an experiment for example).
 
-        value can be any number.
+        The value can be any number, supplied with a unit from a controlled vocabulary.
 
-        Unit values can be one of next:
+        The time unit should be one of the following:
             :py:attr:`~genestack_client.Metainfo.YEAR`,
             :py:attr:`~genestack_client.Metainfo.MONTH`,
             :py:attr:`~genestack_client.Metainfo.WEEK`,
@@ -207,11 +207,11 @@ class Metainfo(dict):
 
     def add_file_reference(self, key, accession):
         """
-        Add reference to other file.
+        Add a reference to another Genestack file.
 
         :param key: key
         :type key: str
-        :param accession: accession for referenced file
+        :param accession: accession of the file to reference
         :type accession: str
         :rtype: None
         """
@@ -221,8 +221,8 @@ class Metainfo(dict):
 
     def add_date_time(self, key, time):
         """
-        Add date to metainfo.
-        Time can be passed in one of the next formats:
+        Add a date.
+        The time parameter can be passed in one of the following formats:
 
          - :py:class:`datetime.datetime`
          - :py:class:`datetime.date`

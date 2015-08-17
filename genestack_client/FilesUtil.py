@@ -124,15 +124,15 @@ class FilesUtil(Application):
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
         """
-        Create folder.
+        Create a folder.
 
-        :param name: display name
+        :param name: name of the folder
         :type name: str
-        :param parent: if not specified create folder in 'private'
+        :param parent: if not specified, create folder in the user's private folder
         :type parent: str
-        :param description: description for folder
+        :param description: description of the folder (goes into the metainfo)
         :type description: str
-        :param metainfo: additional Metainfo. Description and accession should be specified via arguments or in metainfo, not in both places.
+        :param metainfo: additional Metainfo. Description and accession should be specified either via arguments or in a metainfo object (but not in both).
         :type metainfo: Metainfo
         :return: accession of created folder
         """
@@ -144,7 +144,7 @@ class FilesUtil(Application):
 
     def find_or_create_folder(self, name, parent=None):
         """
-        Return folder accession if it is already exists, create it otherwise.
+        Return the folder accession if it already exists, and create it otherwise.
         If more than one folder is found the first one is returned.
 
         :param name: display name
@@ -158,11 +158,11 @@ class FilesUtil(Application):
 
     def link_file(self, accession, parent):
         """
-        Link file to folder.
+        Link a file to a folder.
 
         :param accession: file accession
         :type accession: str
-        :param parent: destination accession
+        :param parent: parent folder accession
         :type parent: str
         :rtype: None
         """
@@ -170,7 +170,7 @@ class FilesUtil(Application):
 
     def unlink_file(self, accession, parent):
         """
-        Unlink file from folder.
+        Unlink a file from a folder.
 
         :param accession: file accession
         :type accession: str
@@ -182,7 +182,7 @@ class FilesUtil(Application):
 
     def clear_container(self, container_accession):
         """
-        Unlink all files from current container.
+        Unlink all files from a container.
 
         :param container_accession: accession of the container
         :type container_accession: str
@@ -192,7 +192,7 @@ class FilesUtil(Application):
 
     def add_metainfo_string_value(self, accession_list, key, value):
         """
-        Add string value to metainfo of specified files.
+        Add a string value to the metainfo of specified files.
 
         :param accession_list: list of files to be updated
         :type accession_list: list
@@ -206,7 +206,7 @@ class FilesUtil(Application):
 
     def replace_metainfo_string_value(self, accession_list, key, value):
         """
-        Replace string value to metainfo of specified files.
+        Replace a string value in the metainfo of specified files.
 
         :param accession_list: list of files to be updated
         :type accession_list: list
@@ -220,7 +220,7 @@ class FilesUtil(Application):
 
     def remove_metainfo_value(self, accession_list, key):
         """
-        Delete key from metainfo of specified files.
+        Delete a key from the metainfo of specified files.
 
         :param accession_list: list of files to be updated
         :type accession_list: list
@@ -232,9 +232,9 @@ class FilesUtil(Application):
 
     def get_special_folder(self, name):
         """
-        Return special folder accession.
+        Return the accession of a special folder.
 
-        Available special folders is described in :class:`.SpecialFolders`
+        Available special folders are described in :class:`.SpecialFolders`
 
         :param name: special folder name
         :type name: str
@@ -254,11 +254,11 @@ class FilesUtil(Application):
 
         :param accessions: files accessions
         :type accessions: list
-        :param group: group to share
+        :param group: accession of the group to share the files with
         :type group: str
-        :param destination_folder: folder there shared files to be linked. No links if folder is None
+        :param destination_folder: folder in which to link the shared files. No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for share, if not specified will be asked in interactive prompt (work only if output redirected to terminal)
+        :param password: password for sharing. If not specified, will be asked in an interactive prompt (if supported)
         :type: str
         :rtype: None
         """
@@ -270,14 +270,13 @@ class FilesUtil(Application):
 
     def get_groups_to_share(self):
         """
-        Return dict for:  group_accession: group_info_dict
-
-        Group info keys:
-        - savedFolderName:
-        - savedFolderAccession:
-        - name:   group name
-        - folderName: name of shared group folder
-        - folderAccession: accessing of shared group folder
+        Returns a dictionary of the form  ``group_accession: group_info_dict``,
+        where ``group_info_dict`` is a dictionary with the following keys:
+        - savedFolderName
+        - savedFolderAccession
+        - name: name of the group
+        - folderName: name of the group's shared folder
+        - folderAccession: accession of the group's shared folder
 
         :return: group dict
         :rtype: dict
@@ -294,9 +293,9 @@ class FilesUtil(Application):
 
         :param parent: parent accession
         :type parent: str
-        :param names: tuple of folder names that should be founded/created
+        :param names: tuple of folder names that should be found/created
         :type names: tuple
-        :param created: set True if missed folder should be created, default is False
+        :param created: set True if missed folder should be created. Default is False
         :type created: bool
         :return: accession of last folder in paths.
         :rtype: str
@@ -318,7 +317,7 @@ class FilesUtil(Application):
 
     def get_home_folder(self):
         """
-        Return accession of user home folder.
+        Return the accession of the current user's home folder.
 
         :return: accession of home folder
         :rtype: str
@@ -327,7 +326,7 @@ class FilesUtil(Application):
 
     def get_public_folder(self):
         """
-        Return accession of ``Public`` folder.
+        Return the accession of the ``Public`` folder on the current Genestack instance.
 
         :return: accession of ``Public`` folder
         :rtype: str
@@ -336,11 +335,11 @@ class FilesUtil(Application):
 
     def get_complete_infos(self, accession_list):
         """
-        Return file complete info maps for listed accessions.
-        Fail on invalid accessions.
-        Complete infos returned in same order as in accession_list.
+        Returns a list of dictionaries with complete information about each of the specified files.
+        This will return an error if any of the accessions is not valid.
+        The order of the returned list is the same as the one of the accessions list.
 
-        File complete info object have next keys with subkeys:
+        The information dictionaries have the following structure:
            - accession
            - kind
            - owner
@@ -353,7 +352,7 @@ class FilesUtil(Application):
              - displayString
              - isError
              - id
-           - permissionsByGroup (value for each key is map that use group accession as its key)
+           - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
              - displayStrings
              - groupNames
              - ids
@@ -367,18 +366,18 @@ class FilesUtil(Application):
 
         :param accession_list: list of valid accessions.
         :type accession_list: list
-        :return: list of file info maps.
+        :return: list of file info dictionaries.
         :rtype: list
         """
         return self.invoke('getCompleteInfos', accession_list)
 
     def get_infos(self, accession_list):
         """
-        Return file complete info maps for listed accessions.
-        Fail on invalid accessions.
-        Complete infos returned in same order as in accession_list.
+        Returns a list of dictionaries with information about each of the specified files.
+        This will return an error if any of the accessions is not valid.
+        The order of the returned list is the same as the one of the accessions list.
 
-        File complete info object have next keys with subkeys:
+        The information dictionaries have the following structure:
            - accession
            - owner
            - name
@@ -388,7 +387,7 @@ class FilesUtil(Application):
            - initializationStatus
              - isError
              - id
-           - permissionsByGroup (value for each key is map that use group accession as its key)
+           - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
              - groupNames
              - ids
            - time
@@ -402,7 +401,7 @@ class FilesUtil(Application):
 
         :param accession_list: list of valid accessions.
         :type accession_list: list
-        :return: list of file info maps.
+        :return: list of file info dictionaries.
         :rtype: list
         """
         return self.invoke('getInfos', accession_list)

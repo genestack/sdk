@@ -22,28 +22,25 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 
 class DataImporter(object):
     """
-    Import files to system. If parent is not specified, file created in special folder ``Imported files``
+    A class used to import files to a Genestack instance.
+    If no ``parent`` is not specified, the files are created in the special folder ``Imported files``
 
-    Required and recommended values can be set by arguments directly or passed inside BioMetainfo object::
+    Required and recommended values can be set by arguments directly or passed inside a ``BioMetainfo`` object::
 
-       create_bed(name="Bed", link='link')
+       create_bed(name="Bed", link="some/link")
 
-       # has same effect as:
-
+       # is equivalent to:
        metainfo = BioMetainfo()
-       metainfo.add_string(BioMetainfo.NAME, 'name)
-       metainfo.add_external_link(BioMetainfo.DATA_LINK, url, text='link name')
+       metainfo.add_string(BioMetainfo.NAME, "Bed")
+       metainfo.add_external_link(BioMetainfo.DATA_LINK, "some/link", text="link name")
        create_bed(metainfo=metainfo)
 
-    It is prohibited to pass same value both with argument and in metainfo.
+    Do not pass the same value both through the arguments and inside a metainfo object.
 
-    Supported types of urls for external links:
-
-    There is no difference between file and gzipped file for system,
-    both packed and unpacked files will produce same result.
-
-    If protocol is not specified ``file://`` will be used
-    Special characters should be escaped except ``s3://``. Links to s3 should be given in same way like it used in s3cmd.
+    Genestack accepts both compressed and uncompressed files.
+    If the protocol is not specified, ``file://`` will be used.
+    Special characters should be escaped except ``s3://``. Links to Amazon S3 storage should be formatted
+    as in :ref:`s3cmd <http://s3tools.org/s3cmd>`.
 
     Supported protocols:
 
@@ -65,7 +62,7 @@ class DataImporter(object):
         -  ``s3://bucket/file.gz``
         -  ``s3://bucket/file name.gz``
 
-    In case of local file ``Raw Upload`` file will be created.
+    If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
     def __init__(self, connection):
         self.connection = connection
@@ -124,7 +121,7 @@ class DataImporter(object):
 
     def load_raw(self, file_path):
         """
-        Load file to genestack storage, return created file accession.
+        Load a file to Genestack and return the accession of the created file.
 
         :param file_path: existing file path
         :type file_path: str
@@ -135,10 +132,10 @@ class DataImporter(object):
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create bed file.
-        name and url are required fields they can be specified by arguments or via metainfo.
+        Create a BED file.
+        "name" and "url" are mandatory fields. They can be specified through the arguments or via a metainfo object.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -159,10 +156,10 @@ class DataImporter(object):
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create vcf file.
-        name and url are required fields they can be specified by arguments or via metainfo.
+        Create VCF file.
+        "name" and "url" are required fields. They can be specified through the arguments or via a metainfo object.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -183,8 +180,8 @@ class DataImporter(object):
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create vcf file.
-        name and url are required fields they can be specified by arguments or via metainfo.
+        Create a WIG file.
+        "name" and "url" are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -215,13 +212,13 @@ class DataImporter(object):
                    strain=None,
                    reference_genome=None):
         """
-        Create aligned read file.
+        Create an aligned reads file.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param url: url of bam file, index will be created at initialization stage
+        :param url: URL of a BAM file; the index will be created at initialization
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
         :param organism: organism
@@ -247,9 +244,9 @@ class DataImporter(object):
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
-        Create experiment. name is required.
+        Create an experiment. The name is required.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -270,7 +267,7 @@ class DataImporter(object):
                                 urls=None,
                                 method=None, organism=None, metainfo=None):
         """
-        Create microarray assay in experiment folder. If parent is not experiment exception will be raised.
+        Create a microarray assay in experiment folder. If parent is not an experiment, an exception will be raised.
         name and links are required fields.
 
         :param parent: accession of parent experiment
@@ -310,7 +307,7 @@ class DataImporter(object):
         Create sequencing assay in experiment folder. If parent is not experiment exception will be raised.
         name and links are required fields.
 
-        :param parent: accession of parent experiment
+        :param parent: accession of the parent experiment
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -344,7 +341,7 @@ class DataImporter(object):
                               urls=None,
                               method=None, organism=None, metainfo=None):
         """
-        Create unaligned read. Unaligned read can be created in folder.
+        Create an Unaligned Reads file. Unaligned reads can be created in folder.
         name and links are required fields.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
@@ -385,7 +382,7 @@ class DataImporter(object):
         Create genome annotation.
         name and link are required.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
         :param url: url or local path
         :type url: str
@@ -505,7 +502,7 @@ class DataImporter(object):
                            urls=None,
                            metainfo=None):
         """
-        Create report file. File can be created in folder.
+        Create a report file. File can be created in folder.
         name and links are required fields.
 
         :param parent: accession of parent folder leave empty for ``Imported files``

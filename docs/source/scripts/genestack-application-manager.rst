@@ -13,9 +13,8 @@ This script can be used both as shell and command line:
 
     usage: genestack-application-manager [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
-    Application manager is a script that lets you to add new applications into the
-    system, remove your uploaded applications from the system, list available
-    applications and do other related things.
+    The Genestack Application Manager is a command-line utility that allows you to
+    upload and manageyour applications on a specific Genestack instance
     
     positional arguments:
       <command>             "info", "invoke", "versions", "remove",
@@ -73,7 +72,7 @@ Commands
     usage: genestack-application-manager info [-h] [-f] [-F] [--vendor]
                              <jar_file_or_folder> [<jar_file_or_folder> ...]
     
-    Read and show info from applications JAR file.
+    Display information from an application's .JAR file.
     
     command arguments:
       -f, --with-filename   show file names for each JAR
@@ -96,10 +95,11 @@ Commands
                                 <version> <jar_file_or_folder>
                                 [<jar_file_or_folder> ...]
     
-    Upload and install JAR files to Genestack system.
+    Upload and install application JAR files to a Genestack instance.
     
     command arguments:
-      -o, --override        overwrite old version of applications with the new one
+      -o, --override        overwrite old version of the applications with the new
+                            one
       -s, --stable          mark installed applications as stable
       -S <scope>, --scope <scope>
                             scope in which application will be stable (default is
@@ -126,7 +126,7 @@ Commands
     usage: genestack-application-manager invoke [-h] [-H <host>] [-u <user>] [-p <password>]
                                <appId> <method> [<args> [<args> ...]]
     
-    Invoke method of stable application.
+    Invoke method of a stable application.
     
     command arguments:
       <appId>               application identifier
@@ -151,11 +151,11 @@ Commands
     usage: genestack-application-manager reload [-h] [-H <host>] [-u <user>] [-p <password>]
                                <version> <appId> [<appId> ...]
     
-    Reload specific version of applications.
+    Reload a specific version of an application.
     
     command arguments:
-      <version>             applications version
-      <appId>               application identifier to mark as stable
+      <version>             application version
+      <appId>               ID of the application to be marked as stable
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -175,11 +175,11 @@ Commands
     usage: genestack-application-manager remove [-h] [-H <host>] [-u <user>] [-p <password>]
                                <version> <appId> [<appId> ...]
     
-    Remove specific version of applications.
+    Remove a specific version of an application.
     
     command arguments:
-      <version>             applications version
-      <appId>               identifier of application to remove
+      <version>             application version
+      <appId>               identifier of the application to remove
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -200,15 +200,15 @@ Commands
                                [-S <scope>]
                                <version> <appId> [<appId> ...]
     
-    Mark applications of the specified version as stable.
+    Mark applications with the specified version as stable.
     
     command arguments:
       <version>             applications version or '-' (minus sign) to remove
                             stable version
-      <appId>               application identifier to mark as stable
+      <appId>               ID of the application to be marked as stable
       -S <scope>, --scope <scope>
-                            scope in which application will be stable (default is
-                            'user'): session | system | user
+                            scope in which the application will be stable (default
+                            is 'user'): session | system | user
     
     optional arguments:
       -h, --help            show this help message and exit

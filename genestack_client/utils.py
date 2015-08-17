@@ -27,8 +27,9 @@ def isatty():
 
 def make_connection_parser(user=None, password=None, host=None):
     """
-    Create argument parser to with connection parameters.
-    If one of email, password or user specified use them as default, else use data from user object.
+    Creates an argument parser with the provided connection parameters.
+    If one of `email`, `password` or `user` is specified, they are used. Otherwise, the default
+    identity from the local config file will be used.
 
     :param user: user alias or email
     :type user: str
@@ -49,8 +50,8 @@ def make_connection_parser(user=None, password=None, host=None):
 
 def get_user(args=None):
     """
-    Return user corresponding to arguments.
-    If arguments is None use :attr:`make_connection_parser` to get arguments.
+    Returns the user corresponding to the provided arguments.
+    If `args` is `None`, uses :attr:`make_connection_parser` to get arguments.
 
     :param args: result of commandline parse
     :type args: argparse.Namespace
@@ -74,7 +75,8 @@ def get_user(args=None):
 
 def get_connection(args=None):
     """
-    Shortcut to :py:func:`get_user` . :py:meth:`~genestack_client.settings.User.User.get_connection`
+    This is the same as :py:func:`get_user` . :py:meth:`~genestack_client.settings.User.User.get_connection`
+    Generally the fastest way to get an active connection.
 
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace

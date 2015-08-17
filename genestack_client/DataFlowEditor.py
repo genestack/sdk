@@ -10,14 +10,14 @@ class DataFlowEditor(Application):
 
     def create_dataflow(self, accession, name=None):
         """
-        Creates dataflow based on file provenance.
-        Nodes of dataflow can be accessed by accession of corresponding file in provenance.
+        Creates a data flow based on the file provenance of the specified file.
+        The nodes of the data flow can be accessed by the accession of the corresponding files in the file provenance.
 
         :param accession: file accession
         :type accession: str
-        :param name: dataflow name
+        :param name: data flow name
         :type name: str
-        :return: accession of created dataflow file
+        :return: accession of the created data flow file
         :rtype: str
         :raise GenestackException:
         """
@@ -41,13 +41,13 @@ class DataFlowEditor(Application):
 
     def add_files(self, page_accession, node_accession, files):
         """
-        Add files to node.
+        Add files to a data flow node.
 
-        :param page_accession: accession of dataflow
+        :param page_accession: accession of data flow file
         :type page_accession: str
         :param node_accession: accession of origin file in node
         :type node_accession: str
-        :param files: list of accession of files to add
+        :param files: list of accessions of files to add to the node
         :type files: list
         :rtype None
         """
@@ -56,9 +56,9 @@ class DataFlowEditor(Application):
 
     def clear_node(self, page_accession, node_accession):
         """
-        Remove all files from node.
+        Remove all files from a data flow node.
 
-        :param page_accession: accession of dataflow
+        :param page_accession: accession of data flow file
         :type page_accession: str
         :param node_accession: accession of origin file in node
         :type node_accession: str
