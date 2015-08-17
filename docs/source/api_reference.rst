@@ -1,6 +1,7 @@
 API reference
 #############
 
+This is the complete API reference of the Genestack Client Library. For a more gentle introduction, you can read the :doc:`getting_started` section.
 
 .. toctree::
    :maxdepth: 2
