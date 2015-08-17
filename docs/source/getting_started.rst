@@ -87,11 +87,11 @@ Connecting to a Genestack instance
 
 To communicate with a Genestack instance using the library, the first thing you need is to open a connection to the server.
 
-Connection parameters via command-line arguments
-------------------------------------------------
+Passing Connection Parameters via Command-line Arguments
+--------------------------------------------------------
 
 The easiest way to open a connection is through the helper function: :py:func:`~genestack.get_connection`.
-It uses command line arguments parsed by :py:class:`argparse.ArgumentParser` to find your credentials in the local config file. If no arguments are supplied to your script, the connection will attempt to log in with the default user specified by ``genestack-user-setup``.
+It uses command line arguments parsed by an :py:class:`argparse.ArgumentParser` to find your credentials in the local config file. If no arguments are supplied to your script, the connection will attempt to log in with the default user specified by ``genestack-user-setup``.
 You can specify another user by appending ``-u <user_alias>`` to your command line call. For example, let's consider the following script, saved in ``my_genestack_script.py``, that simply creates a connection to the Genestack server and returns the e-mail address of the current user:
 
 .. code-block:: python
@@ -114,8 +114,9 @@ Using the connection parameters, you can run this script from a terminal using d
     bob@email.com
 
 
+.. TODO talk more about the parser and how you shouldn't use get_connection()
 
-If your script accepts custom command-line arguments, you can add them to the parser :py:func:`~genestack.make_connection_parser`.
+If your script accepts custom command-line arguments, you can add them to the arguments parser returned by :py:func:`~genestack.make_connection_parser`.
 The arguments ``-u``, ``-p`` and ``-H`` are reserved for the connection parameters.
 Have a look at the following example:
 
@@ -142,8 +143,12 @@ Have a look at the following example:
     $ python my_script.py -u bob
     bob@email.com does not have a unicorn :(
 
+.. warning::
+    
+    If you use custom arguments, make sure to follow the syntax of the previous script: first, retrieve the parser with ``make_connection_parser()``, then add the new argument to it, parse the command-line arguments and finally send them to ``get_connection``.
 
-**Arguments accepted by the connection parser**
+Arguments Accepted by the Connection Parser
+---------------------------------------------
 
 If no connection parameter is passed to your script, ``get_connection`` will attempt a connection using the default identity from your local configuration file (you can change it via the command ``genestack-user-setup default``).
 
@@ -151,13 +156,13 @@ If only the parameter ``-u <alias>`` is supplied, the parser will look for the c
 
 You can also supply the parameters ``-u <email> -H <host> -p <password>``. By default, the host is ``platform.genestack.com``and if no password is provided, you will be prompted for it.
 
-    .. code-block:: sh
+.. code-block:: sh
 
-        $ python my_script.py -u user@email.com -H platform.genestack.org -p password
+    $ python my_script.py -u user@email.com -H platform.genestack.org -p password
 
 
-Hard-coded Connection Parameters 
-----------------------------------
+Using Hard-coded Connection Parameters 
+--------------------------------------
 
 You can also supply hard-coded parameters for the connection directly inside your script.
 
@@ -183,8 +188,8 @@ You can also supply hard-coded parameters for the connection directly inside you
     $ python my_script.py
     user@email.com
 
-Calling application methods with connection
-*******************************************
+Calling an Application's Methods
+*********************************
 
 You can use the client library to call the public Java methods of any application that is available to the current user. You just need to supply the application ID and the method name
 
@@ -207,7 +212,7 @@ And here is how to call a Java method with arguments:
     metainfo.add_string(Metainfo.NAME, "New folder")
     print connection.application('genestack/filesUtil').invoke('createFolder', PRIVATE, metainfo)
 
-The number, order and type of the arguments should match between your Java methods and the Python call to ``invoke``. Type conversion between Python and Java behaves in the way you would expect (a Python numeric variable will be either an ``int`` or ``double``, a Python list will become a ``List``, a dictionary will become a ``Map``, etc.)
+The number, order and type of the arguments should match between your Java methods and the Python call to ``invoke``. Type conversion between Python and Java generally behaves in the way you would expect (a Python numeric variable will be either an ``int`` or ``double``, a Python list will become a ``List``, a dictionary will become a ``Map``, etc.)
 
 The client library comes with a lot of wrapper classes around common Genestack applications, which allow you to use a more convenient syntax to invoke the methods of specific application (see section below).
 
@@ -307,7 +312,7 @@ Let's print the results to know the accession of our files::
     >>> print 'Successfully load assay with accession %s to experiment %s' % (assay, experiment)
     Successfully load assay with accession GSF000002 to experiment GSF000001
 
-Starting file initialization::
+And finally we can start the initialization of the file::
 
     >>> from genestack_client import FileInitializer
     >>> initializer = FileInitializer(connection)
@@ -319,21 +324,23 @@ As a result you should have
 
     - an ``Experiment`` folder in ``Imported files``
     - a ``Sequencing assay`` file inside the experiment
-    - Two ``Raw Upload`` files in the ``Uploaded files`` folder. This is your local files located on genestack storage. You can remove them after initialization of assay.
+    - Two ``Raw Upload`` files in the ``Uploaded files`` folder. (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized)
 
-See :ref:`DataImporter` for more methods.
+See :ref:`DataImporter` for more info.
 
 TaskLogViewer
 *************
 
-Create connection and viewer::
+The Task Log Viewer allows you to access the contents of initialization logs programatically. 
+
+Again, we start by opening a connection and instantiating the class::
 
     >>> from genestack_client import get_connection
     >>> connection = get_connection()
     >>> from genestack_client import TaskLogViewer
-    >>> log_viewer = DataImporter(connection)
+    >>> log_viewer = TaskLogViewer(connection)
 
-Check stderr log for file::
+Then we can check the error log of a file::
 
     >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
     This log is empty (perhaps there was no log produced)
