@@ -132,13 +132,8 @@ class DataImporter(object):
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-<<<<<<< HEAD
         Create a BED file.
-        "name" and "url" are mandatory fields. They can be specified through the arguments or via a metainfo object.
-=======
-        Create bed file.
-        ``name`` and ``url`` are required fields.
->>>>>>> master
+        ``name`` and ``url`` are mandatory fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
@@ -161,13 +156,8 @@ class DataImporter(object):
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-<<<<<<< HEAD
-        Create VCF file.
-        "name" and "url" are required fields. They can be specified through the arguments or via a metainfo object.
-=======
-        Create vcf file.
-        ``name`` and ``url`` are required fields.
->>>>>>> master
+        Create a VCF file.
+        ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
@@ -190,13 +180,8 @@ class DataImporter(object):
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-<<<<<<< HEAD
         Create a WIG file.
-        "name" and "url" are required fields. They can be specified through the arguments or via a metainfo object.
-=======
-        Create vcf file.
-        ``name`` and ``url`` are required fields.
->>>>>>> master
+        ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -254,11 +239,7 @@ class DataImporter(object):
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
-<<<<<<< HEAD
-        Create an experiment. The name is required.
-=======
-        Create experiment. ``name`` is required field.
->>>>>>> master
+        Create an experiment. The ``name`` parameter is required.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
@@ -279,13 +260,8 @@ class DataImporter(object):
     def create_microarray_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
-<<<<<<< HEAD
-        Create a microarray assay in experiment folder. If parent is not an experiment, an exception will be raised.
-        name and links are required fields.
-=======
-        Create microarray assay in experiment folder. If parent is not experiment exception will be raised.
+        Create a microarray assay in experiment folder. If ``parent`` is not an experiment, an exception will be raised.
         ``name`` and ``urls`` are required fields.
->>>>>>> master
 
         :param parent: accession of parent experiment
         :type parent: str
@@ -314,7 +290,8 @@ class DataImporter(object):
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
-        Create sequencing assay in experiment folder. If parent is not experiment exception will be raised.
+        Create a sequencing assay inside an experiment folder. If ``parent`` is not an experiment,
+        an exception will be raised.
         ``name`` and ``urls`` are required fields.
 
         :param parent: accession of the parent experiment
@@ -344,13 +321,8 @@ class DataImporter(object):
     def create_unaligned_read(self, parent=None, name=None, urls=None,
                               method=None, organism=None, metainfo=None):
         """
-<<<<<<< HEAD
-        Create an Unaligned Reads file. Unaligned reads can be created in folder.
-        name and links are required fields.
-=======
-        Create unaligned read. Unaligned read can be created in folder.
+        Create an Unaligned Reads file.
         ``name`` and ``urls`` are required fields.
->>>>>>> master
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -380,7 +352,7 @@ class DataImporter(object):
                                  organism=None, reference_genome=None,
                                  strain=None, metainfo=None):
         """
-        Create genome annotation.
+        Create a genome annotation.
         ``name`` and ``url`` are required fields.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -415,7 +387,7 @@ class DataImporter(object):
 
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
-        Create dbNSFP file. ``name`` and ``url`` are required fields.
+        Create a dbNSFP file. ``name`` and ``url`` are required fields.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -450,7 +422,7 @@ class DataImporter(object):
                                 strain=None,
                                 metainfo=None):
         """
-        Create reference genome.
+        Create a reference genome.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -488,13 +460,9 @@ class DataImporter(object):
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
         """
-<<<<<<< HEAD
         Create a report file. File can be created in folder.
-        name and links are required fields.
-=======
-        Create report file. File can be created in folder.
         ``name`` and ``urls`` are required fields.
->>>>>>> master
+
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
