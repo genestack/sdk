@@ -13,7 +13,7 @@ This script can be used both as shell and command line:
 
     usage: genestack-application-manager [-H <host>] [-u <user>] [-p <password>] [-h] [<command>]
     
-    The Genestack Application Manager is a command-line utility that allows you to
+    The Genestack Application Manager is a command-line utilitythat allows you to
     upload and manageyour applications on a specific Genestack instance
     
     positional arguments:
@@ -72,7 +72,7 @@ Commands
     usage: genestack-application-manager info [-h] [-f] [-F] [--vendor]
                              <jar_file_or_folder> [<jar_file_or_folder> ...]
     
-    Display information from an application's .JAR file.
+    Display information about an application's JAR file.
     
     command arguments:
       -f, --with-filename   show file names for each JAR
@@ -95,7 +95,7 @@ Commands
                                 <version> <jar_file_or_folder>
                                 [<jar_file_or_folder> ...]
     
-    Upload and install application JAR files to a Genestack instance.
+    Upload and install an application's JAR file to a Genestack instance.
     
     command arguments:
       -o, --override        overwrite old version of the applications with the new
