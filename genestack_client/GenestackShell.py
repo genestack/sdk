@@ -273,12 +273,12 @@ class GenestackShell(cmd.Cmd):
         Run a command with arguments.
 
         :param command: command
-        :param command: Command
-        :param argument_line: argument string for command
+        :type command: Command
+        :param argument_line: argument string for the command
         :type argument_line: str
-        :param connection: connection, for OFFLINE command can be None
-        :param connection: genestack_client.Connection.Connection
-        :param shell: flag if shell mode
+        :param connection: connection (can be None in the case of an ``OFFLINE`` command)
+        :type connection: Connection
+        :param shell: should we use shell mode?
         :type shell: bool
         """
         if shell or command.OFFLINE:

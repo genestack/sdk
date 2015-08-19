@@ -49,7 +49,7 @@ class DataFlowEditor(Application):
         :type node_accession: str
         :param files: list of accessions of files to add to the node
         :type files: list
-        :rtype None
+        :rtype: None
         """
         node = self.__get_node_by_accession(page_accession, node_accession)
         self.invoke('addFiles', files, node, page_accession)
@@ -62,7 +62,7 @@ class DataFlowEditor(Application):
         :type page_accession: str
         :param node_accession: accession of origin file in node
         :type node_accession: str
-        :rtype None
+        :rtype: None
         """
         node = self.__get_node_by_accession(page_accession, node_accession)
         self.invoke('clearFile', node, page_accession)

@@ -30,17 +30,22 @@ class FileInitializer(Application):
     # TODO replace to getFileInfo
     def load_info(self, accessions):
         """
-        Takes as input a list of file accessions and returns a list of dictionaries (one for each accession) with the following structure:
+        Takes as input a list of file accessions and returns a list of dictionaries (one for each accession)
+        with the following structure:
+
             - accession: (str) file accession
             - name: (str) file name if the file exists
             - status: (str) initialization status
+
         The possible values for ``status`` are:
+
             - NoSuchFile
             - NotApplicable
             - NotStarted
             - InProgress
             - Complete
             - Failed
+
 
         :param accessions: list of accessions
         :return: list of maps

@@ -35,12 +35,12 @@ class DataImporter(object):
        metainfo.add_external_link(BioMetainfo.DATA_LINK, "some/url", text="link name")
        create_bed(metainfo=metainfo)
 
-    However, __do not__ pass the same value both through the arguments and inside a metainfo object.
+    However, **do not** pass the same value both through the arguments and inside a metainfo object.
 
     Genestack accepts both compressed and uncompressed files.
     If the protocol is not specified, ``file://`` will be used.
     Special characters should be escaped except ``s3://``. Links to Amazon S3 storage should be formatted
-    as in :ref:`s3cmd <http://s3tools.org/s3cmd>`.
+    as in `s3cmd <http://s3tools.org/s3cmd>`__.
 
     Supported protocols:
 
@@ -183,7 +183,7 @@ class DataImporter(object):
         Create a WIG file.
         ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
         :param name: name of the file
         :type name: str

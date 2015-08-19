@@ -172,9 +172,9 @@ class Connection:
 
 class Application:
     """
-    Create a new application instance for the given connection. The connection must be logged in to call the application's methods.
-    The application ID can be specified either as an argument to the class constructor or by overriding the APPLICATION_ID attribute
-    in a child class.
+    Create a new application instance for the given connection. The connection must be logged in to call the
+    application's methods. The application ID can be specified either as an argument to the class constructor
+    or by overriding the ``APPLICATION_ID`` attribute in a child class.
     """
 
     APPLICATION_ID = None

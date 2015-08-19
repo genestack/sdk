@@ -4,3 +4,9 @@ docs/build
 .DS_Store
 build/
 docs/source/scripts/genestack-user-setup.rst
+
+genestack-application-managerc
+
+genestack-shellc
+
+genestack-user-setupc

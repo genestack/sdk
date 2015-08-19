@@ -16,10 +16,10 @@ from SudoUtils import SudoUtils
 
 class SpecialFolders:
     """
-    - IMPORTED: folder where new files are created by Data Importers
-    - CREATED: default folder for files created by prepossessing and analyzing applications
-    - TEMPORARY: temporary files
-    - UPLOADED:  files there raw files are stored.
+    - ``IMPORTED``: folder where new files are created by Data Importers
+    - ``CREATED``: default folder for files created by ``Preprocess`` and ``Analyse`` applications
+    - ``TEMPORARY``: folder for temporary files
+    - ``UPLOADED``:  folder where raw files are stored
     """
     IMPORTED = 'imported'
     CREATED = 'created'
@@ -29,7 +29,7 @@ class SpecialFolders:
 
 class FilesUtil(Application):
     """
-    Application for file management.
+    An application to perform file management operations on Genestack.
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
@@ -340,29 +340,38 @@ class FilesUtil(Application):
         The order of the returned list is the same as the one of the accessions list.
 
         The information dictionaries have the following structure:
-           - accession
-           - kind
-           - owner
-           - name
-           - typeKey
-           - application
-             - id
-             - name
-           - initializationStatus
-             - displayString
-             - isError
-             - id
-           - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
-             - displayStrings
-             - groupNames
-             - ids
-           - time
-             - fileCreation
-             - initializationQueued
-             - initializationStart
-             - initializationEnd
-             - fileCreation
-             - lastMetainfoModification
+
+            - accession
+            - kind
+            - owner
+            - name
+            - typeKey
+            - application
+
+                - id
+                - name
+
+            - initializationStatus
+
+                - displayString
+                - isError
+                - id
+
+            - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
+
+                - displayStrings
+                - groupNames
+                - ids
+
+            - time
+
+                - fileCreation
+                - initializationQueued
+                - initializationStart
+                - initializationEnd
+                - fileCreation
+                - lastMetainfoModification
+
 
         :param accession_list: list of valid accessions.
         :type accession_list: list
@@ -378,26 +387,34 @@ class FilesUtil(Application):
         The order of the returned list is the same as the one of the accessions list.
 
         The information dictionaries have the following structure:
-           - accession
-           - owner
-           - name
-           - application
-             - id
-             - name
-           - initializationStatus
-             - isError
-             - id
-           - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
-             - groupNames
-             - ids
-           - time
-             - time
-             - fileCreation
-             - initializationQueued
-             - initializationStart
-             - initializationEnd
-             - fileCreation
-             - lastMetainfoModification
+
+            - accession
+            - owner
+            - name
+            - application
+
+                - id
+                - name
+
+            - initializationStatus
+
+                - isError
+                - id
+
+            - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
+
+                - groupNames
+                - ids
+
+            - time
+
+                - fileCreation
+                - initializationQueued
+                - initializationStart
+                - initializationEnd
+                - fileCreation
+                - lastMetainfoModification
+
 
         :param accession_list: list of valid accessions.
         :type accession_list: list

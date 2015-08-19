@@ -1,5 +1,5 @@
-Genestack Python Client
-=======================
+Genestack Python Client Library
+===============================
 
 The Genestack Python Client Library is a Python library that allows you to interact programatically with an instance of the Genestack platform.
 

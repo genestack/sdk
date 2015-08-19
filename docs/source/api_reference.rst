@@ -1,4 +1,4 @@
-API reference
+API Reference
 #############
 
 This is the complete API reference of the Genestack Client Library. For a more gentle introduction, you can read the :doc:`getting_started` section.
@@ -23,13 +23,6 @@ DataImporter
 .. autoclass:: genestack_client.DataImporter
         :members:
 
-FileInitializer
----------------
-
-.. autoclass:: genestack_client.FileInitializer
-        :members:
-        :show-inheritance:
-
 .. _FilesUtil:
 
 FilesUtil
@@ -39,6 +32,20 @@ FilesUtil
         :members:
         :show-inheritance:
 
+
+FileInitializer
+---------------
+
+.. autoclass:: genestack_client.FileInitializer
+        :members:
+        :show-inheritance:
+
+DataFlowEditor
+--------------
+
+.. autoclass:: genestack_client.DataFlowEditor
+        :members:
+        :show-inheritance:
 
 SudoUtils
 ---------
@@ -189,29 +196,32 @@ Connection
 .. autoclass:: genestack_client.Connection
         :members:
 
-
-get_connection
---------------
-
-.. autofunction:: genestack_client.get_connection
-
-make_connection_parser
-----------------------
-
-.. autofunction:: genestack_client.make_connection_parser
-
-
-get_user
---------
-
-.. autofunction:: genestack_client.get_user
-
-
 settings.User
 -------------
 
 .. autoclass:: genestack_client.settings.User
         :members:
+
+Helper methods
+--------------
+
+get_connection
+^^^^^^^^^^^^^^
+
+.. autofunction:: genestack_client.get_connection
+
+make_connection_parser
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: genestack_client.make_connection_parser
+
+
+get_user
+^^^^^^^^
+
+.. autofunction:: genestack_client.get_user
+
+
 
 
 Exceptions
@@ -234,8 +244,8 @@ GenestackServerException
 Others
 ******
 
-settings.GenestackShell
------------------------
+GenestackShell
+--------------
 
 .. autoclass:: genestack_client.GenestackShell.GenestackShell
         :members:

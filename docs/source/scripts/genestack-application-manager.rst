@@ -252,34 +252,32 @@ Commands
 Useful commands
 ---------------
 
-If ``-u`` is not specified default user is used. User need to have rights to reproduce this commands.
+If ``-u`` is not specified, the default user is used.
 
 Installing applications
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- If you want to install new JAR file with applications, you simply execute::
+- If you want to install a new JAR file containing applications, simply type::
 
-        genestack-application-manager -r root install my-version path/to/file.jar
-
-
-- If you have your JAR file inside some folder, and this is the only JAR file inside the folder and all its subfolders,
-  then you can specify path to the folder instead for the full path to JAR file
-
-  **NOTE**: when you specify folder path instead of JAR path, then the folder and all its subfolders are searched for JAR files; if only one JAR is found — it is installed, otherwise error is reported.
-  ::
-
-    genestack-application-manager -r root install my-version path/to/folder
+        genestack-application-manager install my-version path/to/file.jar
 
 
-- If you want to install new JAR and also mark all applications from that JAR as stable for your current user, then you can use ``-s`` key of ``install`` command (application manager has default stable scope "user")::
+- If your JAR file is located in a specific folder, and this this folder and its subfolders do not contain any other JAR file,
+  you can specify the path to the folder instead of the full path to the JAR file. In that case, the folder and its subfolders
+  will be searched for JAR files. If no JAR file or more than one JAR file is found, an error is returned.
+
+    genestack-application-manager install my-version path/to/folder
+
+
+- If you want to upload a JAR file and also mark all the applications inside it as stable for your current user, you can use ``-s`` option of the ``install`` command (the default scope for marking applications as stable is ``user``)::
 
     genestack-application-manager install -s my-version path/to/file.jar
 
-- If you want to make applications globally stable, you should specify ``system`` scope with ``-S`` key::
+- If you want to make an applications stable only for your session, you should specify ``-S session``::
 
-    genestack-application-manager install -s -S system my-version path/to/file.jar
+    genestack-application-manager install -s -S session my-version path/to/file.jar
 
-- Otherwise, you can use ``stable`` command after installing JAR file::
+- Otherwise, you can use the ``stable`` command after installing the JAR file::
 
     JAR=path/to/file.jar
     VERSION=my-version
@@ -288,26 +286,26 @@ Installing applications
         genestack-application-manager stable -S system $VERSION $A
     done
 
-- If you want to reinstall your applications later with the same version (no matter if this version was marked as stable),
-  you can simply use ``-o`` key of ``install`` command
+- If you want to reinstall your applications later with the same version (whether or not that version was marked as stable),
+  you can simply use the ``-o`` option for the ``install`` command
 
-  **NOTE:** key ``-o`` works exactly as removing old version before uploading new one, so there are two things to keep in mind:
-  - key ``-o`` can be used to overwrite only your versions, because you cannot overwrite or remove versions uploaded by other users;
-  - key ``-o`` removes global stable mark, so if you overwrite globally stable version, then after that no globally stable version will be available.
-  ::
+  This option works exactly as removing the old version before uploading the new one, so there are two things to keep in mind:
+  -  ``-o`` can be used to overwrite only your versions, because you cannot overwrite or remove versions uploaded by other users;
+  -  ``-o`` removes the global stable mark, so if you overwrite a globally stable version, then after that no globally stable version will be available on the system
+
 
     genestack-application-manager install -o my-version path/to/file.jar
 
-- Sometimes you need to upload JAR file with many applications and mark as stable only one application from that JAR.
-  In this case you should use ``install`` and ``stable`` commands::
+- Sometimes you may want to upload a JAR file with many applications, and only mark as stable one of them.
+  In this case you should use the ``install`` and ``stable`` commands::
 
     genestack-application-manager install my-version path/to/file.jar
     genestack-application-manager stable my-version vendor/appIdFromJarFile
 
-Removing all your applications
-------------------------------
+Removing all of your applications
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- If you want to remove all your applications, just enter the following command::
+- If you want to remove all your applications, you can use the following bash script::
 
     for A in $(genestack-application-manager applications); do
         for V in $(genestack-application-manager versions -o $A); do
@@ -315,7 +313,7 @@ Removing all your applications
         done
     done
 
-- If you want to remove only those your applications that were loaded from specific JAR file, then::
+- And if you want to remove only those your applications that were loaded from a specific JAR file, then::
 
     JAR=path/to/file.jar
     for A in $(genestack-application-manager info $JAR | tail -n+3); do
