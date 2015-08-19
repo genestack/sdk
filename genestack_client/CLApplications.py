@@ -16,7 +16,8 @@ CALCULATE_CHECKSUMS = 'markKeyForCountChecksum'
 class CLApplication(Application):
     """
     Base class to interact with Genestack command-line applications.
-    The APPLICATION_ID is mandatory. You can either pass it as argument to the class constructor or override it in a children class.
+    The ``APPLICATION_ID`` is mandatory. You can either pass it as an argument to the class constructor or override
+    it in a child class.
     Source files and parameters are application-specific.
 
     """
@@ -28,8 +29,8 @@ class CLApplication(Application):
     def create_file(self, source_files, name=None, params=None, calculate_checksums=False, expected_checksums=None,
                     initialize=False):
         """
-        Creates a native file with the application and return its accession.
-        If a source file is not found or is not of the expected type, a corresponding exception will be thrown.
+        Create a native file with the application and return its accession.
+        If a source file is not found or is not of the expected type, an exception will be thrown.
 
         :param source_files: list of source files accessions
         :type source_files: list
@@ -41,7 +42,7 @@ class CLApplication(Application):
         :type calculate_checksums: bool
         :param expected_checksums: List of expected checksums, in any order
         :type expected_checksums: list
-        :param initialize: should initialization should be started immediately after the file is created
+        :param initialize: should initialization be started immediately after the file is created?
         :return: accession of created file
         :rtype: str
         """
@@ -88,11 +89,11 @@ class CLApplication(Application):
 
     def change_command_line_arguments(self, accession, params):
         """
-        Change the command-line arguments strings in file metainfo.
-        "params" is a list of command-line strings. Each commnaline is string with commands separated with spaces.
+        Change the command-line arguments strings in the file's metainfo.
+        ``params`` is a list of command-line strings.
 
         If the file is not found, does not have the right file type
-        or is already initialized, the corresponding exceptions are thrown.
+        or is already initialized, an exception will be thrown.
 
         :param accession: file accession
         :type accession: str
@@ -105,7 +106,7 @@ class CLApplication(Application):
     def start(self, accession):
         """
         Start file initialization.
-        If the file is not found or is not of the right file type, the corresponding exception is thrown.
+        If the file is not found or is not of the right file type, an exception will be thrown.
 
         :param accession: file accession
         :type accession: str
@@ -134,8 +135,8 @@ class CLApplication(Application):
 
         If the file is not found or is not of the right file type,
         the corresponding exceptions are thrown.
-        If accession_to_remove or accession_to_add is not found,
-        the corresponding exceptions are thrown.
+        If ``accession_to_remove`` or ``accession_to_add`` is not found,
+        an exception will be thrown.
 
         :param accession: accession of file
         :param key: key for source files

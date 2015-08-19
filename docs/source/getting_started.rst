@@ -1,7 +1,7 @@
 Getting Started with the Genestack Python Client Library
 ########################################################
 
-Installing the library
+Installing the Library
 **********************
 
 If you have access to the GitHub repository, you can either `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_
@@ -235,13 +235,13 @@ If you need to make extensive use of an application that does not already have a
     print signin.whoami()
 
 
-Pre-defined Application Wrapper Classes
-***************************************
+Pre-defined Application Wrappers
+********************************
 
 FilesUtil
 ---------
 
-``FilesUtil`` is a Genestack application used for typical file system operations: find, link, remove and share.
+``FilesUtil`` is a Genestack application used for typical file system operations: finding, linking, removing and sharing files.
 
 First, let's open a connection::
 

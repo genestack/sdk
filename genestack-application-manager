@@ -70,7 +70,7 @@ class Info(Command):
 
 class Install(Command):
     COMMAND = 'install'
-    DESCRIPTION = 'Upload and install an application's JAR file to a Genestack instance.'
+    DESCRIPTION = "Upload and install an application's JAR file to a Genestack instance."
 
     def update_parser(self, p):
         p.add_argument(

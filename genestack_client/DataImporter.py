@@ -35,7 +35,7 @@ class DataImporter(object):
        metainfo.add_external_link(BioMetainfo.DATA_LINK, "some/url", text="link name")
        create_bed(metainfo=metainfo)
 
-    Do not pass the same value both through the arguments and inside a metainfo object.
+    However, __do not__ pass the same value both through the arguments and inside a metainfo object.
 
     Genestack accepts both compressed and uncompressed files.
     If the protocol is not specified, ``file://`` will be used.
@@ -240,6 +240,7 @@ class DataImporter(object):
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
         Create an experiment. The ``name`` parameter is required.
+        It can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
@@ -261,7 +262,7 @@ class DataImporter(object):
                                 method=None, organism=None, metainfo=None):
         """
         Create a microarray assay in experiment folder. If ``parent`` is not an experiment, an exception will be raised.
-        ``name`` and ``urls`` are required fields.
+        ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent experiment
         :type parent: str
@@ -292,7 +293,7 @@ class DataImporter(object):
         """
         Create a sequencing assay inside an experiment folder. If ``parent`` is not an experiment,
         an exception will be raised.
-        ``name`` and ``urls`` are required fields.
+        ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of the parent experiment
         :type parent: str
@@ -322,7 +323,7 @@ class DataImporter(object):
                               method=None, organism=None, metainfo=None):
         """
         Create an Unaligned Reads file.
-        ``name`` and ``urls`` are required fields.
+        ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -353,7 +354,7 @@ class DataImporter(object):
                                  strain=None, metainfo=None):
         """
         Create a genome annotation.
-        ``name`` and ``url`` are required fields.
+        ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
@@ -388,6 +389,7 @@ class DataImporter(object):
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
         Create a dbNSFP file. ``name`` and ``url`` are required fields.
+        They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -462,7 +464,7 @@ class DataImporter(object):
         """
         Create a report file. File can be created in folder.
         ``name`` and ``urls`` are required fields.
-
+        They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
