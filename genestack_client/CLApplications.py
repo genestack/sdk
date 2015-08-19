@@ -11,7 +11,8 @@
 from Connection import Application
 
 
-CALCULATE_CHECKSUMS = 'markKeyForCountChecksum'
+CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
+ADD_CHEKCSUM_METHOD_NAME = 'addCheckSums'
 
 
 class CLApplication(Application):
@@ -70,26 +71,27 @@ class CLApplication(Application):
         :return: None
         """
         self.connection.application('genestack/bio-test-cla').invoke(
-            '%s' % CALCULATE_CHECKSUMS, app_file
-        )
+            CALC_CHECKSUMS_METHOD_NAME, app_file)
 
-    def add_checksums(self, app_file, expected_checksums_set):
+    def add_checksums(self, app_file, expected_checksums):
         """
         Add expected md5 checksum to the metainfo.
         Expected checksums calculated in the next way:
-          - Number of checksums is same as number of entries in the storage. For example Reference Genome have 2 entries (annotation and fasta files).
-          - Order of the checksums does not matter. 
-          - If there are multiple files in one entry it will concatenate them in order as they were PUT to storage
-            by the initialization script.
-          - If file marked for test then after initialization metainfo will have both expected and actual checksums.
+          - Number of checksums is same as number of entries in the storage.
+            For example Reference Genome have 2 entries (annotation and fasta files).
+          - Order of the checksums does not matter.
+          - If there are multiple files in one entry it will concatenate them in order
+            as they were PUT to storage by the initialization script.
+          - If file marked for test then after initialization metainfo
+            will have both expected and actual checksums.
 
         :param app_file: accession of application file
-        :param expected_checksums_set: collection of md5 checksums
+        :param expected_checksums: collection of md5 checksums
         :return: None
         """
+
         self.connection.application('genestack/bio-test-cla').invoke(
-            'addCheckSums', app_file, expected_checksums_set
-        )
+            ADD_CHEKCSUM_METHOD_NAME, app_file, expected_checksums)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
