@@ -10,7 +10,9 @@
 
 from Connection import Application
 
-CALCULATE_CHECKSUMS = 'markKeyForCountChecksum'
+
+CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
+ADD_CHECKSUM_METHOD_NAME = 'addCheckSums'
 
 
 class CLApplication(Application):
@@ -51,33 +53,45 @@ class CLApplication(Application):
             self.rename_file(app_file, name)
 
         if calculate_checksums:
-            # hack to support both master and stable
-            try:
-
-                self.connection.application('genestack/bio-test-cla').invoke(
-                    '%s' % CALCULATE_CHECKSUMS, app_file
-                )
-            except:
-                # old version
-                self.connection.application('genestack/bio-test-preprocess').invoke(
-                    '%s' % CALCULATE_CHECKSUMS, app_file
-                )
+            self.mark_for_tests(app_file)
 
         if expected_checksums:
-            # hack to support both master and stable
-            try:
-                self.connection.application('genestack/bio-test-cla').invoke(
-                    'addCheckSums', app_file, expected_checksums or []
-                )
-            except:
-                # old version
-                self.connection.application('bio-test-preprocess').invoke(
-                    'addCheckSums', app_file, expected_checksums or []
-                )
+            self.add_checksums(app_file, expected_checksums)
 
         if initialize:
             self.start(app_file)
         return app_file
+
+    def mark_for_tests(self, app_file):
+        """
+        Mark file for test via add corresponding key to the metainfo.
+        Test file will calculate md5 checksums for processed files stored in the storage during initialization.
+
+        :param app_file: accession of file
+        :return: None
+        """
+        self.connection.application('genestack/bio-test-cla').invoke(
+            CALC_CHECKSUMS_METHOD_NAME, app_file)
+
+    def add_checksums(self, app_file, expected_checksums):
+        """
+        Add expected md5 checksum to the metainfo.
+        Expected checksums calculated in the next way:
+          - Number of checksums is same as number of entries in the storage.
+            For example Reference Genome have 2 entries (annotation and fasta files).
+          - Order of the checksums does not matter.
+          - If there are multiple files in one entry it will concatenate them in order
+            as they were PUT to storage by the initialization script.
+          - If file marked for test then after initialization metainfo
+            will have both expected and actual checksums.
+
+        :param app_file: accession of application file
+        :param expected_checksums: collection of md5 checksums
+        :return: None
+        """
+
+        self.connection.application('genestack/bio-test-cla').invoke(
+            ADD_CHECKSUM_METHOD_NAME, app_file, expected_checksums)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
@@ -99,7 +113,7 @@ class CLApplication(Application):
         :type accession: str
         :param params: list of commandlines to be set
         :type params: list
-        :rtype: None
+        :return: None
         """
         self.invoke('changeCommandLineArguments', accession, params if isinstance(params, list) else [params])
 
@@ -110,7 +124,7 @@ class CLApplication(Application):
 
         :param accession: file accession
         :type accession: str
-        :rtype: None
+        :return: None
         """
         self.invoke('start', accession)
 
@@ -142,7 +156,7 @@ class CLApplication(Application):
         :param key: key for source files
         :param accession_to_remove: accession to remove
         :param accession_to_add: accession to add
-        :rtype: None
+        :return: None
         """
         self.invoke('replaceFileReference', accession, key, accession_to_remove, accession_to_add)
 
