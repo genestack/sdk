@@ -250,6 +250,9 @@ class VariationCaller2Application(CLApplication):
 class NormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/normalization'
 
+class IntersectGenomicFeaturesMapped(CLApplication):
+    APPLICATION_ID = 'genestack/intersect-bam'
+
 
 # analyse variants
 
@@ -258,6 +261,9 @@ class EffectPredictionApplication(CLApplication):
 
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
+
+class IntersectGenomicFeaturesVariants(CLApplication):
+    APPLICATION_ID = 'genestack/intersect-vcf'
 
 
 # Explore apps
