@@ -12,7 +12,7 @@ from Connection import Application
 
 
 CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
-ADD_CHEKCSUM_METHOD_NAME = 'addCheckSums'
+ADD_CHECKSUM_METHOD_NAME = 'addCheckSums'
 
 
 class CLApplication(Application):
@@ -91,7 +91,7 @@ class CLApplication(Application):
         """
 
         self.connection.application('genestack/bio-test-cla').invoke(
-            ADD_CHEKCSUM_METHOD_NAME, app_file, expected_checksums)
+            ADD_CHECKSUM_METHOD_NAME, app_file, expected_checksums)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
