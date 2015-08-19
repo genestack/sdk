@@ -207,11 +207,11 @@ class MergeMappedReadsApplication(CLApplication):
 # preprocess variants
 
 class VariationMergerApplication(CLApplication):
-    APPLICATION_ID = 'genestack/merge-vcf'
+    APPLICATION_ID = 'genestack/variationMerger'
 
 
 class ConcatenateVariantsApplication(CLApplication):
-    APPLICATION_ID = 'genestack/concatenate-variants'
+    APPLICATION_ID = 'genestack/concatenateVariants'
 
 
 # Analise
