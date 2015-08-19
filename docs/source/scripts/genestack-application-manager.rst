@@ -2,12 +2,12 @@
 genestack-application-manager
 ================================
 
-genestack-application-manager installed with Python Client Library and accessed as ``genestack-application-manager``.
+``genestack-application-manager`` is installed with the Python Client Library and can be accessed from a terminal by typing ``genestack-application-manager``.
 
 
 Usage
 -----
-This script can be used both as shell and command line:
+This script can be used both in interactive shell mode and in static command-line mode:
 
   .. code-block:: text
 
@@ -31,15 +31,15 @@ This script can be used both as shell and command line:
       -p <password>         user password
     
 
-You can get description for every ``command`` by running:
+You can get a description for every ``command`` by typing:
 
   .. code-block:: text
 
     $ genestack-application-manager command -h
 
 
-In shell mode type ``help`` to get list of available commands.
-Use ``help command`` to get command help.
+In shell mode, type ``help`` to get a list of available commands.
+Use ``help command`` to get help for a specific command.
 
 See :ref:`Connection` for more information about connection arguments.
 
