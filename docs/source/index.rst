@@ -15,17 +15,20 @@ Apart from uploading apps, typical use cases of the Python Client Library includ
 * editing the metainfo of Genestack files based on some local data (e.g. an Excel spreadsheet)
 * creating / updating files using command-line applications
 
-All communications with the Genestack server use `HTTPS <http://en.wikipedia.org/wiki/HTTP_Secure>`_.
+.. note::
+    All communications with the Genestack server use `HTTPS <http://en.wikipedia.org/wiki/HTTP_Secure>`_.
 
 You can read the section :doc:`getting_started` for a gentle introduction to the client library.
 
 
-Contents:
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
 
    Getting Started <getting_started>
+   sample_scripts_doc
    api_reference
    scripts/scripts
 
