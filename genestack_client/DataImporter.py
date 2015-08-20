@@ -141,7 +141,7 @@ class DataImporter(object):
         :type name: str
         :param reference_genome: accession of reference genome
         :type reference_genome: str
-        :param url: url or local path to file
+        :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
@@ -165,7 +165,7 @@ class DataImporter(object):
         :type name: str
         :param reference_genome: accession of reference genome
         :type reference_genome: str
-        :param url: url or local path to file
+        :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
@@ -189,7 +189,7 @@ class DataImporter(object):
         :type name: str
         :param reference_genome: accession of reference genome
         :type reference_genome: str
-        :param url: url or local path to file
+        :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
@@ -249,7 +249,7 @@ class DataImporter(object):
         :param description: experiment description
         :type description: str
         :param metainfo: metainfo object
-        :param metainfo: BioMetainfo
+        :type metainfo: BioMetainfo
         :return: file accession
         :rtype: str
         """
@@ -358,7 +358,7 @@ class DataImporter(object):
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
         :type parent: str
-        :param url: url or local path
+        :param url: URL or local path
         :type url: str
         :param name: name of the file
         :type name: str
@@ -393,7 +393,7 @@ class DataImporter(object):
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
-        :param url: url or local path
+        :param url: URL or local path
         :type url: str
         :param name: name of the file
         :type name: str
@@ -437,7 +437,7 @@ class DataImporter(object):
         :param annotation_url: url to annotation file
         :type annotation_url: str
         :param organism: organism
-        :param organism: str
+        :type organism: str
         :param assembly: assembly
         :type assembly: str
         :param release: release
@@ -470,7 +470,7 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param urls: url or list of urls of local file paths
+        :param urls: URL or list of URLs of local file paths
         :type urls: list or str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo

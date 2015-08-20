@@ -164,7 +164,7 @@ If no connection parameter is passed to your script, ``get_connection`` will att
 
 If only the parameter ``-u <alias>`` is supplied, the parser will look for the corresponding identity in the local configuration file. If no match is found, the script will switch to interactive login.
 
-You can also supply the parameters ``-u <email> -H <host> -p <password>``. By default, the host is ``platform.genestack.com``and if no password is provided, you will be prompted for it.
+You can also supply the parameters ``-u <email> -H <host> -p <password>``. By default, the host is ``platform.genestack.com`` and if no password is provided, you will be prompted for one.
 
 .. code-block:: sh
 
@@ -199,7 +199,7 @@ You can also supply hard-coded parameters for the connection directly inside you
     user@email.com
 
 Calling an Application's Methods
-*********************************
+********************************
 
 You can use the client library to call the public Java methods of any application that is available to the current user. You just need to supply the application ID and the method name
 
@@ -247,6 +247,9 @@ If you need to make extensive use of an application that does not already have a
 
 Pre-defined Application Wrappers
 ********************************
+
+This section illustrates briefly some of the things you can do using the pre-defined application wrappers from the client library.
+For a more detailed description of these wrappers, have a look at :ref:`ApplicationWrappers`.
 
 FilesUtil
 ---------

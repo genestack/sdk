@@ -6,6 +6,8 @@ This is the complete API reference of the Genestack Client Library. For a more g
 .. toctree::
    :maxdepth: 2
 
+.. _ApplicationWrappers:
+
 Application Wrappers
 ********************
 

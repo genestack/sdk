@@ -56,7 +56,7 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raises: GenestackServerException: if there is not or more then one reference genome
+        :raises: GenestackServerException: if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
