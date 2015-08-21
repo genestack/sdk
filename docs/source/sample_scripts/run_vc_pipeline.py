@@ -77,7 +77,6 @@ if __name__ == "__main__":
 
     # get connection and application handlers
     connection = get_connection(args)
-    fastqc_app = CLApplication(connection, 'genestack/fastqc-report')
     bowtie_app = BowtieApplication(connection)
     mapped_qc_app = AlignedReadsQC(connection)
     variant_calling_app = VariationCaller2Application(connection)
