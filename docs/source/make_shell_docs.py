@@ -44,7 +44,10 @@ Commands
 
 
 def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
-    shell_module = imp.load_source(shell_name, os.path.join(os.path.dirname(__file__), '..', '..', shell_name))
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', shell_name)) as f:
+        shell_module = imp.new_module('shell_name')
+        exec(f.read(), shell_module.__dict__)
+
     shell = getattr(shell_module, class_name)
 
     tool_file_name = os.path.basename(shell_name)
