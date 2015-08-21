@@ -44,3 +44,31 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 .. note::
 
     One could easily extend this script to support two files per sample (in the case of paired-end reads).
+
+Running a data analysis pipeline
+--------------------------------
+
+Generally, if you want to run multiple files through the same analysis pipeline, the easiest way to do it is using the Data Flow Editor through the web interface. This tool is powerful enough to cover most of the use cases you could think of.
+However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programatically.
+
+Our script will take as input the Genestack accession of a folder containing Unaligned Reads files. It will then produce for each file :
+
+    * a Mapped Reads file produced with Bowtie, possibly using a custom reference genome
+    * a QC Report for the mapping
+    * a Variant Calling file
+
+To do this, we define a ``BatchFilesCreator`` class with some simple methods to create multiple files from a CLA. We also create a ``BowtieBatchFilesCreator`` inheriting from this class, that has additional logic to change the reference genome. You can easily adapt this logic to your own pipeline.
+
+Here is the script:
+
+.. literalinclude:: sample_scripts/run_vc_pipeline.py
+    :linenos:
+    :language: python
+
+The script can then be called from a terminal with the following syntax:
+
+.. code-block:: none
+
+    python run_vc_pipeline.py -u <user_alias> --ref-genome <custom_ref_genome_accession> --name "My project name" <raw_reads_folder>
+
+Note that the folder supplied as input to the script should **only** contain Unaligned Reads files.

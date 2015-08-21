@@ -78,13 +78,11 @@ class CLApplication(Application):
         """
         Add expected md5 checksum to the metainfo.
         Expected checksums calculated in the next way:
-          - Number of checksums is same as number of entries in the storage.
-            For example Reference Genome have 2 entries (annotation and fasta files).
-          - Order of the checksums does not matter (TODO: that might entail problems!).
-          - If there are multiple files in one entry it will concatenate them in order
-            as they were PUT to storage by the initialization script.
-          - If file marked for test then after initialization metainfo
-            will have both expected and actual checksums.
+
+            - Number of checksums is same as number of entries in the storage. For example Reference Genome have 2 entries (annotation and fasta files).
+            - Order of the checksums does not matter (TODO: that might entail problems!).
+            - If there are multiple files in one entry it will concatenate them in order as they were PUT to storage by the initialization script.
+            - If file marked for test then after initialization metainfo will have both expected and actual checksums.
 
         :param app_file: accession of application file
         :param expected_checksums: collection of md5 checksums
