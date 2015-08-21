@@ -11,7 +11,7 @@ Installing applications
         genestack-application-manager install my-version path/to/file.jar
 
 
-- If your JAR file is located in a specific folder, and this this folder and its subfolders do not contain any other JAR file,
+- If your JAR file is located in a specific folder, and this folder and its subfolders do not contain any other JAR file,
   you can specify the path to the folder instead of the full path to the JAR file. In that case, the folder and its subfolders
   will be searched for JAR files. If no JAR file or more than one JAR file is found, an error is returned.
 

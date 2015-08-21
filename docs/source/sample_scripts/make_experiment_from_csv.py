@@ -67,8 +67,8 @@ with open(csv_input, 'r') as the_file:
                 metainfo.add_string(metainfo_key, file_data[key])
 
         # create the sequencing assay on Genestack
-        importer.create_sequencing_assay(experiment, metainfo=metainfo)
+        created_file = importer.create_sequencing_assay(experiment, metainfo=metainfo)
 
-        print "Created file '%s'" % file_data['name']
+        print "Created file '%s' (%s)" % (file_data['name'], created_file)
 
 print "All done! Bye now..."
