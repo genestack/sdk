@@ -43,10 +43,10 @@ class BatchFilesCreator:
 
 # special class for Bowtie to replace the default reference genome
 class BatchBowtieFileCreator(BatchFilesCreator):
-    def __init__(self, cla, base_folder, friendly_name, connection, custom_args=None, ref_genome=None):
+    def __init__(self, cla, base_folder, friendly_name, custom_args=None, ref_genome=None):
         BatchFilesCreator.__init__(self, cla, base_folder, friendly_name, custom_args)
         self._ref_genome = ref_genome
-        self._files_util = FilesUtil(connection)
+        self._files_util = FilesUtil(cla.connection)
 
     def _create_output_file(self, source):
         output = BatchFilesCreator._create_output_file(self, source)
@@ -94,8 +94,7 @@ if __name__ == "__main__":
     base_folder = files_util.create_folder(project_name, parent=created_files_folder)
 
     # Create pipeline files
-    bowtie_creator = BatchBowtieFileCreator(bowtie_app, base_folder, "Mapped Reads", connection,
-                                            ref_genome=args.ref_genome)
+    bowtie_creator = BatchBowtieFileCreator(bowtie_app, base_folder, "Mapped Reads", ref_genome=args.ref_genome)
     mapped_reads = bowtie_creator.create_files(raw_reads)
     mapped_reads_qcs = BatchFilesCreator(mapped_qc_app, base_folder, "Mapped Reads QC").create_files(mapped_reads)
     vc_creator = BatchFilesCreator(variant_calling_app, base_folder, "Variants", custom_args=VC_ARGUMENTS_NO_INDELS)
