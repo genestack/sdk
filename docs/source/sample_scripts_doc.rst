@@ -59,7 +59,14 @@ Our script will take as input the Genestack accession of a folder containing Una
 
 To do this, we define a ``BatchFilesCreator`` class with some simple methods to create multiple files from a CLA. We also create a ``BowtieBatchFilesCreator`` inheriting from this class, that has additional logic to change the reference genome. You can easily adapt this logic to your own pipeline.
 
-Here is the script:
+Moreover, we will create Variant Calling files with non-default parameter (specifically, we only want to call SNPs and not indels). To do this, we use the method ``CLApplication.change_command_line_arguments``, which takes as input the accession of the CLA file, and the list of command-line strings to use.
+
+Since the syntax of the command-line strings can vary from one CLA to another, the easiest way to know what command-line strings you should specify is to first create a file with the corresponding CLA on Genestack and change the parameters to the ones you want using the user interface. Then, look at the metainfo of the file (for example by clicking the name of the file inside the CLA page and choosing "View metainfo"). The metainfo field "Parameters" will store the list of command-line strings that you want (strings are separated by commas in the Metainfo Viewer dialog).
+
+.. note::
+
+    File references (like reference genomes) are not specified in the parameters strings. They are stored in separate metainfo fields. The code for ``BatchBowtieFileCreator`` illustrates how to use a custom reference genome for the Bowtie-based Unspliced Mapping CLA.
+
 
 .. literalinclude:: sample_scripts/run_vc_pipeline.py
     :linenos:
