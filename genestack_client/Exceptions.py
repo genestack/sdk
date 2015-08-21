@@ -11,23 +11,23 @@
 """
 Genestack exceptions.
 
-Contains GenestackException class with subclasses, that should be used
-instead of Exception class to raise exceptions if something goes wrong.
+The base class for Genestack exception is ``GenestackException``.
+These classes should be used in your scripts instead of standard Python exceptions.
 """
 
 
 class GenestackException(Exception):
     """
-    GenestackException class, that should be used instead of
-    Exception class to raise exceptions if something goes wrong.
+    This is the base Genestack exception class. It should be used instead of
+    ``Exception`` to raise exceptions if something goes wrong.
     """
     pass
 
 
 class GenestackServerException(GenestackException):
     """
-    GenestackServerException class, that should be thrown when
-    Server sends response with error message from Java code.
+    GenestackServerException class. Should be thrown when
+    a server sends a response with an error message from Java code.
     :py:class:`GenestackServerException` is a subclass of the :py:class:`GenestackException`.
     """
 
@@ -35,10 +35,10 @@ class GenestackServerException(GenestackException):
         """
         :param message: exception message
         :type message: str
-        :param path: path after server url of connection.
+        :param path: path after server URL of connection.
         :type path: str
-        :param post_data: post data (file or dict)
-        :param stack_trace: stack trace form server
+        :param post_data: POST data (file or dict)
+        :param stack_trace: server stack trace
         :type stack_trace: str
         """
         GenestackException.__init__(self, message)

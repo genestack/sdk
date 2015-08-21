@@ -24,16 +24,16 @@ def _get_server_url(host):
 
 class User(object):
     """
-    Stores information about server url, login, password and alias.
+    A class storing information about the server's URL, the user login, password and alias.
     """
     def __init__(self, email, alias=None, host=None, password=None):
         """
         All fields are optional.
-        If ``alias`` is None it will be same as ``email``.
-        If no ``host`` specified DEFAULT_HOST be used.
+        If ``alias`` is None it will be the same as ``email``.
+        If no ``host`` is specified, the ``DEFAULT_HOST`` be used.
 
-        If you login interactively no ``email`` or ``password`` required.
-        alias is used to find user in :py:func:`~genestack_client.utils.get_user`
+        If you login interactively, no ``email`` or ``password`` is required.
+        The alias is used to find the matching user in :py:func:`~genestack_client.utils.get_user`
 
 
         :param email: email
@@ -52,11 +52,11 @@ class User(object):
 
     def get_connection(self, interactive=True):
         """
-        Return logged connection for current user.
-        If ``interactive`` flag is True and unknown password or email will ask it in interactive mode.
-        IF host is not specified will connect to `DEFAULT_HOST`.
+        Return a logged connection for current user.
+        If ``interactive`` is True and the password or email are unknown, they will be asked in interactive mode.
+        If no host is specified, the ``DEFAULT_HOST`` will be used.
 
-        :param interactive: ask email or/and password interactively.
+        :param interactive: ask email and/or password interactively.
         :type interactive: bool
         :return: logged connection
         :rtype: :py:class:`~genestack_client.Connection.Connection`
