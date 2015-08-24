@@ -49,4 +49,5 @@ for i, entry in enumerate(infos):
     if move_files:
         files_util.unlink_file(accession, source_folder)
 
-print "All done!"
+print "All done! Your files can be found inside the folder with accession %s" % output_folder
+
