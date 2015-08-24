@@ -40,11 +40,9 @@ for i, entry in enumerate(infos):
 
     # if there is a folder for this group, we add the file to it ;
     # otherwise, we create one, add it to our dictionary of folders and add the file to it
-    if application in grouping_folders:
-        group_folder = grouping_folders[application]
-    else:
-        group_folder = files_util.create_folder("Files for %s" % application, parent=output_folder)
-        grouping_folders[application] = group_folder
+    if application not in grouping_folders:
+        new_folder = files_util.create_folder("Files for %s" % application, parent=output_folder)
+        grouping_folders[application] = new_folder
     files_util.link_file(accession, grouping_folders[application])
     if move_files:
         files_util.unlink_file(accession, source_folder)
