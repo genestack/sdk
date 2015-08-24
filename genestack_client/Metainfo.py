@@ -17,11 +17,11 @@ from Exceptions import GenestackException
 
 def xstr(arg):
     """
-    Convert argument to string if it is not None.
+    Convert the input argument to a string if it is not None.
 
-    :param arg:
+    :param arg: input object
     :type arg: object
-    :return: string representation of item
+    :return: string representation of the object
     :rtype: str
     """
     return str(arg) if arg is not None else None
@@ -117,7 +117,7 @@ class Metainfo(dict):
     def add_person(self, key, name, phone=None, email=None):
         """
         Add a person. The name is required, and all other fields are optional.
-        All fields will be visible to anyone who has access to this metainfo.
+        All fields will be visible to anyone who has access to this metainfo object.
 
         :param key: key
         :type key: str
@@ -139,7 +139,7 @@ class Metainfo(dict):
                          postal_code=None, state=None, phone=None, email=None, url=None):
         """
         Add an organization. The name is required, and all other fields are optional.
-        All fields will be visible to anyone who has access to this metainfo.
+        All fields will be visible to anyone who has access to this metainfo object.
 
         :param key: key
         :type key: str

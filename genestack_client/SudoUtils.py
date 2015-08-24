@@ -17,20 +17,22 @@ from genestack_client import GenestackException
 
 class SudoUtils(Application):
     """
-    Sudo utils.
+    An application wrapper to enable superuser mode for the current user.
+    This mode is needed to perform actions such as sharing files.
     """
     APPLICATION_ID = 'genestack/sudoutils'
 
     def is_sudo_active(self):
         """
-        Return is active. This request extends sudo time.
+        Returns a boolean indicating whether superuser mode is still active. This request extends
+        the duration of a superuser session.
         """
         return self.invoke('isSudoActive')
 
     def ensure_sudo(self, password):
         """
-        Enable super-user mode for a short amount of time (5 minutes).
-        If ``password`` is None, it has same effect as ``is_sudo_active``
+        Enable superuser mode for a short amount of time (5 minutes).
+        If ``password`` is None, it has the same effect as ``is_sudo_active``
 
         :param password: password
         :type password: str

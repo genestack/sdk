@@ -45,6 +45,29 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 
     One could easily extend this script to support two files per sample (in the case of paired-end reads).
 
+Organising files into folders based on their metainfo
+-----------------------------------------------------
+
+Keeping your files organised is a difficult thing. A common thing to do when you have many files belonging to the same
+project is to group them into folders based on their application.
+The following script takes as input a folder of files and organises these files into subfolders, such that all files
+created with the same application will go into the same subfolder. We will also provide an option to unlink the files from
+their folder of origin. The script illustrates the use of the ``FilesUtil`` class to perform
+typical file manipulation operations.
+
+.. literalinclude:: sample_scripts/group_files_into_folders.py
+    :linenos:
+    :language: python
+
+The script can be called with the following syntax:
+
+.. code-block:: shell
+
+    python group_files_into_folders.py [--move-files] <source_folder_accession>
+
+You can easily adapt the script to group files based on some other criterium from their metainfo, like their organism, their
+creation date, or in fact any metainfo value.
+
 Running a data analysis pipeline
 --------------------------------
 
@@ -65,7 +88,7 @@ Since the syntax of the command-line strings can vary from one CLA to another, t
 
 .. note::
 
-    File references (like reference genomes) are not specified in the parameters strings. They are stored in separate metainfo fields. The code for ``BatchBowtieFileCreator`` illustrates how to use a custom reference genome for the Bowtie-based Unspliced Mapping CLA.
+    File references (like reference genomes) are not specified in the parameters strings. They are stored in separate metainfo fields. The code for ``BowtieBatchFilesCreator`` illustrates how to use a custom reference genome for the Bowtie-based Unspliced Mapping CLA.
 
 
 .. literalinclude:: sample_scripts/run_vc_pipeline.py

@@ -121,7 +121,7 @@ class DataImporter(object):
 
     def load_raw(self, file_path):
         """
-        Load a file to Genestack and return the accession of the created file.
+        Create a Genestack Raw Upload file from a local file, and return the accession of the created file.
 
         :param file_path: existing file path
         :type file_path: str
@@ -132,7 +132,7 @@ class DataImporter(object):
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create a BED file.
+        Create a Genestack Wiggle Track from a local or remote BED file.
         ``name`` and ``url`` are mandatory fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -156,7 +156,7 @@ class DataImporter(object):
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create a VCF file.
+        Create a Genestack Variants file from a local or remote VCF file.
         ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -180,7 +180,7 @@ class DataImporter(object):
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create a WIG file.
+        Create a Genestack Wiggle Track from a local or remote WIG file.
         ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -211,7 +211,7 @@ class DataImporter(object):
                    strain=None,
                    reference_genome=None):
         """
-        Create an aligned reads file.
+        Create a Genestack Aligned Reads file from a local or remote BAM file.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -239,7 +239,7 @@ class DataImporter(object):
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
-        Create an experiment. The ``name`` parameter is required.
+        Create a Genestack Experiment. The ``name`` parameter is required.
         It can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -261,7 +261,7 @@ class DataImporter(object):
     def create_microarray_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
-        Create a microarray assay in experiment folder. If ``parent`` is not an experiment, an exception will be raised.
+        Create a Genestack Microarray Assay inside an Experiment folder. If ``parent`` is not an Experiment, an exception will be raised.
         ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent experiment
@@ -291,7 +291,7 @@ class DataImporter(object):
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
-        Create a sequencing assay inside an experiment folder. If ``parent`` is not an experiment,
+        Create a Genestack Sequencing Assay inside an Experiment folder. If ``parent`` is not an Experiment,
         an exception will be raised.
         ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
@@ -322,7 +322,8 @@ class DataImporter(object):
     def create_unaligned_read(self, parent=None, name=None, urls=None,
                               method=None, organism=None, metainfo=None):
         """
-        Create an Unaligned Reads file.
+        Create a Genestack Unaligned Reads file from one or several local or remote files. Most common file formats encoding
+        sequencing reads with quality scores are accepted (FASTQ 33/64, SRA, FASTA+QUAL, SFF, FAST5).
         ``name`` and ``urls`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
@@ -353,7 +354,7 @@ class DataImporter(object):
                                  organism=None, reference_genome=None,
                                  strain=None, metainfo=None):
         """
-        Create a genome annotation.
+        Create a Genestack Genome Annotation file from a local or remote file.
         ``name`` and ``url`` are required fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -388,7 +389,7 @@ class DataImporter(object):
 
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
-        Create a dbNSFP file. ``name`` and ``url`` are required fields.
+        Create a Genestack dbNSFP file. ``name`` and ``url`` are required fields.
         They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
@@ -424,7 +425,8 @@ class DataImporter(object):
                                 strain=None,
                                 metainfo=None):
         """
-        Create a reference genome.
+        Create a Genestack Reference Genome from a collection of local or remote FASTA sequence files, and a GTF or GFF
+        annotation file.
 
         :param parent: accession of parent folder leave empty for ``Imported files``
         :type parent: str
@@ -462,7 +464,7 @@ class DataImporter(object):
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
         """
-        Create a report file. File can be created in folder.
+        Create a Genestack Report File from a local or remote data file.
         ``name`` and ``urls`` are required fields.
         They can be specified through the arguments or via a metainfo object.
 
