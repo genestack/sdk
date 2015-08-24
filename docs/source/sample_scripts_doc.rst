@@ -97,7 +97,7 @@ Since the syntax of the command-line strings can vary from one CLA to another, t
 
 The script can then be called from a terminal with the following syntax:
 
-.. code-block:: none
+.. code-block:: shell
 
     python run_vc_pipeline.py -u <user_alias> --ref-genome <custom_ref_genome_accession> --name "My project name" <raw_reads_folder>
 
