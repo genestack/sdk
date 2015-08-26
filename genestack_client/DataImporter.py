@@ -132,7 +132,7 @@ class DataImporter(object):
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
-        Create a Genestack Wiggle Track from a local or remote BED file.
+        Create a Genestack BED Track from a local or remote BED file.
         ``name`` and ``url`` are mandatory fields. They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder. Leave empty for ``Imported files``
@@ -389,7 +389,7 @@ class DataImporter(object):
 
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
-        Create a Genestack dbNSFP file. ``name`` and ``url`` are required fields.
+        Create a Genestack Variation Database file. ``name`` and ``url`` are required fields.
         They can be specified through the arguments or via a metainfo object.
 
         :param parent: accession of parent folder leave empty for ``Imported files``

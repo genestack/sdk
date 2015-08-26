@@ -1,11 +1,13 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-from genestack_client import *
+from genestack_client import FilesUtil, BowtieApplication, AlignedReadsQC, VariationCaller2Application
+from genestack_client import BioMetainfo, SpecialFolders
+from genestack_client import make_connection_parser, get_connection
 
 
 # base class to create multiple files with a CLA
-class BatchFilesCreator:
+class BatchFilesCreator(object):
     def __init__(self, cla, base_folder, friendly_name, custom_args=None):
         """
         Constructor of the general batch files creator, to create multiple files from a CLA.
@@ -26,14 +28,14 @@ class BatchFilesCreator:
         print "Creating %s files..." % self._friendly_name
         output_folder = files_util.create_folder(self._friendly_name, parent=self._base_folder)
         output_files = []
-        for i, source in enumerate(sources):
+        for i, source in enumerate(sources, 1):
             output = self._create_output_file(source)
             files_util.link_file(output, output_folder)
-            print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i + 1, n_files)
+            print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i, files_count)
             output_files.append(output)
         return output_files
 
-    # this method can be overriden in child classes to allow for more complex file creation logic
+    # this method can be overridden in child classes to allow for more complex file creation logic
     def _create_output_file(self, source):
         output = self._cla.create_file(source)
         if self._custom_args:
@@ -67,36 +69,39 @@ if __name__ == "__main__":
     parser = make_connection_parser()
     parser.add_argument('raw_reads_folder',
                         help='Genestack accession of the folder containing the raw reads files to process.')
-    parser.add_argument('--name', help='Name of the Genestack folder where to put the output files')
+    parser.add_argument('--name', default="New Project",
+                        help='Name of the Genestack folder where to put the output files')
     parser.add_argument('--ref-genome', help='Accession of the reference genome to use for the mapping step')
 
     args = parser.parse_args()
-    project_name = args.name or "New Project"
+    project_name = args.name
 
     print "Connecting to Genestack..."
 
-    # get connection and application handlers
+    # get connection and create output folder
     connection = get_connection(args)
+    files_util = FilesUtil(connection)
+    created_files_folder = files_util.get_special_folder(SpecialFolders.CREATED)
+    project_folder = files_util.create_folder(project_name, parent=created_files_folder)
+
+    # create application wrappers and batch files creators
     bowtie_app = BowtieApplication(connection)
     mapped_qc_app = AlignedReadsQC(connection)
     variant_calling_app = VariationCaller2Application(connection)
-    files_util = FilesUtil(connection)
 
-    created_files_folder = files_util.get_special_folder(SpecialFolders.CREATED)
+    bowtie_creator = BowtieBatchFilesCreator(bowtie_app, project_folder, "Mapped Reads", ref_genome=args.ref_genome)
+    mapped_qc_creator = BatchFilesCreator(mapped_qc_app, project_folder, "Mapped Reads QC")
+    vc_creator = BatchFilesCreator(variant_calling_app, project_folder, "Variants", custom_args=VC_ARGUMENTS_NO_INDELS)
 
     # collect files
     print "Collecting raw reads..."
     raw_reads = files_util.get_file_children(args.raw_reads_folder)
-    n_files = len(raw_reads)
-    print "Found %d files to process" % n_files
-
-    base_folder = files_util.create_folder(project_name, parent=created_files_folder)
+    files_count = len(raw_reads)
+    print "Found %d files to process" % files_count
 
     # Create pipeline files
-    bowtie_creator = BowtieBatchFilesCreator(bowtie_app, base_folder, "Mapped Reads", ref_genome=args.ref_genome)
     mapped_reads = bowtie_creator.create_files(raw_reads)
-    mapped_reads_qcs = BatchFilesCreator(mapped_qc_app, base_folder, "Mapped Reads QC").create_files(mapped_reads)
-    vc_creator = BatchFilesCreator(variant_calling_app, base_folder, "Variants", custom_args=VC_ARGUMENTS_NO_INDELS)
+    mapped_reads_qcs = mapped_qc_creator.create_files(mapped_reads)
     vc_creator.create_files(mapped_reads)
 
-    print "All done! Your files are in the folder %s" % base_folder
+    print "All done! Your files are in the folder %s" % project_folder

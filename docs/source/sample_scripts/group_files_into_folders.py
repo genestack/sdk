@@ -1,9 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-
-from genestack_client import *
-
+from genestack_client import FilesUtil, make_connection_parser, get_connection
 
 # parse script arguments
 parser = make_connection_parser()
@@ -22,21 +20,23 @@ files_util = FilesUtil(connection)
 
 print "Collecting files..."
 files = files_util.get_file_children(source_folder)
-nb_files = len(files)
-print "Found %d files to organize. Retrieving metainfo..." % nb_files
-infos = files_util.get_complete_infos(files)
+files_count = len(files)
+print "Found %d files to organise. Retrieving infos..." % files_count
+infos = files_util.get_infos(files)
 
 output_folder = files_util.create_folder("Organized files", parent=source_folder)
 grouping_folders = {}
 
-for i, entry in enumerate(infos):
-    accession = entry.get('accession')
-    print "Processing file %d of %d (%s)..." % (i + 1, nb_files, accession)
+for i, entry in enumerate(infos, 1):
+    accession = entry['accession']
+    print "Processing file %d of %d (%s)..." % (i, files_count, accession)
 
     # use either application name, application ID or "Unknown application" (in this order of preference)
     app_entry = entry.get('application')
-    application = (app_entry.get('name') or app_entry.get('id')) if app_entry else None
-    application = application or "Unknown application"
+    if app_entry:
+        application = app_entry.get('name') or app_entry.get('id', "Unknown application")
+    else:
+        application = "Unknown application"
 
     # if there is a folder for this group, we add the file to it ;
     # otherwise, we create one, add it to our dictionary of folders and add the file to it
@@ -48,4 +48,3 @@ for i, entry in enumerate(infos):
         files_util.unlink_file(accession, source_folder)
 
 print "All done! Your files can be found inside the folder with accession %s" % output_folder
-

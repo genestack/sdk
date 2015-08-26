@@ -52,7 +52,7 @@ Keeping your files organised is a difficult thing. A common thing to do when you
 project is to group them into folders based on their application.
 The following script takes as input a folder of files and organises these files into subfolders, such that all files
 created with the same application will go into the same subfolder. We will also provide an option to unlink the files from
-their folder of origin. The script illustrates the use of the ``FilesUtil`` class to perform
+their folder of origin. The script illustrates the use of the :ref:`FilesUtil` class to perform
 typical file manipulation operations.
 
 .. literalinclude:: sample_scripts/group_files_into_folders.py
@@ -74,11 +74,7 @@ Running a data analysis pipeline
 Generally, if you want to run multiple files through the same analysis pipeline, the easiest way to do it is using the Data Flow Editor through the web interface. This tool is powerful enough to cover most of the use cases you could think of.
 However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programatically.
 
-Our script will take as input the Genestack accession of a folder containing Unaligned Reads files. It will then produce for each file :
-
-    * a Mapped Reads file produced with Bowtie, possibly using a custom reference genome
-    * a QC Report for the mapping
-    * a Variant Calling file
+Our script will take as input the Genestack accession of a folder containing Unaligned Reads files. It will then produce for each file three downstream files: a Mapped Reads file produced with Bowtie (possibly using a custom reference genome), a Mapped Reads QC Report, and a Variant Calling file.
 
 To do this, we define a ``BatchFilesCreator`` class with some simple methods to create multiple files from a CLA. We also create a ``BowtieBatchFilesCreator`` inheriting from this class, that has additional logic to change the reference genome. You can easily adapt this logic to your own pipeline.
 
