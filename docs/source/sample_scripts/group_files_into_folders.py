@@ -5,7 +5,7 @@ from genestack_client import FilesUtil, make_connection_parser, get_connection
 
 # parse script arguments
 parser = make_connection_parser()
-parser.add_argument('folder', help='Accession of the Genestack folder storing the files to group by application.')
+parser.add_argument('folder', help='Accession of the Genestack folder storing the files to group by application')
 parser.add_argument('--move-files', action='store_true',
                     help='If present, the original files will be unlinked from the source folder')
 args = parser.parse_args()

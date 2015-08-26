@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # parse script arguments
     parser = make_connection_parser()
     parser.add_argument('raw_reads_folder',
-                        help='Genestack accession of the folder containing the raw reads files to process.')
+                        help='Genestack accession of the folder containing the raw reads files to process')
     parser.add_argument('--name', default="New Project",
                         help='Name of the Genestack folder where to put the output files')
     parser.add_argument('--ref-genome', help='Accession of the reference genome to use for the mapping step')
