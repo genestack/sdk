@@ -12,7 +12,7 @@ class BatchFilesCreator(object):
         Constructor of the general batch files creator, to create multiple files from a CLA.
 
         :param cla: a ``CLApplication`` object, wrapper for the corresponding CLA
-        :param base_folder: accession of the base folder where the pipeline files will be organized into subfolders
+        :param base_folder: accession of the base folder where the pipeline files will be organised into subfolders
         :param friendly_name: user-friendly name of the files produced by the app ; used in the on-screen statements
         and in the name of the project subfolders
         :param custom_args: list of custom command-line argument strings for the files. Default is ``None``
