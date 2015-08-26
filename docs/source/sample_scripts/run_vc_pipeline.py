@@ -58,9 +58,9 @@ class BowtieBatchFilesCreator(BatchFilesCreator):
             self._cla.replace_file_reference(output, BioMetainfo.REFERENCE_GENOME, None, self._ref_genome)
         return output
 
-# these are the CLA arguments that correspond to all default options except the type of variants to look for (SNPs only)
-# the easiest way to know the syntax of the command-line arguments for a specific app is to look at the "Parameters"
-# metainfo field of a CLA file on Genestack that has the parameters you want
+# These CLA arguments correspond to all default options except the type of variants to look for (SNPs only).
+# The easiest way to know the syntax of the command-line arguments for a specific app is to look at the "Parameters"
+# metainfo field of a CLA file on Genestack that has the parameters you want.
 VC_ARGUMENTS_NO_INDELS = ["--skip-indels -d 250 -m 1 -E --BCF --output-tags DP,DV,DP4,SP", "",
                           "--skip-variants indels --multiallelic-caller --variants-only"]
 
