@@ -394,7 +394,6 @@ class FilesUtil(Application):
             - application
 
                 - id
-                - name
 
             - initializationStatus
 

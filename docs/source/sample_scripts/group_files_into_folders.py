@@ -22,7 +22,7 @@ print "Collecting files..."
 files = files_util.get_file_children(source_folder)
 files_count = len(files)
 print "Found %d files to organise. Retrieving infos..." % files_count
-infos = files_util.get_infos(files)
+infos = files_util.get_complete_infos(files)
 
 output_folder = files_util.create_folder("Organized files", parent=source_folder)
 grouping_folders = {}
