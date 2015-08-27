@@ -19,17 +19,18 @@ class BatchFilesCreator(object):
         """
 
         self._cla = cla
+        self._files_util = FilesUtil(cla.connection)
         self._base_folder = base_folder
         self._friendly_name = friendly_name
         self._custom_args = custom_args
 
     def create_files(self, sources):
         print "Creating %s files..." % self._friendly_name
-        output_folder = files_util.create_folder(self._friendly_name, parent=self._base_folder)
+        output_folder = self._files_util.create_folder(self._friendly_name, parent=self._base_folder)
         output_files = []
         for i, source in enumerate(sources, 1):
             output = self._create_output_file(source)
-            files_util.link_file(output, output_folder)
+            self._files_util.link_file(output, output_folder)
             print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i, files_count)
             output_files.append(output)
         return output_files
@@ -47,7 +48,6 @@ class BowtieBatchFilesCreator(BatchFilesCreator):
     def __init__(self, cla, base_folder, friendly_name, custom_args=None, ref_genome=None):
         BatchFilesCreator.__init__(self, cla, base_folder, friendly_name, custom_args)
         self._ref_genome = ref_genome
-        self._files_util = FilesUtil(cla.connection)
 
     def _create_output_file(self, source):
         output = BatchFilesCreator._create_output_file(self, source)
