@@ -33,6 +33,9 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
+    # TODO remove in 0.1.10
+    # File class constants are renamed in 0.1.9
+    # Start deprecated constants
     IFile = 'com.genestack.api.files.IFile'
     IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
     IFolder = 'com.genestack.api.files.IFolder'
@@ -42,6 +45,29 @@ class FilesUtil(Application):
     IApplicationPageFile = 'com.genestack.files.IApplicationPageFile'
     IContainerFile = 'com.genestack.api.files.IContainerFile'
     IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
+    # end deprecated constants
+
+    CONTAINER = 'com.genestack.api.files.IContainerFile'
+    FOLDER = 'com.genestack.api.files.IFolder'
+    EXPERIMENT = 'com.genestack.bio.files.IExperiment'
+
+    FILE = 'com.genestack.api.files.IFile'
+    UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
+    ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
+    VARIATION = 'com.genestack.bio.files.IVariationFile'
+    APPLICATION_PAGE = 'com.genestack.files.IApplicationPageFile'
+    REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
+    AUXILIARY = 'com.genestack.api.files.IAuxiliaryFile'
+    INDEX = 'com.genestack.api.files.IIndexFile'
+    CODON_TABLE = 'com.genestack.bio.files.ICodonTable'
+    BED = 'com.genestack.bio.files.genomedata.IGenomeBEDData'
+    WIG = 'com.genestack.bio.files.genomedata.IGenomeWiggleData'
+    GENOME_ANNOTATION = 'com.genestack.bio.files.IGenomeAnnotations'
+    HTSEQ_COUNTS = 'com.genestack.bio.files.IHTSeqCounts'
+    EXTERNAL_DATABASE = 'com.genestack.bio.files.IExternalDataBase'
+    PREFERENCES = 'com.genestack.files.IPreferencesFile'
+    REPORT = 'com.genestack.files.IReportFile'
+    RAW = 'com.genestack.files.IRawFile'
 
     def find_reference_genome(self, organism, assembly, release):
         """
