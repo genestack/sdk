@@ -86,7 +86,7 @@ class FilesUtil(Application):
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
-    def find_file_by_name(self, name, parent=None, file_class=IFile):
+    def find_file_by_name(self, name, parent=None, file_class=FILE):
         """
         Finds file with specified name (ignore case!) and type.
         If no file is found None is returned.
@@ -109,22 +109,22 @@ class FilesUtil(Application):
 
     # SA: TODO: remove this methods and change usage to findFileByName
     def find_folder_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IFolder)
+        return self.find_file_by_name(name, parent, self.FOLDER)
 
     def find_aligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IAlignedReads)
+        return self.find_file_by_name(name, parent, self.ALIGNED_READS)
 
     def find_unaligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IUnalignedReads)
+        return self.find_file_by_name(name, parent, self.UNALIGNED_READS)
 
     def find_variation_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IVariationFile)
+        return self.find_file_by_name(name, parent, self.VARIATION)
 
     def find_experiment_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IExperiment)
+        return self.find_file_by_name(name, parent, self.EXPERIMENT)
 
     def find_application_page_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IApplicationPageFile)
+        return self.find_file_by_name(name, parent, self.APPLICATION_PAGE)
 
     def collect_initializable_files_in_container(self, accession):
         """
@@ -335,7 +335,7 @@ class FilesUtil(Application):
             if create:
                 parent = self.find_or_create_folder(path, parent=parent)
             else:
-                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.IFolder)
+                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.FOLDER)
                 if _parent_accession is None:
                     raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
                 parent = _parent_accession
