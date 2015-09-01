@@ -31,7 +31,7 @@ class BatchFilesCreator(object):
         for i, source in enumerate(sources, 1):
             output = self._create_output_file(source)
             self._files_util.link_file(output, output_folder)
-            print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i, files_count)
+            print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i, len(output))
             output_files.append(output)
         return output_files
 
