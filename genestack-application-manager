@@ -298,7 +298,7 @@ def mark_as_stable(application, version, app_id_list, scope):
             application.invoke('markAsStable', app_id, scope, version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
-    except Exception as e:
+    except GenestackException as e:
         sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
@@ -314,7 +314,7 @@ def remove_applications(application, version, app_id_list):
             application.invoke('removeApplication', app_id, version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
-    except Exception as e:
+    except GenestackException as e:
         sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
@@ -330,7 +330,7 @@ def reload_applications(application, version, app_id_list):
             application.invoke('reloadApplication', app_id, version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
-    except Exception as e:
+    except GenestackException as e:
         sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
@@ -352,7 +352,7 @@ def upload_single_file(application, file_path, version, override,
     try:
         parameters = {'version': version, 'override': override}
         upload_token = application.invoke('getUploadToken', parameters)
-    except Exception as e:
+    except GenestackException as e:
         sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()

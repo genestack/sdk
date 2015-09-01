@@ -14,7 +14,6 @@ import os
 import cmd
 import shlex
 from traceback import print_exc
-from Exceptions import GenestackException
 from utils import isatty, make_connection_parser, get_connection
 
 if isatty():
@@ -297,7 +296,7 @@ class GenestackShell(cmd.Cmd):
             print
             print "Command interrupted."
             return
-        except (GenestackException, Exception) as e:
+        except Exception as e:
             sys.stdout.flush()
             sys.stderr.write('%s\n' % e)
             sys.stderr.flush()
