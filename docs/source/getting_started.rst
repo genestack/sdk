@@ -1,45 +1,61 @@
-Getting Started with Genestack Python Client Library
-####################################################
+Getting Started with the Genestack Python Client Library
+########################################################
 
-Installing genestack
-********************
+Installing the Library
+**********************
 
-- clone `repo <https://github.com/genestack/python-client/>`_ or download and unpack  `latest release <https://github.com/genestack/python-client/releases/latest/>`_
-- navigate to repository folder or unpacked folder
+.. note::
+
+    At the moment, the Genestack SDK is not available to the public.
+    To get the library sources or to access the GitHub repository, ask somebody at Genestack.
 
 
-Installing
-----------
+If you have access to the GitHub repository, you can either `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
+
+Once inside the directory, you can install the library using ``pip`` if it is available on your system (if not, have a look at the `pip install instructions <https://pip.pypa.io/en/latest/installing.html>`_):
 
 .. code-block:: sh
 
     $ sudo pip install .
 
-.. note:: If you want you to install manually ensure that `keyring <https://pypi.python.org/pypi/keyring>`_ and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
+.. note::
+
+    You can also install the library without ``pip``, by typing ``python setup.py install``.
+    In that case make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
+    and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
 
 
-Test your installation:
+Then, you can test your installation by executing:
 
 .. code-block:: sh
 
     $ python -c 'import genestack_client; print genestack_client.__version__'
 
+If the command executes without returning an error, you have successfully installed the Genestack Python Client Library. Yay!
 
 Configuring Credentials
 ***********************
 
-Create genestack account if you don't have one.
+The Genestack Python Client Library works by logging in to a Genestack instance (typically ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.org`` if you are working on the community edition of Genestack). Therefore, before doing anything you need to have an account on the Genestack instance to which you want to connect.
 
-Run init script:
-
+To avoid typing in your credentials every time you connect to a Genestack instance programmatically, the library comes with a utility ``genestack-user-setup`` which allows you to store locally, in a secure manner, a list of user identities to login to Genestack. To configure your first user identity, type in the following command in a terminal:
 
 .. code-block:: sh
 
     $ genestack-user-setup init
 
-Input email and password for genestack platform. If your email and password match setup is finished.
+.. warning::
+    
+    By default, the new user identity will be linked to the host ``platform.genestack.com`` (i.e. the community edition of Genestack). If you are a developer, you want to work on ``internal-dev.genestack.com`` instead. Therefore, you should change that command to:
 
-To check result execute:
+    .. code-block:: sh
+
+        $ genestack-user-setup --host internal-dev.genestack.com init
+
+
+You will be prompted for your email and password to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
+
+To check the result, you can run:
 
 .. code-block:: sh
 
@@ -48,24 +64,23 @@ To check result execute:
     email     user@email.com
     host      platform.genestack.org
 
+.. warning::
+
+   By default, your password will be stored using a secure storage system provided by your OS (See https://pypi.python.org/pypi/keyring for more information)
+   If the secure storage system is not accessible, you will be asked for permission to store your password in plain text in a configuration file. However, this option is **strongly discouraged**. You have been warned!
+
+
 .. note::
 
-   Password is stored in system secure storage (See https://pypi.python.org/pypi/keyring for more information)
-   If system storage is not accessible it will ask your permission to store password as plain text in config file.
+   The information you supply to ``genestack-user-setup`` is only stored locally on your computer. Therefore, if you change your password online, you will need to update your local configuration as well.
 
 
-.. note::
+Setting up additional users
+---------------------------
 
-   This data is not synchronized with server, if you change password on server you need to change it here too.
+If you have multiple accounts on Genestack (or you are using multiple instances of Genestack), you can define multiple identities with the ``genestack-user-setup``.
 
-
-Setup additional users
-----------------------
-
-If you have more then one account on genestack platform you may want to add other users.
-
-Each user needs to have unique alias, email, host and password. There is not limitation to number of aliases.
-You can even create couple of them for one account. To add user execute:
+Each user has an alias (unique identifier), an email address, a host address and a password. Typically, the host name will either be ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.com`` if you are working on the community edition of Genestack. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
 
 .. code-block:: sh
 
@@ -73,100 +88,98 @@ You can even create couple of them for one account. To add user execute:
 
 .. note::
 
-    See more info about user management: :doc:`scripts/genestack-user-setup`
+    To know more about user management, have a look at: :doc:`scripts/genestack-user-setup`
 
 .. _Connection:
 
-Connection
-**********
+Connecting to a Genestack instance
+**********************************
 
-To work with platform you should have connection. First thing you need is to have account at genestack platform.
+To communicate with a Genestack instance using the library, the first thing you need is to open a connection to the server.
 
+Passing Connection Parameters via Command-line Arguments
+--------------------------------------------------------
 
-Connection via arguments
-------------------------
+The easiest way to open a connection is through the helper function: :py:func:`~genestack.get_connection`.
+It uses command line arguments parsed by an :py:class:`argparse.ArgumentParser` to find your credentials in the local config file. If no arguments are supplied to your script, the connection will attempt to log in with the default user specified by ``genestack-user-setup``.
+You can specify another user by appending ``-u <user_alias>`` to your command line call. For example, let's consider the following script, saved in ``my_genestack_script.py``, that simply creates a connection to the Genestack server and returns the e-mail address of the current user:
 
-Preferred way to get connection via helper function: :py:func:`~genestack.get_connection`.
-It uses command line arguments parsed by :py:class:`argparse.ArgumentParser` to find your credentials in config. If not argument specified it uses credentials of default user.
-You can specify other user by adding ``-u <alias>`` to command line argument.
-
-
-**Get connection**::
+.. code-block:: python
 
     from genestack_client import get_connection
 
     connection = get_connection()
     print connection.whoami()
 
-**Run script from commandline**:
+Using the connection parameters, you can run this script from a terminal using different Genestack identities:
 
 .. code-block:: sh
 
-    # with default user
-    $ ./script.py
+    # login with default user
+    $ python my_genestack_script.py
     user@email.com
 
-    # with user bob@email.com that present in config with alias bob
-    $ ./script.py -u bob
+    # login as bob@email.com, present in the config file under the alias "bob"
+    $ python my_genestack_script.py -u bob
     bob@email.com
 
-.. note::
 
-    In case then you need more arguments you need to add it to parser that returned by :py:func:`~genestack.make_connection_parser`.
-    Arguments ``-u``, ``-p`` and ``-H`` are reserved for connection.
+.. TODO talk more about the parser and how you shouldn't use get_connection()
 
+If your script accepts custom command-line arguments, you can add them to the arguments parser returned by :py:func:`~genestack.make_connection_parser`.
+The arguments ``-u``, ``-p`` and ``-H`` are reserved for the connection parameters.
+Have a look at the following example:
 
-**Connection with additional script arguments**::
+.. code-block:: python
 
     from genestack_client import get_connection, make_connection_parser
 
-    # create instance of argparse.ArgumentParser with predefined arguments for connection
+    # create an instance of argparse.ArgumentParser with predefined arguments for connection
     parser = make_connection_parser()
-    parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have unicorn.')
+    parser.add_argument('-c', '--unicorn',  dest='unicorn', action='store_true', help='Set if you have a unicorn.')
     args = parser.parse_args()
     connection = get_connection(args)
     email = connection.whoami()
     if args.unicorn:
-        print '%s has unicorn!' % email
+        print '%s has a UNICORN!!' % email
     else:
-        print '%s does not have unicorn.' % email
+        print '%s does not have a unicorn :(' % email
 
 .. code-block:: sh
 
-    $ ./script.py
-    user@email.com has unicorn!
+    $ python my_script.py --unicorn
+    user@email.com has a UNICORN!!
 
-    $ ./script.py -u bob
-    bob@email.com does not have unicorn.
+    $ python my_script.py -u bob
+    bob@email.com does not have a unicorn :(
 
+.. warning::
+    
+    If you use custom arguments, make sure to follow the syntax of the previous script: first, retrieve the parser with ``make_connection_parser()``, then add the new argument to it, parse the command-line arguments and finally send them to ``get_connection``.
 
-**Arguments for connection parser**
+Arguments Accepted by the Connection Parser
+---------------------------------------------
 
-* Using settings:
+If no connection parameter is passed to your script, ``get_connection`` will attempt a connection using the default identity from your local configuration file (you can change it via the command ``genestack-user-setup default``).
 
-  if no argument specified get_connection will return connection to default user
+If only the parameter ``-u <alias>`` is supplied, the parser will look for the corresponding identity in the local configuration file. If no match is found, the script will switch to interactive login.
 
-  if only ``-u <alias>`` is specified will be used user from settings. If user is not present system will switch to interactive login.
+You can also supply the parameters ``-u <email> -H <host> -p <password>``. By default, the host is ``platform.genestack.com`` and if no password is provided, you will be prompted for one.
 
-* Raw input:
+.. code-block:: sh
 
-    if ``-H <host>`` or ``-p <password>`` or both will be specified login will treat it as raw input
-
-    ``-u <email>`` expects email
-
-    ``-H <host>`` server host, if it is not specified will use ``platform.genestack.org``.
-
-    ``-p <password>`` if password is not specified user should add it in interactive mode.
-
-    .. code-block:: sh
-
-        $ ./script.py -u user@email.com -H platform.genestack.org -p passwords
+    $ python my_script.py -u user@email.com -H platform.genestack.org -p password
 
 
-Create connection directly in code
-----------------------------------
+Using Hard-coded Connection Parameters 
+--------------------------------------
 
-This approach required more efforts and require to store your password as plain text
+You can also supply hard-coded parameters for the connection directly inside your script.
+
+.. warning::
+    
+    This approach is only provided for reference, but it is **strongly discouraged**, as it requires you (among other things) to store your e-mail and password in plain text inside your code.
+
 
 .. code-block:: python
 
@@ -180,26 +193,42 @@ This approach required more efforts and require to store your password as plain 
     print connection.whoami()
 
 
-Run script from commandline:
-
 .. code-block:: sh
 
-    $ ./script.py
+    $ python my_script.py
     user@email.com
 
-Calling application methods with connection
-*******************************************
+Calling an Application's Methods
+********************************
 
-To call application method you need to know application_id and method name::
+You can use the client library to call the public Java methods of any application that is available to the current user. You just need to supply the application ID and the method name
+
+.. code-block:: python
 
     from genestack_client import get_connection
-
 
     connection = get_connection()
     print connection.application('genestack/signin').invoke('whoami')
 
+And here is how to call a Java method with arguments:
 
-If your application have a lot of methods you may create own class::
+.. code-block:: python
+
+    from genestack_client import get_connection, Metainfo, PRIVATE
+
+
+    connection = get_connection()
+    metainfo = Metainfo()
+    metainfo.add_string(Metainfo.NAME, "New folder")
+    print connection.application('genestack/filesUtil').invoke('createFolder', PRIVATE, metainfo)
+
+The number, order and type of the arguments should match between your Java methods and the Python call to ``invoke``. Type conversion between Python and Java generally behaves in the way you would expect (a Python numeric variable will be either an ``int`` or ``double``, a Python list will become a ``List``, a dictionary will become a ``Map``, etc.)
+
+The client library comes with a lot of wrapper classes around common Genestack applications, which allow you to use a more convenient syntax to invoke the methods of specific application (see section below).
+
+If you need to make extensive use of an application that does not already have a wrapper class in the client library, you can easily create your own wrapper class in a similar way. Your class simply needs to inherit from ``Application`` and declare an ``APPLICATION_ID``:
+
+.. code-block:: python
 
     from genestack_client import Application, get_connection
 
@@ -215,52 +244,43 @@ If your application have a lot of methods you may create own class::
     signin = SignIn(connection)
     print signin.whoami()
 
-Calling method with arguments::
 
-    from genestack_client import get_connection, Metainfo, PRIVATE
+Pre-defined Application Wrappers
+********************************
 
-
-    connection = get_connection()
-    metainfo = Metainfo()
-    metainfo.add_string(Metainfo.NAME, "New folder")
-    print connection.application('genestack/filesUtil').invoke('createFolder', PRIVATE, metainfo)
-
-Number, order and type of arguments should match for python and java method.
-
-
-Using predefined wrappers
-*************************
+This section illustrates briefly some of the things you can do using the pre-defined application wrappers from the client library.
+For a more detailed description of these wrappers, have a look at :ref:`ApplicationWrappers`.
 
 FilesUtil
 ---------
 
-File utils used for common file operations: find, link, remove and share.
+``FilesUtil`` is a Genestack application used for typical file system operations: finding, linking, removing and sharing files.
 
-To work with FilesUtil you need to connection::
+First, let's open a connection::
 
     >>> from genestack_client import get_connection
     >>> connection = get_connection()
 
-Create instance::
+Then we create a new instance of the class::
 
     >>> from genestack_client import FilesUtil
     >>> file_utils = FilesUtil(connection)
 
 
-Create folder in user folder::
+Then we can create a new empty folder::
 
     >>> folder_accession = file_utils.create_folder("My new folder")
     >>> print folder_accession
     GSF000001
 
-You can specify any folder you want as parent::
+By default, this one was created in the "Created Files" folder of the current user, but we can define any folder as parent::
 
     >>> inner_folder_accession = file_utils.create_folder("My inner folder", parent=folder_accession)
     >>> print inner_folder_accession
     GSF000002
 
 
-Find folder by its name::
+Finding a folder by its name::
 
     >>> folder_accession = file_utils.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
     >>> print folder_accession
@@ -271,25 +291,25 @@ See :ref:`FilesUtil` for more methods.
 
 
 Importers
-*********
+---------
 
-First step you need connection::
+As always, we start by creating a connection::
 
     >>> from genestack_client import get_connection
     >>> connection = get_connection()
 
-To import data instantiate data importer with connection::
+Then we create a new instance of the app::
 
     >>> from genestack_client import DataImporter
     >>> importer = DataImporter(connection)
 
-Create experiment in ``Imported files``::
+Then let's create an experiment in ``Imported files``::
 
     >>> experiment = importer.create_experiment(name='Sample of paired-end reads from A. fumigatus WGS experiment',
     ... description='A segment of a paired-end whole genome sequencing experiment of A. fumigatus')
 
 
-Add sequencing assay for experiment. Use local files as sources::
+We can add a sequencing assay to the experiment, using local files as sources::
 
 
     >>> assay = importer.create_sequencing_assay(experiment,
@@ -300,12 +320,12 @@ Add sequencing assay for experiment. Use local files as sources::
     Uploading ds1.gz - 100.00%
     Uploading ds2.gz - 100.00%
 
-To find out file in system print result::
+Let's print the results to know the accession of our files::
 
     >>> print 'Successfully load assay with accession %s to experiment %s' % (assay, experiment)
     Successfully load assay with accession GSF000002 to experiment GSF000001
 
-Start file initialization::
+And finally we can start the initialization of the file::
 
     >>> from genestack_client import FileInitializer
     >>> initializer = FileInitializer(connection)
@@ -313,25 +333,27 @@ Start file initialization::
     >>> print 'Start initialization of %s' % assay
     Start initialization of GSF000002
 
-As result you will have:
+As a result you should have
 
-    - ``Experiment`` folder in ``Imported files``
-    - ``Sequencing assay`` file in experiment
-    - Two ``Raw Upload`` files in ``Uploaded files`` folder. This is your local files located on genestack storage. You can remove them after initialization of assay.
+    - an ``Experiment`` folder in ``Imported files``
+    - a ``Sequencing assay`` file inside the experiment
+    - Two ``Raw Upload`` files in the ``Uploaded files`` folder. (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized)
 
-See :ref:`DataImporter` for more methods.
+See :ref:`DataImporter` for more info.
 
 TaskLogViewer
-*************
+-------------
 
-Create connection and viewer::
+The Task Log Viewer allows you to access the contents of initialization logs programatically. 
+
+Again, we start by opening a connection and instantiating the class::
 
     >>> from genestack_client import get_connection
     >>> connection = get_connection()
     >>> from genestack_client import TaskLogViewer
-    >>> log_viewer = DataImporter(connection)
+    >>> log_viewer = TaskLogViewer(connection)
 
-Check stderr log for file::
+Then we can check the error log of a file::
 
     >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
     This log is empty (perhaps there was no log produced)

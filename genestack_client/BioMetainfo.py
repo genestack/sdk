@@ -13,7 +13,7 @@ from Metainfo import Metainfo
 
 class BioMetainfo(Metainfo):
     """
-    MetainfoRepresentation with additional methods for bio metadata.  :py:class:`BioMetainfo` is a subclass of the :py:class:`~genestack_client.Metainfo.Metainfo`.
+    A metainfo representation with additional methods for biological metadata.  :py:class:`BioMetainfo` is a subclass of :py:class:`~genestack_client.Metainfo.Metainfo`.
     """
 
     METHOD = 'genestack.bio:method'
@@ -53,7 +53,7 @@ class BioMetainfo(Metainfo):
 
     def add_organism(self, key, value):
         """
-        Add organism value.
+        Add an organism value.
 
         :param key: key
         :type key: str
@@ -65,11 +65,11 @@ class BioMetainfo(Metainfo):
 
     def add_ethnic_group(self, key, value):
         """
-        Add ethnic group value.
+        Add an ethnic group value.
 
         :param key: key
         :type key: str
-        :param value: organism name
+        :param value: ethnic group name
         :type value: str
         :rtype: None
         """

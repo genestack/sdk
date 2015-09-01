@@ -22,7 +22,7 @@ from genestack_client.GenestackShell import GenestackShell, Command
 
 def validate_application_id(app_id):
     if len(app_id.split('/')) != 2:
-        sys.stderr.write('Invalid application ID, expect "{vendor}/{application}" got: %s\n' % app_id)
+        sys.stderr.write('Invalid application ID: expected "{vendor}/{application}", but got "%s" instead\n' % app_id)
         return False
     return True
 
@@ -39,7 +39,7 @@ DEFAULT_SCOPE = 'user'
 
 class Info(Command):
     COMMAND = 'info'
-    DESCRIPTION = 'Read and show info from applications JAR file.'
+    DESCRIPTION = "Display information about an application's JAR file."
     OFFLINE = True
 
     def update_parser(self, p):
@@ -70,12 +70,12 @@ class Info(Command):
 
 class Install(Command):
     COMMAND = 'install'
-    DESCRIPTION = 'Upload and install JAR files to Genestack system.'
+    DESCRIPTION = "Upload and install an application's JAR file to a Genestack instance."
 
     def update_parser(self, p):
         p.add_argument(
             '-o', '--override', action='store_true',
-            help='overwrite old version of applications with the new one'
+            help='overwrite old version of the applications with the new one'
         )
         p.add_argument(
             '-s', '--stable', action='store_true',
@@ -158,7 +158,7 @@ class ListApplications(Command):
 
 class MarkAsStable(Command):
     COMMAND = 'stable'
-    DESCRIPTION = 'Mark applications of the specified version as stable.'
+    DESCRIPTION = 'Mark applications with the specified version as stable.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -168,12 +168,12 @@ class MarkAsStable(Command):
         )
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
-            help='application identifier to mark as stable'
+            help='ID of the application to be marked as stable'
         )
         p.add_argument(
             '-S', '--scope', metavar='<scope>', choices=SCOPE_DICT.keys(),
             default=DEFAULT_SCOPE,
-            help='scope in which application will be stable'
+            help='scope in which the application will be stable'
                  ' (default is \'%s\'): %s' %
                  (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
         )
@@ -193,15 +193,15 @@ class MarkAsStable(Command):
 
 class Remove(Command):
     COMMAND = 'remove'
-    DESCRIPTION = 'Remove specific version of applications.'
+    DESCRIPTION = 'Remove a specific version of an application.'
 
     def update_parser(self, p):
         p.add_argument(
-            'version', metavar='<version>', help='applications version'
+            'version', metavar='<version>', help='application version'
         )
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
-            help='identifier of application to remove'
+            help='identifier of the application to remove'
         )
 
     def run(self):
@@ -215,15 +215,15 @@ class Remove(Command):
 
 class Reload(Command):
     COMMAND = 'reload'
-    DESCRIPTION = 'Reload specific version of applications.'
+    DESCRIPTION = 'Reload a specific version of an application.'
 
     def update_parser(self, p):
         p.add_argument(
-            'version', metavar='<version>', help='applications version'
+            'version', metavar='<version>', help='application version'
         )
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
-            help='application identifier to mark as stable'
+            help='ID of the application to be marked as stable'
         )
 
     def run(self):
@@ -238,7 +238,7 @@ class Reload(Command):
 # FIXME: This class should be removed; it is written only for debug purposes:
 class Invoke(Command):
     COMMAND = 'invoke'
-    DESCRIPTION = 'Invoke method of stable application.'
+    DESCRIPTION = 'Invoke method of a stable application.'
 
     def update_parser(self, p):
         p.add_argument(
@@ -281,16 +281,16 @@ def resolve_jar_file(file_path):
                 jar_files.append(os.path.join(dirpath, f))
 
     if len(jar_files) > 1:
-        raise GenestackException('Too many JAR files found inside folder: %s' % file_path)
+        raise GenestackException('More than one JAR file was found inside %s' % file_path)
     elif not jar_files:
-        raise GenestackException('No JAR files found inside folder: %s' % file_path)
+        raise GenestackException('No JAR file was found inside %s' % file_path)
 
     return jar_files[0]
 
 
 def mark_as_stable(application, version, app_id_list, scope):
     try:
-        print('Mark as stable (%s scope)' % scope)
+        print('Setting the application stable for scope %s' % scope)
         scope = SCOPE_DICT[scope]
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
@@ -307,7 +307,7 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     try:
-        print('Removing application(s) with version')
+        print('Removing application(s) with version "%s"' % version)
         for app_id in app_id_list:
             sys.stdout.write('%s ... ' % app_id)
             sys.stdout.flush()
@@ -360,7 +360,7 @@ def upload_single_file(application, file_path, version, override,
 
     if upload_token is None:
         sys.stdout.flush()
-        sys.stderr.write('Received null token, the upload is not accepted')
+        sys.stderr.write('Received a null token, the upload is not accepted')
         sys.stderr.flush()
         return 1
 
@@ -439,9 +439,9 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 
 class ApplicationManager(GenestackShell):
-    DESCRIPTION = ('Application manager is a script that lets you to add new applications into the system, '
-                   'remove your uploaded applications from the system, '
-                   'list available applications and do other related things.')
+    DESCRIPTION = ('The Genestack Application Manager is a command-line utility'
+                   'that allows you to upload and manage'
+                   'your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
     COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
 

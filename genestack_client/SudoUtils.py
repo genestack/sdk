@@ -29,8 +29,8 @@ class SudoUtils(Application):
 
     def ensure_sudo(self, password):
         """
-        Enable sudo for short amount of time (5 minutes).
-        is password is None has same effect as is_sudo_active
+        Enable super-user mode for a short amount of time (5 minutes).
+        If ``password`` is None, it has same effect as ``is_sudo_active``
 
         :param password: password
         :type password: str
@@ -41,7 +41,7 @@ class SudoUtils(Application):
 
     def ensure_sudo_interactive(self, password):
         """
-        SHow interactive dialog of entering sudo password.
+        Show interactive dialog to enter the superuser password.
 
         :param password: password
         :type password: str

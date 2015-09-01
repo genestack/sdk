@@ -11,26 +11,26 @@ template = """
 {name}
 {name_underline}===
 
-{name} installed with Python Client Library and accessed as ``{name}``.
+``{name}`` is installed with the Python Client Library and can be accessed from a terminal by typing ``{name}``.
 
 
 Usage
 -----
-This script can be used both as shell and command line:
+This script can be used both in interactive shell mode and in static command-line mode:
 
   .. code-block:: text
 
     {usage}
 
-You can get description for every ``command`` by running:
+You can get a description for every ``command`` by typing:
 
   .. code-block:: text
 
     $ {name} command -h
 
 
-In shell mode type ``help`` to get list of available commands.
-Use ``help command`` to get command help.
+In shell mode, type ``help`` to get a list of available commands.
+Use ``help command`` to get help for a specific command.
 
 See :ref:`Connection` for more information about connection arguments.
 
@@ -44,7 +44,10 @@ Commands
 
 
 def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
-    shell_module = imp.load_source(shell_name, os.path.join(os.path.dirname(__file__), '..', '..', shell_name))
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', shell_name)) as f:
+        shell_module = imp.new_module('shell_name')
+        exec(f.read(), shell_module.__dict__)
+
     shell = getattr(shell_module, class_name)
 
     tool_file_name = os.path.basename(shell_name)

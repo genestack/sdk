@@ -58,9 +58,9 @@ group.add_argument('-n', '--no-recognition', help="don't try to recognize files"
 
 def friendly_number(number):
     """
-    Make human readable value for size.
+    Produce a human-readable value for file size.
     :param number: bytes.
-    :return: human friendly string.
+    :return: human-readable string.
     """
     template = '%.1f%sB'
     powers = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
@@ -75,9 +75,9 @@ def friendly_number(number):
 
 def get_files(paths):
     """
-    Get file list by paths. Throws corresponding exception when path does not exist.
+    Get file list by paths. Throws an exception if the file does not exist.
 
-    :param paths: list of paths, may be files or directories.
+    :param paths: list of paths, can be files or directories.
     :return:
     """
     errors = []
