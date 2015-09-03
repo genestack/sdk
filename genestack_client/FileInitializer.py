@@ -48,7 +48,7 @@ class FileInitializer(Application):
 
 
         :param accessions: list of accessions
-        :return: list of maps
+        :return: list of dictionaries
         :rtype: list
         """
         return self.invoke('loadInfo', accessions)

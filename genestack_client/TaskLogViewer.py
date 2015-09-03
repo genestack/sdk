@@ -17,8 +17,8 @@ from Connection import Application
 
 class TaskLogViewer(Application):
     """
-    Wrapper class for the Task Logs Viewer application. This is used to access the initialization output and
-    error logs of a file.
+    A wrapper class for the Task Logs Viewer application. This application allows you to access the initialization
+    logs of a file.
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
 

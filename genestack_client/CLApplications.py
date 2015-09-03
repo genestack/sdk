@@ -76,19 +76,16 @@ class CLApplication(Application):
 
     def add_checksums(self, app_file, expected_checksums):
         """
-        Add expected md5 checksum to the metainfo.
-        Expected checksums calculated in the next way:
+        Add expected MD5 checksum to the metainfo of a CLA file.
+        Expected checksums are calculated in the following way:
 
-           - Number of checksums is same as number of entries in the storage.
-             For example Reference Genome have 2 entries (annotation and fasta files).
-           - Order of the checksums does not matter (TODO: that might entail problems!).
-           - If there are multiple files in one entry it will concatenate them in order
-             as they were PUT to storage by the initialization script.
-           - If file marked for test then after initialization metainfo
-             will have both expected and actual checksums.
+            - The number of checksums is equal to the number of entries in storage. For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - The order of the checksums does not matter (TODO: that might entail problems!).
+            - If there are multiple files in one entry, they will be concatenated in the same order as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo will contain both expected and actual checksum values.
 
         :param app_file: accession of application file
-        :param expected_checksums: collection of md5 checksums
+        :param expected_checksums: collection of MD5 checksums
         :return: None
         """
 
@@ -104,8 +101,11 @@ class CLApplication(Application):
 
     def change_command_line_arguments(self, accession, params):
         """
-        Change the command-line arguments strings in the file's metainfo.
-        ``params`` is a list of command-line strings.
+        Change the command-line arguments strings in a file's metainfo.
+        ``params`` is a list of command-line strings. Note that the syntax of command-line argument strings
+        is application-specific. The only way for you to know which command-line strings to provide it is to look at
+        the ``Parameters`` metainfo field of a CLA file that has the correct parameters specified through the graphical
+        user interface of the application.
 
         If the file is not found, does not have the right file type
         or is already initialized, an exception will be thrown.

@@ -3,8 +3,8 @@
 
 import csv
 
-from genestack_client import *
-from genestack_client import UnalignedReads
+from genestack_client import (UnalignedReads, DataImporter, BioMetainfo,
+                              make_connection_parser, get_connection, GenestackException)
 
 # keys that must be supplied in the CSV file
 MANDATORY_KEYS = ['name', 'link']
@@ -16,7 +16,7 @@ SPECIAL_KEYS = {'name': BioMetainfo.NAME, 'organism': BioMetainfo.ORGANISM,
 
 # parse script arguments
 parser = make_connection_parser()
-parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data.')
+parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data')
 parser.add_argument('--name', help='Name of the experiment to create in Genestack')
 parser.add_argument('--description', help='Description of the experiment to display in Genestack')
 

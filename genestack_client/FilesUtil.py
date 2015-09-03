@@ -337,7 +337,7 @@ class FilesUtil(Application):
         """
         Returns a list of dictionaries with complete information about each of the specified files.
         This will return an error if any of the accessions is not valid.
-        The order of the returned list is the same as the one of the accessions list.
+        The order of the output list is the same as the order of the accessions input list.
 
         The information dictionaries have the following structure:
 
@@ -394,7 +394,6 @@ class FilesUtil(Application):
             - application
 
                 - id
-                - name
 
             - initializationStatus
 
