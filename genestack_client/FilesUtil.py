@@ -118,13 +118,13 @@ class FilesUtil(Application):
         return self.find_file_by_name(name, parent, self.UNALIGNED_READS)
 
     def find_variation_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.VARIATION)
+        return self.find_file_by_name(name, parent, self.VARIATION_FILE)
 
     def find_experiment_by_name(self, name, parent=None):
         return self.find_file_by_name(name, parent, self.EXPERIMENT)
 
     def find_application_page_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.APPLICATION_PAGE)
+        return self.find_file_by_name(name, parent, self.APPLICATION_PAGE_FILE)
 
     def collect_initializable_files_in_container(self, accession):
         """
