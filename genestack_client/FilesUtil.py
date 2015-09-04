@@ -33,6 +33,9 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
+    # TODO remove in 0.1.10
+    # File class constants are renamed in 0.1.9
+    # Start deprecated constants
     IFile = 'com.genestack.api.files.IFile'
     IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
     IFolder = 'com.genestack.api.files.IFolder'
@@ -42,6 +45,29 @@ class FilesUtil(Application):
     IApplicationPageFile = 'com.genestack.files.IApplicationPageFile'
     IContainerFile = 'com.genestack.api.files.IContainerFile'
     IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
+    # end deprecated constants
+
+    CONTAINER = 'com.genestack.api.files.IContainerFile'
+    FOLDER = 'com.genestack.api.files.IFolder'
+    EXPERIMENT = 'com.genestack.bio.files.IExperiment'
+
+    FILE = 'com.genestack.api.files.IFile'
+    UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
+    ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
+    VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
+    APPLICATION_PAGE_FILE = 'com.genestack.files.IApplicationPageFile'
+    REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
+    AUXILIARY_FILE = 'com.genestack.api.files.IAuxiliaryFile'
+    INDEX_FILE = 'com.genestack.api.files.IIndexFile'
+    CODON_TABLE = 'com.genestack.bio.files.ICodonTable'
+    GENOME_BED_DATA = 'com.genestack.bio.files.genomedata.IGenomeBEDData'
+    GENOME_WIGGLE_DATA = 'com.genestack.bio.files.genomedata.IGenomeWiggleData'
+    GENOME_ANNOTATIONS = 'com.genestack.bio.files.IGenomeAnnotations'
+    HTSEQ_COUNTS = 'com.genestack.bio.files.IHTSeqCounts'
+    EXTERNAL_DATABASE = 'com.genestack.bio.files.IExternalDataBase'
+    PREFERENCES_FILE = 'com.genestack.files.IPreferencesFile'
+    REPORT_FILE = 'com.genestack.files.IReportFile'
+    RAW_FILE = 'com.genestack.files.IRawFile'
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -60,7 +86,7 @@ class FilesUtil(Application):
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
-    def find_file_by_name(self, name, parent=None, file_class=IFile):
+    def find_file_by_name(self, name, parent=None, file_class=FILE):
         """
         Finds file with specified name (ignore case!) and type.
         If no file is found None is returned.
@@ -83,22 +109,22 @@ class FilesUtil(Application):
 
     # SA: TODO: remove this methods and change usage to findFileByName
     def find_folder_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IFolder)
+        return self.find_file_by_name(name, parent, self.FOLDER)
 
     def find_aligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IAlignedReads)
+        return self.find_file_by_name(name, parent, self.ALIGNED_READS)
 
     def find_unaligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IUnalignedReads)
+        return self.find_file_by_name(name, parent, self.UNALIGNED_READS)
 
     def find_variation_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IVariationFile)
+        return self.find_file_by_name(name, parent, self.VARIATION_FILE)
 
     def find_experiment_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IExperiment)
+        return self.find_file_by_name(name, parent, self.EXPERIMENT)
 
     def find_application_page_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IApplicationPageFile)
+        return self.find_file_by_name(name, parent, self.APPLICATION_PAGE_FILE)
 
     def collect_initializable_files_in_container(self, accession):
         """
@@ -309,7 +335,7 @@ class FilesUtil(Application):
             if create:
                 parent = self.find_or_create_folder(path, parent=parent)
             else:
-                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.IFolder)
+                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.FOLDER)
                 if _parent_accession is None:
                     raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
                 parent = _parent_accession
