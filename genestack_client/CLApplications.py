@@ -192,6 +192,7 @@ class FilterDuplicatedReads(CLApplication):
 class TrimLowQualityBases(CLApplication):
     APPLICATION_ID = 'genestack/trim-low-quality-bases'
 
+
 class MergeRawReadsApplication(Application):
     APPLICATION_ID = 'genestack/merge-raw-reads'
 
