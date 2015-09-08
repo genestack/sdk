@@ -196,6 +196,10 @@ class TrimLowQualityBases(CLApplication):
 class MergeRawReadsApplication(Application):
     APPLICATION_ID = 'genestack/merge-raw-reads'
 
+    def create_merged_reads(self, sources_folder, grouping_key):
+        return self.invoke('createFiles', sources_folder, grouping_key)
+
+
 
 # preprocess mapped reads
 
