@@ -12,7 +12,7 @@ import os
 import platform
 from genestack_client import GenestackException
 from xml.dom.minidom import getDOMImplementation, parse
-from User import User
+from genestack_client.settings import User
 from copy import deepcopy
 
 

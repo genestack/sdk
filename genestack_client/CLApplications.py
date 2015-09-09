@@ -8,7 +8,7 @@
 # actual or intended publication of such source code.
 #
 
-from Connection import Application
+from genestack_client import Application
 
 
 CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'

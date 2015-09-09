@@ -8,10 +8,7 @@
 # actual or intended publication of such source code.
 #
 
-from Exceptions import GenestackException
-from Metainfo import Metainfo
-from Connection import Application
-from SudoUtils import SudoUtils
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
 
 class SpecialFolders:

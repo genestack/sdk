@@ -10,9 +10,7 @@
 
 import time
 import sys
-from genestack_client import GenestackException
-
-from Connection import Application
+from genestack_client import Application, GenestackException
 
 
 class TaskLogViewer(Application):

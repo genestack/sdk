@@ -11,10 +11,8 @@
 from urllib import quote
 from urlparse import urlparse
 import os
-import sys
 
-from Exceptions import GenestackException
-from BioMetainfo import BioMetainfo
+from genestack_client import GenestackException, BioMetainfo
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
