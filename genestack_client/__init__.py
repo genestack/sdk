@@ -10,16 +10,15 @@
 
 from version import __version__
 
-from Exceptions import GenestackException, GenestackServerException
-from Connection import Connection, Application
-from Metainfo import Metainfo
-from BioMetainfo import BioMetainfo
-from DataImporter import DataImporter
-from FileInitializer import FileInitializer
-from FilesUtil import FilesUtil, SpecialFolders
-from SudoUtils import SudoUtils
-from TaskLogViewer import TaskLogViewer
+from exceptions import GenestackException, GenestackServerException
+from connection import Connection, Application
+from metainfo import Metainfo
+from bio_metainfo import BioMetainfo
+from data_importer import DataImporter
+from file_initializer import FileInitializer
+from sudo_utils import SudoUtils
+from files_util import FilesUtil, SpecialFolders
+from task_log_viewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
-from CLApplications import *
-from DataFlowEditor import DataFlowEditor
-
+from cla import *
+from data_flow_editor import DataFlowEditor

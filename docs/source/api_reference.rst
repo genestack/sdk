@@ -249,7 +249,7 @@ Others
 GenestackShell
 --------------
 
-.. autoclass:: genestack_client.GenestackShell.GenestackShell
+.. autoclass:: genestack_client.genestack_shell.GenestackShell
         :members:
 
 
