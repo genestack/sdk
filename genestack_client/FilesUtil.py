@@ -256,6 +256,22 @@ class FilesUtil(Application):
         """
         self.invoke('removeMetainfoValue', accession_list, key)
 
+    def add_metainfo_values(self, accession, metainfo, skip_existing_keys=True, replace_existing_keys=False):
+        """
+        Add metainfo to a specified file. By default, metainfo keys that are already present in the file will be skipped.
+
+        :param accession: accession of the file to update
+        :param metainfo: metainfo object containing the metainfo to add
+        :type metainfo: Metainfo
+        :param skip_existing_keys: ignore metainfo keys that are already present in the file's metainfo (default: True)
+        :type skip_existing_keys: bool
+        :param replace_existing_keys: replace the existing metainfo value for the metainfo keys that are already present
+        in the file's metainfo (default: False)
+        :type replace_existing_keys: bool
+        :rtype: None
+        """
+        self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
+
     def get_special_folder(self, name):
         """
         Return the accession of a special folder.
