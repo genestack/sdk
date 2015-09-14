@@ -125,10 +125,10 @@ class ChunkedUpload(object):
         # import from here to avoid circular imports
         # TODO move progress functions to other module.
         if isatty():
-            from Connection import TTYProgress
+            from genestack_connection import TTYProgress
             self.progress = TTYProgress()
         else:
-            from Connection import DottedProgress
+            from genestack_connection import DottedProgress
             self.progress = DottedProgress(40)
 
         def _iterator():

@@ -8,7 +8,7 @@
 # actual or intended publication of such source code.
 #
 
-from genestack_client.settings.user import User, DEFAULT_HOST
-from genestack_client.settings.config import config
+from genestack_client.settings.genestack_user import User, DEFAULT_HOST
+from genestack_client.settings.genestack_config import config
 
 

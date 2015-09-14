@@ -10,9 +10,9 @@
 
 from version import __version__
 
-from exceptions import GenestackException, GenestackServerException
-from connection import Connection, Application
-from metainfo import Metainfo
+from genestack_exceptions import GenestackException, GenestackServerException
+from genestack_connection import Connection, Application
+from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo
 from data_importer import DataImporter
 from file_initializer import FileInitializer

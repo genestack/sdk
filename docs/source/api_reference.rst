@@ -42,12 +42,6 @@ FileInitializer
         :members:
         :show-inheritance:
 
-DataFlowEditor
---------------
-
-.. autoclass:: genestack_client.DataFlowEditor
-        :members:
-        :show-inheritance:
 
 SudoUtils
 ---------
