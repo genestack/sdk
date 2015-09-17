@@ -296,14 +296,8 @@ class FilesUtil(Application):
 
     def get_groups_to_share(self):
         """
-        Returns a dictionary of the form  ``group_accession: group_info_dict``,
-        where ``group_info_dict`` is a dictionary with the following keys:
-        - savedFolderName
-        - savedFolderAccession
-        - name: name of the group
-        - folderName: name of the group's shared folder
-        - folderAccession: accession of the group's shared folder
-
+        Returns a dictionary of the form  ``group_accession: group_name``.
+        
         :return: group dict
         :rtype: dict
 
