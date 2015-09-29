@@ -8,7 +8,7 @@
 # actual or intended publication of such source code.
 #
 
-from Metainfo import Metainfo
+from genestack_client import Metainfo
 
 
 class BioMetainfo(Metainfo):

@@ -12,7 +12,7 @@ import datetime
 import os
 from urlparse import urlparse, unquote
 
-from Exceptions import GenestackException
+from genestack_client import GenestackException
 
 
 def xstr(arg):

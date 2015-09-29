@@ -13,7 +13,7 @@ import json
 import shlex
 from datetime import datetime
 
-from genestack_client.GenestackShell import GenestackShell, Command
+from genestack_client.genestack_shell import GenestackShell, Command
 
 APPLICATION_SHELL = 'genestack/shell'
 
