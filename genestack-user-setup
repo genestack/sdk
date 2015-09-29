@@ -75,6 +75,13 @@ def ask_email_and_password(host, alias=None):
     return connection, user
 
 
+def check_config():
+    config_path = config.get_settings_file()
+    if not os.path.exists(config_path):
+        print "You do not seem to have a config file yet. Please run genestack-user-setup init. Exiting."
+        exit(1)
+
+
 class AddUser(Command):
     COMMAND = 'add'
     DESCRIPTION = 'Add new user.'
@@ -130,6 +137,7 @@ class SetPassword(Command):
         parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
 
     def run(self):
+        check_config()
         users = config.users
         user = users.get(self.args.alias)
         if not user:
@@ -155,6 +163,7 @@ class SetDefault(Command):
         parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
 
     def run(self):
+        check_config()
         users = config.users
         user = users.get(self.args.alias)
         if not user:
@@ -175,6 +184,7 @@ class Remove(Command):
         parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
 
     def run(self):
+        check_config()
         users = config.users
 
         user = users.get(self.args.alias)
@@ -197,6 +207,7 @@ class RenameUser(Command):
         parent.add_argument('new_alias', metavar='<new_alias>', help='New alias', nargs='?')
 
     def run(self):
+        check_config()
         users = config.users
 
         user = users.get(self.args.alias)
@@ -226,6 +237,7 @@ class List(Command):
     OFFLINE = True
 
     def run(self):
+        check_config()
         users = sorted(config.users.items())
 
         default_user_alias = config.default_user and config.default_user.alias
@@ -278,24 +290,12 @@ class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
     COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
 
-    def process_command(self, command, argument_line, connection, shell=False):
-        config_path = config.get_settings_file()
-        if not shell and not isinstance(command, (Init, Path, List, AddUser)) and not os.path.exists(config_path):
-            print "You do not seem to have a config file yet. Please run genestack-user-setup init. Exiting."
-            exit(1)
-        return GenestackShell.process_command(self, command, argument_line, connection, shell=shell)
-
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print "No config file was found; starting init."
-            connection = self.process_command(Init(), [], None)
-            self.connection = connection
-        else:
-            self.connection = get_connection(args)
-        email = self.connection.whoami()
-        self.prompt = '%s> ' % email
-        self.intro = "Hello, %s!" % email
+            self.process_command(Init(), [], None)
+        GenestackShell.set_shell_user(self, args)
 
 
 if __name__ == '__main__':

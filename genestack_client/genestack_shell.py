@@ -113,7 +113,7 @@ class Command(object):
         Set a connection for the command.
 
         :param conn: connection
-        :type conn: genestack_client.Connection.Connection
+        :type conn: genestack_client.Connection
         """
         self.connection = conn
 
@@ -132,12 +132,18 @@ class Command(object):
         """
         return self.DESCRIPTION
 
+    def run(self):
+        """
+        Override this method to implement the command action.
+        """
+        raise NotImplementedError()
+
 
 class GenestackShell(cmd.Cmd):
     """
     Base shell class. :py:class:`GenestackShell` is a subclass of the :py:class:`cmd.Cmd`.
 
-    Arguments to be overriden in children:
+    Arguments to be overridden in children:
 
         - ``INTRO``: greeting at start of shell mode
         - ``COMMAND_LIST``: list of available commands
@@ -185,6 +191,7 @@ class GenestackShell(cmd.Cmd):
     def __init__(self, *args, **kwargs):
         self.COMMANDS = {command.COMMAND: command for command in self.COMMAND_LIST}
         cmd.Cmd.__init__(self, *args, **kwargs)
+        self.connection = None
 
     def get_shell_parser(self):
         """
@@ -255,7 +262,7 @@ class GenestackShell(cmd.Cmd):
         self.connection = get_connection(args)
         email = self.connection.whoami()
         self.prompt = '%s> ' % email
-        self.INTRO = "Hello, %s!" % email
+        self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
 
     def postloop(self):
         try:
@@ -265,16 +272,17 @@ class GenestackShell(cmd.Cmd):
 
     def do_EOF(self, line):
         return True
+
     do_quit = do_EOF
 
-    def process_command(self, command, argument_line, connection, shell=False):
+    def process_command(self, command, argument_list, connection, shell=False):
         """
         Run a command with arguments.
 
         :param command: command
         :type command: Command
-        :param argument_line: argument string for the command
-        :type argument_line: str
+        :param argument_list: the list of arguments for the command
+        :type argument_list: list
         :param connection: connection (can be None in the case of an ``OFFLINE`` command)
         :type connection: Connection
         :param shell: should we use shell mode?
@@ -285,7 +293,7 @@ class GenestackShell(cmd.Cmd):
         else:
             p = command.get_command_parser(make_connection_parser())
         try:
-            args = p.parse_args(argument_line)
+            args = p.parse_args(argument_list)
         except SystemExit:
             return
         command.set_connection(connection)

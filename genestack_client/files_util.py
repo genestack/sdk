@@ -123,6 +123,7 @@ class FilesUtil(Application):
     def find_application_page_file_by_name(self, name, parent=None):
         return self.find_file_by_name(name, parent, self.APPLICATION_PAGE_FILE)
 
+    # FIXME: use pagination in this method, see #5063
     def collect_initializable_files_in_container(self, accession):
         """
         Recursively search for all initialisable file in container.
