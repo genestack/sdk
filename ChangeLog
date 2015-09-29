@@ -1,7 +1,7 @@
 * version 0.1.9
   * percent encode incoming urls for s3 in DataImporter
   * rename `GenestackShell` module to `genestack_shell`
-  * rename `UnalignedReads` to 'unaligned_reads'
+  * rename `UnalignedReads` to `unaligned_reads`
 
 * version 0.1.8
   * rename pythonSDK to Python Client Library, `genestack` -> 'genestack-client'
