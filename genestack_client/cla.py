@@ -301,3 +301,7 @@ class FastQCApplicaton(CLApplication):
 
 class AlignedReadsQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc'
+
+
+class TargetedSequencingQC(CLApplication):
+    APPLICATION_ID = 'genestack/alignedreads-qc-enrichment'
