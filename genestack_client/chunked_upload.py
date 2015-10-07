@@ -78,7 +78,7 @@ class ChunkedUpload(object):
         if chunk_size is None:
             chunk_size = CHUNK_SIZE
         if chunk_size <= 0:
-            raise GenestackException("Chunk size should be positive.")
+            raise GenestackException("Chunk size should be positive")
 
         self.chunk_upload_url = '/application/uploadChunked/%s/unusedToken' % application.application_id
         self.connection = application.connection

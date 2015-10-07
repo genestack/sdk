@@ -326,7 +326,7 @@ class FilesUtil(Application):
         :raises:  GenestackException: when paths are not specified or parent cannot be found.
         """
         if not names:
-            raise GenestackException("At least one path should be specified.")
+            raise GenestackException("At least one path should be specified")
 
         create = bool(kwargs.get('create'))
         for path in names:

@@ -42,7 +42,7 @@ class TaskLogViewer(Application):
         while True:
             log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, limit)
             if not log_chunk:
-                raise GenestackException('File %s not found or have no tasks.' % accession)
+                raise GenestackException('File %s not found or have no tasks' % accession)
 
             if log_chunk['content'] is None and not follow:
                 break
