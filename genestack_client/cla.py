@@ -277,6 +277,24 @@ class IntersectGenomicFeaturesMapped(CLApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
 
+# analyse raw counts
+
+class ExpressionNavigatorforGenes(CLApplication):
+    APPLICATION_ID = 'genestack/expressionNavigator'
+
+
+# analyse FPKM counts
+
+class ExpressionNavigatorforIsoforms(CLApplication):
+    APPLICATION_ID = 'genestack/expressionNavigator-isoforms'
+
+
+# analyse Differential Expression Statistics
+
+class GOEnrichmentAnalysis(CLApplication):
+    APPLICATION_ID = 'genestack/functionalEnrichmentAnalysis'
+
+
 # analyse variants
 
 class EffectPredictionApplication(CLApplication):
