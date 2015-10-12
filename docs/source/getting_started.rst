@@ -33,6 +33,16 @@ Then, you can test your installation by executing:
 
 If the command executes without returning an error, you have successfully installed the Genestack Python Client Library. Yay!
 
+
+.. note::
+
+  If you have ssh warnings in console you can update to newest version of python 2.7.* or install requests security dependencies.
+
+ .. code-block:: sh
+
+    $ sudo pip install 'requests[security]'
+
+
 Configuring Credentials
 ***********************
 
