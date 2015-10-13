@@ -294,14 +294,27 @@ class FilesUtil(Application):
 
     def get_groups_to_share(self):
         """
-        Returns a dictionary of the form  ``group_accession: group_name``.
-        
+        Returns a dictionary of the form ``group_accession: group_name``.
+
         :return: group dict
         :rtype: dict
 
         """
         share_utils = self.connection.application('genestack/shareutils')
         return share_utils.invoke('getGroupsToShare')
+
+    def get_group_folder_info(self, group_accession):
+        """
+        Return map with information about group folder.
+        It is map with two keys ``name`` and ``accession``.
+
+        :param group_accession: group accession
+        :type group_accession: str
+        :return: map with keys ``name`` and  ``accession``
+        :rtype: dict
+        """
+        share_utils = self.connection.application('genestack/shareutils')
+        return share_utils.invoke('getGroupFolderInfo', group_accession)
 
     def get_folder(self, parent, *names, **kwargs):
         """
