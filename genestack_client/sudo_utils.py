@@ -38,7 +38,7 @@ class SudoUtils(Application):
         :return: True if sudo is active.
         """
         # TODO rename this method in java and javascript https://trac.genestack.com/ticket/3393
-        return self.invoke('isPasswordCorrect', password)
+        return self.invoke('ensureSudo', password)
 
     def ensure_sudo_interactive(self, password):
         """
