@@ -15,11 +15,11 @@ import urllib2
 import cookielib
 import json
 import requests
-from Exceptions import GenestackServerException, GenestackException
-from utils import isatty
-from chunked_upload import upload_by_chunks
-from version import __version__
 from distutils.version import StrictVersion
+
+from genestack_client import GenestackServerException, GenestackException, __version__
+from genestack_client.utils import isatty
+from genestack_client.chunked_upload import upload_by_chunks
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):

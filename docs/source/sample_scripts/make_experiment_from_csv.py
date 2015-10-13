@@ -48,7 +48,7 @@ with open(csv_input, 'r') as the_file:
     # check if mandatory keys are in the CSV file
     for mandatory_key in MANDATORY_KEYS:
         if mandatory_key not in field_names:
-            raise GenestackException("The key '%s' must be supplied in the CSV file. Aborting." % mandatory_key)
+            raise GenestackException("The key '%s' must be supplied in the CSV file" % mandatory_key)
 
     for file_data in reader:
 

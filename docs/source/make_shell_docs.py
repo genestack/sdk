@@ -1,6 +1,6 @@
 import os
 import imp
-from genestack_client.GenestackShell import get_help
+from genestack_client.genestack_shell import get_help
 from genestack_client import make_connection_parser
 
 import sys

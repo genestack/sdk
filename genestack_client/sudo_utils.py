@@ -11,8 +11,7 @@
 import getpass
 import sys
 
-from Connection import Application
-from genestack_client import GenestackException
+from genestack_client import Application, GenestackException
 
 
 class SudoUtils(Application):
