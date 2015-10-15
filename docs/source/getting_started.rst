@@ -36,11 +36,12 @@ If the command executes without returning an error, you have successfully instal
 
 .. note::
 
-  If you have ssh warnings in console you can update to newest version of python 2.7.* or install requests security dependencies.
+    If you see a warning such as ``InsecurePlatformWarning: A true SSLContext object is not available`` in the console,
+    you can either update your Python to the latest ``2.7.*`` version, or install the ``security`` package extras using ``pip``:
 
- .. code-block:: sh
+    .. code-block:: sh
 
-    $ sudo pip install 'requests[security]'
+        $ sudo pip install 'requests[security]'
 
 
 Configuring Credentials
