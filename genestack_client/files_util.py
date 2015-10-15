@@ -306,11 +306,11 @@ class FilesUtil(Application):
     def get_group_folder_info(self, group_accession):
         """
         Return dictionary with information about group folder.
-        It has two keys: ``name`` and ``accession``.
+        It has two keys: ``name`` (name of the group) and ``accession`` (accession of the group folder).
 
         :param group_accession: group accession
         :type group_accession: str
-        :return: dictionary with keys ``name`` and  ``accession``
+        :return: dictionary with keys ``name`` (name of the group) and  ``accession`` (accession of the group folder)
         :rtype: dict
         """
         share_utils = self.connection.application('genestack/shareutils')
