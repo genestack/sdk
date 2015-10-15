@@ -2,18 +2,19 @@
 
 ### Documentation
 
-   [Documentation](https://internal-dev.genestack.com/developers/index.html)
+   [stable](http://genestack-client.readthedocs.org/en/stable/)
 
 ### Repo
 
   ```
   docs/                             - folder with documentation sources
-  genestack/                        - folder with genestack library
+  genestack_client/                 - folder with library
   tests/                            - developer tests, require pytest to run.
-  genestack-application-manager     - script to connect to application-manager (installed as script with genestack)
-  genestack-user-setup              - script to setup user (installed as script with genestack)
-  local_settings_sample.xml         - sample settings file for local developer
-  setup.py                          - installation setup for genestack library
+  genestack-application-manager     - script to connect to application-manager (installed as script)
+  genestack-user-setup              - script to setup user (installed as script)
+  genestack-uploader                - commandline uploader (installed as script)
+  genestack-shell                   - shell (installed as script)
+  setup.py                          - installation setup for genestack_client library
   ```
 
 ### Generate documentation files
