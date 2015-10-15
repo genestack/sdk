@@ -31,8 +31,8 @@ if __name__ == "__main__":
     # parse script arguments
     parser = make_connection_parser()
     parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data')
-    parser.add_argument('--folder', help='Accession of the Genestack folder containing the files')
-    parser.add_argument('--local-key', help='Name of the local key to match CSV records and Genestack files names')
+    parser.add_argument('local-key', help='Name of the local key to match CSV records and Genestack files names')
+    parser.add_argument('folder', help='Accession of the Genestack folder containing the files')
 
     args = parser.parse_args()
     csv_input = args.csv_file

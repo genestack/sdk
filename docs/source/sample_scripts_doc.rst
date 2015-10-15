@@ -73,7 +73,7 @@ The script is then called with the following syntax:
 
 .. code-block:: shell
 
-    python add_metainfo_from_table.py --local-key "file_name" --folder GSF12345 my_csv_file.csv
+    python add_metainfo_from_table.py my_csv_file.csv file_name GSF12345
 
 
 Organising files into folders based on their metainfo
