@@ -11,10 +11,8 @@
 from urllib import quote
 from urlparse import urlparse
 import os
-import sys
 
-from Exceptions import GenestackException
-from BioMetainfo import BioMetainfo
+from genestack_client import GenestackException, BioMetainfo
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
@@ -485,3 +483,30 @@ class DataImporter(object):
             for url in urls:
                 metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/reportLoader', 'importFile', parent, metainfo)
+
+    def create_mapped_reads_count(self,
+                                  parent=None,
+                                  name=None,
+                                  url=None,
+                                  reference_genome=None,
+                                  metainfo=None):
+        """
+        Create a Mapped Reads Count file from a local or remote mapped reads count file.
+
+        :param parent: accession of parent folder leave empty for ``Imported files``
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param reference_genome: reference genome accession
+        :type reference_genome: str
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        return self.__invoke_loader('genestack/mappedReadsCountLoader', 'importFile', parent, metainfo)

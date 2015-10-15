@@ -8,7 +8,7 @@
 # actual or intended publication of such source code.
 #
 
-from Connection import Application
+from genestack_client import Application
 
 
 CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
@@ -277,6 +277,24 @@ class IntersectGenomicFeaturesMapped(CLApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
 
+# analyse raw counts
+
+class ExpressionNavigatorforGenes(CLApplication):
+    APPLICATION_ID = 'genestack/expressionNavigator'
+
+
+# analyse FPKM counts
+
+class ExpressionNavigatorforIsoforms(CLApplication):
+    APPLICATION_ID = 'genestack/expressionNavigator-isoforms'
+
+
+# analyse Differential Expression Statistics
+
+class GOEnrichmentAnalysis(CLApplication):
+    APPLICATION_ID = 'genestack/functionalEnrichmentAnalysis'
+
+
 # analyse variants
 
 class EffectPredictionApplication(CLApplication):
@@ -301,3 +319,7 @@ class FastQCApplicaton(CLApplication):
 
 class AlignedReadsQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc'
+
+
+class TargetedSequencingQC(CLApplication):
+    APPLICATION_ID = 'genestack/alignedreads-qc-enrichment'
