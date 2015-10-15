@@ -22,5 +22,5 @@ setup(
     author_email='',
     description='Genestack Python Client Library',
     scripts=['genestack-user-setup', 'genestack-application-manager', 'genestack-uploader', 'genestack-shell'],
-    install_requires=['keyring', 'requests[security]']
+    install_requires=['keyring', 'requests']
 )
