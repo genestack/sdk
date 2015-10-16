@@ -108,7 +108,7 @@ class Connection:
 
         compatible = StrictVersion(version_map[COMPATIBLE])
 
-        update_message = ('You can update it with next command:\n'
+        update_message = ('You can update it with the following command:\n'
                           '    pip install git+https://github.com/genestack/python-client@stable\n')
 
         if my_verison >= compatible:
