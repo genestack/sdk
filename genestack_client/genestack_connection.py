@@ -103,10 +103,7 @@ class Connection:
         latest_version = StrictVersion(version_map[LATEST])
         my_verison = StrictVersion(version)
 
-        if latest_version < my_verison:
-            return 'You use version from future'
-
-        if latest_version == my_verison:
+        if latest_version <= my_verison:
             return ''
 
         compatible = StrictVersion(version_map[COMPATIBLE])
