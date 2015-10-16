@@ -4,25 +4,25 @@ Getting Started with the Genestack Python Client Library
 Installing the Library
 **********************
 
-.. note::
-
-    At the moment, the Genestack SDK is not available to the public.
-    To get the library sources or to access the GitHub repository, ask somebody at Genestack.
-
-
-If you have access to the GitHub repository, you can either `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
-
-Once inside the directory, you can install the library using ``pip`` if it is available on your system (if not, have a look at the `pip install instructions <https://pip.pypa.io/en/latest/installing.html>`_):
+You can install Genestack Python Client Library using ``pip`` if it is available on your system (if not, have a look at the `pip install instructions <https://pip.pypa.io/en/latest/installing.html>`_)
 
 .. code-block:: sh
 
-    $ sudo pip install .
+    $ pip install git+https://github.com/genestack/python-client@stable
+
 
 .. note::
 
-    You can also install the library without ``pip``, by typing ``python setup.py install``.
+    You can also install the library without ``pip``:
+
+    You need to have a copy of sources by `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
+
+    .. code-block:: sh
+
+        $ python setup.py install .
+
     In that case make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
-    and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
+    and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed.
 
 
 Then, you can test your installation by executing:
