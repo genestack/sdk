@@ -249,8 +249,8 @@ Commands
 
 
 
-Useful commands
----------------
+Usage examples
+--------------
 
 If ``-u`` is not specified, the default user is used.
 
