@@ -103,17 +103,19 @@ class Connection:
         latest_version = StrictVersion(version_map[LATEST])
         my_verison = StrictVersion(version)
 
-        if latest_version < my_verison:
-            return 'You use version from future'
-
-        if latest_version == my_verison:
+        if latest_version <= my_verison:
             return ''
 
         compatible = StrictVersion(version_map[COMPATIBLE])
+
+        update_message = ('You can update it with the following command:\n'
+                          '    pip install git+https://github.com/genestack/python-client@stable\n')
+
         if my_verison >= compatible:
-            return 'Newer version "%s" available, please update.' % latest_version
+            return 'Newer version "%s" available, please update.\n%s' % (latest_version, update_message)
         else:
-            raise GenestackException('Your version "%s" is too old, please update to %s' % (my_verison, latest_version))
+            raise GenestackException('Your version "%s" is too old, please update to %s.\n%s' % (
+                my_verison, latest_version, update_message))
 
     def logout(self):
         """

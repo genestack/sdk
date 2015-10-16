@@ -32,7 +32,7 @@ def test_too_old():
 
 def test_future_version():
     connection = get_connection()
-    assert connection.check_version('99.99.99') == 'You use version from future'
+    assert connection.check_version('99.99.99') == ''
 
 
 if __name__ == '__main__':
