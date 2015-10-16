@@ -15,13 +15,15 @@ You can install Genestack Python Client Library using ``pip`` if it is available
 
     You can also install the library without ``pip``:
 
-    You need to have a copy of sources by `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
+    You need to download the sources, either by `cloning the repository from GitHub <https://github.com/genestack/python-client/>`_
+    or by retrieving and unpacking `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
+    Then, open up a terminal, go to the folder containing the sources and run:
 
     .. code-block:: sh
 
         $ python setup.py install .
 
-    In that case make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
+    In that case, make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
     and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed.
 
 
