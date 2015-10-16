@@ -35,7 +35,8 @@ Usage
       Files that were not recognized are linked to subfolder 'Unrecognized files'.
     
       ATTENTION: Recognition of big number of files may cause server timeouts.
-      Split uploading with recognition into relatively small iterations to prevent timeout failures.
+      Split uploading with recognition into relatively small iterations to prevent timeout
+      failures.
     
     optional arguments:
       -h, --help            show this help message and exit
