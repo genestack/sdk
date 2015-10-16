@@ -49,22 +49,14 @@ If the command executes without returning an error, you have successfully instal
 Configuring Credentials
 ***********************
 
-The Genestack Python Client Library works by logging in to a Genestack instance (typically ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.org`` if you are working on the community edition of Genestack). Therefore, before doing anything you need to have an account on the Genestack instance to which you want to connect.
+The Genestack Python Client Library works by logging in to a Genestack instance (by default `platform.genestack.org <https://platform.genestack.org/endpoint/application/run/genestack/signin>`_).
+Therefore, before doing anything you need to have an account on the Genestack instance to which you want to connect.
 
 To avoid typing in your credentials every time you connect to a Genestack instance programmatically, the library comes with a utility ``genestack-user-setup`` which allows you to store locally, in a secure manner, a list of user identities to login to Genestack. To configure your first user identity, type in the following command in a terminal:
 
 .. code-block:: sh
 
     $ genestack-user-setup init
-
-.. warning::
-    
-    By default, the new user identity will be linked to the host ``platform.genestack.com`` (i.e. the community edition of Genestack). If you are a developer, you want to work on ``internal-dev.genestack.com`` instead. Therefore, you should change that command to:
-
-    .. code-block:: sh
-
-        $ genestack-user-setup --host internal-dev.genestack.com init
-
 
 You will be prompted for your email and password to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
 
@@ -93,7 +85,7 @@ Setting up additional users
 
 If you have multiple accounts on Genestack (or you are using multiple instances of Genestack), you can define multiple identities with the ``genestack-user-setup``.
 
-Each user has an alias (unique identifier), an email address, a host address and a password. Typically, the host name will either be ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.com`` if you are working on the community edition of Genestack. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
+Each user has an alias (unique identifier), an email address, a host address and a password. The host name will be ``platform.genestack.com`` by default. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
 
 .. code-block:: sh
 
