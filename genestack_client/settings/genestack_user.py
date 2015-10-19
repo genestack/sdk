@@ -52,7 +52,7 @@ class User(object):
 
     def get_connection(self, interactive=True):
         """
-        Return a logged connection for current user.
+        Return a logged-in connection for current user.
         If ``interactive`` is True and the password or email are unknown, they will be asked in interactive mode.
         If no host is specified, the ``DEFAULT_HOST`` will be used.
 
