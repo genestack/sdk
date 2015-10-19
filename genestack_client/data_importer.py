@@ -21,7 +21,7 @@ SEQUENCE_KEY = 'genestack.url:sequence'
 class DataImporter(object):
     """
     A class used to import files to a Genestack instance.
-    If no ``parent`` is not specified, the files are created in the special folder ``Imported files``
+    If no ``parent`` is specified, the files are created in the special folder ``Imported files``
 
     Required and recommended values can be set by arguments directly or passed inside a ``BioMetainfo`` object::
 
