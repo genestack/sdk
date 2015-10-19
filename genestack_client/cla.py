@@ -31,20 +31,23 @@ class CLApplication(Application):
     def create_file(self, source_files, name=None, params=None, calculate_checksums=False, expected_checksums=None,
                     initialize=False):
         """
-        Create a native file with the application and return its accession.
+        Create a native Genestack file with the application and return its accession.
         If a source file is not found or is not of the expected type, an exception will be thrown.
 
         :param source_files: list of source files accessions
         :type source_files: list
         :param name: if a name is provided, the created file will be renamed
         :type name: str
-        :param params: custom command-line arguments strings; if None, the application defaults will be used.
+        :param params: custom command-line arguments strings; if None,
+            the application defaults will be used.
         :param params: list
-        :param calculate_checksums: a flag used in the initialization script to compute checksums for the created files
+        :param calculate_checksums: a flag used in the initialization script
+            to compute checksums for the created files
         :type calculate_checksums: bool
         :param expected_checksums: List of expected checksums, in any order
         :type expected_checksums: list
-        :param initialize: should initialization be started immediately after the file is created?
+        :param initialize: should initialization be started immediately
+            after the file is created?
         :return: accession of created file
         :rtype: str
         """
@@ -66,7 +69,8 @@ class CLApplication(Application):
     def mark_for_tests(self, app_file):
         """
         Mark file for test via add corresponding key to the metainfo.
-        Test file will calculate md5 checksums for processed files stored in the storage during initialization.
+        Test file will calculate md5 checksums for processed files
+        stored in the storage during initialization.
 
         :param app_file: accession of file
         :return: None
@@ -79,10 +83,13 @@ class CLApplication(Application):
         Add expected MD5 checksum to the metainfo of a CLA file.
         Expected checksums are calculated in the following way:
 
-            - The number of checksums is equal to the number of entries in storage. For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - The number of checksums is equal to the number of entries in storage.
+              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
             - The order of the checksums does not matter (TODO: that might entail problems!).
-            - If there are multiple files in one entry, they will be concatenated in the same order as they were ``PUT`` to storage by the initialization script.
-            - If a file is marked for testing, then after initialization its metainfo will contain both expected and actual checksum values.
+            - If there are multiple files in one entry, they will be concatenated in the same order
+              as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo
+              will contain both expected and actual checksum values.
 
         :param app_file: accession of application file
         :param expected_checksums: collection of MD5 checksums
@@ -102,10 +109,11 @@ class CLApplication(Application):
     def change_command_line_arguments(self, accession, params):
         """
         Change the command-line arguments strings in a file's metainfo.
-        ``params`` is a list of command-line strings. Note that the syntax of command-line argument strings
-        is application-specific. The only way for you to know which command-line strings to provide it is to look at
-        the ``Parameters`` metainfo field of a CLA file that has the correct parameters specified through the graphical
-        user interface of the application.
+        ``params`` is a list of command-line strings.
+        Note that the syntax of command-line argument strings is application-specific.
+        The only way for you to know which command-line strings to provide it is to look at
+        the ``Parameters`` metainfo field of a CLA file that has the correct parameters
+        specified through the graphical user interface of the application.
 
         If the file is not found, does not have the right file type
         or is already initialized, an exception will be thrown.

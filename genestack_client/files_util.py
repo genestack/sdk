@@ -68,7 +68,8 @@ class FilesUtil(Application):
 
     def find_reference_genome(self, organism, assembly, release):
         """
-        Returns the accession of the reference genome with the specified parameters: organism, assembly, release.
+        Returns the accession of the reference genome with the specified parameters:
+        ``organism``, ``assembly``, ``release``.
         If more than one or no genome is found, the corresponding exceptions are thrown.
 
         :param organism: organism
@@ -86,7 +87,7 @@ class FilesUtil(Application):
     def find_file_by_name(self, name, parent=None, file_class=FILE):
         """
         Finds file with specified name (ignore case!) and type.
-        If no file is found None is returned.
+        If no file is found ``None`` is returned.
         If more than one file is found the first one is returned.
         If the parent container is not found, the corresponding exceptions are thrown.
 
@@ -156,7 +157,8 @@ class FilesUtil(Application):
         :type parent: str
         :param description: description of the folder (goes into the metainfo)
         :type description: str
-        :param metainfo: additional Metainfo. Description and accession should be specified either via arguments or in a metainfo object (but not in both).
+        :param metainfo: additional :py:class:`~genestack_client.Metainfo`.
+            Description and accession should be specified either via arguments or in a metainfo object (but not in both).
         :type metainfo: Metainfo
         :return: accession of created folder
         """
@@ -256,15 +258,17 @@ class FilesUtil(Application):
 
     def add_metainfo_values(self, accession, metainfo, skip_existing_keys=True, replace_existing_keys=False):
         """
-        Add metainfo to a specified file. By default, metainfo keys that are already present in the file will be skipped.
+        Add metainfo to a specified file.
+        By default, metainfo keys that are already present in the file will be skipped.
 
         :param accession: accession of the file to update
         :param metainfo: metainfo object containing the metainfo to add
         :type metainfo: Metainfo
-        :param skip_existing_keys: ignore metainfo keys that are already present in the file's metainfo (default: True)
+        :param skip_existing_keys: ignore metainfo keys that are already present in the file's metainfo
+            (default: ``True``)
         :type skip_existing_keys: bool
-        :param replace_existing_keys: replace the existing metainfo value for the metainfo keys that are already present
-        in the file's metainfo (default: False)
+        :param replace_existing_keys: replace the existing metainfo value for the metainfo keys
+            that are already present in the file's metainfo (default: ``False``)
         :type replace_existing_keys: bool
         :rtype: None
         """
@@ -284,7 +288,7 @@ class FilesUtil(Application):
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
                            SpecialFolders.UPLOADED)
-        if not name in special_folders:
+        if name not in special_folders:
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
@@ -298,7 +302,8 @@ class FilesUtil(Application):
         :type group: str
         :param destination_folder: folder in which to link the shared files. No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing. If not specified, will be asked in an interactive prompt (if supported)
+        :param password: password for sharing.
+            If not specified, will be asked in an interactive prompt (if supported)
         :type: str
         :rtype: None
         """
@@ -326,7 +331,7 @@ class FilesUtil(Application):
 
         :param group_accession: group accession
         :type group_accession: str
-        :return: dictionary with keys ``name`` (name of the group) and  ``accession`` (accession of the group folder)
+        :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
         :rtype: dict
         """
         share_utils = self.connection.application('genestack/shareutils')

@@ -179,8 +179,6 @@ BioMetainfo
 
 .. autoclass:: genestack_client.BioMetainfo
         :members:
-        :show-inheritance:
-
 
 
 Users and Connections
@@ -246,6 +244,12 @@ GenestackShell
 .. autoclass:: genestack_client.genestack_shell.GenestackShell
         :members:
 
+
+Command
+-------
+
+.. autoclass:: genestack_client.genestack_shell.Command
+        :members:
 
 SpecialFolders
 --------------
