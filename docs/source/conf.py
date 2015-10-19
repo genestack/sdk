@@ -323,3 +323,6 @@ autoclass_content = 'both'
 sys.path.append('.')
 from make_shell_docs import main
 main()
+
+from make_uploader_docs import main
+main()
