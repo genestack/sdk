@@ -5,6 +5,8 @@ genestack-application-manager
 ``genestack-application-manager`` is installed with the Python Client Library and can be accessed from a terminal by typing ``genestack-application-manager``.
 
 
+.. WARNING!!! Don not edit part from below, it is auto-generated from script help output
+
 Usage
 -----
 This script can be used both in interactive shell mode and in static command-line mode:
@@ -249,8 +251,8 @@ Commands
 
 
 
-Useful commands
----------------
+Usage examples
+--------------
 
 If ``-u`` is not specified, the default user is used.
 

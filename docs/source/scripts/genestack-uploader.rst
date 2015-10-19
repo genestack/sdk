@@ -4,6 +4,8 @@ genestack-uploader
 
 ``genestack-uploader`` is installed with the Python Client Library and can be accessed from a terminal by typing ``genestack-uploader``.
 
+.. WARNING!!! Don not edit part from below, it is auto-generated from script help output
+
 
 Usage
 -----
