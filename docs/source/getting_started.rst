@@ -269,25 +269,25 @@ First, let's open a connection::
 Then we create a new instance of the class::
 
     >>> from genestack_client import FilesUtil
-    >>> file_utils = FilesUtil(connection)
+    >>> files_util = FilesUtil(connection)
 
 
 Then we can create a new empty folder::
 
-    >>> folder_accession = file_utils.create_folder("My new folder")
+    >>> folder_accession = files_util.create_folder("My new folder")
     >>> print folder_accession
     GSF000001
 
 By default, this one was created in the "Created Files" folder of the current user, but we can define any folder as parent::
 
-    >>> inner_folder_accession = file_utils.create_folder("My inner folder", parent=folder_accession)
+    >>> inner_folder_accession = files_util.create_folder("My inner folder", parent=folder_accession)
     >>> print inner_folder_accession
     GSF000002
 
 
 Finding a folder by its name::
 
-    >>> folder_accession = file_utils.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
+    >>> folder_accession = files_util.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
     >>> print folder_accession
     GSF000002
 
