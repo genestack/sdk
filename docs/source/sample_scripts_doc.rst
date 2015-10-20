@@ -45,6 +45,37 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 
     One could easily extend this script to support two files per sample (in the case of paired-end reads).
 
+Editing the metainfo of existing files
+--------------------------------------
+
+In the real world, data and metatada live in different places and you may not have access to both of them at the same time.
+Sometimes, you may be in a situation where you have uploaded data on Genestack and you are only provided with metadata later on.
+The following script takes as input a comma-delimited CSV
+file containing metadata and adds that metadata to existing files on Genestack. The files should be located in a
+specific folder, and the correspondence between records in the CSV file and the remote files is done based on the
+name of the remote files. The name of the files should be stored in a specific column of the CSV file,
+whose name must be supplied to the script with the ``--local-key`` parameter.
+
+.. literalinclude:: sample_scripts/add_metainfo_from_table.py
+    :linenos:
+    :language: python
+
+For instance, imagine we have the following CSV file:
+
+.. code-block:: none
+
+    file_name,organism,disease
+    Patient 1,Homo sapiens,Asthma
+    Patient 2,Homo sapiens,Healthy
+    ....
+
+The script is then called with the following syntax:
+
+.. code-block:: shell
+
+    python add_metainfo_from_table.py my_csv_file.csv file_name GSF12345
+
+
 Organising files into folders based on their metainfo
 -----------------------------------------------------
 
