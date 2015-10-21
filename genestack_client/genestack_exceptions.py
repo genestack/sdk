@@ -20,9 +20,6 @@ class GenestackException(Exception):
 class GenestackServerException(GenestackException):
     """
     Should be thrown when a server sends a response with an error message from Java code.
-
-    :py:class:`~genestack_client.GenestackServerException` is a subclass of the
-    :py:class:`~genestack_client.GenestackException`.
     """
 
     def __init__(self, message, path, post_data, stack_trace=None):

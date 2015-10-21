@@ -326,3 +326,10 @@ main()
 
 from make_uploader_docs import main
 main()
+
+
+from genestack_client import Metainfo, Application, GenestackException
+
+Metainfo.__module__ = 'genestack_client'
+Application.__module__ = 'genestack_client'
+GenestackException.__module__ = 'genestack_client'

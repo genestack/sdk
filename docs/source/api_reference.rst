@@ -16,6 +16,7 @@ Application
 
 .. autoclass:: genestack_client.Application
         :members:
+        :show-inheritance:
 
 .. _DataImporter:
 
@@ -24,6 +25,7 @@ DataImporter
 
 .. autoclass:: genestack_client.DataImporter
         :members:
+        :show-inheritance:
 
 .. _FilesUtil:
 
@@ -179,6 +181,7 @@ BioMetainfo
 
 .. autoclass:: genestack_client.BioMetainfo
         :members:
+        :show-inheritance:
 
 
 Users and Connections
@@ -189,12 +192,14 @@ Connection
 
 .. autoclass:: genestack_client.Connection
         :members:
+        :show-inheritance:
 
 settings.User
 -------------
 
 .. autoclass:: genestack_client.settings.User
         :members:
+        :show-inheritance:
 
 Helper methods
 --------------
@@ -217,7 +222,6 @@ get_user
 
 
 
-
 Exceptions
 **********
 
@@ -226,6 +230,7 @@ GenestackException
 
 .. autoclass:: genestack_client.GenestackException
         :members:
+        :show-inheritance:
 
 
 GenestackServerException
@@ -233,6 +238,7 @@ GenestackServerException
 
 .. autoclass:: genestack_client.GenestackServerException
         :members:
+        :show-inheritance:
 
 
 Others
@@ -243,6 +249,7 @@ GenestackShell
 
 .. autoclass:: genestack_client.genestack_shell.GenestackShell
         :members:
+        :show-inheritance:
 
 
 Command
@@ -250,9 +257,11 @@ Command
 
 .. autoclass:: genestack_client.genestack_shell.Command
         :members:
+        :show-inheritance:
 
 SpecialFolders
 --------------
 
 .. autoclass:: genestack_client.SpecialFolders
         :members:
+        :show-inheritance:
