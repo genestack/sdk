@@ -59,7 +59,7 @@ TaskLogViewer
 
 .. autoclass:: genestack_client.TaskLogViewer
         :members:
-
+        :show-inheritance:
 
 Command-Line Applications
 *************************
@@ -69,93 +69,9 @@ CLApplication
 
 .. autoclass:: genestack_client.CLApplication
         :members:
+        :show-inheritance:
 
-
-TestCLApplication
------------------
-
-.. autoclass:: genestack_client.TestCLApplication
-        :members:
-
-BsmapApplication
-----------------
-
-.. autoclass:: genestack_client.BsmapApplication
-        :members:
-
-UnalignedReadsQC
-----------------
-
-.. autoclass:: genestack_client.UnalignedReadsQC
-        :members:
-
-MethratioApplication
---------------------
-
-.. autoclass:: genestack_client.MethratioApplication
-        :members:
-
-HTSeqCountsApplication
-----------------------
-
-.. autoclass:: genestack_client.HTSeqCountsApplication
-        :members:
-
-NormalizationApplication
-------------------------
-
-.. autoclass:: genestack_client.NormalizationApplication
-        :members:
-
-TophatApplication
------------------
-
-.. autoclass:: genestack_client.TophatApplication
-        :members:
-
-VariationCallerApplication
---------------------------
-
-.. autoclass:: genestack_client.VariationCallerApplication
-        :members:
-
-FilterByQuality
----------------
-
-.. autoclass:: genestack_client.FilterByQuality
-        :members:
-
-TrimToFixedLength
------------------
-
-.. autoclass:: genestack_client.TrimToFixedLength
-        :members:
-
-SubsampleReads
---------------
-
-.. autoclass:: genestack_client.SubsampleReads
-        :members:
-
-FilterDuplicatedReads
----------------------
-
-.. autoclass:: genestack_client.FilterDuplicatedReads
-        :members:
-
-TrimLowQualityBases
--------------------
-
-.. autoclass:: genestack_client.TrimLowQualityBases
-        :members:
-
-MarkDuplicated
---------------
-
-.. autoclass:: genestack_client.MarkDuplicated
-        :members:
-
-
+.. include:: cla_reference._rst
 
 Metainfo Objects
 ****************

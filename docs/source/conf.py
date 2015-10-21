@@ -327,9 +327,13 @@ main()
 from make_uploader_docs import main
 main()
 
+from create_cla_docs import main
+main()
 
-from genestack_client import Metainfo, Application, GenestackException
+
+from genestack_client import Metainfo, Application, GenestackException, CLApplication
 
 Metainfo.__module__ = 'genestack_client'
 Application.__module__ = 'genestack_client'
 GenestackException.__module__ = 'genestack_client'
+CLApplication.__module__ = 'genestack_client'
