@@ -71,7 +71,7 @@ CLApplication
         :members:
         :show-inheritance:
 
-.. include:: cla_reference._rst
+.. include:: _cla_reference.rst
 
 Metainfo Objects
 ****************

@@ -19,7 +19,7 @@ print os.getcwd()
 
 
 def main():
-    with open('cla_reference._rst', 'w') as f:
+    with open('_cla_reference.rst', 'w') as f:
         for name, attr in getmembers(cla):
             if isclass(attr) and name != 'CLApplication' and issubclass(attr, cla.CLApplication):
                 f.write(template.format(name=name, name_underline='-' * len(name)))
