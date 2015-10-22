@@ -135,7 +135,8 @@ class DataImporter(object):
         ``name`` and ``url`` are mandatory fields. They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder. Leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -160,7 +161,8 @@ class DataImporter(object):
         ``name`` and ``url`` are required fields. They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder. Leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -186,7 +188,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder. Leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -221,7 +224,8 @@ class DataImporter(object):
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -251,7 +255,8 @@ class DataImporter(object):
         It can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder. Leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -342,7 +347,8 @@ class DataImporter(object):
         ``name`` and ``urls`` are required fields.
         They can be specified through the arguments or via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -375,7 +381,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder. Leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param url: URL or local path
         :type url: str
@@ -411,7 +418,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param url: URL or local path
         :type url: str
@@ -451,10 +459,9 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
 
-
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -495,7 +502,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -525,7 +533,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param parent: accession of parent folder leave empty for ``Imported files``
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
