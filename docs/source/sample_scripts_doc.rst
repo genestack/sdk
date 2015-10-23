@@ -52,9 +52,9 @@ In the real world, data and metadata live in different places and you may not ha
 Sometimes, you may be in a situation where you have uploaded data on Genestack and you are only provided with metadata later on.
 The following script takes as input a comma-delimited CSV
 file containing metadata and adds that metadata to existing files on Genestack. The files should be located in a
-specific folder, and the correspondence between records in the CSV file and the remote files is done based on the
+specific folder, and the correspondence between records in the CSV file and the remote files is determined by the
 name of the remote files. The name of the files should be stored in a specific column of the CSV file,
-whose name must be supplied to the script with the ``--local-key`` parameter.
+whose name must be supplied to the script as ``local-key`` parameter.
 
 .. literalinclude:: sample_scripts/add_metainfo_from_table.py
     :linenos:
@@ -96,7 +96,7 @@ The script can be called with the following syntax:
 
     python group_files_into_folders.py [--move-files] <source_folder_accession>
 
-You can easily adapt the script to group files based on some other criterium from their metainfo, like their organism, their
+You can easily adapt the script to group files based on some other criterion from their metainfo, like their organism, their
 creation date, or in fact any metainfo value.
 
 Running a data analysis pipeline
