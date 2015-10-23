@@ -48,7 +48,7 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 Editing the metainfo of existing files
 --------------------------------------
 
-In the real world, data and metatada live in different places and you may not have access to both of them at the same time.
+In the real world, data and metadata live in different places and you may not have access to both of them at the same time.
 Sometimes, you may be in a situation where you have uploaded data on Genestack and you are only provided with metadata later on.
 The following script takes as input a comma-delimited CSV
 file containing metadata and adds that metadata to existing files on Genestack. The files should be located in a
