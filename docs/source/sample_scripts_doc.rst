@@ -103,7 +103,7 @@ Running a data analysis pipeline
 --------------------------------
 
 Generally, if you want to run multiple files through the same analysis pipeline, the easiest way to do it is using the Data Flow Editor through the web interface. This tool is powerful enough to cover most of the use cases you could think of.
-However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programatically.
+However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programmatically.
 
 Our script will take as input the Genestack accession of a folder containing Unaligned Reads files. It will then produce for each file three downstream files: a Mapped Reads file produced with Bowtie (possibly using a custom reference genome), a Mapped Reads QC Report, and a Variant Calling file.
 
