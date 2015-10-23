@@ -366,3 +366,4 @@ Then we can check the error log of a file::
 
 See :ref:`TaskLogViewer` for more info.
 
+.. disqus::

@@ -28,7 +28,7 @@ sys.path.insert(0, '../../')  # Use Python Client Library from current repositor
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinxcontrib.disqus']
 
 intersphinx_mapping = {'python': ('http://docs.python.org/2.7', None)}
 
@@ -315,6 +315,9 @@ epub_copyright = u'2015, Genestack Limited'
 
 # If false, no index is generated.
 #epub_use_index = True
+
+
+disqus_shortname = 'python-client'
 
 autoclass_content = 'both'
 
