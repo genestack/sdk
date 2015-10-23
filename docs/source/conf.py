@@ -317,7 +317,7 @@ epub_copyright = u'2015, Genestack Limited'
 #epub_use_index = True
 
 
-disqus_shortname = 'python-client'
+disqus_shortname = 'genestack'
 
 autoclass_content = 'both'
 
