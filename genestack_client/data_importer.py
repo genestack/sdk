@@ -283,7 +283,7 @@ class DataImporter(object):
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if urls:
             for url in urls:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
+                metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/experimentLoader', 'addMicroarrayAssay', parent, metainfo)
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
