@@ -395,22 +395,27 @@ AppInfo = namedtuple('AppInfo', [
 
 
 def read_jar_file(file_path):
-    with zipfile.ZipFile(file_path) as zip_file:
-        try:
-            info = zip_file.getinfo('applications.xml')
-            with zip_file.open(info) as manifest:
-                doc = minidom.parse(manifest)
-                namespace = doc.documentElement.namespaceURI
-                applications = doc.getElementsByTagNameNS(namespace, 'application')
-                vendor = doc.getElementsByTagNameNS(namespace, 'vendor')[0].firstChild.nodeValue
-                identifiers = [
-                    vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
-                    for a in applications
-                ]
-        except KeyError as e:
-            raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (
-                os.path.abspath(file_path), e))
-        return AppInfo(vendor, identifiers)
+    try:
+        with zipfile.ZipFile(file_path) as zip_file:
+            try:
+                info = zip_file.getinfo('applications.xml')
+                with zip_file.open(info) as manifest:
+                    doc = minidom.parse(manifest)
+                    namespace = doc.documentElement.namespaceURI
+                    applications = doc.getElementsByTagNameNS(namespace, 'application')
+                    vendor = doc.getElementsByTagNameNS(namespace, 'vendor')[0].firstChild.nodeValue
+                    identifiers = [
+                        vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
+                        for a in applications
+                    ]
+            except KeyError as e:
+                raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (
+                    os.path.abspath(file_path), e))
+
+            return AppInfo(vendor, identifiers)
+    except Exception:
+        sys.stderr.write('Fail to read jar file: %s\n' % os.path.abspath(file_path))
+        raise
 
 
 def show_info(files, vendor_only, with_filename, no_filename):
