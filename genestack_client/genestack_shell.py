@@ -16,6 +16,7 @@ import shlex
 from traceback import print_exc
 from utils import isatty, make_connection_parser, get_connection
 
+
 if isatty():
     # To have autocomplete and console navigation on windows you need to have pyreadline installed.
     # Pyreadline replace readline with alias to itself.
@@ -68,7 +69,7 @@ class Command(object):
 
         - ``COMMAND``: name of the command
         - ``DESCRIPTION``: description as shown in the help message
-        - ``OFFLINE``: set to True if the command does not require a connection to the Genestack server.
+        - ``OFFLINE``: set to ``True`` if the command does not require a connection to the Genestack server.
     """
     COMMAND = None
     DESCRIPTION = ''
@@ -83,10 +84,11 @@ class Command(object):
     def get_command_parser(self, parser=None):
         """
         Returns a command parser. This function is called each time before a command is executed.
-        To add new arguments to the command, you should override the :py:meth:`update_parser` method.
+        To add new arguments to the command,
+        you should override the :py:meth:`~genestack_client.genestack_shell.Command.update_parser` method.
 
-        :param parser: base argument parser. For offline commands and commands inside shell, it will be None.
-            For the other cases, it will be the result of :py:func:`~genestack_client.utils.make_connection_parser`
+        :param parser: base argument parser. For offline commands and commands inside shell, it will be ``None``.
+            For the other cases, it will be the result of :py:func:`~genestack_client.make_connection_parser`
         :type parser: argparse.ArgumentParser
         :return: parser
         :rtype: argparse.ArgumentParser
@@ -100,7 +102,7 @@ class Command(object):
 
     def update_parser(self, parent):
         """
-        Add arguments for the command. Should be overriden in child classes.
+        Add arguments for the command. Should be overridden in child classes.
 
         :param parent: argument group
         :type parent: argparse._ArgumentGroup
@@ -129,6 +131,9 @@ class Command(object):
     def get_short_description(self):
         """
         Returns a short description for the command. Used in the "help" message.
+
+        :return short description
+        :rtype: str
         """
         return self.DESCRIPTION
 
@@ -141,8 +146,6 @@ class Command(object):
 
 class GenestackShell(cmd.Cmd):
     """
-    Base shell class. :py:class:`GenestackShell` is a subclass of the :py:class:`cmd.Cmd`.
-
     Arguments to be overridden in children:
 
         - ``INTRO``: greeting at start of shell mode
@@ -208,9 +211,7 @@ class GenestackShell(cmd.Cmd):
         return parser
 
     def preloop(self):
-        """
-        Entry point. Check whether we should run a script and exit, or start an interactive shell.
-        """
+        # Entry point. Check whether we should run a script and exit, or start an interactive shell.
 
         parser = self.get_shell_parser()
         args, others = parser.parse_known_args()

@@ -42,7 +42,8 @@ class _NoRedirectError(urllib2.HTTPErrorProcessor):
 class Connection:
     """
     A class to handle a connection to a specified Genestack server.
-    Instantiating the class does mean you are logged in to the server. To do so, you need to call the :attr:`login` method.
+    Instantiating the class does mean you are logged in to the server.
+    To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
     """
 
     def __init__(self, server_url):
@@ -78,7 +79,7 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: GenestackServerException: if login failed
+        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
         """
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
@@ -174,8 +175,9 @@ class Connection:
 
 class Application:
     """
-    Create a new application instance for the given connection. The connection must be logged in to call the
-    application's methods. The application ID can be specified either as an argument to the class constructor
+    Create a new application instance for the given connection.
+    The connection must be logged in to call the application's methods.
+    The application ID can be specified either as an argument to the class constructor
     or by overriding the ``APPLICATION_ID`` attribute in a child class.
     """
 

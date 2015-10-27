@@ -14,7 +14,7 @@ import sys
 
 def isatty():
     """
-    Return True if the file is connected to a tty device.
+    Return ``True`` if the file is connected to a tty device.
 
     :return: is a tty
     :rtype: bool
@@ -28,7 +28,7 @@ def isatty():
 def make_connection_parser(user=None, password=None, host=None):
     """
     Creates an argument parser with the provided connection parameters.
-    If one of `email`, `password` or `user` is specified, they are used. Otherwise, the default
+    If one of ``email``, ``password`` or ``user`` is specified, they are used. Otherwise, the default
     identity from the local config file will be used.
 
     :param user: user alias or email
@@ -38,7 +38,7 @@ def make_connection_parser(user=None, password=None, host=None):
     :param host: host
     :type host: str
     :return: parser
-    :rtype: :py:class:`~argparse.ArgumentParser`
+    :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group('connection')
@@ -51,12 +51,12 @@ def make_connection_parser(user=None, password=None, host=None):
 def get_user(args=None):
     """
     Returns the user corresponding to the provided arguments.
-    If `args` is `None`, uses :attr:`make_connection_parser` to get arguments.
+    If ``args`` is ``None``, uses :py:func:`~genestack_client.make_connection_parser` to get arguments.
 
     :param args: result of commandline parse
     :type args: argparse.Namespace
     :return: user
-    :rtype: :py:class:`~genestack_client.settings.User.User`
+    :rtype: ~genestack_client.settings.User
     """
 
     from settings import config, User
@@ -75,13 +75,13 @@ def get_user(args=None):
 
 def get_connection(args=None):
     """
-    This is the same as :py:func:`get_user` . :py:meth:`~genestack_client.settings.User.User.get_connection`
+    This is the same as :py:func:`~genestack_client.get_user` . :py:meth:`~genestack_client.settings.User.get_connection`
     Generally the fastest way to get an active connection.
 
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: :py:class:`~genestack_client.Connection.Connection`
+    :rtype: ~genestack_client.Connection
     """
     user = get_user(args)
     return user.get_connection(interactive=True)

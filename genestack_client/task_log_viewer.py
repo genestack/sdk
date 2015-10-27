@@ -25,13 +25,14 @@ class TaskLogViewer(Application):
 
     def view_log(self, accession, log_type=None, follow=True):
         """
-        Print a file's latest task initialization logs to stdout. Raises an exception if the file is not found
-        or has no associated initialization task.
+        Print a file's latest task initialization logs to `stdout`.
+        Raises an exception if the file is not found or has no associated initialization task.
         By default the output `stdout` log is shown. You can also view the `stderr` error log.
-        `follow=True` will wait until initialization is finished. Incoming logs will be printed to the console.
+        ``follow=True`` will wait until initialization is finished.
+        Incoming logs will be printed to the console.
 
         :param accession: file accession
-        :param log_type: stdout or stderr
+        :param log_type: `stdout` or `stderr`
         :param follow: if enabled, wait and display new lines as they appear (similar to ``tail --follow``)
         """
         if not log_type:
