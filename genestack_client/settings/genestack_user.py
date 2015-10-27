@@ -60,7 +60,7 @@ class User(object):
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
         :return: logged connection
-        :rtype: :py:class:`~genestack_client.Connection`
+        :rtype: ~genestack_client.Connection
         """
         connection = Connection(_get_server_url(self.host))
         if self.email and self.password:

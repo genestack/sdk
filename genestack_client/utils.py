@@ -38,7 +38,7 @@ def make_connection_parser(user=None, password=None, host=None):
     :param host: host
     :type host: str
     :return: parser
-    :rtype: :py:class:`~argparse.ArgumentParser`
+    :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group('connection')
@@ -56,7 +56,7 @@ def get_user(args=None):
     :param args: result of commandline parse
     :type args: argparse.Namespace
     :return: user
-    :rtype: :py:class:`~genestack_client.settings.User`
+    :rtype: ~genestack_client.settings.User
     """
 
     from settings import config, User
@@ -81,7 +81,7 @@ def get_connection(args=None):
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: :py:class:`~genestack_client.Connection`
+    :rtype: ~genestack_client.Connection
     """
     user = get_user(args)
     return user.get_connection(interactive=True)
