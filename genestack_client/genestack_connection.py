@@ -220,7 +220,8 @@ class Application:
 
         path = '/application/invoke/%s' % self.application_id
 
-        return self.__invoke(path, to_post)
+        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
+        return self.__invoke(path, to_post)['result']
 
     def upload_chunked_file(self, file_path):
         return upload_by_chunks(self, file_path)
