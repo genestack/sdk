@@ -97,8 +97,8 @@ class FilesUtil(Application):
         :type parent: str
         :param file_class: File class to be returned, default IFile
         :type file_class: str
-        :return: instance of subclass of IFile
-        :rtype: IFile
+        :return: file accession
+        :rtype: str
         """
         return self.invoke(
             'getFileByName',
