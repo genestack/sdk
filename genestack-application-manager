@@ -394,28 +394,41 @@ AppInfo = namedtuple('AppInfo', [
 ])
 
 
-def read_jar_file(file_path):
-    try:
-        with zipfile.ZipFile(file_path) as zip_file:
-            try:
-                info = zip_file.getinfo('applications.xml')
-                with zip_file.open(info) as manifest:
-                    doc = minidom.parse(manifest)
-                    namespace = doc.documentElement.namespaceURI
-                    applications = doc.getElementsByTagNameNS(namespace, 'application')
-                    vendor = doc.getElementsByTagNameNS(namespace, 'vendor')[0].firstChild.nodeValue
-                    identifiers = [
-                        vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
-                        for a in applications
-                    ]
-            except KeyError as e:
-                raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (
-                    os.path.abspath(file_path), e))
+def log_on_error(function):
+    """
+    Wrapper to print arguments to stderr on exception.
 
-            return AppInfo(vendor, identifiers)
-    except Exception:
-        sys.stderr.write('Fail to read jar file: %s\n' % os.path.abspath(file_path))
-        raise
+    :param function: function to decorate
+    :return: decorated function
+    """
+    def wrapper(*args):
+        try:
+            return function(*args)
+        except Exception as e:
+            sys.stderr.write('Error at "%s" with arguments: %s\n' % (function.__name__, ', '.join(map(repr, args))))
+            raise
+    return wrapper
+
+
+@log_on_error
+def read_jar_file(file_path):
+    with zipfile.ZipFile(file_path) as zip_file:
+        try:
+            info = zip_file.getinfo('applications.xml')
+            with zip_file.open(info) as manifest:
+                doc = minidom.parse(manifest)
+                namespace = doc.documentElement.namespaceURI
+                applications = doc.getElementsByTagNameNS(namespace, 'application')
+                vendor = doc.getElementsByTagNameNS(namespace, 'vendor')[0].firstChild.nodeValue
+                identifiers = [
+                    vendor + '/' + a.getElementsByTagNameNS(namespace, 'id')[0].firstChild.nodeValue
+                    for a in applications
+                ]
+        except KeyError as e:
+            raise GenestackException('Unable to read applications.xml manifest from %s: %s' % (
+                os.path.abspath(file_path), e))
+
+        return AppInfo(vendor, identifiers)
 
 
 def show_info(files, vendor_only, with_filename, no_filename):
