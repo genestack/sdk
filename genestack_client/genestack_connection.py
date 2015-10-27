@@ -79,7 +79,7 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: GenestackServerException: if login failed
+        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
         """
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:

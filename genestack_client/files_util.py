@@ -80,7 +80,7 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raises: GenestackServerException: if more than one genome, or no genome is found
+        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
