@@ -74,7 +74,7 @@ release = __version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = ['_cla_reference.rst']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -326,3 +326,16 @@ main()
 
 from make_uploader_docs import main
 main()
+
+from create_cla_docs import main
+main()
+
+
+from genestack_client import Metainfo, Application, GenestackException, CLApplication
+
+Metainfo.__module__ = 'genestack_client'
+Application.__module__ = 'genestack_client'
+GenestackException.__module__ = 'genestack_client'
+CLApplication.__module__ = 'genestack_client'
+
+

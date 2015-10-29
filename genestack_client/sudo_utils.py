@@ -25,17 +25,21 @@ class SudoUtils(Application):
         """
         Returns a boolean indicating whether superuser mode is still active. This request extends
         the duration of a superuser session.
+
+        :return: ``True`` if sudo is active
+        :rtype: bool
         """
         return self.invoke('isSudoActive')
 
     def ensure_sudo(self, password):
         """
         Enable superuser mode for a short amount of time (5 minutes).
-        If ``password`` is None, it has the same effect as ``is_sudo_active``
+        If ``password`` is ``None``, it has the same effect as ``is_sudo_active``
 
         :param password: password
         :type password: str
-        :return: True if sudo is active.
+        :return: ``True`` if sudo is active
+        :rtype: bool
         """
         # TODO rename this method in java and javascript https://trac.genestack.com/ticket/3393
         return self.invoke('ensureSudo', password)

@@ -13,7 +13,7 @@ from genestack_client import Metainfo
 
 class BioMetainfo(Metainfo):
     """
-    A metainfo representation with additional methods for biological metadata.  :py:class:`BioMetainfo` is a subclass of :py:class:`~genestack_client.Metainfo.Metainfo`.
+    A metainfo representation with additional methods for biological metadata.
     """
 
     METHOD = 'genestack.bio:method'
