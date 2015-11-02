@@ -232,8 +232,14 @@ class ChunkedUpload(object):
             if response.status_code == 200:
                 self.__update_progress(chunk.size)
                 data = json.loads(response.text)
+
+                # FIXME: Remove after 0.26.0 dotorg update
                 if 'applicationResult' in data:
-                    self.application_result = data['applicationResult']
+                    data['result'] = data['applicationResult']
+                    data['lastChunkUploaded'] = True
+
+                if data.get('lastChunkUploaded', False):
+                    self.application_result = data['result']
                     self.has_application_result = True
                     self.finished = True
                 return

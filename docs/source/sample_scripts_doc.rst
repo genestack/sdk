@@ -48,13 +48,13 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 Editing the metainfo of existing files
 --------------------------------------
 
-In the real world, data and metatada live in different places and you may not have access to both of them at the same time.
+In the real world, data and metadata live in different places and you may not have access to both of them at the same time.
 Sometimes, you may be in a situation where you have uploaded data on Genestack and you are only provided with metadata later on.
 The following script takes as input a comma-delimited CSV
 file containing metadata and adds that metadata to existing files on Genestack. The files should be located in a
-specific folder, and the correspondence between records in the CSV file and the remote files is done based on the
+specific folder, and the correspondence between records in the CSV file and the remote files is determined by the
 name of the remote files. The name of the files should be stored in a specific column of the CSV file,
-whose name must be supplied to the script with the ``--local-key`` parameter.
+whose name must be supplied to the script as ``local-key`` parameter.
 
 .. literalinclude:: sample_scripts/add_metainfo_from_table.py
     :linenos:
@@ -96,14 +96,14 @@ The script can be called with the following syntax:
 
     python group_files_into_folders.py [--move-files] <source_folder_accession>
 
-You can easily adapt the script to group files based on some other criterium from their metainfo, like their organism, their
+You can easily adapt the script to group files based on some other criterion from their metainfo, like their organism, their
 creation date, or in fact any metainfo value.
 
 Running a data analysis pipeline
 --------------------------------
 
 Generally, if you want to run multiple files through the same analysis pipeline, the easiest way to do it is using the Data Flow Editor through the web interface. This tool is powerful enough to cover most of the use cases you could think of.
-However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programatically.
+However, some complex pipelines are not supported by the Data Flow Editor. In that case, you can write your own script to generate all the files on Genestack programmatically.
 
 Our script will take as input the Genestack accession of a folder containing Unaligned Reads files. It will then produce for each file three downstream files: a Mapped Reads file produced with Bowtie (possibly using a custom reference genome), a Mapped Reads QC Report, and a Variant Calling file.
 

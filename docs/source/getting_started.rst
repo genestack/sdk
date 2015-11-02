@@ -221,7 +221,6 @@ And here is how to call a Java method with arguments:
 
     from genestack_client import get_connection, Metainfo, PRIVATE
 
-
     connection = get_connection()
     metainfo = Metainfo()
     metainfo.add_string(Metainfo.NAME, "New folder")
@@ -237,13 +236,11 @@ If you need to make extensive use of an application that does not already have a
 
     from genestack_client import Application, get_connection
 
-
     class SignIn(Application):
         APPLICATION_ID = 'genestack/signin'
 
         def whoami(self):
             return self.invoke('whoami')
-
 
     connection = get_connection()
     signin = SignIn(connection)
@@ -271,7 +268,6 @@ Then we create a new instance of the class::
     >>> from genestack_client import FilesUtil
     >>> files_util = FilesUtil(connection)
 
-
 Then we can create a new empty folder::
 
     >>> folder_accession = files_util.create_folder("My new folder")
@@ -284,13 +280,11 @@ By default, this one was created in the "Created Files" folder of the current us
     >>> print inner_folder_accession
     GSF000002
 
-
 Finding a folder by its name::
 
     >>> folder_accession = files_util.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
     >>> print folder_accession
     GSF000002
-
 
 See :ref:`FilesUtil` for more methods.
 
@@ -338,11 +332,11 @@ And finally we can start the initialization of the file::
     >>> print 'Start initialization of %s' % assay
     Start initialization of GSF000002
 
-As a result you should have
+As a result you should have:
 
-    - an ``Experiment`` folder in ``Imported files``
-    - a ``Sequencing assay`` file inside the experiment
-    - Two ``Raw Upload`` files in the ``Uploaded files`` folder. (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized)
+    - an ``Experiment`` folder in ``Imported files``;
+    - a ``Sequencing assay`` file inside the experiment;
+    - two ``Raw Upload`` files in the ``Uploaded files`` folder (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized).
 
 See :ref:`DataImporter` for more info.
 
@@ -363,6 +357,4 @@ Then we can check the error log of a file::
     >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
     This log is empty (perhaps there was no log produced)
 
-
 See :ref:`TaskLogViewer` for more info.
-

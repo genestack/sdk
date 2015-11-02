@@ -33,7 +33,7 @@ class User(object):
         If no ``host`` is specified, the ``DEFAULT_HOST`` be used.
 
         If you login interactively, no ``email`` or ``password`` is required.
-        The alias is used to find the matching user in :py:func:`~genestack_client.utils.get_user`
+        The alias is used to find the matching user in :py:func:`~genestack_client.get_user`
 
 
         :param email: email
@@ -52,14 +52,15 @@ class User(object):
 
     def get_connection(self, interactive=True):
         """
-        Return a logged connection for current user.
-        If ``interactive`` is True and the password or email are unknown, they will be asked in interactive mode.
+        Return a logged-in connection for current user.
+        If ``interactive`` is ``True`` and the password or email are unknown,
+        they will be asked in interactive mode.
         If no host is specified, the ``DEFAULT_HOST`` will be used.
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
         :return: logged connection
-        :rtype: :py:class:`~genestack_client.Connection.Connection`
+        :rtype: ~genestack_client.Connection
         """
         connection = Connection(_get_server_url(self.host))
         if self.email and self.password:
