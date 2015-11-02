@@ -199,12 +199,13 @@ class Application:
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
         response = json.load(f)
-        if isinstance(response, dict) and 'error' in response:
+        error = response.get('error')
+        if error is not None:
             raise GenestackServerException(
-                response['error'], path, to_post,
+                error, path, to_post,
                 stack_trace=response.get('errorStackTrace')
             )
-        return response
+        return response['result']
 
     def invoke(self, method, *params):
         """
@@ -222,6 +223,7 @@ class Application:
 
         path = '/application/invoke/%s' % self.application_id
 
+        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
         return self.__invoke(path, to_post)
 
     def upload_chunked_file(self, file_path):
