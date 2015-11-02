@@ -199,13 +199,24 @@ class Application:
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
         response = json.load(f)
-        error = response.get('error')
-        if error is not None:
-            raise GenestackServerException(
-                error, path, to_post,
-                stack_trace=response.get('errorStackTrace')
-            )
-        return response['result']
+        # TODO remove after 0.26 dotorg update
+        if isinstance(response, dict):
+            error = response.get('error')
+            if error is not None:
+                raise GenestackServerException(
+                    error, path, to_post,
+                    stack_trace=response.get('errorStackTrace')
+                )
+            return response.get('result', response)
+        return response
+
+        # error = response.get('error')
+        # if error is not None:
+        #     raise GenestackServerException(
+        #         error, path, to_post,
+        #         stack_trace=response.get('errorStackTrace')
+        #     )
+        # return response['result']
 
     def invoke(self, method, *params):
         """
