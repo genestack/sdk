@@ -199,12 +199,13 @@ class Application:
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
         response = json.load(f)
-        if isinstance(response, dict) and 'error' in response:
+        error = response.get('error')
+        if error is not None:
             raise GenestackServerException(
-                response['error'], path, to_post,
+                error, path, to_post,
                 stack_trace=response.get('errorStackTrace')
             )
-        return response
+        return response['result']
 
     def invoke(self, method, *params):
         """
