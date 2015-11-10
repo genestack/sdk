@@ -18,6 +18,7 @@ import json
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.utils import isatty
 
 
 def validate_application_id(app_id):
@@ -74,6 +75,11 @@ class Install(Command):
 
     def update_parser(self, p):
         p.add_argument(
+            '-f', '--force', action='store_true',
+            default=False,
+            help='Run installation without any prompts (use with caution)'
+        )
+        p.add_argument(
             '-o', '--override', action='store_true',
             help='overwrite old version of the applications with the new one'
         )
@@ -102,7 +108,7 @@ class Install(Command):
         return upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope
+            self.args.stable, self.args.scope, self.args.force
         )
 
 
@@ -197,6 +203,11 @@ class Remove(Command):
 
     def update_parser(self, p):
         p.add_argument(
+            '-f', '--force', action='store_true',
+            default=False,
+            help='Remove without any prompts (use with caution)'
+        )
+        p.add_argument(
             'version', metavar='<version>', help='application version'
         )
         p.add_argument(
@@ -207,6 +218,13 @@ class Remove(Command):
     def run(self):
         apps_ids = self.args.app_id_list
         if not all(map(validate_application_id, apps_ids)):
+            return
+        application = self.connection.application(APPLICATION_ID)
+        version = self.args.version
+        if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
+            sys.stdout.flush()
+            sys.stderr.write('Removing was aborted by user\n')
+            sys.stderr.flush()
             return
         return remove_applications(
             self.connection.application(APPLICATION_ID), self.args.version, apps_ids
@@ -337,18 +355,26 @@ def reload_applications(application, version, app_id_list):
         return 1
 
 
-def upload_file(application, files_list, version, override, stable, scope):
+def upload_file(application, files_list, version, override, stable, scope, force):
     for file_path in files_list:
         result = upload_single_file(
             application, file_path, version, override,
-            stable, scope
+            stable, scope, force
         )
         if result is not None and result != 0:
             return result
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope):
+                       stable, scope, force=False):
+    app_info = read_jar_file(file_path)
+    if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
+        if not prompt_removing_stable_version(application, app_info.identifiers, version):
+            sys.stdout.flush()
+            sys.stderr.write('Installation was aborted by user\n')
+            sys.stderr.flush()
+            return
+
     try:
         parameters = {'version': version, 'override': override}
         upload_token = application.invoke('getUploadToken', parameters)
@@ -383,8 +409,6 @@ def upload_single_file(application, file_path, version, override,
 
     if not stable:
         return
-
-    app_info = read_jar_file(file_path)
 
     return mark_as_stable(application, version, app_info.identifiers, scope)
 
@@ -453,6 +477,34 @@ def show_info(files, vendor_only, with_filename, no_filename):
             print '\t%s' % app_id
 
         first_file = False
+
+
+def prompt_removing_stable_version(application, apps_ids, version):
+    check_tty()
+    apps = []
+    for app_id in apps_ids:
+            stable_versions = application.invoke('getStableVersions', app_id)
+            if stable_versions.get('SYSTEM') == version:
+                apps.append(app_id)
+
+    if not apps:
+        return True
+
+    message = ('You are going to make unstable following system stable applications with version "%s": \n' % version) +\
+        '\n'.join(apps) + "\nDo you want to continue? [y/n]"
+
+    choice = '.'
+    while choice not in 'yn':
+        try:
+            choice = raw_input(message)
+        except KeyboardInterrupt:
+            return False
+    return choice == 'y'
+
+
+def check_tty():
+    if not isatty():
+        raise GenestackException("Prompt cannot be called")
 
 
 class ApplicationManager(GenestackShell):
