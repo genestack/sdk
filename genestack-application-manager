@@ -18,6 +18,7 @@ import json
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.utils import isatty
 
 
 def validate_application_id(app_id):
@@ -462,22 +463,34 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 
 def prompt_removing_stable_version(application, apps_ids, version):
+    check_tty()
     apps = []
     for app_id in apps_ids:
             stable_versions = application.invoke('getStableVersions', app_id)
             if stable_versions.get('SYSTEM') == version:
                 apps.append(app_id)
 
-    if len(apps) == 0:
+    if not apps:
         return True
 
     message = ('You are going to make unstable following system stable applications with version "%s": \n' % version) +\
-        '\n'.join(apps) + "\nDo you want to continue? [Y/n]"
+        '\n'.join(apps) + "\nDo you want to continue? [y/n]"
 
     choice = ''
-    while choice != 'Y' and choice != 'n':
-        choice = raw_input(message)
-    return choice == 'Y'
+    while choice not in 'yn':
+        try:
+            choice = raw_input(message)
+        except KeyboardInterrupt:
+            sys.stdout.flush()
+            sys.stderr.write('Interrupted by user\n')
+            sys.stderr.flush()
+            return 1
+    return choice == 'y'
+
+
+def check_tty():
+    if not isatty():
+        raise GenestackException("Prompt cannot be called")
 
 
 class ApplicationManager(GenestackShell):
