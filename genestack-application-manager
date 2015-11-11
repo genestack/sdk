@@ -369,9 +369,11 @@ def upload_single_file(application, file_path, version, override,
                        stable, scope, force=False):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
-        if not prompt_removing_stable_version(application, app_info.identifiers, version):
+        if get_system_stable_apps_version(application, app_info.identifiers, version):
             sys.stdout.flush()
-            sys.stderr.write('Installation was aborted by user\n')
+            sys.stderr.write('Can\'t install version "%s". This version is already system stable.\n' % version +
+                             'If you want to upload new version and make it stable, add "-S system" option.\n' +
+                             'Otherwise use another version name.\n')
             sys.stderr.flush()
             return
 
@@ -464,11 +466,7 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
-    apps = []
-    for app_id in apps_ids:
-            stable_versions = application.invoke('getStableVersions', app_id)
-            if stable_versions.get('SYSTEM') == version:
-                apps.append(app_id)
+    apps = get_system_stable_apps_version(application, apps_ids, version)
 
     if not apps:
         return True
@@ -483,6 +481,15 @@ def prompt_removing_stable_version(application, apps_ids, version):
         except KeyboardInterrupt:
             return False
     return choice == 'y'
+
+
+def get_system_stable_apps_version(application, apps_ids, version):
+    apps = []
+    for app_id in apps_ids:
+        stable_versions = application.invoke('getStableVersions', app_id)
+        if stable_versions.get('SYSTEM') == version:
+            apps.append(app_id)
+    return apps
 
 
 def check_tty():
