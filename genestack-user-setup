@@ -13,8 +13,9 @@ from argparse import ArgumentParser
 
 import os
 import re
+import sys
 from getpass import getpass
-from genestack_client import GenestackException, get_connection
+from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.settings import DEFAULT_HOST, User, config
 
@@ -274,16 +275,29 @@ class Init(Command):
         return parser
 
     def run(self):
-        config_path = config.get_settings_file()
-        if os.path.exists(config_path):
-            print "A config file was already found at %s" % config_path
-            return
-        print "If you do not have a Genestack account, you need to create one first."
+        """
+        Create config file if it is not present.
 
-        connection, user = ask_email_and_password(self.args.host)
-        config.add_user(user)  # adding first user make him default.
-        print "Initialization finished. Config file created at %s" % config_path
-        return connection
+        Catch ``KeyboardInterrupt`` and ``EOFError`` is required here for case
+        when this command is run for first time and in shell mode.
+        If we don't quit here, shell will continue execution and ask credentials once more.
+        """
+        try:
+            config_path = config.get_settings_file()
+            if os.path.exists(config_path):
+                print "A config file was already found at %s" % config_path
+                return
+            print "If you do not have a Genestack account, you need to create one first."
+
+            connection, user = ask_email_and_password(self.args.host)
+            config.add_user(user)  # adding first user make him default.
+            print "Initialization finished. Config file created at %s" % config_path
+            return connection
+        except (KeyboardInterrupt, EOFError):
+            sys.stdout.flush()
+            sys.stderr.write('\nError: Init is not finished\n')
+            sys.stderr.flush()
+            exit(1)
 
 
 class UserManagement(GenestackShell):
@@ -294,7 +308,8 @@ class UserManagement(GenestackShell):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print "No config file was found; starting init."
-            self.process_command(Init(), ['--host', args.host], None)
+            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], None)
+            args.host = None  # do not provide host for future use of arguments
         GenestackShell.set_shell_user(self, args)
 
 
