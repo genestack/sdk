@@ -124,7 +124,7 @@ class CLApplication(Application):
         :type params: list
         :return: None
         """
-        self.invoke('changeCommandLineArguments', accession, params if isinstance(params, list) else [params])
+        self.invoke('changeCommandLineArguments', self.__accession_list__(accession), params if isinstance(params, list) else [params])
 
     def start(self, accession):
         """
@@ -135,7 +135,7 @@ class CLApplication(Application):
         :type accession: str
         :return: None
         """
-        self.invoke('start', accession)
+        self.invoke('start', self.__accession_list__(accession))
 
     # TODO move to filesUtils, why we return name?
     def rename_file(self, accession, name):
@@ -167,8 +167,10 @@ class CLApplication(Application):
         :param accession_to_add: accession to add
         :return: None
         """
-        self.invoke('replaceFileReference', accession, key, accession_to_remove, accession_to_add)
+        self.invoke('replaceFileReference', self.__accession_list__(accession), key, accession_to_remove, accession_to_add)
 
+    def __accession_list__(self, accession):
+        return accession if type(accession) == list else [accession]
 
 class TestCLApplication(CLApplication):
     APPLICATION_ID = 'genestack/testcla'
