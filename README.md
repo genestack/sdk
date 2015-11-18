@@ -4,6 +4,13 @@
 
    [stable](http://genestack-client.readthedocs.org/en/stable/)
 
+### Installation
+   
+   - install library
+     - `pip install git+https://github.com/genestack/python-client@stable --upgrade`
+   - setup default user
+     - `genestack-user-setup init`
+   
 ### Repo
 
   ```

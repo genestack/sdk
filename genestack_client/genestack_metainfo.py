@@ -17,7 +17,7 @@ from genestack_client import GenestackException
 
 def xstr(arg):
     """
-    Convert the input argument to a string if it is not None.
+    Convert the input argument to a string if it is not ``None``.
 
     :param arg: input object
     :type arg: object
@@ -96,7 +96,7 @@ class Metainfo(dict):
         """
         Add an external link. The URL should point to a valid source file.
         The source should be either a publicly available file on the web, or a local file.
-        Local files will be uploaded if imported with :py:class:`~genestack_client.DataImporter.DataImporter`
+        Local files will be uploaded if imported with :py:class:`~genestack_client.DataImporter`
 
         :param key: key
         :type key: str
@@ -231,7 +231,7 @@ class Metainfo(dict):
 
         :param key: key
         :type key: str
-        :param value: time value
+        :param time: time value
         :rtype: None
         """
         date_time_format = '%Y-%m-%d %H:%M:%S'

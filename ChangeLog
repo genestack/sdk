@@ -1,3 +1,12 @@
+* version 0.2.1
+  * allow to run genestack-user-setup init with -H/--host argument
+
+* version 0.2.0
+  * compatibility fixes according to the upcoming changes in the genestack platform
+    * new core returns JSON with application response stored in 'result' field
+    * chunked upload completion is marked as 'lastChunkUploaded' : true
+  * updated documentation
+
 * version 0.1.9
   * percent encode incoming urls for s3 in `DataImporter`
   * rename `GenestackShell` module to `genestack_shell`
