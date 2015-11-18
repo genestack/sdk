@@ -30,20 +30,6 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
-    # TODO remove in 0.1.10
-    # File class constants are renamed in 0.1.9
-    # Start deprecated constants
-    IFile = 'com.genestack.api.files.IFile'
-    IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
-    IFolder = 'com.genestack.api.files.IFolder'
-    IAlignedReads = 'com.genestack.bio.files.IAlignedReads'
-    IVariationFile = 'com.genestack.bio.files.IVariationFile'
-    IExperiment = 'com.genestack.bio.files.IExperiment'
-    IApplicationPageFile = 'com.genestack.api.files.IApplicationPageFile'
-    IContainerFile = 'com.genestack.api.files.IContainerFile'
-    IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
-    # end deprecated constants
-
     CONTAINER = 'com.genestack.api.files.IContainerFile'
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
