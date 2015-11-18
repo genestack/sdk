@@ -196,15 +196,16 @@ class GenestackShell(cmd.Cmd):
         cmd.Cmd.__init__(self, *args, **kwargs)
         self.connection = None
 
-    def get_shell_parser(self):
+    def get_shell_parser(self, offline=False):
         """
         Returns the parser for shell arguments.
 
         :return: parser for shell commands
         :rtype: argparse.ArgumentParser
         """
-        parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
-                                parents=[make_connection_parser()])
+        parents = [] if offline else [make_connection_parser()]
+        parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION, parents=parents)
+
         # override default help
         parser.add_argument('-h', '--help', action='store_true', help="show this help message and exit")
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
@@ -242,6 +243,10 @@ class GenestackShell(cmd.Cmd):
                 connection = get_connection(args)
             else:
                 connection = None
+                # parse arguments that have same name as connection parser
+                parser = self.get_shell_parser(offline=True)
+                _, others = parser.parse_known_args()
+
             self.process_command(command, others, connection)
             exit(0)
 
