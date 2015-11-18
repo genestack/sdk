@@ -118,7 +118,7 @@ class CLApplication(Application):
         If the file is not found, does not have the right file type
         or is already initialized, an exception will be thrown.
 
-        :param accession: file accession
+        :param accession: file accession or accession list
         :type accession: str
         :param params: list of commandlines to be set
         :type params: list
@@ -131,7 +131,7 @@ class CLApplication(Application):
         Start file initialization.
         If the file is not found or is not of the right file type, an exception will be thrown.
 
-        :param accession: file accession
+        :param accession: file accession or accession list
         :type accession: str
         :return: None
         """
@@ -161,7 +161,7 @@ class CLApplication(Application):
         If ``accession_to_remove`` or ``accession_to_add`` is not found,
         an exception will be thrown.
 
-        :param accession: accession of file
+        :param accession: file accession or accession list
         :param key: key for source files
         :param accession_to_remove: accession to remove
         :param accession_to_add: accession to add
