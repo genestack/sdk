@@ -1,5 +1,5 @@
 * version ?
-  * Move rename_file form CLAplication to FilesUtil, return type changed to None
+  * Move `rename_file` method form `CLAplication` to `FilesUtil`, return type changed to `None`
 
 * version 0.2.1
   * allow to run genestack-user-setup init with -H/--host argument
