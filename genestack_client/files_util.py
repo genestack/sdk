@@ -30,20 +30,6 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
-    # TODO remove in 0.1.10
-    # File class constants are renamed in 0.1.9
-    # Start deprecated constants
-    IFile = 'com.genestack.api.files.IFile'
-    IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
-    IFolder = 'com.genestack.api.files.IFolder'
-    IAlignedReads = 'com.genestack.bio.files.IAlignedReads'
-    IVariationFile = 'com.genestack.bio.files.IVariationFile'
-    IExperiment = 'com.genestack.bio.files.IExperiment'
-    IApplicationPageFile = 'com.genestack.files.IApplicationPageFile'
-    IContainerFile = 'com.genestack.api.files.IContainerFile'
-    IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
-    # end deprecated constants
-
     CONTAINER = 'com.genestack.api.files.IContainerFile'
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
@@ -52,7 +38,7 @@ class FilesUtil(Application):
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
     ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
     VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
-    APPLICATION_PAGE_FILE = 'com.genestack.files.IApplicationPageFile'
+    APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
     REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
     AUXILIARY_FILE = 'com.genestack.api.files.IAuxiliaryFile'
     INDEX_FILE = 'com.genestack.api.files.IIndexFile'
@@ -62,9 +48,9 @@ class FilesUtil(Application):
     GENOME_ANNOTATIONS = 'com.genestack.bio.files.IGenomeAnnotations'
     HTSEQ_COUNTS = 'com.genestack.bio.files.IHTSeqCounts'
     EXTERNAL_DATABASE = 'com.genestack.bio.files.IExternalDataBase'
-    PREFERENCES_FILE = 'com.genestack.files.IPreferencesFile'
-    REPORT_FILE = 'com.genestack.files.IReportFile'
-    RAW_FILE = 'com.genestack.files.IRawFile'
+    PREFERENCES_FILE = 'com.genestack.api.files.IPreferencesFile'
+    REPORT_FILE = 'com.genestack.api.files.IReportFile'
+    RAW_FILE = 'com.genestack.api.files.IRawFile'
 
     def find_reference_genome(self, organism, assembly, release):
         """
