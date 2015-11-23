@@ -7,6 +7,7 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+import sys
 
 from genestack_client import Application, FilesUtil
 
@@ -136,6 +137,10 @@ class CLApplication(Application):
         :return: None
         """
         self.invoke('start', self.__to_list(accession))
+
+    def rename_file(self, accession, name):
+        sys.stderr.write('Deprecated: use FilesUtil.rename_file instead\n')
+        FilesUtil(self.connection).rename_file(accession, name)
 
     def replace_file_reference(self, accession, key, accession_to_remove, accession_to_add):
         """
