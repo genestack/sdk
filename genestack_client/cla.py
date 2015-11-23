@@ -7,8 +7,9 @@
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
+import sys
 
-from genestack_client import Application
+from genestack_client import Application, FilesUtil
 
 
 CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
@@ -54,7 +55,7 @@ class CLApplication(Application):
         app_file = self.__create_file(source_files, params)
 
         if name:
-            self.rename_file(app_file, name)
+            FilesUtil(self.connection).rename_file(app_file, name)
 
         if calculate_checksums:
             self.mark_for_tests(app_file)
@@ -137,20 +138,9 @@ class CLApplication(Application):
         """
         self.invoke('start', self.__to_list(accession))
 
-    # TODO move to filesUtils, why we return name?
     def rename_file(self, accession, name):
-        """
-        Rename a file and returns its new name.
-
-        :param accession: file accession
-        :type accession: str
-        :param name: name
-        :type name: str
-        :return: new name
-        :rtype: str
-        """
-        # TODO java return name because javascript require it for callback, should we support same interface in python?
-        return self.invoke('renameFile', accession, name)
+        sys.stderr.write('Deprecated: use FilesUtil.rename_file instead\n')
+        FilesUtil(self.connection).rename_file(accession, name)
 
     def replace_file_reference(self, accession, key, accession_to_remove, accession_to_add):
         """

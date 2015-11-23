@@ -459,3 +459,15 @@ class FilesUtil(Application):
         :rtype: list
         """
         return self.invoke('getInfos', accession_list)
+
+    def rename_file(self, accession, name):
+        """
+        Rename a file.
+
+        :param accession: file accession
+        :type accession: str
+        :param name: name
+        :type name: str
+        :rtype: None
+        """
+        self.invoke('renameFile', accession, name)
