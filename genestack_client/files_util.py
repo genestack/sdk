@@ -460,17 +460,14 @@ class FilesUtil(Application):
         """
         return self.invoke('getInfos', accession_list)
 
-
     def rename_file(self, accession, name):
         """
-        Rename a file and returns its new name.
+        Rename a file.
 
         :param accession: file accession
         :type accession: str
         :param name: name
         :type name: str
-        :return: new name
-        :rtype: str
+        :rtype: None
         """
-        # TODO java returns file info because javascript require it for callback, should we support same interface in python?
-        return self.invoke('renameFile', accession, name)
+        self.invoke('renameFile', accession, name)
