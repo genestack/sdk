@@ -51,6 +51,8 @@ class FilesUtil(Application):
     PREFERENCES_FILE = 'com.genestack.api.files.IPreferencesFile'
     REPORT_FILE = 'com.genestack.api.files.IReportFile'
     RAW_FILE = 'com.genestack.api.files.IRawFile'
+    MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
+    SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
 
     def find_reference_genome(self, organism, assembly, release):
         """
