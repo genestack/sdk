@@ -61,7 +61,7 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
-        self._add_value(key, value, 'Organism')
+        self.add_string(key, value)
 
     def add_ethnic_group(self, key, value):
         """
@@ -73,4 +73,4 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
-        self._add_value(key, value, 'EthnicGroup')
+        self.add_string(key, value)
