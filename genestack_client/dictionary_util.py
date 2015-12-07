@@ -27,7 +27,7 @@ class DictionaryUtil(Application):
         Add entries to a dictionary file.
 
         Currently, entries cannot be longer than 255 characters.
-        Entries exceeding this limit will be skipped (and a warning will be issued)
+        If an entry exceeds this limit, a `GenestackException` will be raised.
         If two entries have the same characters with a different case (e.g. 'Homo sapiens' and 'HOMO SAPIENS')
         the latest entry will overwrite the previous one.
 
@@ -37,9 +37,7 @@ class DictionaryUtil(Application):
         :param entries_list: list[str]
         :return: None
         """
-        invalid_entries = [entry for entry in entries_list if len(entry) >= 255]
-        if invalid_entries:
-            print "Warning: the following entries will be skipped as they are over 255 characters: %s" \
-                  % (", ".join(invalid_entries))
-            entries_list = [entry for entry in entries_list if len(entry) < 255]
+        if any(len(entry) > 255 for entry in entries_list):
+            raise GenestackException("Dictionary entries cannot be longer than 255 characters")
+
         self.invoke('addToDictionary', dictionary_file, entries_list)
