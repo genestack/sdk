@@ -41,3 +41,25 @@ class DictionaryUtil(Application):
             raise GenestackException("Dictionary entries cannot be longer than 255 characters")
 
         self.invoke('addToDictionary', dictionary_file, entries_list)
+
+    def remove_entries(self, dictionary_file, entries_list):
+        """
+        Remove entries from a dictionary file.
+
+        :param dictionary_file: accession of the dictionary file
+        :type dictionary_file: str
+        :param entries_list: list of entries
+        :param entries_list: list[str]
+        :return: None
+        """
+        self.invoke('removeFromDictionary', dictionary_file, entries_list)
+
+    def clear(self, dictionary_file):
+        """
+        Remove all entries from a dictionary file.
+
+        :param dictionary_file: accession of the dictionary file
+        :type dictionary_file: str
+        :return: None
+        """
+        self.invoke('clear', dictionary_file)
