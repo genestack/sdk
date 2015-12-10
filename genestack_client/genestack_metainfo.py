@@ -92,6 +92,18 @@ class Metainfo(dict):
         """
         self._add_value(key, value, 'integer')
 
+    def add_decimal(self, key, value):
+        """
+        Add a decimal value.
+
+        :param key: key
+        :type key: str
+        :param value: integer value
+        :type value: float or str
+        :rtype: None
+        """
+        self._add_value(key, value, 'decimal')
+
     def add_external_link(self, key, url, text=None, fmt=None):
         """
         Add an external link. The URL should point to a valid source file.
