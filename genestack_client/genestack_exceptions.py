@@ -39,14 +39,17 @@ class GenestackServerException(GenestackException):
 
     def __str__(self):
         if isinstance(self.post_data, dict):
-            return 'Got error "%s" at call of method "%s" of "%s"' % (
+            message = 'Got error "%s" at call of method "%s" of "%s"' % (
                 self.message,
                 self.post_data.get('method', '<unknown>'),
                 self.path
             )
         else:
             # upload file
-            return 'Got error "%s" at call of "%s"' % (
+            message = 'Got error "%s" at call of "%s"' % (
                 self.message,
                 self.path
             )
+        if self.stack_trace:
+            message += '\nStacktrace from server is:\n%s' % self.stack_trace
+        return message
