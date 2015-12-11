@@ -1,7 +1,7 @@
 * version ?
   * move `rename_file` method form `CLAplication` to `FilesUtil`, return type changed to `None`
   * add `DictionaryUtil`
-  * add new method `get_metainfo_values_as_strings` to `FilesUtil`
+  * add new methods `get_metainfo_values_as_strings`, `link_files` and `unlink_files` to `FilesUtil`
 
 * version 0.2.1
   * allow to run genestack-user-setup init with -H/--host argument
