@@ -262,6 +262,20 @@ class FilesUtil(Application):
         """
         self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
 
+    def get_metainfo_values_as_strings(self, accessions_list, keys_list):
+        """
+        Retrieve metainfo values as strings for specific files and metainfo keys.
+        The function returns a dictionary.
+
+        :param accessions_list: accessions of the files to retrieve
+        :type: accessions: list[str]
+        :param keys_list: metainfo keys to retrieve
+        :type: keys: list[str]
+        :return: a two-level dictionary with the following structure: accession -> key -> value
+        :rtype: dict
+        """
+        self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+
     def get_special_folder(self, name):
         """
         Return the accession of a special folder.
