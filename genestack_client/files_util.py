@@ -194,31 +194,28 @@ class FilesUtil(Application):
         """
         self.invoke('unlinkFile', accession, parent)
 
-    def link_files(self, accessions, parents):
+    def link_files(self, children_to_parents_dict):
         """
-        Link files to containers
-        (the n-th element of `accessions` will be linked into the n-th element of `parents`).
+        Link files to containers.
 
-        :param accessions: files accessions
-        :type accessions: list[str]
-        :param parents: parent containers accessions
-        :type parents: list[str]
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to link, and
+            values are lists of accessions of the containers to link into
+        :type: dict
+
         :rtype: None
         """
-        self.invoke('linkFiles', accessions, parents)
+        self.invoke('linkFiles', children_to_parents_dict)
 
-    def unlink_files(self, accessions, parents):
+    def unlink_files(self, children_to_parents_dict):
         """
-        Unlink files from containers
-        (the n-th elemtn of `accesions` will be unlinked from the n-th element of `parents`).
-
-        :param accessions: files accessions
-        :type accessions: list[str]
-        :param parents: parent containers accessions
-        :type parents: list[str]
+        Unlink files from containers.
+        
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
+            values are lists of accessions of the containers to unlink from
+        :type: dict
         :rtype: None
         """
-        self.invoke('unlinkFiles', accessions, parents)
+        self.invoke('unlinkFiles', children_to_parents_dict)
 
     def clear_container(self, container_accession):
         """
