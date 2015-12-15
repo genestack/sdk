@@ -312,8 +312,6 @@ class GenestackShell(cmd.Cmd):
             return
         except Exception as e:
             sys.stdout.flush()
-            sys.stderr.write('%s\n' % e)
-            sys.stderr.flush()
             print_exc()
 
     def do_help(self, line):
