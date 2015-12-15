@@ -49,6 +49,10 @@ class User(object):
         self.email = email
         self.password = password  # TODO make property
         self.alias = alias or email
+        self.__debug = False
+
+    def set_debug(self):
+        self.__debug = True
 
     def get_connection(self, interactive=True):
         """
@@ -62,7 +66,7 @@ class User(object):
         :return: logged connection
         :rtype: ~genestack_client.Connection
         """
-        connection = Connection(_get_server_url(self.host))
+        connection = Connection(_get_server_url(self.host), debug=self.__debug)
         if self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:

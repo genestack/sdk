@@ -45,6 +45,7 @@ def make_connection_parser(user=None, password=None, host=None):
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
     group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
+    group.add_argument('--debug', dest='debug', help='connect to server in debug mode', action='store_true')
     return parser
 
 
@@ -65,12 +66,17 @@ def get_user(args=None):
         args = make_connection_parser().parse_args()
 
     alias = args.user
+    user = None
     if not args.host and not args.pwd:
         if not alias and config.default_user:
-            return config.default_user
+            user = config.default_user
         if alias in config.users:
-            return config.users[alias]
-    return User(email=alias, host=args.host, password=args.pwd)
+            user = config.users[alias]
+    if user is None:
+        user = User(email=alias, host=args.host, password=args.pwd)
+    if args.debug:
+        user.set_debug()
+    return user
 
 
 def get_connection(args=None):

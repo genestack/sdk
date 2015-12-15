@@ -46,13 +46,14 @@ class Connection:
     To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
     """
 
-    def __init__(self, server_url):
+    def __init__(self, server_url, debug=False):
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
         self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
+        self.debug = debug
 
     def __del__(self):
         try:
@@ -203,9 +204,12 @@ class Application:
         if isinstance(response, dict):
             error = response.get('error')
             if error is not None:
+                if self.connection.debug:
+                    stack_trace = response.get('errorStackTrace')
+                else:
+                    stack_trace = None
                 raise GenestackServerException(
-                    error, path, to_post,
-                    stack_trace=response.get('errorStackTrace')
+                    error, path, to_post, stack_trace=stack_trace
                 )
             return response.get('result', response)
         return response
