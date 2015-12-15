@@ -45,6 +45,7 @@ def make_connection_parser(user=None, password=None, host=None):
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
     group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
+    group.add_argument('--debug', dest='debug', help='print additional stacktrace on error', action='store_true')
     return parser
 
 
@@ -84,4 +85,4 @@ def get_connection(args=None):
     :rtype: ~genestack_client.Connection
     """
     user = get_user(args)
-    return user.get_connection(interactive=True)
+    return user.get_connection(interactive=True, debug=args and args.debug)
