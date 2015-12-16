@@ -9,6 +9,8 @@
 # actual or intended publication of such source code.
 #
 
+import codecs
+import locale
 import sys
 import os
 import urllib2
@@ -20,6 +22,8 @@ from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.utils import isatty
 
+# wrap sys.stdout into a StreamWriter to allow writing unicode.
+sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
 def validate_application_id(app_id):
     if len(app_id.split('/')) != 2:
