@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Genestack Python Client Library'
-copyright = u'2015, Genestack'
+copyright = u'2016, Genestack'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -265,7 +265,7 @@ texinfo_documents = [
 epub_title = u'Genestack Python Client Library Documentation'
 epub_author = u'Genestack Limited'
 epub_publisher = u'Genestack Limited'
-epub_copyright = u'2015, Genestack Limited'
+epub_copyright = u'2016, Genestack Limited'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
