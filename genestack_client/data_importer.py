@@ -181,6 +181,14 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/variationFileLoader', 'importFile', parent, metainfo)
 
+    # FIXME this is a test method for the custom indexer!
+    def _create_vcf_ng(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        return self.__invoke_loader('genestack/variationFileLoaderNG', 'importFile', parent, metainfo)
+
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
         Create a Genestack Wiggle Track from a local or remote WIG file.
