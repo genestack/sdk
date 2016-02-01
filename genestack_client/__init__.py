@@ -10,7 +10,7 @@
 
 from version import __version__
 
-from genestack_exceptions import GenestackException, GenestackServerException
+from genestack_exceptions import GenestackException, GenestackServerException, GenestackAuthenticationException
 from genestack_connection import Connection, Application
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo

@@ -14,6 +14,9 @@ import os
 import cmd
 import shlex
 from traceback import print_exc
+
+from genestack_client import GenestackAuthenticationException
+
 from utils import isatty, make_connection_parser, get_connection
 
 
@@ -211,6 +214,10 @@ class GenestackShell(cmd.Cmd):
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
         return parser
 
+    @staticmethod
+    def get_connection(args=None):
+        return get_connection(args)
+
     def preloop(self):
         # Entry point. Check whether we should run a script and exit, or start an interactive shell.
 
@@ -240,7 +247,7 @@ class GenestackShell(cmd.Cmd):
 
         if command:
             if not command.OFFLINE:
-                connection = get_connection(args)
+                connection = self.get_connection(args)
             else:
                 connection = None
                 # parse arguments that have same name as connection parser
@@ -265,10 +272,14 @@ class GenestackShell(cmd.Cmd):
         :type args: argparse.Namespace
         """
         # set user for shell
-        self.connection = get_connection(args)
-        email = self.connection.whoami()
-        self.prompt = '%s> ' % email
-        self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        self.connection = self.get_connection(args)
+        try:
+            email = self.connection.whoami()
+            self.prompt = '%s> ' % email
+            self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        except GenestackAuthenticationException:
+            self.prompt = 'anonymous>'
+            self.intro = self.INTRO
 
     def postloop(self):
         try:

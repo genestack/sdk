@@ -17,14 +17,14 @@ import json
 import requests
 from distutils.version import StrictVersion
 
-from genestack_client import GenestackServerException, GenestackException, __version__
+from genestack_client import GenestackServerException, GenestackAuthenticationException, GenestackException, __version__
 from genestack_client.utils import isatty
 from genestack_client.chunked_upload import upload_by_chunks
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
     def http_error_401(self, req, fp, code, msg, headers):
-        raise GenestackException('Authentication failure')
+        raise GenestackAuthenticationException('Authentication failure')
 
 
 class _NoRedirect(urllib2.HTTPRedirectHandler):

@@ -67,8 +67,8 @@ class User(object):
             connection.login(self.email, self.password)
         elif interactive:
             self.__interactive_login(connection)
-        else:
-            raise GenestackException('Not enough user data to login')
+        #else:
+        #    raise GenestackException('Not enough user data to login')
         return connection
 
     def __repr__(self):
@@ -83,10 +83,13 @@ class User(object):
             if message:
                 print message
             if email and '@' in email:
-                email = raw_input('E-mail [%s]: ' % email).strip() or email
+                email = raw_input('e-mail [%s]: ' % email).strip() or email
             else:
-                email = raw_input('E-mail: ').strip() or email
+                email = raw_input('e-mail: ').strip() or email
             if not email:
+                anonymously = raw_input('Proceed anonymously [y/N]?').strip().lower() == 'y'
+                if anonymously:
+                    return
                 continue
             password = getpass('password for %s: ' % email)
             try:
