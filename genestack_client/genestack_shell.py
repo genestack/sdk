@@ -14,6 +14,9 @@ import os
 import cmd
 import shlex
 from traceback import print_exc
+
+from genestack_client import GenestackAuthenticationException
+
 from utils import isatty, make_connection_parser, get_connection
 
 
@@ -268,9 +271,13 @@ class GenestackShell(cmd.Cmd):
         """
         # set user for shell
         self.setup_connection(args)
-        email = self.connection.whoami()
-        self.prompt = '%s> ' % email
-        self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        try:
+            email = self.connection.whoami()
+            self.prompt = '%s> ' % email
+            self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        except GenestackAuthenticationException:
+            self.prompt = 'anonymous>'
+            self.intro = self.INTRO
 
     def postloop(self):
         try:
