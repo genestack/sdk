@@ -14,6 +14,9 @@ import os
 import cmd
 import shlex
 from traceback import print_exc
+
+from genestack_client import GenestackAuthenticationException
+
 from utils import isatty, make_connection_parser, get_connection
 
 
@@ -211,6 +214,9 @@ class GenestackShell(cmd.Cmd):
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
         return parser
 
+    def setup_connection(self, args=None):
+        self.connection = get_connection(args)
+
     def preloop(self):
         # Entry point. Check whether we should run a script and exit, or start an interactive shell.
 
@@ -240,14 +246,13 @@ class GenestackShell(cmd.Cmd):
 
         if command:
             if not command.OFFLINE:
-                connection = get_connection(args)
+                self.setup_connection(args)
             else:
-                connection = None
                 # parse arguments that have same name as connection parser
                 parser = self.get_shell_parser(offline=True)
                 _, others = parser.parse_known_args()
 
-            self.process_command(command, others, connection)
+            self.process_command(command, others)
             exit(0)
 
         # do shell
@@ -265,10 +270,14 @@ class GenestackShell(cmd.Cmd):
         :type args: argparse.Namespace
         """
         # set user for shell
-        self.connection = get_connection(args)
-        email = self.connection.whoami()
-        self.prompt = '%s> ' % email
-        self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        self.setup_connection(args)
+        try:
+            email = self.connection.whoami()
+            self.prompt = '%s> ' % email
+            self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
+        except GenestackAuthenticationException:
+            self.prompt = 'anonymous>'
+            self.intro = self.INTRO
 
     def postloop(self):
         try:
@@ -281,7 +290,7 @@ class GenestackShell(cmd.Cmd):
 
     do_quit = do_EOF
 
-    def process_command(self, command, argument_list, connection, shell=False):
+    def process_command(self, command, argument_list, shell=False):
         """
         Run a command with arguments.
 
@@ -289,8 +298,6 @@ class GenestackShell(cmd.Cmd):
         :type command: Command
         :param argument_list: the list of arguments for the command
         :type argument_list: list
-        :param connection: connection (can be None in the case of an ``OFFLINE`` command)
-        :type connection: Connection
         :param shell: should we use shell mode?
         :type shell: bool
         """
@@ -302,7 +309,7 @@ class GenestackShell(cmd.Cmd):
             args = p.parse_args(argument_list)
         except SystemExit:
             return
-        command.set_connection(connection)
+        command.set_connection(self.connection)
         command.set_arguments(args)
         try:
             return command.run()
@@ -356,7 +363,7 @@ class GenestackShell(cmd.Cmd):
     def default(self, line):
         args = shlex.split(line)
         if args and args[0] in self.COMMANDS:
-            self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection, shell=True)
+            self.process_command(self.COMMANDS[args[0]](), args[1:], shell=True)
         else:
             self.stdout.write('*** Unknown command: %s\n' % line)
 

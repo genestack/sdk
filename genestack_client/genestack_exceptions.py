@@ -53,3 +53,9 @@ class GenestackServerException(GenestackException):
         if self.stack_trace:
             message += '\nStacktrace from server is:\n%s' % self.stack_trace
         return message
+
+class GenestackAuthenticationException(GenestackException):
+    """
+    Should be thrown when a server sends an authentication error.
+    """
+    pass
