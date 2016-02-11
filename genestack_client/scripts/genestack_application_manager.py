@@ -528,6 +528,9 @@ class ApplicationManager(GenestackShell):
     COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
 
 
-if __name__ == '__main__':
+def main():
     shell = ApplicationManager()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()
