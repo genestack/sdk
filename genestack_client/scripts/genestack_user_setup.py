@@ -133,6 +133,7 @@ def select_user(users, selected=None):
 class SetPassword(Command):
     COMMAND = 'password'
     DESCRIPTION = 'Set password for user.'
+    OFFLINE = True
 
     def update_parser(self, parent):
         parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
@@ -292,7 +293,6 @@ class Init(Command):
             connection, user = ask_email_and_password(self.args.host)
             config.add_user(user)  # adding first user make him default.
             print "Initialization finished. Config file created at %s" % config_path
-            return connection
         except (KeyboardInterrupt, EOFError):
             sys.stdout.flush()
             sys.stderr.write('\nError: Init is not finished\n')
@@ -303,6 +303,8 @@ class Init(Command):
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
     COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
+    intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
+    prompt = 'user_setup> '
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
@@ -310,7 +312,6 @@ class UserManagement(GenestackShell):
             print "No config file was found; starting init."
             self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], None)
             args.host = None  # do not provide host for future use of arguments
-        GenestackShell.set_shell_user(self, args)
 
 
 def main():
