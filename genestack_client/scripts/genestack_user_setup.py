@@ -313,6 +313,9 @@ class UserManagement(GenestackShell):
         GenestackShell.set_shell_user(self, args)
 
 
-if __name__ == '__main__':
+def main():
     shell = UserManagement()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()
