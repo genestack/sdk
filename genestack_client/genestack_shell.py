@@ -16,6 +16,7 @@ import shlex
 from traceback import print_exc
 
 from genestack_client import GenestackAuthenticationException
+from version import __version__
 
 from utils import isatty, make_connection_parser, get_connection
 
@@ -211,6 +212,7 @@ class GenestackShell(cmd.Cmd):
 
         # override default help
         parser.add_argument('-h', '--help', action='store_true', help="show this help message and exit")
+        parser.add_argument('-v', '--version', action='store_true', help="show version")
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
         return parser
 
@@ -222,6 +224,10 @@ class GenestackShell(cmd.Cmd):
 
         parser = self.get_shell_parser()
         args, others = parser.parse_known_args()
+
+        if args.version:
+            print __version__
+            exit(0)
 
         command = self.COMMANDS.get(args.command)
         if command:
@@ -274,10 +280,9 @@ class GenestackShell(cmd.Cmd):
         try:
             email = self.connection.whoami()
             self.prompt = '%s> ' % email
-            self.intro = self.INTRO if self.INTRO else "Hello, %s!" % email
         except GenestackAuthenticationException:
             self.prompt = 'anonymous>'
-            self.intro = self.INTRO
+        self.intro = '\ngenestack_client v%s\n%s' % (__version__, self.INTRO)
 
     def postloop(self):
         try:
