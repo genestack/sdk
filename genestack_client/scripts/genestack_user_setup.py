@@ -146,7 +146,7 @@ class SetPassword(Command):
             user = select_user(users, None)  # TODO get current user for shell and command line
 
         while True:
-            user.password = getpass('Input password for %s: ' % user.alias)
+            user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
             try:
                 user.get_connection()
                 break
