@@ -481,7 +481,7 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
         print 'Vendor:', app_info.vendor
         print 'Applications:'
-        for app_id in app_info.identifiers:
+        for app_id in sorted(app_info.identifiers):
             print '\t%s' % app_id
 
         first_file = False
