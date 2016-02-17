@@ -264,6 +264,7 @@ class GenestackShell(cmd.Cmd):
         # do shell
         try:
             readline.read_history_file(self.get_history_file_path())
+            readline.set_history_length(1000)
         except (IOError, NameError):
             pass
         self.set_shell_user(args)
