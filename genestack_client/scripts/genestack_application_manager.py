@@ -314,7 +314,8 @@ def resolve_jar_file(file_path):
 
 def mark_as_stable(application, version, app_id_list, scope):
     try:
-        print('Setting the application stable for scope %s' % scope)
+        print('Setting the application version "%s" stable for scope %s'
+              % (version, scope))
         scope = SCOPE_DICT[scope]
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
