@@ -495,13 +495,14 @@ def prompt_removing_stable_version(application, apps_ids, version):
     if not apps:
         return True
 
-    message = ('You are going to make unstable following system stable applications with version "%s": \n' % version) +\
-        '\n'.join(apps) + "\nDo you want to continue? [y/n]"
+    msg = '''You are going to make unstable following system stable applications with version "%s":
+%s
+Do you want to continue? [y/n]''' % (version, '\n'.join(apps))
 
     choice = '.'
     while choice not in 'yn':
         try:
-            choice = raw_input(message)
+            choice = raw_input(msg)
         except KeyboardInterrupt:
             return False
     return choice == 'y'
