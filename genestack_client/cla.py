@@ -10,11 +10,11 @@
 
 import sys
 
-from genestack_client import Application, FilesUtil
+from genestack_client import Application, FilesUtil, Metainfo
 
 
-CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
-ADD_CHECKSUM_METHOD_NAME = 'addCheckSums'
+CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
+EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 
 
 class CLApplication(Application):
@@ -46,8 +46,8 @@ class CLApplication(Application):
         :param calculate_checksums: a flag used in the initialization script
             to compute checksums for the created files
         :type calculate_checksums: bool
-        :param expected_checksums: List of expected checksums, in any order
-        :type expected_checksums: list
+        :param expected_checksums: Dict of expected checksums there key is metainfo key for checksum calculation
+        :type expected_checksums: dict
         :param initialize: should initialization be started immediately
             after the file is created?
         :return: accession of created file
@@ -77,8 +77,10 @@ class CLApplication(Application):
         :param app_file: accession of file
         :return: None
         """
-        self.connection.application('genestack/bio-test-cla').invoke(
-            CALC_CHECKSUMS_METHOD_NAME, app_file)
+        fu = FilesUtil(self.connection)
+        metainfo = Metainfo()
+        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
+        fu.add_metainfo_values(app_file, metainfo)
 
     def add_checksums(self, app_file, expected_checksums):
         """
@@ -97,9 +99,11 @@ class CLApplication(Application):
         :param expected_checksums: collection of MD5 checksums
         :return: None
         """
-
-        self.connection.application('genestack/bio-test-cla').invoke(
-            ADD_CHECKSUM_METHOD_NAME, app_file, expected_checksums)
+        fu = FilesUtil(self.connection)
+        metainfo = Metainfo()
+        for key, value in expected_checksums.items():
+            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
+        fu.add_metainfo_values(app_file, metainfo)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
@@ -162,6 +166,7 @@ class CLApplication(Application):
 
     def __to_list(self, string_or_list):
         return string_or_list if isinstance(string_or_list, list) else [string_or_list]
+
 
 class TestCLApplication(CLApplication):
     APPLICATION_ID = 'genestack/testcla'
