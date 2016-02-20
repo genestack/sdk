@@ -11,6 +11,10 @@
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
 
+CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
+EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
+
+
 class SpecialFolders:
     """
     - ``IMPORTED``: folder where new files are created by Data Importers
@@ -487,3 +491,38 @@ class FilesUtil(Application):
         :rtype: None
         """
         self.invoke('renameFile', accession, name)
+
+    def mark_for_tests(self, app_file):
+        """
+        Mark file for test via add corresponding key to the metainfo.
+        Test file will calculate md5 checksums for processed files
+        stored in the storage during initialization.
+
+        :param app_file: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
+        self.add_metainfo_values(app_file, metainfo)
+
+    def add_checksums(self, app_file, expected_checksums):
+        """
+        Add expected MD5 checksum to the metainfo of a CLA file.
+        Expected checksums are calculated in the following way:
+
+            - The number of checksums is equal to the number of entries in storage.
+              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - The order of the checksums does not matter (TODO: that might entail problems!).
+            - If there are multiple files in one entry, they will be concatenated in the same order
+              as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo
+              will contain both expected and actual checksum values.
+
+        :param app_file: accession of application file
+        :param expected_checksums: collection of MD5 checksums
+        :return: None
+        """
+        metainfo = Metainfo()
+        for key, value in expected_checksums.items():
+            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
+        self.add_metainfo_values(app_file, metainfo)
