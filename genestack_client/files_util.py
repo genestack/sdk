@@ -494,9 +494,9 @@ class FilesUtil(Application):
 
     def mark_for_tests(self, app_file):
         """
-        Mark file for test via add corresponding key to the metainfo.
+        Mark file for test by adding corresponding key to metainfo.
         Test file will calculate md5 checksums for processed files
-        stored in the storage during initialization.
+        during initialization.
 
         :param app_file: accession of file
         :return: None
@@ -510,9 +510,8 @@ class FilesUtil(Application):
         Add expected MD5 checksum to the metainfo of a CLA file.
         Expected checksums are calculated in the following way:
 
-            - The number of checksums is equal to the number of entries in storage.
+            - The number of checksums equals number of entries in storage.
               For instance, a Reference Genome file has 2 entries (annotation and sequence files).
-            - The order of the checksums does not matter (TODO: that might entail problems!).
             - If there are multiple files in one entry, they will be concatenated in the same order
               as they were ``PUT`` to storage by the initialization script.
             - If a file is marked for testing, then after initialization its metainfo
