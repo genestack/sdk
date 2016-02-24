@@ -42,7 +42,7 @@ class CLApplication(Application):
         :param calculate_checksums: a flag used in the initialization script
             to compute checksums for the created files
         :type calculate_checksums: bool
-        :param expected_checksums: Dict of expected checksums there key is metainfo key for checksum calculation
+        :param expected_checksums: Dict of expected checksums (``{metainfo_key: expected_checksum}``)
         :type expected_checksums: dict
         :param initialize: should initialization be started immediately
             after the file is created?
