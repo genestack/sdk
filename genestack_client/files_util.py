@@ -494,8 +494,8 @@ class FilesUtil(Application):
 
     def mark_for_tests(self, app_file):
         """
-        Mark file for test by adding corresponding key to metainfo.
-        Test file will calculate md5 checksums for processed files
+        Mark Genestack file as test one by adding corresponding key to metainfo.
+        Test file will calculate md5 checksums of its encapsulated physical files
         during initialization.
 
         :param app_file: accession of file
