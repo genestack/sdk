@@ -274,7 +274,7 @@ class FilesUtil(Application):
         :return: a two-level dictionary with the following structure: accession -> key -> value
         :rtype: dict
         """
-        self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+        return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
 
     def get_special_folder(self, name):
         """
