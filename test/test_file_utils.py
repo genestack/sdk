@@ -17,11 +17,11 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (FilesUtil, GenestackException, GenestackServerException, get_connection,
-                       make_connection_parser, SpecialFolders)
+                       make_connection_parser, SpecialFolders, Metainfo)
 
 @pytest.fixture(scope='module')
 def files_utils():
-    connection = get_connection(make_connection_parser().parse_args([]))
+    connection = get_connection(make_connection_parser().parse_args())
     files_utils = FilesUtil(connection)
     return files_utils
 
@@ -146,6 +146,16 @@ def test_get_infos(files_utils):
     assert info['initializationStatus'] == {'id': 'NOT_APPLICABLE', 'isError': False, 'description': 'Not applicable'}
     assert set(info) == {'name', 'accession', 'application',
                          'owner', 'permissionsByGroup', 'time', 'initializationStatus'}
+
+
+def test_get_metainfo_strings(files_utils):
+    special_folder = files_utils.get_special_folder(SpecialFolders.CREATED)
+    infos = files_utils.get_metainfo_values_as_strings([special_folder],
+                                        [Metainfo.NAME, Metainfo.DESCRIPTION])
+    assert set(infos[special_folder].keys()) == {Metainfo.NAME, Metainfo.DESCRIPTION}
+    assert infos[special_folder][Metainfo.NAME] == "Created files"
+    assert infos[special_folder][Metainfo.DESCRIPTION] == "Files you created with various applications"
+
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])
