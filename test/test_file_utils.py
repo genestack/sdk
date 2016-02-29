@@ -92,11 +92,11 @@ def test_get_path_find_long_paths(files_utils):
 
 
 def test_get_path_public(files_utils):
-    assert files_utils.find_file_by_name('Genome annotation', file_class=files_utils.IFolder, parent=files_utils.get_public_folder())
+    assert files_utils.find_file_by_name('Genome annotation', file_class=files_utils.FOLDER, parent=files_utils.get_public_folder())
 
 
 def test_get_path_public_upper_case(files_utils):
-    assert files_utils.find_file_by_name('GENOME ANNOTATION', parent=files_utils.get_public_folder(), file_class=files_utils.IFolder)
+    assert files_utils.find_file_by_name('GENOME ANNOTATION', parent=files_utils.get_public_folder(), file_class=files_utils.FOLDER)
 
 
 def test_get_path_create_paths(files_utils):
@@ -121,7 +121,12 @@ def test_get_complete_infos(files_utils):
                                           'groupNames': {'GSG000001': 'WORLD'},
                                           'ids': {'GSG000001': []}}
     assert set(info['time']) == {'fileCreation', 'lastMetainfoModification'}
-    assert info['initializationStatus'] == {'displayString': 'Complete', 'id': 'NotApplicable', 'isError': False}
+    assert info['initializationStatus'] == {
+        'displayString': 'Complete',
+        'id': 'NOT_APPLICABLE',
+        'isError': False,
+        'description': 'Not applicable'
+    }
     assert set(info) == {'name', 'accession', 'application', 'kind',
                          'owner', 'typeKey', 'permissionsByGroup', 'time', 'initializationStatus'}
 
@@ -138,7 +143,7 @@ def test_get_infos(files_utils):
     assert info['permissionsByGroup'] == {'groupNames': {'GSG000001': 'WORLD'},
                                           'ids': {'GSG000001': []}}
     assert set(info['time']) == {'fileCreation', 'lastMetainfoModification'}
-    assert info['initializationStatus'] == {'id': 'NotApplicable', 'isError': False}
+    assert info['initializationStatus'] == {'id': 'NOT_APPLICABLE', 'isError': False, 'description': 'Not applicable'}
     assert set(info) == {'name', 'accession', 'application',
                          'owner', 'permissionsByGroup', 'time', 'initializationStatus'}
 
