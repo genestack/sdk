@@ -259,6 +259,8 @@ class Metainfo(dict):
 
         :param key: key
         :type key: str
+        :param: number of units as float
+        :type value: float | str
         :param unit: unit
         :type unit: str
         :rtype: None
@@ -273,6 +275,7 @@ class Metainfo(dict):
         Add a temperature value.
         The value can be any number, supplied with a unit from a controlled vocabulary.
 
+
         The temperature unit should be one of the following:
             :py:attr:`~genestack_client.Metainfo.CELSIUS`,
             :py:attr:`~genestack_client.Metainfo.KELVIN`,
@@ -280,7 +283,8 @@ class Metainfo(dict):
 
         :param key: key
         :type key: str
-        :param value: temperature value
+        :param value: number of units as float
+        :type value: float | str
         :param unit: unit
         :type unit: str
         :rtype: None
