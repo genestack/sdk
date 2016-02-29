@@ -49,6 +49,10 @@ class Metainfo(dict):
     SECOND = 'SECOND'
     MILLISECOND = 'MILLISECOND'
 
+    CELSIUS = 'CELSIUS'
+    KELVIN = 'KELVIN'
+    FAHRENHEIT = 'FAHRENHEIT'
+
     def _add_value(self, key, value, type):
         self.setdefault(key, []).append({'type': type, 'value': xstr(value)})
 
@@ -91,6 +95,18 @@ class Metainfo(dict):
         :rtype: None
         """
         self._add_value(key, value, 'integer')
+
+    def add_memory_size(self, key, value):
+        """
+        Add a memory size in bytes.
+
+        :param key: key
+        :type key: str
+        :param value: integer value
+        :type value: int
+        :rtype: None
+        """
+        self._add_value(key, value, 'memorySize')
 
     def add_decimal(self, key, value):
         """
@@ -145,6 +161,41 @@ class Metainfo(dict):
         result['name'] = xstr(name)
         result['phone'] = xstr(phone)
         result['email'] = xstr(email)
+        self.setdefault(key, []).append(result)
+
+    def add_publication(self, key, title, authors, journal_name,
+                        issue_date, identifiers=None, issue_number=None, pages=None):
+        """
+        Add a publication.
+        All fields will be visible to anyone who has access to this metainfo object.
+
+        :param key:
+        :type key: str
+        :param title: publication title
+        :type title: str
+        :param identifiers: publication identifiers
+        :type identifiers: dict
+        :param authors: publication authors
+        :type authors: str
+        :param journal_name: name of the journal containing this publication
+        :type journal_name: str
+        :param issue_date: journal issue date
+        :type issue_date: str
+        :param issue_number: journal issue number
+        :type issue_number: str
+        :param pages: pages in the journal issue
+        :type pages: str
+        :rtype: None
+        """
+        result = Metainfo._create_dict_with_type('publication')
+        result['identifiers'] = identifiers if identifiers is not None else {}
+        result['journalName'] = xstr(journal_name)
+        result['issueDate'] = xstr(issue_date)
+        result['title'] = xstr(title)
+        result['authors'] = xstr(authors)
+        result['issueNumber'] = xstr(issue_number)
+        result['pages'] = xstr(pages)
+
         self.setdefault(key, []).append(result)
 
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
@@ -213,6 +264,28 @@ class Metainfo(dict):
         :rtype: None
         """
         result = Metainfo._create_dict_with_type('time')
+        result['value'] = xstr(value)
+        result['unit'] = unit.upper()
+        self.setdefault(key, []).append(result)
+
+    def add_temperature(self, key, value, unit):
+        """
+        Add a temperature value.
+        The value can be any number, supplied with a unit from a controlled vocabulary.
+
+        The temperature unit should be one of the following:
+            :py:attr:`~genestack_client.Metainfo.CELSIUS`,
+            :py:attr:`~genestack_client.Metainfo.KELVIN`,
+            :py:attr:`~genestack_client.Metainfo.FAHRENHEIT`,
+
+        :param key: key
+        :type key: str
+        :param value: temperature value
+        :param unit: unit
+        :type unit: str
+        :rtype: None
+        """
+        result = Metainfo._create_dict_with_type('temperature')
         result['value'] = xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
