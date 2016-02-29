@@ -188,7 +188,7 @@ class Metainfo(dict):
         :rtype: None
         """
         result = Metainfo._create_dict_with_type('publication')
-        result['identifiers'] = identifiers if identifiers is not None else {}
+        result['identifiers'] = identifiers if identifiers else {}
         result['journalName'] = xstr(journal_name)
         result['issueDate'] = xstr(issue_date)
         result['title'] = xstr(title)
