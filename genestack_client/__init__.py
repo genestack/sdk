@@ -8,6 +8,14 @@
 # actual or intended publication of such source code.
 #
 
+import sys
+
+
+if not (2, 7, 6) < sys.version_info < (3, 0):
+    sys.stderr.write('%s Python version is not supported. Required version 2.7.6+, Python 3 not supported\n')
+    exit(1)
+
+
 from version import __version__
 
 from genestack_exceptions import GenestackException, GenestackServerException, GenestackAuthenticationException
