@@ -45,8 +45,8 @@ Commands
 """
 
 
-def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', shell_name)) as f:
+def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_path):
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack_client', 'scripts', file_name)) as f:
         shell_module = imp.new_module('shell_name')
         exec(f.read(), shell_module.__dict__)
 
@@ -83,9 +83,9 @@ def generate_rst_doc(shell_name, class_name, footer_file_name, save_path):
 
 
 def main():
-    generate_rst_doc('genestack-application-manager', 'ApplicationManager', 'app-manager_footer.txt', os.path.join('scripts', 'genestack-application-manager.rst'))
-    generate_rst_doc('genestack-shell', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
-    generate_rst_doc('genestack-user-setup', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
+    generate_rst_doc('genestack-application-manager', 'genestack_application_manager.py',  'ApplicationManager', 'app-manager_footer.txt', os.path.join('scripts', 'genestack-application-manager.rst'))
+    generate_rst_doc('genestack-shell', 'shell.py', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
+    generate_rst_doc('genestack-user-setup', 'genestack_user_setup.py', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 
 
 if __name__ == '__main__':

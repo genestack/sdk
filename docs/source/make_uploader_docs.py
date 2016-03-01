@@ -22,7 +22,7 @@ Usage
 
 
 def main():
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack-uploader')) as f:
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack_client', 'scripts', 'genestack_uploader.py')) as f:
         module = imp.new_module('shell_name')
         exec(f.read(), module.__dict__)
 
