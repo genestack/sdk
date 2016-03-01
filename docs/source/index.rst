@@ -3,6 +3,8 @@ Genestack Python Client Library
 
 The Genestack Python Client Library is a Python library that allows you to interact programatically with an instance of the Genestack platform.
 
+**Python 2** supported from version `2.7.6`, **Python 3** is not supported.
+
 At a low level, it allows you only to login to Genestack as a specific user (like you would through a web browser) and call the public Java methods of any application that your user has access to.
 
 Importantly, the Genestack Python Client Library includes the ``genestack-application-manager``, a command-line utility that allows you to upload your own applications to a Genestack instance. This tool is essential if you are a third-party developer, as this is currently the only way for you to upload your apps to a Genestack instance.
