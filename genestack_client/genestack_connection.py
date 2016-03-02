@@ -82,12 +82,12 @@ class Connection:
         :rtype: None
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
         """
-        logged = self.application('genestack/signin').invoke('authenticate', email, password)
-        if not logged['authenticated']:
-            raise GenestackException("Fail to login %s" % email)
         version_msg = self.check_version(__version__)
         if version_msg:
             print 'Warning: %s' % version_msg
+        logged = self.application('genestack/signin').invoke('authenticate', email, password)
+        if not logged['authenticated']:
+            raise GenestackException("Fail to login %s" % email)
 
     def check_version(self, version):
         """
