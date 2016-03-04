@@ -166,6 +166,15 @@ class MergeRawReadsApplication(Application):
         return self.invoke('createFiles', sources_folder, grouping_key)
 
 
+# preprocess microarrays
+
+class AffymetrixMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/affymetrix-normalisation'
+
+
+class AgilentMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/agilent-normalisation'
+
 
 # preprocess mapped reads
 
@@ -179,6 +188,10 @@ class RemoveDuplicated(CLApplication):
 
 class MergeMappedReadsApplication(CLApplication):
     APPLICATION_ID = 'genestack/merge-mapped-reads'
+
+
+class AlignedReadsSubsamplingApplication(CLApplication):
+    APPLICATION_ID = 'genestack/aligned-subsampling'
 
 
 # preprocess variants
@@ -239,6 +252,7 @@ class VariationCaller2Application(CLApplication):
 class NormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/normalization'
 
+
 class IntersectGenomicFeaturesMapped(CLApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
@@ -266,8 +280,10 @@ class GOEnrichmentAnalysis(CLApplication):
 class EffectPredictionApplication(CLApplication):
     APPLICATION_ID = 'genestack/snpeff'
 
+
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
+
 
 class IntersectGenomicFeaturesVariants(CLApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
@@ -289,3 +305,11 @@ class AlignedReadsQC(CLApplication):
 
 class TargetedSequencingQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc-enrichment'
+
+
+class ArrayQualityMetricsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/arrayqualitymetrics'
+
+
+class DoseResponseApplication(CLApplication):
+    APPLICATION_ID = 'genestack/dose-response'
