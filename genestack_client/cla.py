@@ -166,7 +166,6 @@ class MergeRawReadsApplication(Application):
         return self.invoke('createFiles', sources_folder, grouping_key)
 
 
-
 # preprocess mapped reads
 
 class MarkDuplicated(CLApplication):
@@ -179,6 +178,10 @@ class RemoveDuplicated(CLApplication):
 
 class MergeMappedReadsApplication(CLApplication):
     APPLICATION_ID = 'genestack/merge-mapped-reads'
+
+
+class AlignedReadsSubsamplingApplication(CLApplication):
+    APPLICATION_ID = 'genestack/aligned-subsampling'
 
 
 # preprocess variants
