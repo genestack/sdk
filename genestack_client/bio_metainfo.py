@@ -27,7 +27,7 @@ class BioMetainfo(Metainfo):
     DEVELOPMENTAL_STAGE = 'genestack.bio:developmentalStage'
     DISEASE_STATE = 'genestack.bio:disease'
     DISEASE_STAGE = 'genestack.bio:diseaseStage'
-    COMPOUND = 'genestack.bio:compoundName'
+    COMPOUND = 'genestack.bio:compoundTreatment/compound'
     AGE = 'genestack.bio:age'
     SEX = 'genestack.bio:sex'
     HUMAN_ETHNIC_GROUP = 'genestack.bio:humanEthnicGroup'
