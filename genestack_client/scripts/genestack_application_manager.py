@@ -18,7 +18,7 @@ import json
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
-from genestack_client.utils import isatty
+from genestack_client.utils import isatty, ask_confirmation
 
 if sys.stdout.encoding is None:
     # wrap sys.stdout into a StreamWriter to allow writing unicode to pipe
@@ -490,24 +490,20 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
  %s
-Do you want to continue? [y/n] '''
+Do you want to continue'''
+
 
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
     apps = get_system_stable_apps_version(application, apps_ids, version)
-
     if not apps:
         return True
 
     message = REMOVE_PROMPT % (version, '\n '.join(apps))
-
-    choice = '.'
-    while choice not in 'yn':
-        try:
-            choice = raw_input(message)
-        except KeyboardInterrupt:
-            return False
-    return choice == 'y'
+    try:
+        return ask_confirmation(message)
+    except KeyboardInterrupt:
+        return False
 
 
 def get_system_stable_apps_version(application, apps_ids, version):

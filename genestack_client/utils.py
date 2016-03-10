@@ -11,6 +11,8 @@
 import argparse
 import sys
 
+from genestack_client import GenestackException
+
 
 def isatty():
     """
@@ -86,3 +88,30 @@ def get_connection(args=None):
     """
     user = get_user(args)
     return user.get_connection(interactive=True, debug=args and args.debug)
+
+
+def ask_confirmation(question, default=None):
+    """
+    Ask confirmation and return response as boolean value.
+    This method will not end until user input correct answer.
+
+    :param question: question to ask, without [y/n] suffix and question mark.
+    :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
+    :return:
+    """
+    if not isatty():
+        raise GenestackException("Prompt cannot be called")
+
+    assert default in ('y', 'n', None), 'Wrong default value, expect "n", "y" or None'
+    question_suffix = '[%s/%s]' % tuple(x.upper() if x == default else x for x in 'yn')
+
+    while True:
+        text = raw_input('%s %s? ' % (question, question_suffix)).strip().lower()
+        if not text and default:
+            text = default
+
+        if text in ('y', 'yes'):
+            return True
+        if text in ('n', 'no'):
+            return False
+        print 'Unexpected response please input "y[es]" or "n[o]"'

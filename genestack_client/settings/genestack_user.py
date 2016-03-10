@@ -10,7 +10,7 @@
 
 from getpass import getpass
 from genestack_client import GenestackException, Connection
-from genestack_client.utils import isatty
+from genestack_client.utils import isatty, ask_confirmation
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -87,7 +87,7 @@ class User(object):
             else:
                 email = raw_input('e-mail: ').strip() or email
             if not email:
-                anonymously = raw_input('Proceed anonymously [y/N]?').strip().lower() == 'y'
+                anonymously = ask_confirmation('Proceed anonymously', default='n')
                 if anonymously:
                     return
                 continue
