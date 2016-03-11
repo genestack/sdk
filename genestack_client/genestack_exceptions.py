@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -53,3 +53,9 @@ class GenestackServerException(GenestackException):
         if self.stack_trace:
             message += '\nStacktrace from server is:\n%s' % self.stack_trace
         return message
+
+class GenestackAuthenticationException(GenestackException):
+    """
+    Should be thrown when a server sends an authentication error.
+    """
+    pass

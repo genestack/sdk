@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -17,14 +17,14 @@ import json
 import requests
 from distutils.version import StrictVersion
 
-from genestack_client import GenestackServerException, GenestackException, __version__
+from genestack_client import GenestackServerException, GenestackAuthenticationException, GenestackException, __version__
 from genestack_client.utils import isatty
 from genestack_client.chunked_upload import upload_by_chunks
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
     def http_error_401(self, req, fp, code, msg, headers):
-        raise GenestackException('Authentication failure')
+        raise GenestackAuthenticationException('Authentication failure')
 
 
 class _NoRedirect(urllib2.HTTPRedirectHandler):
@@ -82,12 +82,12 @@ class Connection:
         :rtype: None
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
         """
-        logged = self.application('genestack/signin').invoke('authenticate', email, password)
-        if not logged['authenticated']:
-            raise GenestackException("Fail to login %s" % email)
         version_msg = self.check_version(__version__)
         if version_msg:
             print 'Warning: %s' % version_msg
+        logged = self.application('genestack/signin').invoke('authenticate', email, password)
+        if not logged['authenticated']:
+            raise GenestackException("Fail to login %s" % email)
 
     def check_version(self, version):
         """

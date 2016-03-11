@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -18,8 +18,14 @@ import json
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
-from genestack_client.utils import isatty
+from genestack_client.utils import isatty, ask_confirmation
 
+if sys.stdout.encoding is None:
+    # wrap sys.stdout into a StreamWriter to allow writing unicode to pipe
+    # (in that case Python 2 cannot determine encoding)
+    import codecs
+    import locale
+    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
 def validate_application_id(app_id):
     if len(app_id.split('/')) != 2:
@@ -308,7 +314,8 @@ def resolve_jar_file(file_path):
 
 def mark_as_stable(application, version, app_id_list, scope):
     try:
-        print('Setting the application stable for scope %s' % scope)
+        print('Setting the application version "%s" stable for scope %s'
+              % (version, scope))
         scope = SCOPE_DICT[scope]
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
@@ -475,29 +482,28 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
         print 'Vendor:', app_info.vendor
         print 'Applications:'
-        for app_id in app_info.identifiers:
+        for app_id in sorted(app_info.identifiers):
             print '\t%s' % app_id
 
         first_file = False
 
 
+REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
+ %s
+Do you want to continue'''
+
+
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
     apps = get_system_stable_apps_version(application, apps_ids, version)
-
     if not apps:
         return True
 
-    message = ('You are going to make unstable following system stable applications with version "%s": \n' % version) +\
-        '\n'.join(apps) + "\nDo you want to continue? [y/n]"
-
-    choice = '.'
-    while choice not in 'yn':
-        try:
-            choice = raw_input(message)
-        except KeyboardInterrupt:
-            return False
-    return choice == 'y'
+    message = REMOVE_PROMPT % (version, '\n '.join(apps))
+    try:
+        return ask_confirmation(message)
+    except KeyboardInterrupt:
+        return False
 
 
 def get_system_stable_apps_version(application, apps_ids, version):
@@ -522,6 +528,9 @@ class ApplicationManager(GenestackShell):
     COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
 
 
-if __name__ == '__main__':
+def main():
     shell = ApplicationManager()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()

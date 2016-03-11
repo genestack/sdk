@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -15,6 +15,7 @@ from xml.dom.minidom import getDOMImplementation, parse
 from genestack_client.settings import User
 from copy import deepcopy
 
+from genestack_client.utils import ask_confirmation
 
 GENESTACK_SDK = "Genestack SDK"
 SETTING_FILE_NAME = 'genestack.xml'
@@ -174,15 +175,14 @@ class Config(object):
                     else:
                         print 'Exception at storing password at secure storage: %s' % e
                         try:
-                            response = raw_input("Do you want to store password in config file as plain text? [y/N]").lstrip().lower()
+                            save_to_file = ask_confirmation(
+                                'Do you want to store password in config file as plain text',
+                                default='n')
                         except KeyboardInterrupt:
-                            response = 'n'
-                        save_to_file = response in ['y', 'yes']
+                            save_to_file = False
 
                         try:
-                            store_response = raw_input("Set this as default behaviour? [Y/n]").lstrip().lower()
-                            if store_response in ['y', 'yes']:
-                                self.store_raw = save_to_file
+                            self.store_raw = ask_confirmation('Set this as default behaviour', default='y')
                         except KeyboardInterrupt:
                             self.store_raw_session = save_to_file
 

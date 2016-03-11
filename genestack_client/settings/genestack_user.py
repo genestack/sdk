@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -10,7 +10,7 @@
 
 from getpass import getpass
 from genestack_client import GenestackException, Connection
-from genestack_client.utils import isatty
+from genestack_client.utils import isatty, ask_confirmation
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -67,8 +67,8 @@ class User(object):
             connection.login(self.email, self.password)
         elif interactive:
             self.__interactive_login(connection)
-        else:
-            raise GenestackException('Not enough user data to login')
+        #else:
+        #    raise GenestackException('Not enough user data to login')
         return connection
 
     def __repr__(self):
@@ -83,10 +83,13 @@ class User(object):
             if message:
                 print message
             if email and '@' in email:
-                email = raw_input('E-mail [%s]: ' % email).strip() or email
+                email = raw_input('e-mail [%s]: ' % email).strip() or email
             else:
-                email = raw_input('E-mail: ').strip() or email
+                email = raw_input('e-mail: ').strip() or email
             if not email:
+                anonymously = ask_confirmation('Proceed anonymously', default='n')
+                if anonymously:
+                    return
                 continue
             password = getpass('password for %s: ' % email)
             try:

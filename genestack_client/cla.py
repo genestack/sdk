@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -11,10 +11,6 @@
 import sys
 
 from genestack_client import Application, FilesUtil
-
-
-CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
-ADD_CHECKSUM_METHOD_NAME = 'addCheckSums'
 
 
 class CLApplication(Application):
@@ -46,8 +42,8 @@ class CLApplication(Application):
         :param calculate_checksums: a flag used in the initialization script
             to compute checksums for the created files
         :type calculate_checksums: bool
-        :param expected_checksums: List of expected checksums, in any order
-        :type expected_checksums: list
+        :param expected_checksums: Dict of expected checksums (``{metainfo_key: expected_checksum}``)
+        :type expected_checksums: dict
         :param initialize: should initialization be started immediately
             after the file is created?
         :return: accession of created file
@@ -56,50 +52,18 @@ class CLApplication(Application):
         app_file = self.__create_file(source_files, params)
 
         if name:
-            FilesUtil(self.connection).rename_file(app_file, name)
+            fu = FilesUtil(self.connection)
+            fu.rename_file(app_file, name)
 
         if calculate_checksums:
-            self.mark_for_tests(app_file)
+            fu.mark_for_tests(app_file)
 
         if expected_checksums:
-            self.add_checksums(app_file, expected_checksums)
+            fu.add_checksums(app_file, expected_checksums)
 
         if initialize:
             self.start(app_file)
         return app_file
-
-    def mark_for_tests(self, app_file):
-        """
-        Mark file for test via add corresponding key to the metainfo.
-        Test file will calculate md5 checksums for processed files
-        stored in the storage during initialization.
-
-        :param app_file: accession of file
-        :return: None
-        """
-        self.connection.application('genestack/bio-test-cla').invoke(
-            CALC_CHECKSUMS_METHOD_NAME, app_file)
-
-    def add_checksums(self, app_file, expected_checksums):
-        """
-        Add expected MD5 checksum to the metainfo of a CLA file.
-        Expected checksums are calculated in the following way:
-
-            - The number of checksums is equal to the number of entries in storage.
-              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
-            - The order of the checksums does not matter (TODO: that might entail problems!).
-            - If there are multiple files in one entry, they will be concatenated in the same order
-              as they were ``PUT`` to storage by the initialization script.
-            - If a file is marked for testing, then after initialization its metainfo
-              will contain both expected and actual checksum values.
-
-        :param app_file: accession of application file
-        :param expected_checksums: collection of MD5 checksums
-        :return: None
-        """
-
-        self.connection.application('genestack/bio-test-cla').invoke(
-            ADD_CHECKSUM_METHOD_NAME, app_file, expected_checksums)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
@@ -163,6 +127,7 @@ class CLApplication(Application):
     def __to_list(self, string_or_list):
         return string_or_list if isinstance(string_or_list, list) else [string_or_list]
 
+
 class TestCLApplication(CLApplication):
     APPLICATION_ID = 'genestack/testcla'
 
@@ -201,6 +166,15 @@ class MergeRawReadsApplication(Application):
         return self.invoke('createFiles', sources_folder, grouping_key)
 
 
+# preprocess microarrays
+
+class AffymetrixMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/affymetrix-normalisation'
+
+
+class AgilentMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/agilent-normalisation'
+
 
 # preprocess mapped reads
 
@@ -214,6 +188,10 @@ class RemoveDuplicated(CLApplication):
 
 class MergeMappedReadsApplication(CLApplication):
     APPLICATION_ID = 'genestack/merge-mapped-reads'
+
+
+class AlignedReadsSubsamplingApplication(CLApplication):
+    APPLICATION_ID = 'genestack/aligned-subsampling'
 
 
 # preprocess variants
@@ -274,6 +252,7 @@ class VariationCaller2Application(CLApplication):
 class NormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/normalization'
 
+
 class IntersectGenomicFeaturesMapped(CLApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
@@ -301,8 +280,10 @@ class GOEnrichmentAnalysis(CLApplication):
 class EffectPredictionApplication(CLApplication):
     APPLICATION_ID = 'genestack/snpeff'
 
+
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
+
 
 class IntersectGenomicFeaturesVariants(CLApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
@@ -324,3 +305,11 @@ class AlignedReadsQC(CLApplication):
 
 class TargetedSequencingQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc-enrichment'
+
+
+class ArrayQualityMetricsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/arrayqualitymetrics'
+
+
+class DoseResponseApplication(CLApplication):
+    APPLICATION_ID = 'genestack/dose-response'

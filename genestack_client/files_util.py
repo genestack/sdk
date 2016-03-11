@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -9,6 +9,10 @@
 #
 
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
+
+
+CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
+EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 
 
 class SpecialFolders:
@@ -274,7 +278,7 @@ class FilesUtil(Application):
         :return: a two-level dictionary with the following structure: accession -> key -> value
         :rtype: dict
         """
-        self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+        return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
 
     def get_special_folder(self, name):
         """
@@ -487,3 +491,37 @@ class FilesUtil(Application):
         :rtype: None
         """
         self.invoke('renameFile', accession, name)
+
+    def mark_for_tests(self, app_file):
+        """
+        Mark Genestack file as test one by adding corresponding key to metainfo.
+        Test file will calculate md5 checksums of its encapsulated physical files
+        during initialization.
+
+        :param app_file: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
+        self.add_metainfo_values(app_file, metainfo)
+
+    def add_checksums(self, app_file, expected_checksums):
+        """
+        Add expected MD5 checksum to the metainfo of a CLA file.
+        Expected checksums are calculated in the following way:
+
+            - The number of checksums equals number of entries in storage.
+              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - If there are multiple files in one entry, they will be concatenated in the same order
+              as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo
+              will contain both expected and actual checksum values.
+
+        :param app_file: accession of application file
+        :param expected_checksums: collection of MD5 checksums
+        :return: None
+        """
+        metainfo = Metainfo()
+        for key, value in expected_checksums.items():
+            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
+        self.add_metainfo_values(app_file, metainfo)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -27,7 +27,7 @@ class BioMetainfo(Metainfo):
     DEVELOPMENTAL_STAGE = 'genestack.bio:developmentalStage'
     DISEASE_STATE = 'genestack.bio:disease'
     DISEASE_STAGE = 'genestack.bio:diseaseStage'
-    COMPOUND = 'genestack.bio:compoundName'
+    COMPOUND = 'genestack.bio:compoundTreatment/compound'
     AGE = 'genestack.bio:age'
     SEX = 'genestack.bio:sex'
     HUMAN_ETHNIC_GROUP = 'genestack.bio:humanEthnicGroup'
