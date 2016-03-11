@@ -44,6 +44,13 @@ SCOPE_DICT = {
 DEFAULT_SCOPE = 'user'
 
 
+VISIBILITY_DICT = {
+    'owner': 'OWNER',
+    'all': 'ALL'
+}
+DEFAULT_VISIBILITY = 'owner'
+
+
 class Info(Command):
     COMMAND = 'info'
     DESCRIPTION = "Display information about an application's JAR file."
@@ -155,6 +162,61 @@ class ListVersions(Command):
                     'E' if item == stable_versions.get('SESSION') else '-',
                     item
                 )
+
+
+class Visibility(Command):
+    COMMAND = 'visibility'
+    DESCRIPTION = 'Set visibility for application'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'level', metavar='<level>', choices=VISIBILITY_DICT.keys(),
+            default=DEFAULT_VISIBILITY,
+            help='Visibility level which will be set to application'
+                 ' (default is \'%s\'): %s' %
+                 (DEFAULT_VISIBILITY, ' | '.join(VISIBILITY_DICT.keys()))
+        )
+
+    def run(self):
+        app_id = self.args.app_id
+        if not validate_application_id(app_id):
+            return
+        version = self.args.version
+        level = VISIBILITY_DICT[self.args.level]
+        application = self.connection.application(self.args.app_id)
+        application.invoke('setVisibility', app_id, version, level)
+
+
+class Release(Command):
+    COMMAND = 'release'
+    DESCRIPTION = 'Create released application from testing one'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'new_version', metavar='<newVersion>',
+            help='version of released application (must differ from other version of this application)'
+        )
+
+    def run(self):
+        app_id = self.args.app_id
+        if not validate_application_id(app_id):
+            return
+        version = self.args.version
+        new_version = self.args.new_version
+        application = self.connection.application(self.args.app_id)
+        application.invoke('releaseApplication', app_id, version, new_version)
 
 
 class ListApplications(Command):
