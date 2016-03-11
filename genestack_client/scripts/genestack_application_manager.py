@@ -189,7 +189,7 @@ class Visibility(Command):
             return
         version = self.args.version
         level = VISIBILITY_DICT[self.args.level]
-        application = self.connection.application(self.args.app_id)
+        application = self.connection.application(APPLICATION_ID)
         application.invoke('setVisibility', app_id, version, level)
 
 
@@ -215,7 +215,7 @@ class Release(Command):
             return
         version = self.args.version
         new_version = self.args.new_version
-        application = self.connection.application(self.args.app_id)
+        application = self.connection.application(APPLICATION_ID)
         application.invoke('releaseApplication', app_id, version, new_version)
 
 
