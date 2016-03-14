@@ -168,7 +168,7 @@ class ListVersions(Command):
 
         format_string = ''
         if stable_versions is not None:
-            format_string += '%1s%1s%1s\t'  # Stability
+            format_string += '%s%s%s\t'  # Stability
         format_string += '%s'  # Version string
         if self.args.show_visibilities:
             format_string += '\t%s'  # Visibility
