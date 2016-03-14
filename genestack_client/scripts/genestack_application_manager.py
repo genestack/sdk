@@ -135,6 +135,14 @@ class ListVersions(Command):
             help='display stable scopes in output (S: System, U: User, E: sEssion)'
         )
         p.add_argument(
+            '-i', action="store_true", dest='show_visibilities',
+            help='display visibility of each version'
+        )
+        p.add_argument(
+            '-r', action="store_true", dest='show_release_state',
+            help='display release state of version'
+        )
+        p.add_argument(
             '-o', action='store_true', dest='show_owned',
             help='show only versions owned by current user'
         )
@@ -152,16 +160,33 @@ class ListVersions(Command):
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
         result.sort()
+
+        visibility_map = None
+        if self.args.show_visibilities or self.args.show_release_state:
+            visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
+            print visibility_map
+
+        format_string = ''
+        if stable_versions is not None:
+            format_string += '%1s%1s%1s\t'  # Stability
+        format_string += '%s'  # Version string
+        if self.args.show_visibilities:
+            format_string += '\t%s'  # Visibility
+        if self.args.show_release_state:
+            format_string += '\t%s'  # Release state
+
         for item in result:
-            if stable_versions is None:
-                print item
-            else:
-                print '%1s%1s%1s %s' % (
-                    'S' if item == stable_versions.get('SYSTEM') else '-',
-                    'U' if item == stable_versions.get('USER') else '-',
-                    'E' if item == stable_versions.get('SESSION') else '-',
-                    item
-                )
+            params = []
+            if stable_versions is not None:
+                params.append('S' if item == stable_versions.get('SYSTEM') else '-')
+                params.append('U' if item == stable_versions.get('USER') else '-')
+                params.append('E' if item == stable_versions.get('SESSION') else '-')
+            params.append(item)
+            if self.args.show_visibilities:
+                params.append(visibility_map[item]['visibilityLevel'])
+            if self.args.show_release_state:
+                params.append('released' if visibility_map[item]['released'] else 'not released')
+            print format_string % tuple(params)
 
 
 class Visibility(Command):
