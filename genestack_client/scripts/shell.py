@@ -53,11 +53,7 @@ class Call(Command):
 
     def run(self):
         res = self.do_request()
-        if isinstance(res, list):
-            for i in res:
-                print json.dumps(i)
-        else:
-            print json.dumps(res)
+        print json.dumps(res, indent=2)
 
 
 class Time(Call):
