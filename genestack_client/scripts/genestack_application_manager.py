@@ -207,7 +207,18 @@ class Visibility(Command):
         version = self.args.version
         level = VISIBILITY_DICT[self.args.level]
         application = self.connection.application(APPLICATION_ID)
-        application.invoke('setVisibility', app_id, version, level)
+        try:
+            sys.stdout.flush()
+            sys.stdout.write('Setting visibility %s for \'%s\' with version \'%s\'... ' % (level, app_id, version))
+            sys.stdout.flush()
+            application.invoke('setVisibility', app_id, version, level)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackException as e:
+            sys.stdout.flush()
+            sys.stderr.write('%s\n' % e.message)
+            sys.stderr.flush()
+            return 1
 
 
 class Release(Command):
@@ -233,7 +244,18 @@ class Release(Command):
         version = self.args.version
         new_version = self.args.new_version
         application = self.connection.application(APPLICATION_ID)
-        application.invoke('releaseApplication', app_id, version, new_version)
+        try:
+            sys.stdout.flush()
+            sys.stdout.write('Releasing \'%s\' with version \'%s\'... ' % (app_id, new_version))
+            sys.stdout.flush()
+            application.invoke('releaseApplication', app_id, version, new_version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackException as e:
+            sys.stdout.flush()
+            sys.stderr.write('%s\n' % e.message)
+            sys.stderr.flush()
+            return 1
 
 
 class ListApplications(Command):
