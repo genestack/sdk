@@ -165,6 +165,7 @@ class ListVersions(Command):
         if self.args.show_visibilities or self.args.show_release_state:
             visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
 
+        max_len = max(len(x) for x in result)
         for item in result:
             output_string = ''
             if stable_versions is not None:
@@ -173,11 +174,11 @@ class ListVersions(Command):
                     'U' if item == stable_versions.get('USER') else '-',
                     'E' if item == stable_versions.get('SESSION') else '-'
                 )
-            output_string += item
+            output_string += '%-*s' % (max_len, item)
             if self.args.show_visibilities:
-                output_string += '\t' + visibility_map[item]['visibilityLevel']
+                output_string += '\t%5s' % visibility_map[item]['visibilityLevel']
             if self.args.show_release_state:
-                output_string += '\t' + ('released' if visibility_map[item]['released'] else 'not released')
+                output_string += '\t%s' % ('released' if visibility_map[item]['released'] else 'not released')
             print output_string
 
 
