@@ -1,3 +1,6 @@
+* version 0.5.0
+  * add `visibility` and `release` commands to `genestack-application-manager`
+
 * version 0.4.1
   * Fix genestack-uploader crash
 

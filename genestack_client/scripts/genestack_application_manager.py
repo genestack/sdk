@@ -44,6 +44,13 @@ SCOPE_DICT = {
 DEFAULT_SCOPE = 'user'
 
 
+VISIBILITY_DICT = {
+    'owner': 'OWNER',
+    'all': 'ALL'
+}
+DEFAULT_VISIBILITY = 'owner'
+
+
 class Info(Command):
     COMMAND = 'info'
     DESCRIPTION = "Display information about an application's JAR file."
@@ -128,6 +135,14 @@ class ListVersions(Command):
             help='display stable scopes in output (S: System, U: User, E: sEssion)'
         )
         p.add_argument(
+            '-i', action="store_true", dest='show_visibilities',
+            help='display visibility of each version'
+        )
+        p.add_argument(
+            '-r', action="store_true", dest='show_release_state',
+            help='display release state of version'
+        )
+        p.add_argument(
             '-o', action='store_true', dest='show_owned',
             help='show only versions owned by current user'
         )
@@ -145,16 +160,99 @@ class ListVersions(Command):
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
         result.sort()
+
+        visibility_map = None
+        if self.args.show_visibilities or self.args.show_release_state:
+            visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
+
+        max_len = max(len(x) for x in result)
         for item in result:
-            if stable_versions is None:
-                print item
-            else:
-                print '%1s%1s%1s %s' % (
+            output_string = ''
+            if stable_versions is not None:
+                output_string += '%s%s%s ' % (
                     'S' if item == stable_versions.get('SYSTEM') else '-',
                     'U' if item == stable_versions.get('USER') else '-',
-                    'E' if item == stable_versions.get('SESSION') else '-',
-                    item
+                    'E' if item == stable_versions.get('SESSION') else '-'
                 )
+            output_string += '%-*s' % (max_len, item)
+            if self.args.show_visibilities:
+                output_string += '%8s' % visibility_map[item]['visibilityLevel']
+            if self.args.show_release_state:
+                output_string += '   %s' % ('released' if visibility_map[item]['released'] else 'not released')
+            print output_string
+
+
+class Visibility(Command):
+    COMMAND = 'visibility'
+    DESCRIPTION = 'Set visibility for application'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'level', metavar='<level>', choices=VISIBILITY_DICT.keys(),
+            default=DEFAULT_VISIBILITY,
+            help='Visibility level which will be set to application'
+                 ' (default is \'%s\'): %s' %
+                 (DEFAULT_VISIBILITY, ' | '.join(VISIBILITY_DICT.keys()))
+        )
+
+    def run(self):
+        app_id = self.args.app_id
+        if not validate_application_id(app_id):
+            return
+        version = self.args.version
+        level = VISIBILITY_DICT[self.args.level]
+        application = self.connection.application(APPLICATION_ID)
+        try:
+            sys.stdout.write('Setting visibility %s for \'%s\' with version \'%s\'... ' % (level, app_id, version))
+            sys.stdout.flush()
+            application.invoke('setVisibility', app_id, version, level)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackException as e:
+            sys.stderr.write('%s\n' % e.message)
+            sys.stderr.flush()
+            return 1
+
+
+class Release(Command):
+    COMMAND = 'release'
+    DESCRIPTION = 'Create released application from testing one'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'new_version', metavar='<newVersion>',
+            help='version of released application (must differ from other version of this application)'
+        )
+
+    def run(self):
+        app_id = self.args.app_id
+        if not validate_application_id(app_id):
+            return
+        version = self.args.version
+        new_version = self.args.new_version
+        application = self.connection.application(APPLICATION_ID)
+        try:
+            sys.stdout.write('Releasing \'%s\' with version \'%s\'... ' % (app_id, new_version))
+            sys.stdout.flush()
+            application.invoke('releaseApplication', app_id, version, new_version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackException as e:
+            sys.stderr.write('%s\n' % e.message)
+            sys.stderr.flush()
+            return 1
 
 
 class ListApplications(Command):
@@ -228,7 +326,6 @@ class Remove(Command):
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
         if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
-            sys.stdout.flush()
             sys.stderr.write('Removing was aborted by user\n')
             sys.stderr.flush()
             return
@@ -324,7 +421,6 @@ def mark_as_stable(application, version, app_id_list, scope):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -340,7 +436,6 @@ def remove_applications(application, version, app_id_list):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -356,7 +451,6 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -377,7 +471,6 @@ def upload_single_file(application, file_path, version, override,
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
-            sys.stdout.flush()
             sys.stderr.write('Can\'t install version "%s". This version is already system stable.\n' % version +
                              'If you want to upload new version and make it stable, add "-S system" option.\n' +
                              'Otherwise use another version name.\n')
@@ -388,13 +481,11 @@ def upload_single_file(application, file_path, version, override,
         parameters = {'version': version, 'override': override}
         upload_token = application.invoke('getUploadToken', parameters)
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
     if upload_token is None:
-        sys.stdout.flush()
         sys.stderr.write('Received a null token, the upload is not accepted')
         sys.stderr.flush()
         return 1
@@ -411,7 +502,6 @@ def upload_single_file(application, file_path, version, override,
             print result
 
     except urllib2.HTTPError as e:
-        sys.stdout.flush()
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
         sys.stderr.flush()
         return 1
@@ -525,7 +615,9 @@ class ApplicationManager(GenestackShell):
                    'that allows you to upload and manage'
                    'your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
-    COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
+    COMMAND_LIST = [
+        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
+    ]
 
 
 def main():
