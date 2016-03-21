@@ -176,9 +176,9 @@ class ListVersions(Command):
                 )
             output_string += '%-*s' % (max_len, item)
             if self.args.show_visibilities:
-                output_string += '\t%5s' % visibility_map[item]['visibilityLevel']
+                output_string += '%8s' % visibility_map[item]['visibilityLevel']
             if self.args.show_release_state:
-                output_string += '\t%s' % ('released' if visibility_map[item]['released'] else 'not released')
+                output_string += '   %s' % ('released' if visibility_map[item]['released'] else 'not released')
             print output_string
 
 
