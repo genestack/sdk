@@ -209,14 +209,12 @@ class Visibility(Command):
         level = VISIBILITY_DICT[self.args.level]
         application = self.connection.application(APPLICATION_ID)
         try:
-            sys.stdout.flush()
             sys.stdout.write('Setting visibility %s for \'%s\' with version \'%s\'... ' % (level, app_id, version))
             sys.stdout.flush()
             application.invoke('setVisibility', app_id, version, level)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
         except GenestackException as e:
-            sys.stdout.flush()
             sys.stderr.write('%s\n' % e.message)
             sys.stderr.flush()
             return 1
@@ -246,14 +244,12 @@ class Release(Command):
         new_version = self.args.new_version
         application = self.connection.application(APPLICATION_ID)
         try:
-            sys.stdout.flush()
             sys.stdout.write('Releasing \'%s\' with version \'%s\'... ' % (app_id, new_version))
             sys.stdout.flush()
             application.invoke('releaseApplication', app_id, version, new_version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
         except GenestackException as e:
-            sys.stdout.flush()
             sys.stderr.write('%s\n' % e.message)
             sys.stderr.flush()
             return 1
@@ -330,7 +326,6 @@ class Remove(Command):
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
         if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
-            sys.stdout.flush()
             sys.stderr.write('Removing was aborted by user\n')
             sys.stderr.flush()
             return
@@ -426,7 +421,6 @@ def mark_as_stable(application, version, app_id_list, scope):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -442,7 +436,6 @@ def remove_applications(application, version, app_id_list):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -458,7 +451,6 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
@@ -479,7 +471,6 @@ def upload_single_file(application, file_path, version, override,
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
-            sys.stdout.flush()
             sys.stderr.write('Can\'t install version "%s". This version is already system stable.\n' % version +
                              'If you want to upload new version and make it stable, add "-S system" option.\n' +
                              'Otherwise use another version name.\n')
@@ -490,13 +481,11 @@ def upload_single_file(application, file_path, version, override,
         parameters = {'version': version, 'override': override}
         upload_token = application.invoke('getUploadToken', parameters)
     except GenestackException as e:
-        sys.stdout.flush()
         sys.stderr.write('%s\n' % e.message)
         sys.stderr.flush()
         return 1
 
     if upload_token is None:
-        sys.stdout.flush()
         sys.stderr.write('Received a null token, the upload is not accepted')
         sys.stderr.flush()
         return 1
@@ -513,7 +502,6 @@ def upload_single_file(application, file_path, version, override,
             print result
 
     except urllib2.HTTPError as e:
-        sys.stdout.flush()
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
         sys.stderr.flush()
         return 1
