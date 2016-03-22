@@ -27,6 +27,7 @@ if sys.stdout.encoding is None:
     import locale
     sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
+
 def validate_application_id(app_id):
     if len(app_id.split('/')) != 2:
         sys.stderr.write('Invalid application ID: expected "{vendor}/{application}", but got "%s" instead\n' % app_id)
@@ -93,6 +94,11 @@ class Install(Command):
             help='Run installation without any prompts (use with caution)'
         )
         p.add_argument(
+            '-r', '--release', action='store_true',
+            default=False,
+            help='Release installed applications and set them visible for all'
+        )
+        p.add_argument(
             '-o', '--override', action='store_true',
             help='overwrite old version of the applications with the new one'
         )
@@ -121,7 +127,7 @@ class Install(Command):
         return upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force
+            self.args.stable, self.args.scope, self.args.force, self.args.release
         )
 
 
@@ -202,22 +208,10 @@ class Visibility(Command):
         )
 
     def run(self):
-        app_id = self.args.app_id
-        if not validate_application_id(app_id):
-            return
-        version = self.args.version
-        level = VISIBILITY_DICT[self.args.level]
-        application = self.connection.application(APPLICATION_ID)
-        try:
-            sys.stdout.write('Setting visibility %s for \'%s\' with version \'%s\'... ' % (level, app_id, version))
-            sys.stdout.flush()
-            application.invoke('setVisibility', app_id, version, level)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-        except GenestackException as e:
-            sys.stderr.write('%s\n' % e.message)
-            sys.stderr.flush()
-            return 1
+        set_applications_visibility(
+            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version,
+            VISIBILITY_DICT[self.args.level]
+        )
 
 
 class Release(Command):
@@ -237,22 +231,10 @@ class Release(Command):
         )
 
     def run(self):
-        app_id = self.args.app_id
-        if not validate_application_id(app_id):
-            return
-        version = self.args.version
-        new_version = self.args.new_version
-        application = self.connection.application(APPLICATION_ID)
-        try:
-            sys.stdout.write('Releasing \'%s\' with version \'%s\'... ' % (app_id, new_version))
-            sys.stdout.flush()
-            application.invoke('releaseApplication', app_id, version, new_version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-        except GenestackException as e:
-            sys.stderr.write('%s\n' % e.message)
-            sys.stderr.flush()
-            return 1
+        release_applications(
+            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version, self.args.new_version,
+            False
+        )
 
 
 class ListApplications(Command):
@@ -456,18 +438,18 @@ def reload_applications(application, version, app_id_list):
         return 1
 
 
-def upload_file(application, files_list, version, override, stable, scope, force):
+def upload_file(application, files_list, version, override, stable, scope, force, release):
     for file_path in files_list:
         result = upload_single_file(
             application, file_path, version, override,
-            stable, scope, force
+            stable, scope, force, release
         )
         if result is not None and result != 0:
             return result
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False):
+                       stable, scope, force=False, release=False):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -501,6 +483,12 @@ def upload_single_file(application, file_path, version, override,
         if result:
             print result
 
+        if release:
+            release_applications(application, app_info.identifiers, version, version + '-released', override)
+            set_applications_visibility(
+                application, app_info.identifiers, version + '-released', VISIBILITY_DICT['all']
+            )
+
     except urllib2.HTTPError as e:
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
         sys.stderr.flush()
@@ -510,6 +498,46 @@ def upload_single_file(application, file_path, version, override,
         return
 
     return mark_as_stable(application, version, app_info.identifiers, scope)
+
+
+def release_applications(application, app_ids, version, new_version, override):
+    try:
+        sys.stdout.write('Releasing new version \'%s\'\n' % new_version)
+        sys.stdout.flush()
+        for app_id in app_ids:
+            if not validate_application_id(app_id):
+                sys.stderr.write('Invalid application id: %s' % app_id)
+                continue
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            application.invoke('releaseApplication', app_id, version, new_version, override)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+    except GenestackException as e:
+        sys.stderr.write('%s\n' % e.message)
+        sys.stderr.flush()
+        return 1
+    return
+
+
+def set_applications_visibility(application, app_ids, version, level):
+    try:
+        sys.stdout.write('Setting visibility %s for version \'%s\'\n' % (level, version))
+        sys.stdout.flush()
+        for app_id in app_ids:
+            if not validate_application_id(app_id):
+                sys.stderr.write('Invalid application id: %s' % app_id)
+                continue
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            application.invoke('setVisibility', app_id, version, level)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+    except GenestackException as e:
+        sys.stderr.write('%s\n' % e.message)
+        sys.stderr.flush()
+        return 1
+    return
 
 
 AppInfo = namedtuple('AppInfo', [
@@ -527,7 +555,7 @@ def log_on_error(function):
     def wrapper(*args):
         try:
             return function(*args)
-        except Exception as e:
+        except Exception:
             sys.stderr.write('Error at "%s" with arguments: %s\n' % (function.__name__, ', '.join(map(repr, args))))
             raise
     return wrapper
