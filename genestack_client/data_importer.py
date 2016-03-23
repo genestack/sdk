@@ -552,11 +552,7 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/mappedReadsCountLoader', 'importFile', parent, metainfo)
 
-    def create_owl_ontology(self,
-                            parent=None,
-                            name=None,
-                            url=None,
-                            metainfo=None):
+    def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
         """
         Create a Dictionary file from a local or remote owl file.
         ``name`` and ``url`` are required fields.
