@@ -165,6 +165,9 @@ class ListVersions(Command):
         if self.args.show_stable:
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
+        if not result:
+            sys.stderr.write('No versions found\n')
+            return
         result.sort()
 
         visibility_map = None
