@@ -107,7 +107,6 @@ def get_files(paths):
                 folder_path = os.path.join(base, f)
                 if os.path.islink(folder_path):
                     sys.stderr.write("WARNING: Symlink %s was skipped!\n" % folder_path)
-                    sys.stderr.flush()
     return files_list, total_size
 
 

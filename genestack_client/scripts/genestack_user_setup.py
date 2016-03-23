@@ -296,7 +296,6 @@ class Init(Command):
         except (KeyboardInterrupt, EOFError):
             sys.stdout.flush()
             sys.stderr.write('\nError: Init is not finished\n')
-            sys.stderr.flush()
             exit(1)
 
 

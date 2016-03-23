@@ -312,7 +312,6 @@ class Remove(Command):
         version = self.args.version
         if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
             sys.stderr.write('Removing was aborted by user\n')
-            sys.stderr.flush()
             return
         return remove_applications(
             self.connection.application(APPLICATION_ID), self.args.version, apps_ids
@@ -407,7 +406,6 @@ def mark_as_stable(application, version, app_id_list, scope):
             sys.stdout.flush()
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
 
 
@@ -422,7 +420,6 @@ def remove_applications(application, version, app_id_list):
             sys.stdout.flush()
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
 
 
@@ -437,7 +434,6 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.flush()
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
 
 
@@ -459,7 +455,6 @@ def upload_single_file(application, file_path, version, override,
             sys.stderr.write('Can\'t install version "%s". This version is already system stable.\n' % version +
                              'If you want to upload new version and make it stable, add "-S system" option.\n' +
                              'Otherwise use another version name.\n')
-            sys.stderr.flush()
             return
 
     try:
@@ -467,12 +462,10 @@ def upload_single_file(application, file_path, version, override,
         upload_token = application.invoke('getUploadToken', parameters)
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
 
     if upload_token is None:
         sys.stderr.write('Received a null token, the upload is not accepted')
-        sys.stderr.flush()
         return 1
 
     # upload_token, as returned by json.load(), is a Unicode string.
@@ -494,7 +487,6 @@ def upload_single_file(application, file_path, version, override,
 
     except urllib2.HTTPError as e:
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
-        sys.stderr.flush()
         return 1
 
     if not stable:
@@ -518,7 +510,6 @@ def release_applications(application, app_ids, version, new_version, override):
             sys.stdout.flush()
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
     return
 
@@ -538,7 +529,6 @@ def set_applications_visibility(application, app_ids, version, level):
             sys.stdout.flush()
     except GenestackException as e:
         sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
         return 1
     return
 

@@ -296,7 +296,6 @@ class TTYProgress(object):
             sys.stderr.write('\rUploading %s - %.2f%%' % (name, pct))
             if int(pct) >= 100:
                 sys.stderr.write('\n')
-            sys.stderr.flush()
 
 
 class DottedProgress(object):
@@ -316,4 +315,3 @@ class DottedProgress(object):
                 sys.stderr.write('.')
             if self.__dots == self.__full_length:
                 sys.stderr.write('\n')
-            sys.stderr.flush()
