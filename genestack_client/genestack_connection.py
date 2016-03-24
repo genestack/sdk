@@ -44,9 +44,13 @@ class Connection:
     A class to handle a connection to a specified Genestack server.
     Instantiating the class does mean you are logged in to the server.
     To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
+
+    Connection support retrieving debug information.
+      - ``debug`` will print additional traceback from application
+      - ``show_logs``  allow
     """
 
-    def __init__(self, server_url, debug=False):
+    def __init__(self, server_url, debug=False, show_logs=False):
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
@@ -54,6 +58,7 @@ class Connection:
         self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
         self.debug = debug
+        self.show_logs = show_logs
 
     def __del__(self):
         try:
@@ -206,8 +211,19 @@ class Application:
             raise GenestackServerException(
                 error, path, to_post,
                 debug=self.connection.debug,
-                stack_trace=response.get('errorStackTrace')
+                stack_trace=response.get('errorStackTrace'),
             )
+
+        logs = response['log']
+        if logs and (self.connection.show_logs or self.connection.debug):
+            message = '\nLogs:\n'
+            for item in logs:
+                message += '\n'
+                message += item['message']
+                if item['stackTrace']:
+                    message += item['stackTrace']
+            print message
+
         return response['result']
 
     def invoke(self, method, *params):
