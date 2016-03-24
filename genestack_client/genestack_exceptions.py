@@ -22,17 +22,20 @@ class GenestackServerException(GenestackException):
     Should be thrown when a server sends a response with an error message from Java code.
     """
 
-    def __init__(self, message, path, post_data, stack_trace=None):
+    def __init__(self, message, path, post_data, debug=False, stack_trace=None):
         """
         :param message: exception message
         :type message: str
         :param path: path after server URL of connection.
         :type path: str
         :param post_data: POST data (file or dict)
+        :type debug: bool
+        :param debug: flag if stack trace should be printed
         :param stack_trace: server stack trace
         :type stack_trace: str
         """
         GenestackException.__init__(self, message)
+        self.debug = debug
         self.stack_trace = stack_trace
         self.path = path
         self.post_data = post_data
@@ -50,9 +53,10 @@ class GenestackServerException(GenestackException):
                 self.message,
                 self.path
             )
-        if self.stack_trace:
+        if self.debug and self.stack_trace:
             message += '\nStacktrace from server is:\n%s' % self.stack_trace
         return message
+
 
 class GenestackAuthenticationException(GenestackException):
     """

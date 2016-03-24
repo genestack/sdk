@@ -203,14 +203,12 @@ class Application:
 
         error = response.get('error')
         if error is not None:
-            if self.connection.debug:
-                stack_trace = response.get('errorStackTrace')
-            else:
-                stack_trace = None
             raise GenestackServerException(
-                error, path, to_post, stack_trace=stack_trace
+                error, path, to_post,
+                debug=self.connection.debug,
+                stack_trace=response.get('errorStackTrace')
             )
-        return response.get['result']
+        return response['result']
 
     def invoke(self, method, *params):
         """
