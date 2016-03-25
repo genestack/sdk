@@ -308,7 +308,8 @@ class ChunkedUpload(object):
         if self.has_application_result:
             return self.application_result
         else:
-            raise GenestackException('Fail to upload %s: %s' % (self.path, self.error or 'unknown error'))
+            error_message = self.error or 'file has been uploaded from another session'
+            raise GenestackException('Fail to upload %s: %s' % (self.path, error_message))
 
 
 def upload_by_chunks(application, path, chunk_size=None):
