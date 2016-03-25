@@ -211,7 +211,7 @@ class Application:
             raise GenestackServerException(
                 error, path, to_post,
                 debug=self.connection.debug,
-                stack_trace=response.get('errorStackTrace'),
+                stack_trace=response.get('errorStackTrace')
             )
 
         logs = response['log']
