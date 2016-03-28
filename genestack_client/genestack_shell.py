@@ -15,7 +15,7 @@ import cmd
 import shlex
 from traceback import print_exc
 
-from genestack_client import GenestackAuthenticationException
+from genestack_client import GenestackAuthenticationException, GenestackServerException
 from version import __version__
 
 from utils import isatty, make_connection_parser, get_connection
@@ -323,7 +323,10 @@ class GenestackShell(cmd.Cmd):
             print
             print "Command interrupted."
             return
-        except Exception as e:
+        except GenestackServerException as e:
+            sys.stdout.flush()
+            sys.stderr.write(e)
+        except Exception:
             sys.stdout.flush()
             print_exc()
 
