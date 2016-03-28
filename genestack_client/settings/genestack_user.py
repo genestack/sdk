@@ -59,9 +59,9 @@ class User(object):
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
-        :param debug: print stack-trace in case of exception
+        :param debug: print stack trace in case of exception
         :type debug: bool
-        :param show_logs: print logs received from server
+        :param show_logs: print application logs (received from server)
         :type show_logs: bool
         :return: logged connection
         :rtype: ~genestack_client.Connection

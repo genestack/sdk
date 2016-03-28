@@ -216,12 +216,7 @@ class Application:
 
         logs = response['log']
         if logs and (self.connection.show_logs or self.connection.debug):
-            message = '\nLogs:\n'
-            for item in logs:
-                message += '\n'
-                message += item['message']
-                if item['stackTrace']:
-                    message += item['stackTrace']
+            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in logs)
             print message
 
         return response['result']
