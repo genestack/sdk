@@ -48,7 +48,7 @@ def make_connection_parser(user=None, password=None, host=None):
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
     group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
     group.add_argument('--debug', dest='debug', help='print additional stacktrace on error', action='store_true')
-    group.add_argument('--show-logs', dest='show_logs', help='print logs created with ApplicationLogger', action='store_true')
+    group.add_argument('--show-logs', dest='show_logs', help="print application logs (received from server)", action='store_true')
     return parser
 
 

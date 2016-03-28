@@ -47,7 +47,7 @@ class Connection:
 
     Connection support retrieving debug information.
       - ``debug`` will print additional traceback from application
-      - ``show_logs``  allow
+      - ``show_logs`` will print application logs (received from server)
     """
 
     def __init__(self, server_url, debug=False, show_logs=False):
