@@ -479,7 +479,11 @@ def upload_single_file(application, file_path, version, override,
         if result:
             print result
 
-        if release:
+        if release and stable and SCOPE_DICT[scope] == 'SYSTEM':
+            sys.stderr.write('WARNING: You are using `-r` flag with `-S system` construction at the same time. Setting '
+                             'scope `system` will automatically create released version, release it and set visible for'
+                             ' all. `-r` flag will be ignored.\n')
+        elif release:
             release_applications(application, app_info.identifiers, version, version + '-released', override)
             set_applications_visibility(
                 application, app_info.identifiers, version + '-released', VISIBILITY_DICT['all']
