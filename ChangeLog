@@ -2,6 +2,8 @@
   * add `visibility` and `release` commands to `genestack-application-manager`
   * add `release` flag to `install` command in `genestack-application-manager`
   * add `create_owl_ontology` to `DataImporter`
+  * add support for retrieving application logs
+  * make `genestack.bio:strain/breed/cultivar` deprecated, use `genestack.bio:strainBreedCultivar` instead
 
 * version 0.4.1
   * Fix genestack-uploader crash
