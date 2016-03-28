@@ -50,7 +50,7 @@ class User(object):
         self.password = password  # TODO make property
         self.alias = alias or email
 
-    def get_connection(self, interactive=True, debug=False):
+    def get_connection(self, interactive=True, debug=False, show_logs=False):
         """
         Return a logged-in connection for current user.
         If ``interactive`` is ``True`` and the password or email are unknown,
@@ -59,10 +59,14 @@ class User(object):
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
+        :param debug: print stack trace in case of exception
+        :type debug: bool
+        :param show_logs: print application logs (received from server)
+        :type show_logs: bool
         :return: logged connection
         :rtype: ~genestack_client.Connection
         """
-        connection = Connection(_get_server_url(self.host), debug=debug)
+        connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:
