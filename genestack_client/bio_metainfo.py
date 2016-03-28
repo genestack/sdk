@@ -18,7 +18,7 @@ class BioMetainfo(Metainfo):
 
     METHOD = 'genestack.bio:method'
     ORGANISM = 'genestack.bio:organism'
-    STRAIN = 'genestack.bio:strain/breed/cultivar'
+    STRAIN = 'genestack.bio:strainBreedCultivar'
     BREED = STRAIN
     CULTIVAR = STRAIN
     TISSUE = 'genestack.bio:tissue'
