@@ -166,7 +166,7 @@ class ListVersions(Command):
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
         if not result:
-            sys.stderr.write('No versions found\n')
+            sys.stderr.write('No suitable versions found for "%s"\n' % app_id)
             return
         result.sort()
 
