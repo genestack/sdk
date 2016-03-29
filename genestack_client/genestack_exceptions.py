@@ -56,8 +56,8 @@ class GenestackServerException(GenestackException):
         if self.stack_trace:
             if self.debug:
                 message += '\nStacktrace from server is:\n%s' % self.stack_trace
-            else: message += '\nUse connection with "debug" option on to retrieve traceback'
-
+            else:
+                message += '\nEnable debug option to retrieve traceback'
         return message
 
 
