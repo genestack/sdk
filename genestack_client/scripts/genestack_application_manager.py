@@ -478,25 +478,30 @@ def upload_single_file(application, file_path, version, override,
         # hack before fix ApplicationManagerApplication#processReceivedFile // TODO: return some useful information
         if result:
             print result
-
-        if release and stable and SCOPE_DICT[scope] == 'SYSTEM':
-            sys.stderr.write('WARNING: You are using `-r` flag with `-S system` construction at the same time. Setting '
-                             'scope `system` will automatically create released version, release it and set visible for'
-                             ' all. `-r` flag will be ignored.\n')
-        elif release:
-            release_applications(application, app_info.identifiers, version, version + '-released', override)
-            set_applications_visibility(
-                application, app_info.identifiers, version + '-released', VISIBILITY_DICT['all']
-            )
-
     except urllib2.HTTPError as e:
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
         return 1
 
+    released_version = version + '-released'
+    if release and stable and SCOPE_DICT[scope] == 'SYSTEM':
+        sys.stderr.write('WARNING: You are using `-r` flag with `-S system` construction at the same time. Setting '
+                         'scope `system` will automatically create released version, release it and set visible for'
+                         ' all. `-r` flag will be ignored.\n')
+    elif release:
+        release_applications(application, app_info.identifiers, version, released_version, override)
+        set_applications_visibility(
+            application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
+        )
+
     if not stable:
         return
 
-    return mark_as_stable(application, version, app_info.identifiers, scope)
+    return mark_as_stable(
+        application,
+        released_version if release and not SCOPE_DICT[scope] == 'SYSTEM' else version,
+        app_info.identifiers,
+        scope
+    )
 
 
 def release_applications(application, app_ids, version, new_version, override):
