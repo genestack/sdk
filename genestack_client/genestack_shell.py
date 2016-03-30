@@ -325,7 +325,7 @@ class GenestackShell(cmd.Cmd):
             return
         except GenestackServerException as e:
             sys.stdout.flush()
-            sys.stderr.write(e)
+            sys.stderr.write(str(e))
         except Exception:
             sys.stdout.flush()
             print_exc()
