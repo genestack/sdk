@@ -7,7 +7,7 @@
 ### Installation
    
    - install library
-     - `pip install git+https://github.com/genestack/python-client@stable --upgrade`
+     - `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`
    - setup default user
      - `genestack-user-setup init`
    
