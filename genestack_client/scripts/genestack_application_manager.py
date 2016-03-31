@@ -465,7 +465,7 @@ def upload_single_file(application, file_path, version, override,
         return 1
 
     if upload_token is None:
-        sys.stderr.write('Received a null token, the upload is not accepted')
+        sys.stderr.write('Received a null token, the upload is not accepted\n')
         return 1
 
     # upload_token, as returned by json.load(), is a Unicode string.
@@ -501,7 +501,7 @@ def release_applications(application, app_ids, version, new_version, override):
         sys.stdout.flush()
         for app_id in app_ids:
             if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s' % app_id)
+                sys.stderr.write('Invalid application id: %s\n' % app_id)
                 continue
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
@@ -520,7 +520,7 @@ def set_applications_visibility(application, app_ids, version, level):
         sys.stdout.flush()
         for app_id in app_ids:
             if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s' % app_id)
+                sys.stderr.write('Invalid application id: %s\n' % app_id)
                 continue
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
