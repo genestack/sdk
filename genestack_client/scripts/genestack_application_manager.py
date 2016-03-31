@@ -497,8 +497,7 @@ def upload_single_file(application, file_path, version, override,
 
 def release_applications(application, app_ids, version, new_version, override):
     try:
-        sys.stdout.write('Releasing new version \'%s\'\n' % new_version)
-        sys.stdout.flush()
+        print('Releasing new version "%s"' % new_version)
         for app_id in app_ids:
             if not validate_application_id(app_id):
                 sys.stderr.write('Invalid application id: %s\n' % app_id)
@@ -516,8 +515,7 @@ def release_applications(application, app_ids, version, new_version, override):
 
 def set_applications_visibility(application, app_ids, version, level):
     try:
-        sys.stdout.write('Setting visibility %s for version \'%s\'\n' % (level, version))
-        sys.stdout.flush()
+        print('Setting visibility %s for version "%s"' % (level, version))
         for app_id in app_ids:
             if not validate_application_id(app_id):
                 sys.stderr.write('Invalid application id: %s\n' % app_id)
