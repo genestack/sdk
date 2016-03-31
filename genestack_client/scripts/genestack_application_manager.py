@@ -413,7 +413,7 @@ def remove_applications(application, version, app_id_list):
     try:
         print('Removing application(s) with version "%s"' % version)
         for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
+            sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
             application.invoke('removeApplication', app_id, version)
             sys.stdout.write('ok\n')
@@ -427,7 +427,7 @@ def reload_applications(application, version, app_id_list):
     try:
         print('Reloading applications')
         for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
+            sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
             application.invoke('reloadApplication', app_id, version)
             sys.stdout.write('ok\n')
