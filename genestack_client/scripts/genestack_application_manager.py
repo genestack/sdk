@@ -438,6 +438,9 @@ def reload_applications(application, version, app_id_list):
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, release):
+    if stable and release:
+        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
+        return
     for file_path in files_list:
         result = upload_single_file(
             application, file_path, version, override,
@@ -456,6 +459,9 @@ def upload_single_file(application, file_path, version, override,
                              'If you want to upload new version and make it stable, add "-S system" option.\n' +
                              'Otherwise use another version name.\n')
             return
+    if stable and release:
+        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
+        return
 
     try:
         parameters = {'version': version, 'override': override}
@@ -478,21 +484,26 @@ def upload_single_file(application, file_path, version, override,
         # hack before fix ApplicationManagerApplication#processReceivedFile // TODO: return some useful information
         if result:
             print result
-
-        if release:
-            release_applications(application, app_info.identifiers, version, version + '-released', override)
-            set_applications_visibility(
-                application, app_info.identifiers, version + '-released', VISIBILITY_DICT['all']
-            )
-
     except urllib2.HTTPError as e:
         sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
         return 1
 
+    released_version = version + '-released'
+    if release:
+        release_applications(application, app_info.identifiers, version, released_version, override)
+        set_applications_visibility(
+            application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
+        )
+
     if not stable:
         return
 
-    return mark_as_stable(application, version, app_info.identifiers, scope)
+    return mark_as_stable(
+        application,
+        released_version if release and not SCOPE_DICT[scope] == 'SYSTEM' else version,
+        app_info.identifiers,
+        scope
+    )
 
 
 def release_applications(application, app_ids, version, new_version, override):
