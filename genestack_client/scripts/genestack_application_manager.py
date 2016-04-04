@@ -166,7 +166,7 @@ class ListVersions(Command):
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
         if not result:
-            sys.stderr.write('No versions found\n')
+            sys.stderr.write('No suitable versions found for "%s"\n' % app_id)
             return
         result.sort()
 
@@ -413,7 +413,7 @@ def remove_applications(application, version, app_id_list):
     try:
         print('Removing application(s) with version "%s"' % version)
         for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
+            sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
             application.invoke('removeApplication', app_id, version)
             sys.stdout.write('ok\n')
@@ -427,7 +427,7 @@ def reload_applications(application, version, app_id_list):
     try:
         print('Reloading applications')
         for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
+            sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
             application.invoke('reloadApplication', app_id, version)
             sys.stdout.write('ok\n')
@@ -471,7 +471,7 @@ def upload_single_file(application, file_path, version, override,
         return 1
 
     if upload_token is None:
-        sys.stderr.write('Received a null token, the upload is not accepted')
+        sys.stderr.write('Received a null token, the upload is not accepted\n')
         return 1
 
     # upload_token, as returned by json.load(), is a Unicode string.
@@ -508,11 +508,10 @@ def upload_single_file(application, file_path, version, override,
 
 def release_applications(application, app_ids, version, new_version, override):
     try:
-        sys.stdout.write('Releasing new version \'%s\'\n' % new_version)
-        sys.stdout.flush()
+        print('Releasing new version "%s"' % new_version)
         for app_id in app_ids:
             if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s' % app_id)
+                sys.stderr.write('Invalid application id: %s\n' % app_id)
                 continue
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
@@ -527,11 +526,10 @@ def release_applications(application, app_ids, version, new_version, override):
 
 def set_applications_visibility(application, app_ids, version, level):
     try:
-        sys.stdout.write('Setting visibility %s for version \'%s\'\n' % (level, version))
-        sys.stdout.flush()
+        print('Setting visibility %s for version "%s"' % (level, version))
         for app_id in app_ids:
             if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s' % app_id)
+                sys.stderr.write('Invalid application id: %s\n' % app_id)
                 continue
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
