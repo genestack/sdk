@@ -289,6 +289,12 @@ class IntersectGenomicFeaturesVariants(CLApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
 
 
+# Analyse microbiome content
+
+class QiimeMicrobiomeAnalysis(CLApplication):
+    APPLICATION_ID = 'genestack/qiime-report'
+
+
 # Explore apps
 
 class UnalignedReadsQC(CLApplication):
