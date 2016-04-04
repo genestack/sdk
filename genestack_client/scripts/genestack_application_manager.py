@@ -438,6 +438,9 @@ def reload_applications(application, version, app_id_list):
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, release):
+    if stable and release:
+        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
+        return
     for file_path in files_list:
         result = upload_single_file(
             application, file_path, version, override,
@@ -456,6 +459,9 @@ def upload_single_file(application, file_path, version, override,
                              'If you want to upload new version and make it stable, add "-S system" option.\n' +
                              'Otherwise use another version name.\n')
             return
+    if stable and release:
+        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
+        return
 
     try:
         parameters = {'version': version, 'override': override}
@@ -483,11 +489,7 @@ def upload_single_file(application, file_path, version, override,
         return 1
 
     released_version = version + '-released'
-    if release and stable and SCOPE_DICT[scope] == 'SYSTEM':
-        sys.stderr.write('WARNING: You are using `-r` flag with `-S system` construction at the same time. Setting '
-                         'scope `system` will automatically create released version, release it and set visible for'
-                         ' all. `-r` flag will be ignored.\n')
-    elif release:
+    if release:
         release_applications(application, app_info.identifiers, version, released_version, override)
         set_applications_visibility(
             application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
