@@ -145,6 +145,15 @@ class Command(object):
         """
         Override this method to implement the command action.
 
+        Return value of this method is always ignored.
+        Exception thrown from this method means abnormal termination of the command.
+
+        If this command is executed not in shell mode,
+        then exit status ``1`` will be used on abnormal termination.
+
+        Raise :py:class:`~genestack_client.genestack_exceptions.GenestackException` to indicate command failure
+        without showing the stacktrace.
+
         :rtype: None
         """
         raise NotImplementedError()
@@ -308,7 +317,8 @@ class GenestackShell(cmd.Cmd):
         :type argument_list: list
         :param shell: should we use shell mode?
         :type shell: bool
-        :return: exit code of command
+        :return: exit status of command execution
+
         :rtype: int
         """
         if shell or command.OFFLINE:
