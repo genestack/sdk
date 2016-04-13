@@ -393,8 +393,7 @@ def resolve_jar_file(file_path):
 
 
 def mark_as_stable(application, version, app_id_list, scope):
-    print('Setting the application version "%s" stable for scope %s'
-          % (version, scope))
+    print('Setting the application version "%s" stable for scope %s' % (version, scope))
     scope = SCOPE_DICT[scope]
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
@@ -441,7 +440,7 @@ def upload_single_file(application, file_path, version, override,
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
             raise GenestackException('Can\'t install version "%s". This version is already system stable.\n' % version +
-                                     'If you want to upload new version and make it stable, add "-S system" option.\n' +
+                                     'If you want to upload a new version and make it stable, add "-S system" option.\n' +
                                      'Otherwise use another version name.')
 
     parameters = {'version': version, 'override': override}
