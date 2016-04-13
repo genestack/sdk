@@ -146,10 +146,10 @@ class Command(object):
         Override this method to implement the command action.
 
         Return value of this method is always ignored.
-        Exception thrown from this method means abnormal termination of the command.
+        If this method raises an exception, the command will be treated as failed.
 
-        If this command is executed not in shell mode,
-        then exit status ``1`` will be used on abnormal termination.
+        If this command is executed in the shell mode,
+        the failed state is ignored, otherwise exit code ``1`` is returned.
 
         Raise :py:class:`~genestack_client.genestack_exceptions.GenestackException` to indicate command failure
         without showing the stacktrace.
