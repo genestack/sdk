@@ -34,6 +34,7 @@ class BioMetainfo(Metainfo):
     READS_LINK = 'genestack.url:reads'
     DATA_LINK = 'genestack.url:data'
     BAM_FILE_LINK = 'genestack.url:bamfile'
+    REFERENCE_SEQUENCES = 'genestack.bio:referenceSequences'
     REFERENCE_GENOME = 'genestack.bio:referenceGenome'
     REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
     REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
