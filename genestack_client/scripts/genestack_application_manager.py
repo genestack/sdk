@@ -124,7 +124,7 @@ class Install(Command):
 
     def run(self):
         jar_files = [resolve_jar_file(f) for f in self.args.files]
-        return upload_file(
+        upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
             self.args.stable, self.args.scope, self.args.force, self.args.release
@@ -311,8 +311,7 @@ class Remove(Command):
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
         if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
-            sys.stderr.write('Removing was aborted by user\n')
-            return
+            raise GenestackException('Removing was aborted by user')
         return remove_applications(
             self.connection.application(APPLICATION_ID), self.args.version, apps_ids
         )
@@ -394,37 +393,27 @@ def resolve_jar_file(file_path):
 
 
 def mark_as_stable(application, version, app_id_list, scope):
-    try:
-        print('Setting the application version "%s" stable for scope %s'
-              % (version, scope))
-        scope = SCOPE_DICT[scope]
-        for app_id in app_id_list:
-            sys.stdout.write('%-40s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('markAsStable', app_id, scope, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
+    print('Setting the application version "%s" stable for scope %s' % (version, scope))
+    scope = SCOPE_DICT[scope]
+    for app_id in app_id_list:
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('markAsStable', app_id, scope, version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 def remove_applications(application, version, app_id_list):
-    try:
-        print('Removing application(s) with version "%s"' % version)
-        for app_id in app_id_list:
-            sys.stdout.write('%-40s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('removeApplication', app_id, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
+    print('Removing application(s) with version "%s"' % version)
+    for app_id in app_id_list:
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('removeApplication', app_id, version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 def reload_applications(application, version, app_id_list):
-    try:
         print('Reloading applications')
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
@@ -432,22 +421,17 @@ def reload_applications(application, version, app_id_list):
             application.invoke('reloadApplication', app_id, version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, release):
     if stable and release:
-        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
-        return
+        raise GenestackException('Flags \'-r\' and \'-s\' cannot be used at once')
+
     for file_path in files_list:
-        result = upload_single_file(
+        upload_single_file(
             application, file_path, version, override,
             stable, scope, force, release
         )
-        if result is not None and result != 0:
-            return result
 
 
 def upload_single_file(application, file_path, version, override,
@@ -455,24 +439,15 @@ def upload_single_file(application, file_path, version, override,
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
-            sys.stderr.write('Can\'t install version "%s". This version is already system stable.\n' % version +
-                             'If you want to upload new version and make it stable, add "-S system" option.\n' +
-                             'Otherwise use another version name.\n')
-            return
-    if stable and release:
-        sys.stderr.write('Flags \'-r\' and \'-s\' cannot be used at once\n')
-        return
+            raise GenestackException('Can\'t install version "%s". This version is already system stable.\n' % version +
+                                     'If you want to upload a new version and make it stable, add "-S system" option.\n' +
+                                     'Otherwise use another version name.')
 
-    try:
-        parameters = {'version': version, 'override': override}
-        upload_token = application.invoke('getUploadToken', parameters)
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
+    parameters = {'version': version, 'override': override}
+    upload_token = application.invoke('getUploadToken', parameters)
 
     if upload_token is None:
-        sys.stderr.write('Received a null token, the upload is not accepted\n')
-        return 1
+        raise GenestackException('Received a null token, the upload is not accepted')
 
     # upload_token, as returned by json.load(), is a Unicode string.
     # Without the conversion, urllib2.py passes a Unicode URL created from it
@@ -485,8 +460,7 @@ def upload_single_file(application, file_path, version, override,
         if result:
             print result
     except urllib2.HTTPError as e:
-        sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
-        return 1
+        raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     released_version = version + '-released'
     if release:
@@ -507,39 +481,30 @@ def upload_single_file(application, file_path, version, override,
 
 
 def release_applications(application, app_ids, version, new_version, override):
-    try:
-        print('Releasing new version "%s"' % new_version)
-        for app_id in app_ids:
-            if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s\n' % app_id)
-                continue
-            sys.stdout.write('%-40s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('releaseApplication', app_id, version, new_version, override)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
-    return
+    print('Releasing new version "%s"' % new_version)
+    for app_id in app_ids:
+        if not validate_application_id(app_id):
+            sys.stderr.write('Invalid application id: %s\n' % app_id)
+            continue
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('releaseApplication', app_id, version, new_version, override)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 def set_applications_visibility(application, app_ids, version, level):
-    try:
-        print('Setting visibility %s for version "%s"' % (level, version))
-        for app_id in app_ids:
-            if not validate_application_id(app_id):
-                sys.stderr.write('Invalid application id: %s\n' % app_id)
-                continue
-            sys.stdout.write('%-40s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('setVisibility', app_id, version, level)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
-        sys.stderr.write('%s\n' % e.message)
-        return 1
-    return
+    print('Setting visibility %s for version "%s"' % (level, version))
+    for app_id in app_ids:
+        if not validate_application_id(app_id):
+            sys.stderr.write('Invalid application id: %s\n' % app_id)
+            continue
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('setVisibility', app_id, version, level)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
+
 
 
 AppInfo = namedtuple('AppInfo', [
