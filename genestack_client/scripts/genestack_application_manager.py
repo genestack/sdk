@@ -235,8 +235,7 @@ class Release(Command):
 
     def run(self):
         release_applications(
-            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version, self.args.new_version,
-            False
+            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version, self.args.new_version
         )
 
 
@@ -464,7 +463,7 @@ def upload_single_file(application, file_path, version, override,
 
     released_version = version + '-released'
     if release:
-        release_applications(application, app_info.identifiers, version, released_version, override)
+        release_applications(application, app_info.identifiers, version, released_version)
         set_applications_visibility(
             application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
         )
@@ -480,7 +479,7 @@ def upload_single_file(application, file_path, version, override,
     )
 
 
-def release_applications(application, app_ids, version, new_version, override):
+def release_applications(application, app_ids, version, new_version):
     print('Releasing new version "%s"' % new_version)
     for app_id in app_ids:
         if not validate_application_id(app_id):
@@ -488,7 +487,7 @@ def release_applications(application, app_ids, version, new_version, override):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('releaseApplication', app_id, version, new_version, override)
+        application.invoke('releaseApplication', app_id, version, new_version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
 
