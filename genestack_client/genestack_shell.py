@@ -309,7 +309,7 @@ class GenestackShell(cmd.Cmd):
 
     def process_command(self, command, argument_list, shell=False):
         """
-        Run a command with arguments, returns exit code.
+        Runs the given command with the provided arguments and returns the exit code
 
         :param command: command
         :type command: Command
@@ -317,7 +317,7 @@ class GenestackShell(cmd.Cmd):
         :type argument_list: list
         :param shell: should we use shell mode?
         :type shell: bool
-        :return: exit status of command execution
+        :return: 0 if the command was executed successfully, 1 otherwise
 
         :rtype: int
         """
