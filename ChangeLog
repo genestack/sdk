@@ -1,3 +1,7 @@
+* version 0.5.2
+  * fix GenestackServerException constructor to correctly pass exceptions
+    thrown in pool processes
+
 * version 0.5.1
   * fix error on print exception in shell
 
