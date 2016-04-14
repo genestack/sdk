@@ -34,7 +34,7 @@ class GenestackServerException(GenestackException):
         :param stack_trace: server stack trace
         :type stack_trace: str
         """
-        GenestackException.__init__(self, message)
+        GenestackException.__init__(self, message, path, post_data, debug, stack_trace)
         self.debug = debug
         self.stack_trace = stack_trace
         self.path = path
