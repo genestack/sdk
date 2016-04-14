@@ -1,3 +1,7 @@
+* version 0.5.2
+  * fix GenestackServerException constructor to prevent wrong error message
+    if it is thrown inside multiprocessing.Pool
+
 * version 0.5.1
   * fix error on print exception in shell
 
