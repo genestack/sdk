@@ -3,7 +3,7 @@
 
 import csv
 
-from genestack_client import (UnalignedReads, DataImporter, BioMetainfo,
+from genestack_client import (unaligned_reads, DataImporter, BioMetainfo,
                               make_connection_parser, get_connection, GenestackException)
 
 # keys that must be supplied in the CSV file
@@ -30,8 +30,8 @@ connection = get_connection(args)
 importer = DataImporter(connection)
 
 # file format of the reads to import
-file_format = UnalignedReads.compose_format_map(UnalignedReads.Space.BASESPACE, UnalignedReads.Format.PHRED33,
-                                                UnalignedReads.Type.SINGLE)
+file_format = unaligned_reads.compose_format_map(unaligned_reads.Space.BASESPACE, unaligned_reads.Format.PHRED33,
+                                                unaligned_reads.Type.SINGLE)
 
 # create the experiment where we will store the data in Genestack
 experiment = importer.create_experiment(name=args.name or "Imported experiment",
