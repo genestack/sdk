@@ -1,6 +1,8 @@
 * version 0.5.2
   * fix GenestackServerException constructor to correctly pass exceptions
     thrown in pool processes
+  * `release_applications` fixed according to last changes in application-manager application
+    (removed `override` argument)
 
 * version 0.5.1
   * fix error on print exception in shell
