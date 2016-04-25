@@ -87,9 +87,7 @@ class Connection:
         :rtype: None
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
         """
-        version_msg = self.check_version(__version__)
-        if version_msg:
-            print 'Warning: %s' % version_msg
+        self.check_version(__version__)
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
             raise GenestackException("Fail to login %s" % email)
@@ -97,32 +95,24 @@ class Connection:
     def check_version(self, version):
         """
         Check the version of the client library required by the server.
-        The server will return a message specifying the latest version and the earliest compatible version.
+        The server will return a message specifying the compatible version.
         If the current version is not supported, an exception is raised.
 
         :param version: version in format suitable for distutils.version.StrictVersion
-        :return: a user-friendly message.
+        :return: None
         """
         version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
-        LATEST = 'latest'
         COMPATIBLE = 'compatible'
 
-        latest_version = StrictVersion(version_map[LATEST])
         my_verison = StrictVersion(version)
-
-        if latest_version <= my_verison:
-            return ''
-
         compatible = StrictVersion(version_map[COMPATIBLE])
 
-        update_message = ('You can update it with the following command:\n'
-                          '    pip install https://github.com/genestack/python-client/archive/stable.zip\n')
-
-        if my_verison >= compatible:
-            return 'Newer version "%s" available, please update.\n%s' % (latest_version, update_message)
-        else:
-            raise GenestackException('Your version "%s" is too old, please update to %s.\n%s' % (
-                my_verison, latest_version, update_message))
+        if compatible <= my_verison:
+            return
+        raise GenestackException('Your Genestack Client version "%s" is too old, at least "%s" is required.\n'
+                                 'You can update it with the following command:\n'
+                                 '    pip install https://github.com/genestack/python-client/archive/stable.zip' % (
+            my_verison, compatible))
 
     def logout(self):
         """
