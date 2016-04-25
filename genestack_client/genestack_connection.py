@@ -109,12 +109,10 @@ class Connection:
 
         if compatible <= my_verison:
             return
-
-        update_message = ('You can update it with the following command:\n'
-                          '    pip install https://github.com/genestack/python-client/archive/stable.zip\n')
-
-        raise GenestackException('Your version "%s" is too old, please update to %s.\n%s' % (
-            my_verison, compatible, update_message))
+        raise GenestackException('Your Genestack Client version "%s" is too old, please update to %s.\n'
+                                 'You can update it with the following command:\n'
+                                 '    pip install https://github.com/genestack/python-client/archive/stable.zip' % (
+            my_verison, compatible))
 
     def logout(self):
         """
