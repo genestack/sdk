@@ -109,7 +109,7 @@ class Connection:
 
         if compatible <= my_verison:
             return
-        raise GenestackException('Your Genestack Client version "%s" is too old, please update to %s.\n'
+        raise GenestackException('Your Genestack Client version "%s" is too old, at least "%s" is required.\n'
                                  'You can update it with the following command:\n'
                                  '    pip install https://github.com/genestack/python-client/archive/stable.zip' % (
             my_verison, compatible))
