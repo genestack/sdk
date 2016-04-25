@@ -263,6 +263,10 @@ class ExpressionNavigatorforGenes(CLApplication):
     APPLICATION_ID = 'genestack/expressionNavigator'
 
 
+class SingleCellRNASeqAnalysisApplication(CLApplication):
+    APPLICATION_ID = 'genestack/rnaseq'
+
+
 # analyse FPKM counts
 
 class ExpressionNavigatorforIsoforms(CLApplication):
@@ -313,3 +317,7 @@ class ArrayQualityMetricsApplication(CLApplication):
 
 class DoseResponseApplication(CLApplication):
     APPLICATION_ID = 'genestack/dose-response'
+
+
+class SingleCellRNASeqVisualiserApplication(CLApplication):
+    APPLICATION_ID = 'genestack/scrvis'
