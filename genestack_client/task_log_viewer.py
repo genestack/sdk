@@ -22,8 +22,9 @@ class TaskLogViewer(Application):
 
     STDERR = 'stderr'
     STDOUT = 'stdout'
+    MAX_CHUNK_SIZE = 128000
 
-    def view_log(self, accession, log_type=None, follow=True):
+    def view_log(self, accession, log_type=None, follow=True, offset=0):
         """
         Print a file's latest task initialization logs to `stdout`.
         Raises an exception if the file is not found or has no associated initialization task.
@@ -34,15 +35,15 @@ class TaskLogViewer(Application):
         :param accession: file accession
         :param log_type: `stdout` or `stderr`
         :param follow: if enabled, wait and display new lines as they appear (similar to ``tail --follow``)
+        :param offset: offset from which to start retrieving the logs. Set to `-1` if you want to start retrieving
+        logs from the latest chunk.
         """
         if not log_type:
             log_type = self.STDOUT
-        offset = 0
-        limit = 128000
         waiting_message_shown = True
 
         while True:
-            log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, limit)
+            log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, self.MAX_CHUNK_SIZE)
             if not log_chunk:
                 raise GenestackException('File %s not found or has no initialization task' % accession)
 
