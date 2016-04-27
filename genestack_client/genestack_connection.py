@@ -112,8 +112,8 @@ class Connection:
             return
         raise GenestackException('Your Genestack Client version "%s" is too old, at least "%s" is required.\n'
                                  'You can update it with the following command:\n'
-                                 '    pip install https://github.com/genestack/python-client/archive/stable.zip' % (
-            my_verison, compatible))
+                                 '    pip install https://github.com/genestack/python-client/archive/v%s.zip' % (
+            compatible, my_verison, compatible))
 
     def logout(self):
         """
