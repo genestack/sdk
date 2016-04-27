@@ -105,15 +105,16 @@ class Connection:
         version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
         COMPATIBLE = 'compatible'
 
-        my_verison = StrictVersion(__version__)
+        my_version = StrictVersion(__version__)
         compatible = StrictVersion(version_map[COMPATIBLE])
 
-        if compatible <= my_verison:
+        if compatible <= my_version:
             return
-        raise GenestackException('Your Genestack Client version "%s" is too old, at least "%s" is required.\n'
-                                 'You can update it with the following command:\n'
-                                 '    pip install https://github.com/genestack/python-client/archive/v%s.zip' % (
-            compatible, my_verison, compatible))
+        TOO_OLD_MSG = ('Your Genestack Client version "{version}" is too old, at least "{req_version}" is required.\n'
+                       'You can update it with the following command:\n'
+                       '    pip install https://github.com/genestack/python-client/archive/v{req_version}.zip')
+        raise GenestackException(TOO_OLD_MSG.format(version=my_version,
+                                                    req_version=compatible))
 
     def logout(self):
         """
