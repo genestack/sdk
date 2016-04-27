@@ -1,3 +1,8 @@
+* 0.6.1
+  * `Connection.login` raises GenestackAuthenticationException is authentication is failed
+  * `Connection.check_version` version argument removed, module version always used
+  * fix infinite ask password loop in case of use of old version
+
 * version 0.5.2
   * fix GenestackServerException constructor to correctly pass exceptions
     thrown in pool processes
