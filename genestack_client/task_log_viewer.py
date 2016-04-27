@@ -36,7 +36,7 @@ class TaskLogViewer(Application):
         :param log_type: `stdout` or `stderr`
         :param follow: if enabled, wait and display new lines as they appear (similar to ``tail --follow``)
         :param offset: offset from which to start retrieving the logs. Set to `-1` if you want to start retrieving
-        logs from the latest chunk.
+          logs from the latest chunk.
         """
         if not log_type:
             log_type = self.STDOUT
