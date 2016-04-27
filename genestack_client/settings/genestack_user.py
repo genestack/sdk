@@ -9,7 +9,7 @@
 #
 
 from getpass import getpass
-from genestack_client import GenestackException, Connection
+from genestack_client import GenestackException, Connection, GenestackAuthenticationException
 from genestack_client.utils import isatty, ask_confirmation
 
 DEFAULT_HOST = 'platform.genestack.org'
@@ -81,6 +81,8 @@ class User(object):
     def __interactive_login(self, connection):
         if not isatty():
             raise GenestackException("Interactive login is not possible")
+        connection.check_version()
+
         email = self.email
         message = 'Connecting to %s' % self.host
         while True:
@@ -101,6 +103,6 @@ class User(object):
                 self.email = email
                 self.password = password
                 return
-            except GenestackException:
+            except GenestackAuthenticationException:
                 message = 'Your username or password was incorrect for %s. Please try again.' % self.host
 
