@@ -85,8 +85,7 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: :py:class:`~genestack_client.GenestackServerException`
-                 if python_client version outdated,
+        :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
                  :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
         self.check_version()
