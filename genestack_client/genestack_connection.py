@@ -85,14 +85,15 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
+        :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
+                 :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
-        self.check_version(__version__)
+        self.check_version()
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
-            raise GenestackException("Fail to login %s" % email)
+            raise GenestackAuthenticationException("Fail to login %s" % email)
 
-    def check_version(self, version):
+    def check_version(self):
         """
         Check the version of the client library required by the server.
         The server will return a message specifying the compatible version.
@@ -104,7 +105,7 @@ class Connection:
         version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
         COMPATIBLE = 'compatible'
 
-        my_verison = StrictVersion(version)
+        my_verison = StrictVersion(__version__)
         compatible = StrictVersion(version_map[COMPATIBLE])
 
         if compatible <= my_verison:
