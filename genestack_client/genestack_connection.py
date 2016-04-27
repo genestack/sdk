@@ -85,12 +85,14 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if login failed
+        :raises: :py:class:`~genestack_client.GenestackServerException`
+                 if python_client version outdated,
+                 :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
         self.check_version(__version__)
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
-            raise GenestackException("Fail to login %s" % email)
+            raise GenestackAuthenticationException("Fail to login %s" % email)
 
     def check_version(self, version):
         """
