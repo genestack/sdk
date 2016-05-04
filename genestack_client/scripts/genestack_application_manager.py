@@ -489,9 +489,12 @@ def release_applications(application, app_ids, version, new_version, override=Fa
         sys.stdout.flush()
         try:  # This try-except must be removed after next server update (see #5927)
             application.invoke('releaseApplication', app_id, version, new_version)
-        except GenestackException:
-            # Try to call old version of `releaseApplication` method
-            application.invoke('releaseApplication', app_id, version, new_version, override)
+        except GenestackException as e:
+            if e.message.startswith('No such method:'):
+                # Try to call old version of `releaseApplication` method
+                application.invoke('releaseApplication', app_id, version, new_version, override)
+            else:
+                raise e
         sys.stdout.write('ok\n')
         sys.stdout.flush()
 
