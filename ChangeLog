@@ -1,3 +1,7 @@
+* 0.6.2
+  * Removed backward compatibility hack for `release` command
+    (use `ApplicationManagerApplication.releaseApplication(string, string, string)` method only)
+
 * 0.6.1
   * `Connection.login` raises GenestackAuthenticationException is authentication is failed
   * `Connection.check_version` version argument removed, module version always used

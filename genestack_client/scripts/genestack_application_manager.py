@@ -463,7 +463,7 @@ def upload_single_file(application, file_path, version, override,
 
     released_version = version + '-released'
     if release:
-        release_applications(application, app_info.identifiers, version, released_version, override)
+        release_applications(application, app_info.identifiers, version, released_version)
         set_applications_visibility(
             application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
         )
@@ -479,7 +479,7 @@ def upload_single_file(application, file_path, version, override,
     )
 
 
-def release_applications(application, app_ids, version, new_version, override=False):
+def release_applications(application, app_ids, version, new_version):
     print('Releasing new version "%s"' % new_version)
     for app_id in app_ids:
         if not validate_application_id(app_id):
@@ -487,14 +487,7 @@ def release_applications(application, app_ids, version, new_version, override=Fa
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        try:  # This try-except must be removed after next server update (see #5927)
-            application.invoke('releaseApplication', app_id, version, new_version)
-        except GenestackException as e:
-            if e.message.startswith('No such method:'):
-                # Try to call old version of `releaseApplication` method
-                application.invoke('releaseApplication', app_id, version, new_version, override)
-            else:
-                raise e
+        application.invoke('releaseApplication', app_id, version, new_version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
 
