@@ -16,6 +16,7 @@ import shlex
 from traceback import print_exc
 
 from genestack_client import GenestackAuthenticationException, GenestackException
+from genestack_client.genestack_exceptions import GenestackVersionException
 from version import __version__
 
 from utils import isatty, make_connection_parser, get_connection
@@ -228,7 +229,12 @@ class GenestackShell(cmd.Cmd):
         return parser
 
     def setup_connection(self, args=None):
-        self.connection = get_connection(args)
+        try:
+            self.connection = get_connection(args)
+        except GenestackVersionException as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            exit(13)
 
     def preloop(self):
         # Entry point. Check whether we should run a script and exit, or start an interactive shell.
