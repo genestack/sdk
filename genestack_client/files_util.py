@@ -180,7 +180,7 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('linkFile', accession, parent)
+        self.invoke('linkFiles', {accession: [parent]})
 
     def unlink_file(self, accession, parent):
         """
@@ -192,7 +192,7 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('unlinkFile', accession, parent)
+        self.invoke('unlinkFiles', {accession: [parent]})
 
     def link_files(self, children_to_parents_dict):
         """
