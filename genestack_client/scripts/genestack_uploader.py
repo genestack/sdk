@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -107,7 +107,6 @@ def get_files(paths):
                 folder_path = os.path.join(base, f)
                 if os.path.islink(folder_path):
                     sys.stderr.write("WARNING: Symlink %s was skipped!\n" % folder_path)
-                    sys.stderr.flush()
     return files_list, total_size
 
 
@@ -140,7 +139,7 @@ def recognize_files(connection, accession_file_map, new_folder):
             for info in sources:
                 recognized_accessions.add(info['accession'])
 
-    created_files = application.invoke('createFiles', recognised_files)
+    created_files = application.invoke('createFiles', recognised_files, None)
     groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
         print name
@@ -162,7 +161,7 @@ def recognize_files(connection, accession_file_map, new_folder):
         print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
 
 
-if __name__ == '__main__':
+def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
@@ -175,3 +174,6 @@ if __name__ == '__main__':
         recognize_files(connection, accessions, new_folder)
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
+
+if __name__ == '__main__':
+    main()

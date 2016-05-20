@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -70,7 +70,6 @@ class Time(Call):
         print 'Execution time: %s' % (datetime.now() - start)
 
 
-
 class Shell(GenestackShell):
     COMMAND_LIST = [Time, Call]
 
@@ -81,6 +80,10 @@ class Shell(GenestackShell):
         else:
             self.process_command(Call(), ['genestack/shell'] + args, self.connection)
 
-if __name__ == '__main__':
+
+def main():
     shell = Shell()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()

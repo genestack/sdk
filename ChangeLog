@@ -1,4 +1,36 @@
-* version ?
+* 0.6.2
+  * Removed backward compatibility hack for `release` command
+    (use `ApplicationManagerApplication.releaseApplication(string, string, string)` method only)
+
+* 0.6.1
+  * `Connection.login` raises GenestackAuthenticationException is authentication is failed
+  * `Connection.check_version` version argument removed, module version always used
+  * fix infinite ask password loop in case of use of old version
+
+* version 0.5.2
+  * fix GenestackServerException constructor to correctly pass exceptions
+    thrown in pool processes
+  * `release_applications` fixed according to last changes in application-manager application
+    (removed `override` argument)
+
+* version 0.5.1
+  * fix error on print exception in shell
+
+* version 0.5.0
+  * add `visibility` and `release` commands to `genestack-application-manager`
+  * add `release` flag to `install` command in `genestack-application-manager`
+  * add `create_owl_ontology` to `DataImporter`
+  * add support for retrieving application logs
+  * make `genestack.bio:strain/breed/cultivar` deprecated, use `genestack.bio:strainBreedCultivar` instead
+
+* version 0.4.1
+  * Fix genestack-uploader crash
+
+* version 0.4.0
+  * add `add_publication`, `add_memory_size`, and `add_temperature` methods to Metainfo
+  * improve confirmation dialog
+
+* version 0.3.0
   * move `rename_file` method form `CLAplication` to `FilesUtil`, return type changed to `None`
   * add `DictionaryUtil`
   * add new methods `get_metainfo_values_as_strings`, `link_files` and `unlink_files` to `FilesUtil`

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2015-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -308,7 +308,8 @@ class ChunkedUpload(object):
         if self.has_application_result:
             return self.application_result
         else:
-            raise GenestackException('Fail to upload %s: %s' % (self.path, self.error or 'unknown error'))
+            error_message = self.error or 'file has been uploaded from another session'
+            raise GenestackException('Fail to upload %s: %s' % (self.path, error_message))
 
 
 def upload_by_chunks(application, path, chunk_size=None):

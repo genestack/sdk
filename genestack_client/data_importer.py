@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -551,3 +551,26 @@ class DataImporter(object):
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader('genestack/mappedReadsCountLoader', 'importFile', parent, metainfo)
+
+    def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
+        """
+        Create a Dictionary file from a local or remote owl file.
+        ``name`` and ``url`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.BioMetainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        return self.__invoke_loader('genestack/owlOntologyFileLoader', 'importFile', parent, metainfo)

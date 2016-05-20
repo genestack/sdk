@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -9,8 +9,8 @@
 #
 
 from getpass import getpass
-from genestack_client import GenestackException, Connection
-from genestack_client.utils import isatty
+from genestack_client import GenestackException, Connection, GenestackAuthenticationException
+from genestack_client.utils import isatty, ask_confirmation
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -50,7 +50,7 @@ class User(object):
         self.password = password  # TODO make property
         self.alias = alias or email
 
-    def get_connection(self, interactive=True):
+    def get_connection(self, interactive=True, debug=False, show_logs=False):
         """
         Return a logged-in connection for current user.
         If ``interactive`` is ``True`` and the password or email are unknown,
@@ -59,16 +59,20 @@ class User(object):
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
+        :param debug: print stack trace in case of exception
+        :type debug: bool
+        :param show_logs: print application logs (received from server)
+        :type show_logs: bool
         :return: logged connection
         :rtype: ~genestack_client.Connection
         """
-        connection = Connection(_get_server_url(self.host))
+        connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:
             self.__interactive_login(connection)
-        else:
-            raise GenestackException('Not enough user data to login')
+        #else:
+        #    raise GenestackException('Not enough user data to login')
         return connection
 
     def __repr__(self):
@@ -77,16 +81,21 @@ class User(object):
     def __interactive_login(self, connection):
         if not isatty():
             raise GenestackException("Interactive login is not possible")
+        connection.check_version()
+
         email = self.email
         message = 'Connecting to %s' % self.host
         while True:
             if message:
                 print message
             if email and '@' in email:
-                email = raw_input('E-mail [%s]: ' % email).strip() or email
+                email = raw_input('e-mail [%s]: ' % email).strip() or email
             else:
-                email = raw_input('E-mail: ').strip() or email
+                email = raw_input('e-mail: ').strip() or email
             if not email:
+                anonymously = ask_confirmation('Proceed anonymously', default='n')
+                if anonymously:
+                    return
                 continue
             password = getpass('password for %s: ' % email)
             try:
@@ -94,6 +103,6 @@ class User(object):
                 self.email = email
                 self.password = password
                 return
-            except GenestackException:
+            except GenestackAuthenticationException:
                 message = 'Your username or password was incorrect for %s. Please try again.' % self.host
 

@@ -1,16 +1,24 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
+import sys
+
+
+if not ((2, 7, 5) <= sys.version_info < (3, 0)):
+    sys.stderr.write('%s Python version is not supported. Required version 2.7.5+, Python 3 not supported\n' % sys.version)
+    exit(1)
+
+
 from version import __version__
 
-from genestack_exceptions import GenestackException, GenestackServerException
+from genestack_exceptions import GenestackException, GenestackServerException, GenestackAuthenticationException
 from genestack_connection import Connection, Application
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo
