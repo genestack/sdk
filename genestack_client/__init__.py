@@ -18,7 +18,8 @@ if not ((2, 7, 5) <= sys.version_info < (3, 0)):
 
 from version import __version__
 
-from genestack_exceptions import GenestackException, GenestackServerException, GenestackAuthenticationException
+from genestack_exceptions import (GenestackException, GenestackServerException,
+                                  GenestackAuthenticationException, GenestackVersionException)
 from genestack_connection import Connection, Application
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo

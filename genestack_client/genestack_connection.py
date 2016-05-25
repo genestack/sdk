@@ -17,8 +17,8 @@ import json
 import requests
 from distutils.version import StrictVersion
 
-from genestack_client import GenestackServerException, GenestackAuthenticationException, GenestackException, __version__
-from genestack_client.genestack_exceptions import GenestackVersionException
+from genestack_client import (GenestackServerException, GenestackAuthenticationException,
+                              GenestackException, GenestackVersionException, __version__)
 from genestack_client.utils import isatty
 from genestack_client.chunked_upload import upload_by_chunks
 

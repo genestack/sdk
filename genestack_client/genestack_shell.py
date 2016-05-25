@@ -15,8 +15,7 @@ import cmd
 import shlex
 from traceback import print_exc
 
-from genestack_client.genestack_exceptions import (GenestackVersionException, GenestackAuthenticationException,
-                                                   GenestackException)
+from genestack_client import (GenestackVersionException, GenestackAuthenticationException, GenestackException)
 from version import __version__
 
 from utils import isatty, make_connection_parser, get_connection
