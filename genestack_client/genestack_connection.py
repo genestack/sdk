@@ -17,7 +17,8 @@ import json
 import requests
 from distutils.version import StrictVersion
 
-from genestack_client import GenestackServerException, GenestackAuthenticationException, GenestackException, __version__
+from genestack_client import (GenestackServerException, GenestackAuthenticationException,
+                              GenestackException, GenestackVersionException, __version__)
 from genestack_client.utils import isatty
 from genestack_client.chunked_upload import upload_by_chunks
 
@@ -110,11 +111,7 @@ class Connection:
 
         if compatible <= my_version:
             return
-        TOO_OLD_MSG = ('Your Genestack Client version "{version}" is too old, at least "{req_version}" is required.\n'
-                       'You can update it with the following command:\n'
-                       '    pip install https://github.com/genestack/python-client/archive/v{req_version}.zip')
-        raise GenestackException(TOO_OLD_MSG.format(version=my_version,
-                                                    req_version=compatible))
+        raise GenestackVersionException(my_version, compatible)
 
     def logout(self):
         """

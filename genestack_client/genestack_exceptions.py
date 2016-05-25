@@ -67,3 +67,16 @@ class GenestackAuthenticationException(GenestackException):
     Should be thrown when a server sends an authentication error.
     """
     pass
+
+
+class GenestackVersionException(GenestackException):
+    """
+    Exception thrown if old version of client is used.
+    """
+
+    def __init__(self, my_version, compatible):
+        message = ('Your Genestack Client version "{version}" is too old, at least "{req_version}" is required.\n'
+                   'You can update it with the following command:\n'
+                   '    pip install https://github.com/genestack/python-client/archive/v{req_version}.zip'
+                   ).format(version=my_version, req_version=compatible)
+        super(GenestackVersionException, self).__init__(message)
