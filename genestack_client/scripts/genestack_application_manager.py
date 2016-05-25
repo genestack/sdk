@@ -15,6 +15,7 @@ import urllib2
 import zipfile
 import xml.dom.minidom as minidom
 import json
+import time
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
@@ -397,9 +398,21 @@ def mark_as_stable(application, version, app_id_list, scope):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
+        if scope == 'SYSTEM':
+            descriptor = get_application_descriptor(application, app_id, version)
+            while not descriptor['isLoaded']:
+                sys.stdout.write('Application \'%s\' with version \'%s\' is not loaded yet.'
+                                 ' Waiting for loading... (interrupt to abort)' % (app_id, version))
+                sys.stdout.flush()
+                time.sleep(5)
+                descriptor = get_application_descriptor(application, app_id, version)
         application.invoke('markAsStable', app_id, scope, version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
+
+
+def get_application_descriptor(application, application_id, version):
+    return application.invoke('getApplicationDescriptor', application_id, version)
 
 
 def remove_applications(application, version, app_id_list):
