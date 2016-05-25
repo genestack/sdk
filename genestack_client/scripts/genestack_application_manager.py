@@ -405,7 +405,6 @@ def mark_as_stable(application, version, app_id_list, scope):
                                  ' Waiting for loading (interrupt to abort)... ' % (app_id, version))
                 sys.stdout.flush()
             while not descriptor['isLoaded']:
-                print descriptor
                 time.sleep(5)
                 descriptor = get_application_descriptor(application, app_id, version)
         application.invoke('markAsStable', app_id, scope, version)
