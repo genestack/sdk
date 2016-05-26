@@ -399,21 +399,10 @@ def mark_as_stable(application, version, app_id_list, scope):
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
         if scope == 'SYSTEM':
-            descriptor = get_application_descriptor(application, app_id, version)
-            if not descriptor['isLoaded']:
-                sys.stdout.write('\nApplication \'%s\' with version \'%s\' is not loaded yet.'
-                                 ' Waiting for loading (interrupt to abort)... ' % (app_id, version))
-                sys.stdout.flush()
-            while not descriptor['isLoaded']:
-                time.sleep(5)
-                descriptor = get_application_descriptor(application, app_id, version)
+            wait_application_loading(application, app_id, version)
         application.invoke('markAsStable', app_id, scope, version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
-
-
-def get_application_descriptor(application, application_id, version):
-    return application.invoke('getApplicationDescriptor', application_id, version)
 
 
 def remove_applications(application, version, app_id_list):
@@ -501,6 +490,7 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
+        wait_application_loading(application, app_id, version)
         application.invoke('releaseApplication', app_id, version, new_version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
@@ -514,9 +504,26 @@ def set_applications_visibility(application, app_ids, version, level):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
+        wait_application_loading(application, app_id, version)
         application.invoke('setVisibility', app_id, version, level)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
+
+
+def get_application_descriptor(application, application_id, version):
+    return application.invoke('getApplicationDescriptor', application_id, version)
+
+
+def wait_application_loading(application, app_id, version, seconds=5):
+    descriptor = get_application_descriptor(application, app_id, version)
+    if not descriptor['isLoaded']:
+        sys.stdout.write('\nApplication \'%s\' with version \'%s\' is not loaded yet.'
+                         ' Waiting for loading (interrupt to abort)... ' % (app_id, version))
+        sys.stdout.flush()
+    while not descriptor['isLoaded']:
+        time.sleep(seconds)
+        descriptor = get_application_descriptor(application, app_id, version)
+
 
 
 AppInfo = namedtuple('AppInfo', [

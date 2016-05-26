@@ -1,6 +1,7 @@
 * 0.6.2
   * Removed backward compatibility hack for `release` command
     (use `ApplicationManagerApplication.releaseApplication(string, string, string)` method only)
+  * Added waiting of application loading to `release`, `visibility` and `markAsStable` (for SYSTEM scope only) commands
 
 * 0.6.1
   * `Connection.login` raises GenestackAuthenticationException is authentication is failed
