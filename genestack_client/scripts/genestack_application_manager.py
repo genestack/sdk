@@ -9,6 +9,7 @@
 # actual or intended publication of such source code.
 #
 
+import glob
 import json
 import os
 import sys
@@ -76,7 +77,7 @@ class Info(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in self.args.files]
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
         return show_info(
             jar_files, self.args.vendor,
             self.args.with_filename, self.args.no_filename
@@ -123,7 +124,7 @@ class Install(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in self.args.files]
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
@@ -373,6 +374,10 @@ class Invoke(Command):
             print response
 
 
+def match_jar_globs(paths):
+    """ Return a list of files or directories by list of globs. """
+    return sum([glob.glob(p) for p in paths], [])
+
 def resolve_jar_file(file_path):
     if not os.path.exists(file_path):
         raise GenestackException("No such file or directory: %s" % file_path)
@@ -386,7 +391,8 @@ def resolve_jar_file(file_path):
                 jar_files.append(os.path.join(dirpath, f))
 
     if len(jar_files) > 1:
-        raise GenestackException('More than one JAR file was found inside %s' % file_path)
+        raise GenestackException('More than one JAR file was found inside %s:\n'
+                                 ' %s' % (file_path, '\n '.join(jar_files)))
     elif not jar_files:
         raise GenestackException('No JAR file was found inside %s' % file_path)
 
