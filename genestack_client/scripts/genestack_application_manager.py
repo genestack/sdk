@@ -9,12 +9,12 @@
 # actual or intended publication of such source code.
 #
 
-import sys
-import os
-import urllib2
-import zipfile
-import xml.dom.minidom as minidom
 import json
+import os
+import sys
+import urllib2
+import xml.dom.minidom as minidom
+import zipfile
 from collections import namedtuple
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
