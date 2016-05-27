@@ -386,7 +386,8 @@ def resolve_jar_file(file_path):
                 jar_files.append(os.path.join(dirpath, f))
 
     if len(jar_files) > 1:
-        raise GenestackException('More than one JAR file was found inside %s' % file_path)
+        raise GenestackException('More than one JAR file was found inside %s:\n'
+                                 '%s' % (file_path, '\n'.join(jar_files)))
     elif not jar_files:
         raise GenestackException('No JAR file was found inside %s' % file_path)
 
