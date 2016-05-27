@@ -374,6 +374,8 @@ class Invoke(Command):
 
 
 def resolve_jar_file(file_path):
+    if not os.path.exists(file_path):
+        raise GenestackException("No such file or directory: %s" % file_path)
     if not os.path.isdir(file_path):
         return file_path
 
