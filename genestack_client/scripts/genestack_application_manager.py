@@ -77,7 +77,7 @@ class Info(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in match_jar_globs(files)]
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
         return show_info(
             jar_files, self.args.vendor,
             self.args.with_filename, self.args.no_filename
@@ -124,7 +124,7 @@ class Install(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in match_jar_globs(files)]
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
