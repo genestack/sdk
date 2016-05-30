@@ -13,14 +13,14 @@ from Connection import Application
 
 class FileInitializer(Application):
     """
-    Initialize files.
+    Wrapper class around the File Initializer application.
     """
     APPLICATION_ID = 'genestack/initializer'
 
     def initialize(self, accessions):
         """
-        Start initialization for specified accessions.
-        Missed accession and initialization failures skipped.
+        Start initialization for the specified accessions.
+        Missed accession and initialization failures are ignored silently.
 
         :param accessions: list of accessions
         :rtype: None
@@ -30,17 +30,22 @@ class FileInitializer(Application):
     # TODO replace to getFileInfo
     def load_info(self, accessions):
         """
-        Gets list of accessions and returns the list of maps(one map for one accession):
+        Takes as input a list of file accessions and returns a list of dictionaries (one for each accession)
+        with the following structure:
+
             - accession: (str) file accession
             - name: (str) file name if the file exists
             - status: (str) initialization status
-        Status possible values:
+
+        The possible values for ``status`` are:
+
             - NoSuchFile
             - NotApplicable
             - NotStarted
             - InProgress
             - Complete
             - Failed
+
 
         :param accessions: list of accessions
         :return: list of maps

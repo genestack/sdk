@@ -57,7 +57,7 @@ class Chunk(object):
 
 class PermanentError(GenestackException):
     """
-    Exception thrown then no need to try resume upload.
+    If this exception is thrown, the upload will not be able to be resumed.
     """
     pass
 
@@ -188,7 +188,7 @@ class ChunkedUpload(object):
 
     def __process_chunk(self, chunk):
         """
-        Try to upload chunk in several attempts.
+        Try to upload a chunk of data in several attempts.
         :param chunk:
         :return:
         """
@@ -259,13 +259,13 @@ class ChunkedUpload(object):
     def upload(self):
         def do_stuff():
             """
-            Daemon look for uploading.
-            Daemon quits on next conditions:
-                - all chunk are processed
+            The daemon will look for uploads.
+            The daemon will quit if one of the following conditions is met:
+                - all chunks have been processed
                 - someone set self.finished to True
-                - got response form server that file is fully uploaded
-                - got permanent error (4xx, 5xx)
-                - number of RETRY_ATTEMPTS was exceeded for a single chunk
+                - the server said that the file upload was complete
+                - a permanent error was raised (4xx, 5xx)
+                - the number of RETRY_ATTEMPTS was exceeded for a single chunk
             """
             with self.condition:
                 self.thread_counter += 1

@@ -1,7 +1,7 @@
-Scripts
-#######
+Command-Line Utilities
+######################
 
-Scripts installed with Python Client Library.
+Command-line utilities installed with the Python Client Library.
 
 
 .. toctree::

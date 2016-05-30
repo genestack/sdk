@@ -202,7 +202,7 @@ class RenameUser(Command):
         user = users.get(self.args.alias)
 
         if not user:
-            print "Select user for rename."
+            print "Select user to rename."
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
             print "Select new alias."
@@ -264,13 +264,13 @@ class Init(Command):
     def run(self):
         config_path = config.get_settings_file()
         if os.path.exists(config_path):
-            print "Config is already present at %s" % config_path
+            print "A config file was already found at %s" % config_path
             return
-        print "If you have not genestack account you need to create it."
+        print "If you do not have a Genestack account, you need to create one first."
 
         connection, user = ask_email_and_password(self.args.host)
         config.add_user(user)  # adding first user make him default.
-        print "Initialization finished. Config created at %s" % config_path
+        print "Initialization finished. Config file created at %s" % config_path
         return connection
 
 
@@ -281,14 +281,14 @@ class UserManagement(GenestackShell):
     def process_command(self, command, argument_line, connection, shell=False):
         config_path = config.get_settings_file()
         if not shell and not isinstance(command, (Init, Path, List, AddUser)) and not os.path.exists(config_path):
-            print "Config is not present, please do init. Exiting."
+            print "You do not seem to have a config file yet. Please run genestack-user-setup init. Exiting."
             exit(1)
         return GenestackShell.process_command(self, command, argument_line, connection, shell=shell)
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
-            print "Config is not present, starting init."
+            print "No config file was found; starting init."
             connection = self.process_command(Init(), [], None)
             self.connection = connection
         else:

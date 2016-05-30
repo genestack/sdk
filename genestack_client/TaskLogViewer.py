@@ -17,7 +17,8 @@ from Connection import Application
 
 class TaskLogViewer(Application):
     """
-    View file initialization task logs.
+    Wrapper class for the Task Logs Viewer application. This is used to access the initialization output and
+    error logs of a file.
     """
     APPLICATION_ID = 'genestack/task-log-viewer'
 
@@ -26,9 +27,10 @@ class TaskLogViewer(Application):
 
     def view_log(self, accession, log_type=None, follow=True):
         """
-        Print file's last task initialization logs to stdout. Raise exception if file is not found or have no tasks.
-        By default `stdout` log shown, also you can view `stderr` log.
-        `follow=True` will wait until initialization is finished. Incoming logs will be printed to console.
+        Print a file's latest task initialization logs to stdout. Raises an exception if the file is not found
+        or has no associated initialization task.
+        By default the output `stdout` log is shown. You can also view the `stderr` error log.
+        `follow=True` will wait until initialization is finished. Incoming logs will be printed to the console.
 
         :param accession: file accession
         :param log_type: stdout or stderr
