@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -17,11 +17,11 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (FilesUtil, GenestackException, GenestackServerException, get_connection,
-                       make_connection_parser, SpecialFolders)
+                       make_connection_parser, SpecialFolders, Metainfo)
 
 @pytest.fixture(scope='module')
 def files_utils():
-    connection = get_connection(make_connection_parser().parse_args([]))
+    connection = get_connection(make_connection_parser().parse_args())
     files_utils = FilesUtil(connection)
     return files_utils
 
@@ -92,11 +92,11 @@ def test_get_path_find_long_paths(files_utils):
 
 
 def test_get_path_public(files_utils):
-    assert files_utils.find_file_by_name('Genome annotation', file_class=files_utils.IFolder, parent=files_utils.get_public_folder())
+    assert files_utils.find_file_by_name('Genome annotation', file_class=files_utils.FOLDER, parent=files_utils.get_public_folder())
 
 
 def test_get_path_public_upper_case(files_utils):
-    assert files_utils.find_file_by_name('GENOME ANNOTATION', parent=files_utils.get_public_folder(), file_class=files_utils.IFolder)
+    assert files_utils.find_file_by_name('GENOME ANNOTATION', parent=files_utils.get_public_folder(), file_class=files_utils.FOLDER)
 
 
 def test_get_path_create_paths(files_utils):
@@ -121,7 +121,12 @@ def test_get_complete_infos(files_utils):
                                           'groupNames': {'GSG000001': 'WORLD'},
                                           'ids': {'GSG000001': []}}
     assert set(info['time']) == {'fileCreation', 'lastMetainfoModification'}
-    assert info['initializationStatus'] == {'displayString': 'Complete', 'id': 'NotApplicable', 'isError': False}
+    assert info['initializationStatus'] == {
+        'displayString': 'Complete',
+        'id': 'NOT_APPLICABLE',
+        'isError': False,
+        'description': 'Not applicable'
+    }
     assert set(info) == {'name', 'accession', 'application', 'kind',
                          'owner', 'typeKey', 'permissionsByGroup', 'time', 'initializationStatus'}
 
@@ -138,9 +143,19 @@ def test_get_infos(files_utils):
     assert info['permissionsByGroup'] == {'groupNames': {'GSG000001': 'WORLD'},
                                           'ids': {'GSG000001': []}}
     assert set(info['time']) == {'fileCreation', 'lastMetainfoModification'}
-    assert info['initializationStatus'] == {'id': 'NotApplicable', 'isError': False}
+    assert info['initializationStatus'] == {'id': 'NOT_APPLICABLE', 'isError': False, 'description': 'Not applicable'}
     assert set(info) == {'name', 'accession', 'application',
                          'owner', 'permissionsByGroup', 'time', 'initializationStatus'}
+
+
+def test_get_metainfo_strings(files_utils):
+    special_folder = files_utils.get_special_folder(SpecialFolders.CREATED)
+    infos = files_utils.get_metainfo_values_as_strings([special_folder],
+                                        [Metainfo.NAME, Metainfo.DESCRIPTION])
+    assert set(infos[special_folder].keys()) == {Metainfo.NAME, Metainfo.DESCRIPTION}
+    assert infos[special_folder][Metainfo.NAME] == "Created files"
+    assert infos[special_folder][Metainfo.DESCRIPTION] == "Files you created with various applications"
+
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])

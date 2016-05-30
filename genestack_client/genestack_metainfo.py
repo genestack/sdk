@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -12,16 +12,16 @@ import datetime
 import os
 from urlparse import urlparse, unquote
 
-from Exceptions import GenestackException
+from genestack_client import GenestackException
 
 
 def xstr(arg):
     """
-    Convert argument to string if it is not None.
+    Convert the input argument to a string if it is not ``None``.
 
-    :param arg:
+    :param arg: input object
     :type arg: object
-    :return: string representation of item
+    :return: string representation of the object
     :rtype: str
     """
     return str(arg) if arg is not None else None
@@ -48,6 +48,10 @@ class Metainfo(dict):
     MINUTE = 'MINUTE'
     SECOND = 'SECOND'
     MILLISECOND = 'MILLISECOND'
+
+    CELSIUS = 'CELSIUS'
+    KELVIN = 'KELVIN'
+    FAHRENHEIT = 'FAHRENHEIT'
 
     def _add_value(self, key, value, type):
         self.setdefault(key, []).append({'type': type, 'value': xstr(value)})
@@ -92,11 +96,35 @@ class Metainfo(dict):
         """
         self._add_value(key, value, 'integer')
 
+    def add_memory_size(self, key, value):
+        """
+        Add a memory size in bytes.
+
+        :param key: key
+        :type key: str
+        :param value: integer value
+        :type value: int
+        :rtype: None
+        """
+        self._add_value(key, value, 'memorySize')
+
+    def add_decimal(self, key, value):
+        """
+        Add a decimal value.
+
+        :param key: key
+        :type key: str
+        :param value: integer value
+        :type value: float or str
+        :rtype: None
+        """
+        self._add_value(key, value, 'decimal')
+
     def add_external_link(self, key, url, text=None, fmt=None):
         """
         Add an external link. The URL should point to a valid source file.
         The source should be either a publicly available file on the web, or a local file.
-        Local files will be uploaded if imported with :py:class:`~genestack_client.DataImporter.DataImporter`
+        Local files will be uploaded if imported with :py:class:`~genestack_client.DataImporter`
 
         :param key: key
         :type key: str
@@ -117,7 +145,7 @@ class Metainfo(dict):
     def add_person(self, key, name, phone=None, email=None):
         """
         Add a person. The name is required, and all other fields are optional.
-        All fields will be visible to anyone who has access to this metainfo.
+        All fields will be visible to anyone who has access to this metainfo object.
 
         :param key: key
         :type key: str
@@ -135,11 +163,46 @@ class Metainfo(dict):
         result['email'] = xstr(email)
         self.setdefault(key, []).append(result)
 
+    def add_publication(self, key, title, authors, journal_name,
+                        issue_date, identifiers=None, issue_number=None, pages=None):
+        """
+        Add a publication.
+        All fields will be visible to anyone who has access to this metainfo object.
+
+        :param key:
+        :type key: str
+        :param title: publication title
+        :type title: str
+        :param identifiers: publication identifiers
+        :type identifiers: dict
+        :param authors: publication authors
+        :type authors: str
+        :param journal_name: name of the journal containing this publication
+        :type journal_name: str
+        :param issue_date: journal issue date
+        :type issue_date: str
+        :param issue_number: journal issue number
+        :type issue_number: str
+        :param pages: pages in the journal issue
+        :type pages: str
+        :rtype: None
+        """
+        result = Metainfo._create_dict_with_type('publication')
+        result['identifiers'] = identifiers if identifiers else {}
+        result['journalName'] = xstr(journal_name)
+        result['issueDate'] = xstr(issue_date)
+        result['title'] = xstr(title)
+        result['authors'] = xstr(authors)
+        result['issueNumber'] = xstr(issue_number)
+        result['pages'] = xstr(pages)
+
+        self.setdefault(key, []).append(result)
+
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
                          postal_code=None, state=None, phone=None, email=None, url=None):
         """
         Add an organization. The name is required, and all other fields are optional.
-        All fields will be visible to anyone who has access to this metainfo.
+        All fields will be visible to anyone who has access to this metainfo object.
 
         :param key: key
         :type key: str
@@ -196,11 +259,37 @@ class Metainfo(dict):
 
         :param key: key
         :type key: str
+        :param: number of units as float
+        :type value: float | str
         :param unit: unit
         :type unit: str
         :rtype: None
         """
         result = Metainfo._create_dict_with_type('time')
+        result['value'] = xstr(value)
+        result['unit'] = unit.upper()
+        self.setdefault(key, []).append(result)
+
+    def add_temperature(self, key, value, unit):
+        """
+        Add a temperature value.
+        The value can be any number, supplied with a unit from a controlled vocabulary.
+
+
+        The temperature unit should be one of the following:
+            :py:attr:`~genestack_client.Metainfo.CELSIUS`,
+            :py:attr:`~genestack_client.Metainfo.KELVIN`,
+            :py:attr:`~genestack_client.Metainfo.FAHRENHEIT`,
+
+        :param key: key
+        :type key: str
+        :param value: number of units as float
+        :type value: float | str
+        :param unit: unit
+        :type unit: str
+        :rtype: None
+        """
+        result = Metainfo._create_dict_with_type('temperature')
         result['value'] = xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
@@ -231,7 +320,7 @@ class Metainfo(dict):
 
         :param key: key
         :type key: str
-        :param value: time value
+        :param time: time value
         :rtype: None
         """
         date_time_format = '%Y-%m-%d %H:%M:%S'

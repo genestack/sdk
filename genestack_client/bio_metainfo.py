@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
-from Metainfo import Metainfo
+from genestack_client import Metainfo
 
 
 class BioMetainfo(Metainfo):
     """
-    A metainfo representation with additional methods for biological metadata.  :py:class:`BioMetainfo` is a subclass of :py:class:`~genestack_client.Metainfo.Metainfo`.
+    A metainfo representation with additional methods for biological metadata.
     """
 
     METHOD = 'genestack.bio:method'
     ORGANISM = 'genestack.bio:organism'
-    STRAIN = 'genestack.bio:strain/breed/cultivar'
+    STRAIN = 'genestack.bio:strain-breed-cultivar'
     BREED = STRAIN
     CULTIVAR = STRAIN
     TISSUE = 'genestack.bio:tissue'
@@ -27,13 +27,14 @@ class BioMetainfo(Metainfo):
     DEVELOPMENTAL_STAGE = 'genestack.bio:developmentalStage'
     DISEASE_STATE = 'genestack.bio:disease'
     DISEASE_STAGE = 'genestack.bio:diseaseStage'
-    COMPOUND = 'genestack.bio:compoundName'
+    COMPOUND = 'genestack.bio:compoundTreatment/compound'
     AGE = 'genestack.bio:age'
     SEX = 'genestack.bio:sex'
     HUMAN_ETHNIC_GROUP = 'genestack.bio:humanEthnicGroup'
     READS_LINK = 'genestack.url:reads'
     DATA_LINK = 'genestack.url:data'
     BAM_FILE_LINK = 'genestack.url:bamfile'
+    REFERENCE_SEQUENCES = 'genestack.bio:referenceSequences'
     REFERENCE_GENOME = 'genestack.bio:referenceGenome'
     REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
     REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
@@ -61,7 +62,7 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
-        self._add_value(key, value, 'Organism')
+        self.add_string(key, value)
 
     def add_ethnic_group(self, key, value):
         """
@@ -73,4 +74,4 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
-        self._add_value(key, value, 'EthnicGroup')
+        self.add_string(key, value)

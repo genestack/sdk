@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -15,16 +15,17 @@ import urllib2
 import cookielib
 import json
 import requests
-from Exceptions import GenestackServerException, GenestackException
-from utils import isatty
-from chunked_upload import upload_by_chunks
-from version import __version__
 from distutils.version import StrictVersion
+
+from genestack_client import (GenestackServerException, GenestackAuthenticationException,
+                              GenestackException, GenestackVersionException, __version__)
+from genestack_client.utils import isatty
+from genestack_client.chunked_upload import upload_by_chunks
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
     def http_error_401(self, req, fp, code, msg, headers):
-        raise GenestackException('Authentication failure')
+        raise GenestackAuthenticationException('Authentication failure')
 
 
 class _NoRedirect(urllib2.HTTPRedirectHandler):
@@ -42,16 +43,23 @@ class _NoRedirectError(urllib2.HTTPErrorProcessor):
 class Connection:
     """
     A class to handle a connection to a specified Genestack server.
-    Instantiating the class does mean you are logged in to the server. To do so, you need to call the :attr:`login` method.
+    Instantiating the class does mean you are logged in to the server.
+    To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
+
+    Connection support retrieving debug information.
+      - ``debug`` will print additional traceback from application
+      - ``show_logs`` will print application logs (received from server)
     """
 
-    def __init__(self, server_url):
+    def __init__(self, server_url, debug=False, show_logs=False):
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
         self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
+        self.debug = debug
+        self.show_logs = show_logs
 
     def __del__(self):
         try:
@@ -78,42 +86,32 @@ class Connection:
         :param password: password
         :type password: str
         :rtype: None
-        :raises: GenestackServerException: if login failed
+        :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
+                 :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
+        self.check_version()
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
-            raise GenestackException("Fail to login %s" % email)
-        version_msg = self.check_version(__version__)
-        if version_msg:
-            print 'Warning: %s' % version_msg
+            raise GenestackAuthenticationException("Fail to login %s" % email)
 
-    def check_version(self, version):
+    def check_version(self):
         """
         Check the version of the client library required by the server.
-        The server will return a message specifying the latest version and the earliest compatible version.
+        The server will return a message specifying the compatible version.
         If the current version is not supported, an exception is raised.
 
         :param version: version in format suitable for distutils.version.StrictVersion
-        :return: a user-friendly message.
+        :return: None
         """
         version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
-        LATEST = 'latest'
         COMPATIBLE = 'compatible'
 
-        latest_version = StrictVersion(version_map[LATEST])
-        my_verison = StrictVersion(version)
-
-        if latest_version < my_verison:
-            return 'You use version from future'
-
-        if latest_version == my_verison:
-            return ''
-
+        my_version = StrictVersion(__version__)
         compatible = StrictVersion(version_map[COMPATIBLE])
-        if my_verison >= compatible:
-            return 'Newer version "%s" available, please update.' % latest_version
-        else:
-            raise GenestackException('Your version "%s" is too old, please update to %s' % (my_verison, latest_version))
+
+        if compatible <= my_version:
+            return
+        raise GenestackVersionException(my_version, compatible)
 
     def logout(self):
         """
@@ -172,8 +170,9 @@ class Connection:
 
 class Application:
     """
-    Create a new application instance for the given connection. The connection must be logged in to call the
-    application's methods. The application ID can be specified either as an argument to the class constructor
+    Create a new application instance for the given connection.
+    The connection must be logged in to call the application's methods.
+    The application ID can be specified either as an argument to the class constructor
     or by overriding the ``APPLICATION_ID`` attribute in a child class.
     """
 
@@ -195,12 +194,21 @@ class Application:
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
         response = json.load(f)
-        if isinstance(response, dict) and 'error' in response:
+
+        error = response.get('error')
+        if error is not None:
             raise GenestackServerException(
-                response['error'], path, to_post,
+                error, path, to_post,
+                debug=self.connection.debug,
                 stack_trace=response.get('errorStackTrace')
             )
-        return response
+
+        logs = response['log']
+        if logs and (self.connection.show_logs or self.connection.debug):
+            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in logs)
+            print message
+
+        return response['result']
 
     def invoke(self, method, *params):
         """
@@ -218,6 +226,7 @@ class Application:
 
         path = '/application/invoke/%s' % self.application_id
 
+        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
         return self.__invoke(path, to_post)
 
     def upload_chunked_file(self, file_path):
@@ -275,7 +284,6 @@ class TTYProgress(object):
             sys.stderr.write('\rUploading %s - %.2f%%' % (name, pct))
             if int(pct) >= 100:
                 sys.stderr.write('\n')
-            sys.stderr.flush()
 
 
 class DottedProgress(object):
@@ -295,4 +303,3 @@ class DottedProgress(object):
                 sys.stderr.write('.')
             if self.__dots == self.__full_length:
                 sys.stderr.write('\n')
-            sys.stderr.flush()

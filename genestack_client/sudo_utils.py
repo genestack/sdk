@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -11,33 +11,38 @@
 import getpass
 import sys
 
-from Connection import Application
-from genestack_client import GenestackException
+from genestack_client import Application, GenestackException
 
 
 class SudoUtils(Application):
     """
-    Sudo utils.
+    An application wrapper to enable superuser mode for the current user.
+    This mode is needed to perform actions such as sharing files.
     """
     APPLICATION_ID = 'genestack/sudoutils'
 
     def is_sudo_active(self):
         """
-        Return is active. This request extends sudo time.
+        Returns a boolean indicating whether superuser mode is still active. This request extends
+        the duration of a superuser session.
+
+        :return: ``True`` if sudo is active
+        :rtype: bool
         """
         return self.invoke('isSudoActive')
 
     def ensure_sudo(self, password):
         """
-        Enable super-user mode for a short amount of time (5 minutes).
-        If ``password`` is None, it has same effect as ``is_sudo_active``
+        Enable superuser mode for a short amount of time (5 minutes).
+        If ``password`` is ``None``, it has the same effect as ``is_sudo_active``
 
         :param password: password
         :type password: str
-        :return: True if sudo is active.
+        :return: ``True`` if sudo is active
+        :rtype: bool
         """
         # TODO rename this method in java and javascript https://trac.genestack.com/ticket/3393
-        return self.invoke('isPasswordCorrect', password)
+        return self.invoke('ensureSudo', password)
 
     def ensure_sudo_interactive(self, password):
         """

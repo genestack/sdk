@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
-from Exceptions import GenestackException
-from Metainfo import Metainfo
-from Connection import Application
-from SudoUtils import SudoUtils
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils
+
+
+CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
+EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 
 
 class SpecialFolders:
@@ -33,19 +34,34 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
-    IFile = 'com.genestack.api.files.IFile'
-    IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
-    IFolder = 'com.genestack.api.files.IFolder'
-    IAlignedReads = 'com.genestack.bio.files.IAlignedReads'
-    IVariationFile = 'com.genestack.bio.files.IVariationFile'
-    IExperiment = 'com.genestack.bio.files.IExperiment'
-    IApplicationPageFile = 'com.genestack.files.IApplicationPageFile'
-    IContainerFile = 'com.genestack.api.files.IContainerFile'
-    IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
+    CONTAINER = 'com.genestack.api.files.IContainerFile'
+    FOLDER = 'com.genestack.api.files.IFolder'
+    EXPERIMENT = 'com.genestack.bio.files.IExperiment'
+
+    FILE = 'com.genestack.api.files.IFile'
+    UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
+    ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
+    VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
+    APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
+    REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
+    AUXILIARY_FILE = 'com.genestack.api.files.IAuxiliaryFile'
+    INDEX_FILE = 'com.genestack.api.files.IIndexFile'
+    CODON_TABLE = 'com.genestack.bio.files.ICodonTable'
+    GENOME_BED_DATA = 'com.genestack.bio.files.genomedata.IGenomeBEDData'
+    GENOME_WIGGLE_DATA = 'com.genestack.bio.files.genomedata.IGenomeWiggleData'
+    GENOME_ANNOTATIONS = 'com.genestack.bio.files.IGenomeAnnotations'
+    HTSEQ_COUNTS = 'com.genestack.bio.files.IHTSeqCounts'
+    EXTERNAL_DATABASE = 'com.genestack.bio.files.IExternalDataBase'
+    PREFERENCES_FILE = 'com.genestack.api.files.IPreferencesFile'
+    REPORT_FILE = 'com.genestack.api.files.IReportFile'
+    RAW_FILE = 'com.genestack.api.files.IRawFile'
+    MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
+    SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
 
     def find_reference_genome(self, organism, assembly, release):
         """
-        Returns the accession of the reference genome with the specified parameters: organism, assembly, release.
+        Returns the accession of the reference genome with the specified parameters:
+        ``organism``, ``assembly``, ``release``.
         If more than one or no genome is found, the corresponding exceptions are thrown.
 
         :param organism: organism
@@ -56,14 +72,14 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raises: GenestackServerException: if more than one genome, or no genome is found
+        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
-    def find_file_by_name(self, name, parent=None, file_class=IFile):
+    def find_file_by_name(self, name, parent=None, file_class=FILE):
         """
         Finds file with specified name (ignore case!) and type.
-        If no file is found None is returned.
+        If no file is found ``None`` is returned.
         If more than one file is found the first one is returned.
         If the parent container is not found, the corresponding exceptions are thrown.
 
@@ -73,8 +89,8 @@ class FilesUtil(Application):
         :type parent: str
         :param file_class: File class to be returned, default IFile
         :type file_class: str
-        :return: instance of subclass of IFile
-        :rtype: IFile
+        :return: file accession
+        :rtype: str
         """
         return self.invoke(
             'getFileByName',
@@ -83,23 +99,24 @@ class FilesUtil(Application):
 
     # SA: TODO: remove this methods and change usage to findFileByName
     def find_folder_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IFolder)
+        return self.find_file_by_name(name, parent, self.FOLDER)
 
     def find_aligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IAlignedReads)
+        return self.find_file_by_name(name, parent, self.ALIGNED_READS)
 
     def find_unaligned_reads_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IUnalignedReads)
+        return self.find_file_by_name(name, parent, self.UNALIGNED_READS)
 
     def find_variation_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IVariationFile)
+        return self.find_file_by_name(name, parent, self.VARIATION_FILE)
 
     def find_experiment_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IExperiment)
+        return self.find_file_by_name(name, parent, self.EXPERIMENT)
 
     def find_application_page_file_by_name(self, name, parent=None):
-        return self.find_file_by_name(name, parent, self.IApplicationPageFile)
+        return self.find_file_by_name(name, parent, self.APPLICATION_PAGE_FILE)
 
+    # FIXME: use pagination in this method, see #5063
     def collect_initializable_files_in_container(self, accession):
         """
         Recursively search for all initialisable file in container.
@@ -132,7 +149,8 @@ class FilesUtil(Application):
         :type parent: str
         :param description: description of the folder (goes into the metainfo)
         :type description: str
-        :param metainfo: additional Metainfo. Description and accession should be specified either via arguments or in a metainfo object (but not in both).
+        :param metainfo: additional :py:class:`~genestack_client.Metainfo`.
+            Description and accession should be specified either via arguments or in a metainfo object (but not in both).
         :type metainfo: Metainfo
         :return: accession of created folder
         """
@@ -166,7 +184,7 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('linkFile', accession, parent)
+        self.invoke('linkFiles', {accession: [parent]})
 
     def unlink_file(self, accession, parent):
         """
@@ -178,7 +196,30 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('unlinkFile', accession, parent)
+        self.invoke('unlinkFiles', {accession: [parent]})
+
+    def link_files(self, children_to_parents_dict):
+        """
+        Link files to containers.
+
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to link, and
+            values are lists of accessions of the containers to link into
+        :type: dict
+
+        :rtype: None
+        """
+        self.invoke('linkFiles', children_to_parents_dict)
+
+    def unlink_files(self, children_to_parents_dict):
+        """
+        Unlink files from containers.
+        
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
+            values are lists of accessions of the containers to unlink from
+        :type: dict
+        :rtype: None
+        """
+        self.invoke('unlinkFiles', children_to_parents_dict)
 
     def clear_container(self, container_accession):
         """
@@ -230,6 +271,38 @@ class FilesUtil(Application):
         """
         self.invoke('removeMetainfoValue', accession_list, key)
 
+    def add_metainfo_values(self, accession, metainfo, skip_existing_keys=True, replace_existing_keys=False):
+        """
+        Add metainfo to a specified file.
+        By default, metainfo keys that are already present in the file will be skipped.
+
+        :param accession: accession of the file to update
+        :param metainfo: metainfo object containing the metainfo to add
+        :type metainfo: Metainfo
+        :param skip_existing_keys: ignore metainfo keys that are already present in the file's metainfo
+            (default: ``True``)
+        :type skip_existing_keys: bool
+        :param replace_existing_keys: replace the existing metainfo value for the metainfo keys
+            that are already present in the file's metainfo (default: ``False``)
+        :type replace_existing_keys: bool
+        :rtype: None
+        """
+        self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
+
+    def get_metainfo_values_as_strings(self, accessions_list, keys_list):
+        """
+        Retrieve metainfo values as strings for specific files and metainfo keys.
+        The function returns a dictionary.
+
+        :param accessions_list: accessions of the files to retrieve
+        :type: accessions: list[str]
+        :param keys_list: metainfo keys to retrieve
+        :type: keys: list[str]
+        :return: a two-level dictionary with the following structure: accession -> key -> value
+        :rtype: dict
+        """
+        return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+
     def get_special_folder(self, name):
         """
         Return the accession of a special folder.
@@ -244,7 +317,7 @@ class FilesUtil(Application):
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
                            SpecialFolders.UPLOADED)
-        if not name in special_folders:
+        if name not in special_folders:
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
@@ -258,7 +331,8 @@ class FilesUtil(Application):
         :type group: str
         :param destination_folder: folder in which to link the shared files. No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing. If not specified, will be asked in an interactive prompt (if supported)
+        :param password: password for sharing.
+            If not specified, will be asked in an interactive prompt (if supported)
         :type: str
         :rtype: None
         """
@@ -270,13 +344,7 @@ class FilesUtil(Application):
 
     def get_groups_to_share(self):
         """
-        Returns a dictionary of the form  ``group_accession: group_info_dict``,
-        where ``group_info_dict`` is a dictionary with the following keys:
-        - savedFolderName
-        - savedFolderAccession
-        - name: name of the group
-        - folderName: name of the group's shared folder
-        - folderAccession: accession of the group's shared folder
+        Returns a dictionary of the form ``group_accession: group_name``.
 
         :return: group dict
         :rtype: dict
@@ -284,6 +352,19 @@ class FilesUtil(Application):
         """
         share_utils = self.connection.application('genestack/shareutils')
         return share_utils.invoke('getGroupsToShare')
+
+    def get_group_folder_info(self, group_accession):
+        """
+        Return dictionary with information about group folder.
+        It has two keys: ``name`` (name of the group) and ``accession`` (accession of the group folder).
+
+        :param group_accession: group accession
+        :type group_accession: str
+        :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
+        :rtype: dict
+        """
+        share_utils = self.connection.application('genestack/shareutils')
+        return share_utils.invoke('getGroupFolderInfo', group_accession)
 
     def get_folder(self, parent, *names, **kwargs):
         """
@@ -302,14 +383,14 @@ class FilesUtil(Application):
         :raises:  GenestackException: when paths are not specified or parent cannot be found.
         """
         if not names:
-            raise GenestackException("At least one path should be specified.")
+            raise GenestackException("At least one path should be specified")
 
         create = bool(kwargs.get('create'))
         for path in names:
             if create:
                 parent = self.find_or_create_folder(path, parent=parent)
             else:
-                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.IFolder)
+                _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.FOLDER)
                 if _parent_accession is None:
                     raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
                 parent = _parent_accession
@@ -337,7 +418,7 @@ class FilesUtil(Application):
         """
         Returns a list of dictionaries with complete information about each of the specified files.
         This will return an error if any of the accessions is not valid.
-        The order of the returned list is the same as the one of the accessions list.
+        The order of the output list is the same as the order of the accessions input list.
 
         The information dictionaries have the following structure:
 
@@ -394,7 +475,6 @@ class FilesUtil(Application):
             - application
 
                 - id
-                - name
 
             - initializationStatus
 
@@ -422,3 +502,49 @@ class FilesUtil(Application):
         :rtype: list
         """
         return self.invoke('getInfos', accession_list)
+
+    def rename_file(self, accession, name):
+        """
+        Rename a file.
+
+        :param accession: file accession
+        :type accession: str
+        :param name: name
+        :type name: str
+        :rtype: None
+        """
+        self.invoke('renameFile', accession, name)
+
+    def mark_for_tests(self, app_file):
+        """
+        Mark Genestack file as test one by adding corresponding key to metainfo.
+        Test file will calculate md5 checksums of its encapsulated physical files
+        during initialization.
+
+        :param app_file: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
+        self.add_metainfo_values(app_file, metainfo)
+
+    def add_checksums(self, app_file, expected_checksums):
+        """
+        Add expected MD5 checksum to the metainfo of a CLA file.
+        Expected checksums are calculated in the following way:
+
+            - The number of checksums equals number of entries in storage.
+              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - If there are multiple files in one entry, they will be concatenated in the same order
+              as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo
+              will contain both expected and actual checksum values.
+
+        :param app_file: accession of application file
+        :param expected_checksums: collection of MD5 checksums
+        :return: None
+        """
+        metainfo = Metainfo()
+        for key, value in expected_checksums.items():
+            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
+        self.add_metainfo_values(app_file, metainfo)

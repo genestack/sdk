@@ -3,8 +3,8 @@
 
 import csv
 
-from genestack_client import *
-from genestack_client import UnalignedReads
+from genestack_client import (unaligned_reads, DataImporter, BioMetainfo,
+                              make_connection_parser, get_connection, GenestackException)
 
 # keys that must be supplied in the CSV file
 MANDATORY_KEYS = ['name', 'link']
@@ -16,7 +16,7 @@ SPECIAL_KEYS = {'name': BioMetainfo.NAME, 'organism': BioMetainfo.ORGANISM,
 
 # parse script arguments
 parser = make_connection_parser()
-parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data.')
+parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data')
 parser.add_argument('--name', help='Name of the experiment to create in Genestack')
 parser.add_argument('--description', help='Description of the experiment to display in Genestack')
 
@@ -30,8 +30,8 @@ connection = get_connection(args)
 importer = DataImporter(connection)
 
 # file format of the reads to import
-file_format = UnalignedReads.compose_format_map(UnalignedReads.Space.BASESPACE, UnalignedReads.Format.PHRED33,
-                                                UnalignedReads.Type.SINGLE)
+file_format = unaligned_reads.compose_format_map(unaligned_reads.Space.BASESPACE, unaligned_reads.Format.PHRED33,
+                                                unaligned_reads.Type.SINGLE)
 
 # create the experiment where we will store the data in Genestack
 experiment = importer.create_experiment(name=args.name or "Imported experiment",
@@ -48,7 +48,7 @@ with open(csv_input, 'r') as the_file:
     # check if mandatory keys are in the CSV file
     for mandatory_key in MANDATORY_KEYS:
         if mandatory_key not in field_names:
-            raise GenestackException("The key '%s' must be supplied in the CSV file. Aborting." % mandatory_key)
+            raise GenestackException("The key '%s' must be supplied in the CSV file" % mandatory_key)
 
     for file_data in reader:
 

@@ -4,25 +4,27 @@ Getting Started with the Genestack Python Client Library
 Installing the Library
 **********************
 
-.. note::
-
-    At the moment, the Genestack SDK is not available to the public.
-    To get the library sources or to access the GitHub repository, ask somebody at Genestack.
-
-
-If you have access to the GitHub repository, you can either `clone it <https://github.com/genestack/python-client/>`_ or download and unpack  `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
-
-Once inside the directory, you can install the library using ``pip`` if it is available on your system (if not, have a look at the `pip install instructions <https://pip.pypa.io/en/latest/installing.html>`_):
+You can install Genestack Python Client Library using ``pip`` if it is available on your system (if not, have a look at the `pip install instructions <https://pip.pypa.io/en/latest/installing.html>`_)
 
 .. code-block:: sh
 
-    $ sudo pip install .
+    $ pip install https://github.com/genestack/python-client/archive/stable.zip
+
 
 .. note::
 
-    You can also install the library without ``pip``, by typing ``python setup.py install``.
-    In that case make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
-    and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed
+    You can also install the library without ``pip``:
+
+    You need to download the sources, either by `cloning the repository from GitHub <https://github.com/genestack/python-client/>`_
+    or by retrieving and unpacking `the latest release <https://github.com/genestack/python-client/releases/latest/>`_.
+    Then, open up a terminal, go to the folder containing the sources and run:
+
+    .. code-block:: sh
+
+        $ python setup.py install .
+
+    In that case, make sure that the dependencies `keyring <https://pypi.python.org/pypi/keyring>`_
+    and `requests <http://docs.python-requests.org/en/latest/user/install/#install>`_ are installed.
 
 
 Then, you can test your installation by executing:
@@ -33,25 +35,28 @@ Then, you can test your installation by executing:
 
 If the command executes without returning an error, you have successfully installed the Genestack Python Client Library. Yay!
 
+
+.. note::
+
+    If you see a warning such as ``InsecurePlatformWarning: A true SSLContext object is not available`` in the console,
+    you can either update your Python to the latest ``2.7.*`` version, or install the ``security`` package extras using ``pip``:
+
+    .. code-block:: sh
+
+        $ sudo pip install 'requests[security]'
+
+
 Configuring Credentials
 ***********************
 
-The Genestack Python Client Library works by logging in to a Genestack instance (typically ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.org`` if you are working on the community edition of Genestack). Therefore, before doing anything you need to have an account on the Genestack instance to which you want to connect.
+The Genestack Python Client Library works by logging in to a Genestack instance (by default `platform.genestack.org <https://platform.genestack.org/endpoint/application/run/genestack/signin>`_).
+Therefore, before doing anything you need to have an account on the Genestack instance to which you want to connect.
 
 To avoid typing in your credentials every time you connect to a Genestack instance programmatically, the library comes with a utility ``genestack-user-setup`` which allows you to store locally, in a secure manner, a list of user identities to login to Genestack. To configure your first user identity, type in the following command in a terminal:
 
 .. code-block:: sh
 
     $ genestack-user-setup init
-
-.. warning::
-    
-    By default, the new user identity will be linked to the host ``platform.genestack.com`` (i.e. the community edition of Genestack). If you are a developer, you want to work on ``internal-dev.genestack.com`` instead. Therefore, you should change that command to:
-
-    .. code-block:: sh
-
-        $ genestack-user-setup --host internal-dev.genestack.com init
-
 
 You will be prompted for your email and password to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
 
@@ -80,7 +85,7 @@ Setting up additional users
 
 If you have multiple accounts on Genestack (or you are using multiple instances of Genestack), you can define multiple identities with the ``genestack-user-setup``.
 
-Each user has an alias (unique identifier), an email address, a host address and a password. Typically, the host name will either be ``internal-dev.genestack.com`` if you are a developer, or ``platform.genestack.com`` if you are working on the community edition of Genestack. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
+Each user has an alias (unique identifier), an email address, a host address and a password. The host name will be ``platform.genestack.com`` by default. There is no limitation to the number of identities you can store locally, and you can even use different aliases for the same account. To add a new identity, type in:
 
 .. code-block:: sh
 
@@ -216,7 +221,6 @@ And here is how to call a Java method with arguments:
 
     from genestack_client import get_connection, Metainfo, PRIVATE
 
-
     connection = get_connection()
     metainfo = Metainfo()
     metainfo.add_string(Metainfo.NAME, "New folder")
@@ -232,13 +236,11 @@ If you need to make extensive use of an application that does not already have a
 
     from genestack_client import Application, get_connection
 
-
     class SignIn(Application):
         APPLICATION_ID = 'genestack/signin'
 
         def whoami(self):
             return self.invoke('whoami')
-
 
     connection = get_connection()
     signin = SignIn(connection)
@@ -264,28 +266,25 @@ First, let's open a connection::
 Then we create a new instance of the class::
 
     >>> from genestack_client import FilesUtil
-    >>> file_utils = FilesUtil(connection)
-
+    >>> files_util = FilesUtil(connection)
 
 Then we can create a new empty folder::
 
-    >>> folder_accession = file_utils.create_folder("My new folder")
+    >>> folder_accession = files_util.create_folder("My new folder")
     >>> print folder_accession
     GSF000001
 
 By default, this one was created in the "Created Files" folder of the current user, but we can define any folder as parent::
 
-    >>> inner_folder_accession = file_utils.create_folder("My inner folder", parent=folder_accession)
+    >>> inner_folder_accession = files_util.create_folder("My inner folder", parent=folder_accession)
     >>> print inner_folder_accession
     GSF000002
 
-
 Finding a folder by its name::
 
-    >>> folder_accession = file_utils.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
+    >>> folder_accession = files_util.find_file_by_name("My inner folder", file_class=FilesUtil.IFolder)
     >>> print folder_accession
     GSF000002
-
 
 See :ref:`FilesUtil` for more methods.
 
@@ -333,11 +332,11 @@ And finally we can start the initialization of the file::
     >>> print 'Start initialization of %s' % assay
     Start initialization of GSF000002
 
-As a result you should have
+As a result you should have:
 
-    - an ``Experiment`` folder in ``Imported files``
-    - a ``Sequencing assay`` file inside the experiment
-    - Two ``Raw Upload`` files in the ``Uploaded files`` folder. (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized)
+    - an ``Experiment`` folder in ``Imported files``;
+    - a ``Sequencing assay`` file inside the experiment;
+    - two ``Raw Upload`` files in the ``Uploaded files`` folder (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized).
 
 See :ref:`DataImporter` for more info.
 
@@ -358,6 +357,4 @@ Then we can check the error log of a file::
     >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
     This log is empty (perhaps there was no log produced)
 
-
 See :ref:`TaskLogViewer` for more info.
-

@@ -2,22 +2,31 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
-import sys
-import os
-import urllib2
-import zipfile
-import xml.dom.minidom as minidom
+import glob
 import json
+import os
+import sys
+import urllib2
+import xml.dom.minidom as minidom
+import zipfile
 from collections import namedtuple
 from genestack_client import GenestackException
-from genestack_client.GenestackShell import GenestackShell, Command
+from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.utils import isatty, ask_confirmation
+
+if sys.stdout.encoding is None:
+    # wrap sys.stdout into a StreamWriter to allow writing unicode to pipe
+    # (in that case Python 2 cannot determine encoding)
+    import codecs
+    import locale
+    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
 
 def validate_application_id(app_id):
@@ -35,6 +44,13 @@ SCOPE_DICT = {
     'session': 'SESSION'
 }
 DEFAULT_SCOPE = 'user'
+
+
+VISIBILITY_DICT = {
+    'owner': 'OWNER',
+    'all': 'ALL'
+}
+DEFAULT_VISIBILITY = 'owner'
 
 
 class Info(Command):
@@ -61,7 +77,7 @@ class Info(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in self.args.files]
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
         return show_info(
             jar_files, self.args.vendor,
             self.args.with_filename, self.args.no_filename
@@ -73,6 +89,16 @@ class Install(Command):
     DESCRIPTION = "Upload and install an application's JAR file to a Genestack instance."
 
     def update_parser(self, p):
+        p.add_argument(
+            '-f', '--force', action='store_true',
+            default=False,
+            help='Run installation without any prompts (use with caution)'
+        )
+        p.add_argument(
+            '-r', '--release', action='store_true',
+            default=False,
+            help='Release installed applications and set them visible for all'
+        )
         p.add_argument(
             '-o', '--override', action='store_true',
             help='overwrite old version of the applications with the new one'
@@ -98,11 +124,11 @@ class Install(Command):
         )
 
     def run(self):
-        jar_files = [resolve_jar_file(f) for f in self.args.files]
-        return upload_file(
+        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
+        upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope
+            self.args.stable, self.args.scope, self.args.force, self.args.release
         )
 
 
@@ -114,6 +140,14 @@ class ListVersions(Command):
         p.add_argument(
             '-s', action='store_true', dest='show_stable',
             help='display stable scopes in output (S: System, U: User, E: sEssion)'
+        )
+        p.add_argument(
+            '-i', action="store_true", dest='show_visibilities',
+            help='display visibility of each version'
+        )
+        p.add_argument(
+            '-r', action="store_true", dest='show_release_state',
+            help='display release state of version'
         )
         p.add_argument(
             '-o', action='store_true', dest='show_owned',
@@ -132,17 +166,78 @@ class ListVersions(Command):
         if self.args.show_stable:
             stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
         result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
+        if not result:
+            sys.stderr.write('No suitable versions found for "%s"\n' % app_id)
+            return
         result.sort()
+
+        visibility_map = None
+        if self.args.show_visibilities or self.args.show_release_state:
+            visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
+
+        max_len = max(len(x) for x in result)
         for item in result:
-            if stable_versions is None:
-                print item
-            else:
-                print '%1s%1s%1s %s' % (
+            output_string = ''
+            if stable_versions is not None:
+                output_string += '%s%s%s ' % (
                     'S' if item == stable_versions.get('SYSTEM') else '-',
                     'U' if item == stable_versions.get('USER') else '-',
-                    'E' if item == stable_versions.get('SESSION') else '-',
-                    item
+                    'E' if item == stable_versions.get('SESSION') else '-'
                 )
+            output_string += '%-*s' % (max_len, item)
+            if self.args.show_visibilities:
+                output_string += '%8s' % visibility_map[item]['visibilityLevel']
+            if self.args.show_release_state:
+                output_string += '   %s' % ('released' if visibility_map[item]['released'] else 'not released')
+            print output_string
+
+
+class Visibility(Command):
+    COMMAND = 'visibility'
+    DESCRIPTION = 'Set visibility for application'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'level', metavar='<level>', choices=VISIBILITY_DICT.keys(),
+            default=DEFAULT_VISIBILITY,
+            help='Visibility level which will be set to application'
+                 ' (default is \'%s\'): %s' %
+                 (DEFAULT_VISIBILITY, ' | '.join(VISIBILITY_DICT.keys()))
+        )
+
+    def run(self):
+        set_applications_visibility(
+            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version,
+            VISIBILITY_DICT[self.args.level]
+        )
+
+
+class Release(Command):
+    COMMAND = 'release'
+    DESCRIPTION = 'Create released application from testing one'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'app_id', metavar='<appId>', help='application identifier'
+        )
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'new_version', metavar='<newVersion>',
+            help='version of released application (must differ from other version of this application)'
+        )
+
+    def run(self):
+        release_applications(
+            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version, self.args.new_version
+        )
 
 
 class ListApplications(Command):
@@ -197,6 +292,11 @@ class Remove(Command):
 
     def update_parser(self, p):
         p.add_argument(
+            '-f', '--force', action='store_true',
+            default=False,
+            help='Remove without any prompts (use with caution)'
+        )
+        p.add_argument(
             'version', metavar='<version>', help='application version'
         )
         p.add_argument(
@@ -208,6 +308,10 @@ class Remove(Command):
         apps_ids = self.args.app_id_list
         if not all(map(validate_application_id, apps_ids)):
             return
+        application = self.connection.application(APPLICATION_ID)
+        version = self.args.version
+        if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
+            raise GenestackException('Removing was aborted by user')
         return remove_applications(
             self.connection.application(APPLICATION_ID), self.args.version, apps_ids
         )
@@ -270,7 +374,13 @@ class Invoke(Command):
             print response
 
 
+def match_jar_globs(paths):
+    """ Return a list of files or directories by list of globs. """
+    return sum([glob.glob(p) for p in paths], [])
+
 def resolve_jar_file(file_path):
+    if not os.path.exists(file_path):
+        raise GenestackException("No such file or directory: %s" % file_path)
     if not os.path.isdir(file_path):
         return file_path
 
@@ -281,7 +391,8 @@ def resolve_jar_file(file_path):
                 jar_files.append(os.path.join(dirpath, f))
 
     if len(jar_files) > 1:
-        raise GenestackException('More than one JAR file was found inside %s' % file_path)
+        raise GenestackException('More than one JAR file was found inside %s:\n'
+                                 ' %s' % (file_path, '\n '.join(jar_files)))
     elif not jar_files:
         raise GenestackException('No JAR file was found inside %s' % file_path)
 
@@ -289,80 +400,61 @@ def resolve_jar_file(file_path):
 
 
 def mark_as_stable(application, version, app_id_list, scope):
-    try:
-        print('Setting the application stable for scope %s' % scope)
-        scope = SCOPE_DICT[scope]
-        for app_id in app_id_list:
-            sys.stdout.write('%-40s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('markAsStable', app_id, scope, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
+    print('Setting the application version "%s" stable for scope %s' % (version, scope))
+    scope = SCOPE_DICT[scope]
+    for app_id in app_id_list:
+        sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
-        return 1
+        application.invoke('markAsStable', app_id, scope, version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 def remove_applications(application, version, app_id_list):
-    try:
-        print('Removing application(s) with version "%s"' % version)
-        for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('removeApplication', app_id, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
+    print('Removing application(s) with version "%s"' % version)
+    for app_id in app_id_list:
+        sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
-        return 1
+        application.invoke('removeApplication', app_id, version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 def reload_applications(application, version, app_id_list):
-    try:
-        print('Reloading applications')
-        for app_id in app_id_list:
-            sys.stdout.write('%s ... ' % app_id)
-            sys.stdout.flush()
-            application.invoke('reloadApplication', app_id, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
-    except GenestackException as e:
+    print('Reloading applications')
+    for app_id in app_id_list:
+        sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
-        return 1
+        application.invoke('reloadApplication', app_id, version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope):
+def upload_file(application, files_list, version, override, stable, scope, force, release):
+    if stable and release:
+        raise GenestackException('Flags \'-r\' and \'-s\' cannot be used at once')
+
     for file_path in files_list:
-        result = upload_single_file(
+        upload_single_file(
             application, file_path, version, override,
-            stable, scope
+            stable, scope, force, release
         )
-        if result is not None and result != 0:
-            return result
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope):
-    try:
-        parameters = {'version': version, 'override': override}
-        upload_token = application.invoke('getUploadToken', parameters)
-    except GenestackException as e:
-        sys.stdout.flush()
-        sys.stderr.write('%s\n' % e.message)
-        sys.stderr.flush()
-        return 1
+                       stable, scope, force=False, release=False):
+    app_info = read_jar_file(file_path)
+    if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
+        if get_system_stable_apps_version(application, app_info.identifiers, version):
+            raise GenestackException('Can\'t install version "%s". This version is already system stable.\n' % version +
+                                     'If you want to upload a new version and make it stable, add "-S system" option.\n' +
+                                     'Otherwise use another version name.')
+
+    parameters = {'version': version, 'override': override}
+    upload_token = application.invoke('getUploadToken', parameters)
 
     if upload_token is None:
-        sys.stdout.flush()
-        sys.stderr.write('Received a null token, the upload is not accepted')
-        sys.stderr.flush()
-        return 1
+        raise GenestackException('Received a null token, the upload is not accepted')
 
     # upload_token, as returned by json.load(), is a Unicode string.
     # Without the conversion, urllib2.py passes a Unicode URL created from it
@@ -374,19 +466,51 @@ def upload_single_file(application, file_path, version, override,
         # hack before fix ApplicationManagerApplication#processReceivedFile // TODO: return some useful information
         if result:
             print result
-
     except urllib2.HTTPError as e:
-        sys.stdout.flush()
-        sys.stderr.write('HTTP Error %s: %s\n' % (e.code, e.read()))
-        sys.stderr.flush()
-        return 1
+        raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
+
+    released_version = version + '-released'
+    if release:
+        release_applications(application, app_info.identifiers, version, released_version)
+        set_applications_visibility(
+            application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
+        )
 
     if not stable:
         return
 
-    app_info = read_jar_file(file_path)
+    return mark_as_stable(
+        application,
+        released_version if release and not SCOPE_DICT[scope] == 'SYSTEM' else version,
+        app_info.identifiers,
+        scope
+    )
 
-    return mark_as_stable(application, version, app_info.identifiers, scope)
+
+def release_applications(application, app_ids, version, new_version):
+    print('Releasing new version "%s"' % new_version)
+    for app_id in app_ids:
+        if not validate_application_id(app_id):
+            sys.stderr.write('Invalid application id: %s\n' % app_id)
+            continue
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('releaseApplication', app_id, version, new_version)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
+
+
+def set_applications_visibility(application, app_ids, version, level):
+    print('Setting visibility %s for version "%s"' % (level, version))
+    for app_id in app_ids:
+        if not validate_application_id(app_id):
+            sys.stderr.write('Invalid application id: %s\n' % app_id)
+            continue
+        sys.stdout.write('%-40s ... ' % app_id)
+        sys.stdout.flush()
+        application.invoke('setVisibility', app_id, version, level)
+        sys.stdout.write('ok\n')
+        sys.stdout.flush()
 
 
 AppInfo = namedtuple('AppInfo', [
@@ -394,6 +518,23 @@ AppInfo = namedtuple('AppInfo', [
 ])
 
 
+def log_on_error(function):
+    """
+    Wrapper to print arguments to stderr on exception.
+
+    :param function: function to decorate
+    :return: decorated function
+    """
+    def wrapper(*args):
+        try:
+            return function(*args)
+        except Exception:
+            sys.stderr.write('Error at "%s" with arguments: %s\n' % (function.__name__, ', '.join(map(repr, args))))
+            raise
+    return wrapper
+
+
+@log_on_error
 def read_jar_file(file_path):
     with zipfile.ZipFile(file_path) as zip_file:
         try:
@@ -432,10 +573,42 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
         print 'Vendor:', app_info.vendor
         print 'Applications:'
-        for app_id in app_info.identifiers:
+        for app_id in sorted(app_info.identifiers):
             print '\t%s' % app_id
 
         first_file = False
+
+
+REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
+ %s
+Do you want to continue'''
+
+
+def prompt_removing_stable_version(application, apps_ids, version):
+    check_tty()
+    apps = get_system_stable_apps_version(application, apps_ids, version)
+    if not apps:
+        return True
+
+    message = REMOVE_PROMPT % (version, '\n '.join(apps))
+    try:
+        return ask_confirmation(message)
+    except KeyboardInterrupt:
+        return False
+
+
+def get_system_stable_apps_version(application, apps_ids, version):
+    apps = []
+    for app_id in apps_ids:
+        stable_versions = application.invoke('getStableVersions', app_id)
+        if stable_versions.get('SYSTEM') == version:
+            apps.append(app_id)
+    return apps
+
+
+def check_tty():
+    if not isatty():
+        raise GenestackException("Prompt cannot be called")
 
 
 class ApplicationManager(GenestackShell):
@@ -443,9 +616,14 @@ class ApplicationManager(GenestackShell):
                    'that allows you to upload and manage'
                    'your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
-    COMMAND_LIST = [Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke]
+    COMMAND_LIST = [
+        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
+    ]
 
 
-if __name__ == '__main__':
+def main():
     shell = ApplicationManager()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()

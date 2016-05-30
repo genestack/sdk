@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
-from Connection import Application
+from genestack_client import Application
 
 
 class FileInitializer(Application):
@@ -48,7 +48,7 @@ class FileInitializer(Application):
 
 
         :param accessions: list of accessions
-        :return: list of maps
+        :return: list of dictionaries
         :rtype: list
         """
         return self.invoke('loadInfo', accessions)

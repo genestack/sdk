@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -10,9 +10,10 @@
 #
 import argparse
 import json
+import shlex
 from datetime import datetime
 
-from genestack_client.GenestackShell import GenestackShell, Command
+from genestack_client.genestack_shell import GenestackShell, Command
 
 APPLICATION_SHELL = 'genestack/shell'
 
@@ -59,35 +60,6 @@ class Call(Command):
             print json.dumps(res)
 
 
-class Invoke(Command):
-    COMMAND = 'invoke'
-    DESCRIPTION = 'invoke shell application'
-    OFFLINE = False
-
-    def update_parser(self, p):
-        p.add_argument(
-            'method',
-            help='shell method'
-        )
-        p.add_argument(
-            'params', nargs=argparse.REMAINDER,
-            help='params'
-        )
-
-    def do_request(self):
-        params = serialize_params(self.args.params)
-        return self.connection.application(APPLICATION_SHELL).invoke(self.args.method, *params)
-
-    def run(self):
-        res = self.do_request()
-        if isinstance(res, list):
-            for i in res:
-                print i
-        else:
-            print res
-
-
-
 class Time(Call):
     DESCRIPTION = 'invoke with timer'
     COMMAND = 'time'
@@ -98,17 +70,20 @@ class Time(Call):
         print 'Execution time: %s' % (datetime.now() - start)
 
 
-
 class Shell(GenestackShell):
     COMMAND_LIST = [Time, Call]
 
     def default(self, line):
-        args = line.split()
+        args = shlex.split(line)
         if args and args[0] in self.COMMANDS:
             self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection)
         else:
             self.process_command(Call(), ['genestack/shell'] + args, self.connection)
 
-if __name__ == '__main__':
+
+def main():
     shell = Shell()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()

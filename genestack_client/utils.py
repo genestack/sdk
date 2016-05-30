@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -11,10 +11,12 @@
 import argparse
 import sys
 
+from genestack_client import GenestackException
+
 
 def isatty():
     """
-    Return True if the file is connected to a tty device.
+    Return ``True`` if the file is connected to a tty device.
 
     :return: is a tty
     :rtype: bool
@@ -28,7 +30,7 @@ def isatty():
 def make_connection_parser(user=None, password=None, host=None):
     """
     Creates an argument parser with the provided connection parameters.
-    If one of `email`, `password` or `user` is specified, they are used. Otherwise, the default
+    If one of ``email``, ``password`` or ``user`` is specified, they are used. Otherwise, the default
     identity from the local config file will be used.
 
     :param user: user alias or email
@@ -38,25 +40,27 @@ def make_connection_parser(user=None, password=None, host=None):
     :param host: host
     :type host: str
     :return: parser
-    :rtype: :py:class:`~argparse.ArgumentParser`
+    :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group('connection')
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
     group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
+    group.add_argument('--debug', dest='debug', help='print additional stacktrace on error', action='store_true')
+    group.add_argument('--show-logs', dest='show_logs', help="print application logs (received from server)", action='store_true')
     return parser
 
 
 def get_user(args=None):
     """
     Returns the user corresponding to the provided arguments.
-    If `args` is `None`, uses :attr:`make_connection_parser` to get arguments.
+    If ``args`` is ``None``, uses :py:func:`~genestack_client.make_connection_parser` to get arguments.
 
     :param args: result of commandline parse
     :type args: argparse.Namespace
     :return: user
-    :rtype: :py:class:`~genestack_client.settings.User.User`
+    :rtype: ~genestack_client.settings.User
     """
 
     from settings import config, User
@@ -75,13 +79,40 @@ def get_user(args=None):
 
 def get_connection(args=None):
     """
-    This is the same as :py:func:`get_user` . :py:meth:`~genestack_client.settings.User.User.get_connection`
+    This is the same as :py:func:`~genestack_client.get_user` . :py:meth:`~genestack_client.settings.User.get_connection`
     Generally the fastest way to get an active connection.
 
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: :py:class:`~genestack_client.Connection.Connection`
+    :rtype: ~genestack_client.Connection
     """
     user = get_user(args)
-    return user.get_connection(interactive=True)
+    return user.get_connection(interactive=True, debug=args and args.debug, show_logs=args and args.show_logs)
+
+
+def ask_confirmation(question, default=None):
+    """
+    Ask confirmation and return response as boolean value.
+    This method will not end until user input correct answer.
+
+    :param question: question to ask, without [y/n] suffix and question mark.
+    :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
+    :return:
+    """
+    if not isatty():
+        raise GenestackException("Prompt cannot be called")
+
+    assert default in ('y', 'n', None), 'Wrong default value, expect "n", "y" or None'
+    question_suffix = '[%s/%s]' % tuple(x.upper() if x == default else x for x in 'yn')
+
+    while True:
+        text = raw_input('%s %s? ' % (question, question_suffix)).strip().lower()
+        if not text and default:
+            text = default
+
+        if text in ('y', 'yes'):
+            return True
+        if text in ('n', 'no'):
+            return False
+        print 'Unexpected response please input "y[es]" or "n[o]"'

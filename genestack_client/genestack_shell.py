@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -14,7 +14,12 @@ import os
 import cmd
 import shlex
 from traceback import print_exc
+
+from genestack_client import (GenestackVersionException, GenestackAuthenticationException, GenestackException)
+from version import __version__
+
 from utils import isatty, make_connection_parser, get_connection
+
 
 if isatty():
     # To have autocomplete and console navigation on windows you need to have pyreadline installed.
@@ -68,7 +73,7 @@ class Command(object):
 
         - ``COMMAND``: name of the command
         - ``DESCRIPTION``: description as shown in the help message
-        - ``OFFLINE``: set to True if the command does not require a connection to the Genestack server.
+        - ``OFFLINE``: set to ``True`` if the command does not require a connection to the Genestack server.
     """
     COMMAND = None
     DESCRIPTION = ''
@@ -83,10 +88,11 @@ class Command(object):
     def get_command_parser(self, parser=None):
         """
         Returns a command parser. This function is called each time before a command is executed.
-        To add new arguments to the command, you should override the :py:meth:`update_parser` method.
+        To add new arguments to the command,
+        you should override the :py:meth:`~genestack_client.genestack_shell.Command.update_parser` method.
 
-        :param parser: base argument parser. For offline commands and commands inside shell, it will be None.
-            For the other cases, it will be the result of :py:func:`~genestack_client.utils.make_connection_parser`
+        :param parser: base argument parser. For offline commands and commands inside shell, it will be ``None``.
+            For the other cases, it will be the result of :py:func:`~genestack_client.make_connection_parser`
         :type parser: argparse.ArgumentParser
         :return: parser
         :rtype: argparse.ArgumentParser
@@ -100,7 +106,7 @@ class Command(object):
 
     def update_parser(self, parent):
         """
-        Add arguments for the command. Should be overriden in child classes.
+        Add arguments for the command. Should be overridden in child classes.
 
         :param parent: argument group
         :type parent: argparse._ArgumentGroup
@@ -113,7 +119,7 @@ class Command(object):
         Set a connection for the command.
 
         :param conn: connection
-        :type conn: genestack_client.Connection.Connection
+        :type conn: genestack_client.Connection
         """
         self.connection = conn
 
@@ -129,15 +135,33 @@ class Command(object):
     def get_short_description(self):
         """
         Returns a short description for the command. Used in the "help" message.
+
+        :return short description
+        :rtype: str
         """
         return self.DESCRIPTION
+
+    def run(self):
+        """
+        Override this method to implement the command action.
+
+        Return value of this method is always ignored.
+        If this method raises an exception, the command will be treated as failed.
+
+        If this command is executed in the shell mode,
+        the failed state is ignored, otherwise exit code ``1`` is returned.
+
+        Raise :py:class:`~genestack_client.genestack_exceptions.GenestackException` to indicate command failure
+        without showing the stacktrace.
+
+        :rtype: None
+        """
+        raise NotImplementedError()
 
 
 class GenestackShell(cmd.Cmd):
     """
-    Base shell class. :py:class:`GenestackShell` is a subclass of the :py:class:`cmd.Cmd`.
-
-    Arguments to be overriden in children:
+    Arguments to be overridden in children:
 
         - ``INTRO``: greeting at start of shell mode
         - ``COMMAND_LIST``: list of available commands
@@ -185,28 +209,41 @@ class GenestackShell(cmd.Cmd):
     def __init__(self, *args, **kwargs):
         self.COMMANDS = {command.COMMAND: command for command in self.COMMAND_LIST}
         cmd.Cmd.__init__(self, *args, **kwargs)
+        self.connection = None
 
-    def get_shell_parser(self):
+    def get_shell_parser(self, offline=False):
         """
         Returns the parser for shell arguments.
 
         :return: parser for shell commands
         :rtype: argparse.ArgumentParser
         """
-        parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION,
-                                parents=[make_connection_parser()])
+        parents = [] if offline else [make_connection_parser()]
+        parser = ArgumentParser(conflict_handler='resolve', description=self.DESCRIPTION, parents=parents)
+
         # override default help
         parser.add_argument('-h', '--help', action='store_true', help="show this help message and exit")
+        parser.add_argument('-v', '--version', action='store_true', help="show version")
         parser.add_argument('command', metavar='<command>', help='"%s" or empty to use shell' % '", "'.join(self.COMMANDS), nargs='?')
         return parser
 
+    def setup_connection(self, args=None):
+        try:
+            self.connection = get_connection(args)
+        except GenestackVersionException as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            exit(13)
+
     def preloop(self):
-        """
-        Entry point. Check whether we should run a script and exit, or start an interactive shell.
-        """
+        # Entry point. Check whether we should run a script and exit, or start an interactive shell.
 
         parser = self.get_shell_parser()
         args, others = parser.parse_known_args()
+
+        if args.version:
+            print __version__
+            exit(0)
 
         command = self.COMMANDS.get(args.command)
         if command:
@@ -231,15 +268,19 @@ class GenestackShell(cmd.Cmd):
 
         if command:
             if not command.OFFLINE:
-                connection = get_connection(args)
+                self.setup_connection(args)
             else:
-                connection = None
-            self.process_command(command, others, connection)
-            exit(0)
+                # parse arguments that have same name as connection parser
+                parser = self.get_shell_parser(offline=True)
+                _, others = parser.parse_known_args()
+
+            exit_code = self.process_command(command, others)
+            exit(exit_code)
 
         # do shell
         try:
             readline.read_history_file(self.get_history_file_path())
+            readline.set_history_length(1000)
         except (IOError, NameError):
             pass
         self.set_shell_user(args)
@@ -252,10 +293,13 @@ class GenestackShell(cmd.Cmd):
         :type args: argparse.Namespace
         """
         # set user for shell
-        self.connection = get_connection(args)
-        email = self.connection.whoami()
-        self.prompt = '%s> ' % email
-        self.INTRO = "Hello, %s!" % email
+        self.setup_connection(args)
+        try:
+            email = self.connection.whoami()
+            self.prompt = '%s> ' % email
+        except GenestackAuthenticationException:
+            self.prompt = 'anonymous>'
+        self.intro = '\ngenestack_client v%s\n%s' % (__version__, self.INTRO)
 
     def postloop(self):
         try:
@@ -265,42 +309,46 @@ class GenestackShell(cmd.Cmd):
 
     def do_EOF(self, line):
         return True
+
     do_quit = do_EOF
 
-    def process_command(self, command, argument_line, connection, shell=False):
+    def process_command(self, command, argument_list, shell=False):
         """
-        Run a command with arguments.
+        Runs the given command with the provided arguments and returns the exit code
 
         :param command: command
         :type command: Command
-        :param argument_line: argument string for the command
-        :type argument_line: str
-        :param connection: connection (can be None in the case of an ``OFFLINE`` command)
-        :type connection: Connection
+        :param argument_list: the list of arguments for the command
+        :type argument_list: list
         :param shell: should we use shell mode?
         :type shell: bool
+        :return: 0 if the command was executed successfully, 1 otherwise
+
+        :rtype: int
         """
         if shell or command.OFFLINE:
             p = command.get_command_parser()
         else:
             p = command.get_command_parser(make_connection_parser())
         try:
-            args = p.parse_args(argument_line)
+            args = p.parse_args(argument_list)
         except SystemExit:
-            return
-        command.set_connection(connection)
+            return 1
+        command.set_connection(self.connection)
         command.set_arguments(args)
         try:
-            return command.run()
+            command.run()
+            return 0
         except (KeyboardInterrupt, EOFError):
             print
             print "Command interrupted."
-            return
-        except Exception as e:
+        except GenestackException as e:
             sys.stdout.flush()
             sys.stderr.write('%s\n' % e)
-            sys.stderr.flush()
+        except Exception:
+            sys.stdout.flush()
             print_exc()
+        return 1
 
     def do_help(self, line):
         print
@@ -344,7 +392,7 @@ class GenestackShell(cmd.Cmd):
     def default(self, line):
         args = shlex.split(line)
         if args and args[0] in self.COMMANDS:
-            self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection, shell=True)
+            self.process_command(self.COMMANDS[args[0]](), args[1:], shell=True)
         else:
             self.stdout.write('*** Unknown command: %s\n' % line)
 

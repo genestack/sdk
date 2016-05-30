@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -17,7 +17,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import Connection, GenestackException
 from genestack_client import get_user
-from genestack_client.settings.User import _get_server_url
+from genestack_client.settings.genestack_user import _get_server_url
 
 
 wrong_url = 'http://localhost:9999/aaaaz'

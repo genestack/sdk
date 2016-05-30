@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2015-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -16,8 +16,9 @@ from datetime import datetime
 from io import BytesIO
 from threading import Thread, Lock, Condition
 from requests.exceptions import RequestException
+
 from genestack_client.utils import isatty
-from genestack_client.Exceptions import GenestackException
+from genestack_client import GenestackException
 
 RETRY_ATTEMPTS = 5
 RETRY_INTERVAL = 2  # seconds
@@ -77,7 +78,7 @@ class ChunkedUpload(object):
         if chunk_size is None:
             chunk_size = CHUNK_SIZE
         if chunk_size <= 0:
-            raise GenestackException("Chunk size should be positive.")
+            raise GenestackException("Chunk size should be positive")
 
         self.chunk_upload_url = '/application/uploadChunked/%s/unusedToken' % application.application_id
         self.connection = application.connection
@@ -124,10 +125,10 @@ class ChunkedUpload(object):
         # import from here to avoid circular imports
         # TODO move progress functions to other module.
         if isatty():
-            from Connection import TTYProgress
+            from genestack_connection import TTYProgress
             self.progress = TTYProgress()
         else:
-            from Connection import DottedProgress
+            from genestack_connection import DottedProgress
             self.progress = DottedProgress(40)
 
         def _iterator():
@@ -231,8 +232,14 @@ class ChunkedUpload(object):
             if response.status_code == 200:
                 self.__update_progress(chunk.size)
                 data = json.loads(response.text)
+
+                # FIXME: Remove after 0.26.0 dotorg update
                 if 'applicationResult' in data:
-                    self.application_result = data['applicationResult']
+                    data['result'] = data['applicationResult']
+                    data['lastChunkUploaded'] = True
+
+                if data.get('lastChunkUploaded', False):
+                    self.application_result = data['result']
                     self.has_application_result = True
                     self.finished = True
                 return
@@ -301,7 +308,8 @@ class ChunkedUpload(object):
         if self.has_application_result:
             return self.application_result
         else:
-            raise GenestackException('Fail to upload %s: %s' % (self.path, self.error or 'unknown error'))
+            error_message = self.error or 'file has been uploaded from another session'
+            raise GenestackException('Fail to upload %s: %s' % (self.path, error_message))
 
 
 def upload_by_chunks(application, path, chunk_size=None):

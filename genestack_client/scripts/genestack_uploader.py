@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -25,21 +25,24 @@ DESCRIPTION = '''Upload raw files to server and try to auto recognize them as ge
   All paths must be valid. There is not limit to number of files.
 
 - Uploading:
-  Files are stored in subfolder of 'Raw uploads'; subfolder name corresponds to user local time.
-  Files are uploaded one by one, each in multiple threads.
-  In case of network errors application attempts to retry until number of retries exceeded (5 by default),
-  in which case the whole upload stops and application exits with error code.
-  Uploaded data is not lost though and you can continue uploading this file from the point you stop.
+  Files are stored in subfolder of 'Raw uploads'; subfolder name corresponds
+  to user local time. Files are uploaded one by one, each in multiple threads.
+  In case of network errors application attempts to retry until number of retries
+  exceeded (5 by default), in which case application exits with error code.
+  Uploaded data is not lost though and you can continue uploading this file
+  from the point you stop.
 
-  ATTENTION: When you upload multiple files from the command line, be sure to remove successfully uploaded files
-  from the arguments when before re-running uploader, because otherwise all of them will be uploaded to the server again.
+  ATTENTION: When you upload multiple files from the command line,
+  be sure to remove successfully uploaded files from the arguments when before re-running
+  uploader, because otherwise all of them will be uploaded to the server again.
 
 - Recognition:
   Recognition done only if all files were uploaded successfully. It works over all files.
   Files that were not recognized are linked to subfolder 'Unrecognized files'.
 
   ATTENTION: Recognition of big number of files may cause server timeouts.
-  Split uploading with recognition into relatively small iterations to prevent timeout failures.
+  Split uploading with recognition into relatively small iterations to prevent timeout
+  failures.
 '''
 
 # TODO treat paths as groups for recognition:
@@ -104,7 +107,6 @@ def get_files(paths):
                 folder_path = os.path.join(base, f)
                 if os.path.islink(folder_path):
                     sys.stderr.write("WARNING: Symlink %s was skipped!\n" % folder_path)
-                    sys.stderr.flush()
     return files_list, total_size
 
 
@@ -137,7 +139,7 @@ def recognize_files(connection, accession_file_map, new_folder):
             for info in sources:
                 recognized_accessions.add(info['accession'])
 
-    created_files = application.invoke('createFiles', recognised_files)
+    created_files = application.invoke('createFiles', recognised_files, None)
     groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
         print name
@@ -159,7 +161,7 @@ def recognize_files(connection, accession_file_map, new_folder):
         print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
 
 
-if __name__ == '__main__':
+def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
@@ -172,3 +174,6 @@ if __name__ == '__main__':
         recognize_files(connection, accessions, new_folder)
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
+
+if __name__ == '__main__':
+    main()
