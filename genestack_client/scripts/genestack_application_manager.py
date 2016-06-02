@@ -525,6 +525,7 @@ def wait_application_loading(application, app_id, version, seconds=1):
         descriptor = get_application_descriptor(application, app_id, version)
         if descriptor['state'] == 'FAILED':
             sys.stderr.write('\nLoading of application \'%s\' with version \'%s\' was failed' % (app_id, version))
+            break
 
 
 AppInfo = namedtuple('AppInfo', [
