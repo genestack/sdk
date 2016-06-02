@@ -516,14 +516,15 @@ def get_application_descriptor(application, application_id, version):
 
 def wait_application_loading(application, app_id, version, seconds=5):
     descriptor = get_application_descriptor(application, app_id, version)
-    if not descriptor['isLoaded']:
+    if descriptor['state'] != 'LOADED':
         sys.stdout.write('\nApplication \'%s\' with version \'%s\' is not loaded yet.'
                          ' Waiting for loading (interrupt to abort)... ' % (app_id, version))
         sys.stdout.flush()
-    while not descriptor['isLoaded']:
+    while descriptor['state'] != 'LOADED':
         time.sleep(seconds)
         descriptor = get_application_descriptor(application, app_id, version)
-
+        if descriptor['state'] == 'FAILED':
+            sys.stderr.write('\nLoading of application \'%s\' with version \'%s\' was failed' % (app_id, version))
 
 
 AppInfo = namedtuple('AppInfo', [
