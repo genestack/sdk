@@ -514,7 +514,7 @@ def get_application_descriptor(application, application_id, version):
     return application.invoke('getApplicationDescriptor', application_id, version)
 
 
-def wait_application_loading(application, app_id, version, seconds=5):
+def wait_application_loading(application, app_id, version, seconds=1):
     descriptor = get_application_descriptor(application, app_id, version)
     if descriptor['state'] != 'LOADED':
         sys.stdout.write('\nApplication \'%s\' with version \'%s\' is not loaded yet.'
