@@ -15,7 +15,10 @@ from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
 from argparse import RawTextHelpFormatter
-from genestack_client import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
+from genestack_client import (make_connection_parser, get_connection,
+                              DataImporter, FilesUtil, SpecialFolders)
+from genestack_client.genestack_exceptions import (GenestackServerException,
+                                                   GenestackVersionException)
 
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
@@ -165,7 +168,12 @@ def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
-    connection = get_connection(args)
+    try:
+        connection = get_connection(args)
+    except GenestackVersionException as e:
+        sys.stderr.write(str(e))
+        sys.stderr.write('\n')
+        exit(13)
     new_folder, folder_name, accessions = upload_files(connection, files)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
     if args.no_recognition:
@@ -174,6 +182,7 @@ def main():
         recognize_files(connection, accessions, new_folder)
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
+        exit(1)
 
 if __name__ == '__main__':
     main()
