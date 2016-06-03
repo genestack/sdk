@@ -18,6 +18,8 @@ Usage
 
     {usage}
 
+``{name}`` exits with ``0`` return code in case of success, ``1`` if
+recognition failed, and ``13`` if server requires newer Python Client version.
 """
 
 
