@@ -398,11 +398,15 @@ def mark_as_stable(application, version, app_id_list, scope):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if scope == 'SYSTEM':
-            wait_application_loading(application, app_id, version)
-        application.invoke('markAsStable', app_id, scope, version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
+            if wait_application_loading(application, app_id, version):
+                application.invoke('markAsStable', app_id, scope, version)
+                sys.stdout.write('ok\n')
+                sys.stdout.flush()
+        else:
+            application.invoke('markAsStable', app_id, scope, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
 
 
 def remove_applications(application, version, app_id_list):
@@ -490,10 +494,10 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        wait_application_loading(application, app_id, version)
-        application.invoke('releaseApplication', app_id, version, new_version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        if wait_application_loading(application, app_id, version):
+            application.invoke('releaseApplication', app_id, version, new_version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
 
 
 def set_applications_visibility(application, app_ids, version, level):
@@ -504,10 +508,10 @@ def set_applications_visibility(application, app_ids, version, level):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        wait_application_loading(application, app_id, version)
-        application.invoke('setVisibility', app_id, version, level)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        if wait_application_loading(application, app_id, version):
+            application.invoke('setVisibility', app_id, version, level)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
 
 
 def get_application_descriptor(application, application_id, version):
@@ -520,12 +524,18 @@ def wait_application_loading(application, app_id, version, seconds=1):
         sys.stdout.write('\nApplication \'%s\' with version \'%s\' is not loaded yet.'
                          ' Waiting for loading (interrupt to abort)... ' % (app_id, version))
         sys.stdout.flush()
-    while descriptor['state'] != 'LOADED':
-        time.sleep(seconds)
-        descriptor = get_application_descriptor(application, app_id, version)
-        if descriptor['state'] == 'FAILED':
-            sys.stderr.write('\nLoading of application \'%s\' with version \'%s\' was failed' % (app_id, version))
-            break
+    try:
+        while descriptor['state'] != 'LOADED':
+            time.sleep(seconds)
+            descriptor = get_application_descriptor(application, app_id, version)
+            if descriptor['state'] == 'FAILED':
+                sys.stderr.write('\nLoading of application \'%s\' with version \'%s\' was failed\n' % (app_id, version))
+                return False
+    except KeyboardInterrupt:
+        sys.stdout.write('Action interrupted\n')
+        sys.stdout.flush()
+        return False
+    return True
 
 
 AppInfo = namedtuple('AppInfo', [
