@@ -73,6 +73,16 @@ class Time(Call):
 class Shell(GenestackShell):
     COMMAND_LIST = [Time, Call]
 
+    def get_commands_for_help(self):
+        commands = GenestackShell.get_commands_for_help(self)
+        for data in self.connection.application(APPLICATION_SHELL).invoke('getCommands'):
+            commands.append((data['name'],
+                            'args: %s returns: %s. %s' % (
+                                                ', '.join(data['params']) or 'None',
+                                                data['returns'],
+                                                data['docs'] or 'No documentation')))
+        return commands
+
     def default(self, line):
         args = shlex.split(line)
         if args and args[0] in self.COMMANDS:
