@@ -373,8 +373,11 @@ class GenestackShell(cmd.Cmd):
         if not line:
             print self.doc_header
             print '=' * len(self.doc_header)
+            commands = self.get_commands_for_help()
+            max_size = max(len(command_name) for command_name, _ in commands)
+            help_size = max((20, max_size + 3))
             for command_name, short_description in self.get_commands_for_help():
-                print '%-20s%s' % (command_name, short_description)
+                print '%-*s%s' % (help_size, command_name, short_description)
             print '=' * len(self.doc_header)
 
         try:
