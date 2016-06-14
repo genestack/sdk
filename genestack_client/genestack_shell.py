@@ -350,6 +350,18 @@ class GenestackShell(cmd.Cmd):
             print_exc()
         return 1
 
+    def get_commands_for_help(self):
+        """
+        Return list of command - description paires to shown in shell help command.
+
+        :return: command - description pairs
+        :rtype list[(str, str)]
+        """
+        commands = [('quit', 'Exit shell.')]
+        for name, value in self.COMMANDS.items():
+            commands.append((name, value().get_short_description()))
+        return sorted(commands)
+
     def do_help(self, line):
         print
 
@@ -359,15 +371,14 @@ class GenestackShell(cmd.Cmd):
             return
 
         if not line:
-            commands = {'quit': 'Exit shell.'}
-            for name, value in self.COMMANDS.items():
-                commands[name] = value().get_short_description()
             print self.doc_header
             print '=' * len(self.doc_header)
-            for command_name, short_description in sorted(commands.items()):
-                print '%-20s%s' % (command_name, short_description)
+            commands = self.get_commands_for_help()
+            max_size = max(len(command_name) for command_name, _ in commands)
+            help_size = max((20, max_size + 3))
+            for command_name, short_description in self.get_commands_for_help():
+                print '%-*s%s' % (help_size, command_name, short_description)
             print '=' * len(self.doc_header)
-            return
 
         try:
             getattr(self, 'help_' + line)()
