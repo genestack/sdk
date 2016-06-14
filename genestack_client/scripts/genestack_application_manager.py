@@ -379,6 +379,7 @@ def match_jar_globs(paths):
     """ Return a list of files or directories by list of globs. """
     return sum([glob.glob(p) for p in paths], [])
 
+
 def resolve_jar_file(file_path):
     if not os.path.exists(file_path):
         raise GenestackException("No such file or directory: %s" % file_path)
