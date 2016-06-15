@@ -13,6 +13,8 @@ import json
 import shlex
 from datetime import datetime
 
+import sys
+
 from genestack_client.genestack_shell import GenestackShell, Command
 
 APPLICATION_SHELL = 'genestack/shell'
@@ -84,7 +86,12 @@ class Shell(GenestackShell):
         return commands
 
     def default(self, line):
-        args = shlex.split(line)
+        try:
+            args = shlex.split(line)
+        except Exception as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            return
         if args and args[0] in self.COMMANDS:
             self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection)
         else:
