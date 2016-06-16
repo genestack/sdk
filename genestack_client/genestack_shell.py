@@ -401,7 +401,12 @@ class GenestackShell(cmd.Cmd):
         pass
 
     def default(self, line):
-        args = shlex.split(line)
+        try:
+            args = shlex.split(line)
+        except Exception as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            return
         if args and args[0] in self.COMMANDS:
             self.process_command(self.COMMANDS[args[0]](), args[1:], shell=True)
         else:
