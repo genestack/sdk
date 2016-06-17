@@ -10,11 +10,12 @@
 #
 
 import glob
-import json
 import os
 import sys
 import urllib2
 import xml.dom.minidom as minidom
+import json
+import time
 import zipfile
 from collections import namedtuple
 from genestack_client import GenestackException
@@ -378,6 +379,7 @@ def match_jar_globs(paths):
     """ Return a list of files or directories by list of globs. """
     return sum([glob.glob(p) for p in paths], [])
 
+
 def resolve_jar_file(file_path):
     if not os.path.exists(file_path):
         raise GenestackException("No such file or directory: %s" % file_path)
@@ -405,9 +407,15 @@ def mark_as_stable(application, version, app_id_list, scope):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('markAsStable', app_id, scope, version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
+            if wait_application_loading(application, app_id, version):
+                application.invoke('markAsStable', app_id, scope, version)
+                sys.stdout.write('ok\n')
+                sys.stdout.flush()
+        else:
+            application.invoke('markAsStable', app_id, scope, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
 
 
 def remove_applications(application, version, app_id_list):
@@ -495,9 +503,10 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('releaseApplication', app_id, version, new_version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        if wait_application_loading(application, app_id, version):
+            application.invoke('releaseApplication', app_id, version, new_version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
 
 
 def set_applications_visibility(application, app_ids, version, level):
@@ -508,9 +517,33 @@ def set_applications_visibility(application, app_ids, version, level):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('setVisibility', app_id, version, level)
-        sys.stdout.write('ok\n')
+        if wait_application_loading(application, app_id, version):
+            application.invoke('setVisibility', app_id, version, level)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+
+
+def get_application_descriptor(application, application_id, version):
+    return application.invoke('getApplicationDescriptor', application_id, version)
+
+
+def wait_application_loading(application, app_id, version, seconds=1):
+    descriptor = get_application_descriptor(application, app_id, version)
+    if descriptor['state'] != 'LOADED':
+        sys.stdout.write('\nApplication is not loaded yet. Waiting for loading (interrupt to abort)... ')
         sys.stdout.flush()
+    try:
+        while descriptor['state'] != 'LOADED':
+            time.sleep(seconds)
+            descriptor = get_application_descriptor(application, app_id, version)
+            if descriptor['state'] == 'FAILED':
+                sys.stdout.write('\nLoading of application failed\n')
+                return False
+    except KeyboardInterrupt:
+        sys.stdout.write('Action interrupted\n')
+        sys.stdout.flush()
+        return False
+    return True
 
 
 AppInfo = namedtuple('AppInfo', [
