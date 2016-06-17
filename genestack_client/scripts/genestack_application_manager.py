@@ -537,7 +537,7 @@ def wait_application_loading(application, app_id, version, seconds=1):
             time.sleep(seconds)
             descriptor = get_application_descriptor(application, app_id, version)
             if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application was failed\n')
+                sys.stdout.write('\nLoading of application failed\n')
                 return False
     except KeyboardInterrupt:
         sys.stdout.write('Action interrupted\n')
