@@ -59,7 +59,7 @@ group.add_argument('paths',
                    help='path to files or folders',
                    metavar='<paths>', nargs='+')
 group.add_argument('-n', '--no-recognition', help="don't try to recognize files", action='store_true')
-group.add_argument('--name', metavar='<name>',
+group.add_argument('-F', '--folder_name', metavar='<name>',
                    help='name of the upload folder, if name is not specified it will be generated')
 
 
@@ -175,7 +175,7 @@ def main():
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
         exit(13)
-    new_folder, folder_name, accessions = upload_files(connection, files, args.name)
+    new_folder, folder_name, accessions = upload_files(connection, files, args.folder_name)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
     if args.no_recognition:
         exit(0)
