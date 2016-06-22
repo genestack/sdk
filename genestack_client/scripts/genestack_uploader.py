@@ -60,6 +60,8 @@ group.add_argument('paths',
                    help='path to files or folders',
                    metavar='<paths>', nargs='+')
 group.add_argument('-n', '--no-recognition', help="don't try to recognize files", action='store_true')
+group.add_argument('--name', metavar='<name>',
+                   help='name of the upload folder, if name is not specified it will be generated')
 
 
 def friendly_number(number):
@@ -113,11 +115,11 @@ def get_files(paths):
     return files_list, total_size
 
 
-def upload_files(connection, files):
+def upload_files(connection, files,folder_name):
     importer = DataImporter(connection)
     fu = FilesUtil(connection)
     upload = fu.get_special_folder(SpecialFolders.UPLOADED)
-    folder_name = datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
+    folder_name = folder_name or datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
     new_folder = fu.create_folder(folder_name, parent=upload,
                                   description='Files uploaded by genestack-uploader')
     accession_file_map = {}
@@ -174,7 +176,7 @@ def main():
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
         exit(13)
-    new_folder, folder_name, accessions = upload_files(connection, files)
+    new_folder, folder_name, accessions = upload_files(connection, files, args.name)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
     if args.no_recognition:
         exit(0)
