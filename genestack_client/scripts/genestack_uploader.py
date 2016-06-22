@@ -20,7 +20,6 @@ from genestack_client import (make_connection_parser, get_connection,
 from genestack_client.genestack_exceptions import (GenestackServerException,
                                                    GenestackVersionException)
 
-
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
 
 - Collecting files:
@@ -115,7 +114,7 @@ def get_files(paths):
     return files_list, total_size
 
 
-def upload_files(connection, files,folder_name):
+def upload_files(connection, files, folder_name):
     importer = DataImporter(connection)
     fu = FilesUtil(connection)
     upload = fu.get_special_folder(SpecialFolders.UPLOADED)
@@ -185,6 +184,7 @@ def main():
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
         exit(1)
+
 
 if __name__ == '__main__':
     main()
