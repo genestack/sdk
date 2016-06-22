@@ -61,6 +61,8 @@ group.add_argument('paths',
 group.add_argument('-n', '--no-recognition', help="don't try to recognize files", action='store_true')
 group.add_argument('-F', '--folder_name', metavar='<name>',
                    help='name of the upload folder, if name is not specified it will be generated')
+group.add_argument('-F', '--folder_name', metavar='<name>',
+                   help='name of the upload folder, if name is not specified it will be generated')
 
 
 def friendly_number(number):
