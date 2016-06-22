@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
 # actual or intended publication of such source code.
 #
 
-from genestack_client import Application
+import sys
 
-
-CALC_CHECKSUMS_METHOD_NAME = 'markKeyForCountChecksum'
-ADD_CHECKSUM_METHOD_NAME = 'addCheckSums'
+from genestack_client import Application, FilesUtil
 
 
 class CLApplication(Application):
@@ -44,8 +42,8 @@ class CLApplication(Application):
         :param calculate_checksums: a flag used in the initialization script
             to compute checksums for the created files
         :type calculate_checksums: bool
-        :param expected_checksums: List of expected checksums, in any order
-        :type expected_checksums: list
+        :param expected_checksums: Dict of expected checksums (``{metainfo_key: expected_checksum}``)
+        :type expected_checksums: dict
         :param initialize: should initialization be started immediately
             after the file is created?
         :return: accession of created file
@@ -54,50 +52,18 @@ class CLApplication(Application):
         app_file = self.__create_file(source_files, params)
 
         if name:
-            self.rename_file(app_file, name)
+            fu = FilesUtil(self.connection)
+            fu.rename_file(app_file, name)
 
         if calculate_checksums:
-            self.mark_for_tests(app_file)
+            fu.mark_for_tests(app_file)
 
         if expected_checksums:
-            self.add_checksums(app_file, expected_checksums)
+            fu.add_checksums(app_file, expected_checksums)
 
         if initialize:
             self.start(app_file)
         return app_file
-
-    def mark_for_tests(self, app_file):
-        """
-        Mark file for test via add corresponding key to the metainfo.
-        Test file will calculate md5 checksums for processed files
-        stored in the storage during initialization.
-
-        :param app_file: accession of file
-        :return: None
-        """
-        self.connection.application('genestack/bio-test-cla').invoke(
-            CALC_CHECKSUMS_METHOD_NAME, app_file)
-
-    def add_checksums(self, app_file, expected_checksums):
-        """
-        Add expected MD5 checksum to the metainfo of a CLA file.
-        Expected checksums are calculated in the following way:
-
-            - The number of checksums is equal to the number of entries in storage.
-              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
-            - The order of the checksums does not matter (TODO: that might entail problems!).
-            - If there are multiple files in one entry, they will be concatenated in the same order
-              as they were ``PUT`` to storage by the initialization script.
-            - If a file is marked for testing, then after initialization its metainfo
-              will contain both expected and actual checksum values.
-
-        :param app_file: accession of application file
-        :param expected_checksums: collection of MD5 checksums
-        :return: None
-        """
-
-        self.connection.application('genestack/bio-test-cla').invoke(
-            ADD_CHECKSUM_METHOD_NAME, app_file, expected_checksums)
 
     def __create_file(self, source_files, params=None):
         source_file_list = source_files if isinstance(source_files, list) else [source_files]
@@ -118,39 +84,28 @@ class CLApplication(Application):
         If the file is not found, does not have the right file type
         or is already initialized, an exception will be thrown.
 
-        :param accession: file accession
+        :param accession: file accession or accession list
         :type accession: str
         :param params: list of commandlines to be set
         :type params: list
         :return: None
         """
-        self.invoke('changeCommandLineArguments', accession, params if isinstance(params, list) else [params])
+        self.invoke('changeCommandLineArguments', self.__to_list(accession), self.__to_list(params))
 
     def start(self, accession):
         """
         Start file initialization.
         If the file is not found or is not of the right file type, an exception will be thrown.
 
-        :param accession: file accession
+        :param accession: file accession or accession list
         :type accession: str
         :return: None
         """
-        self.invoke('start', accession)
+        self.invoke('start', self.__to_list(accession))
 
-    # TODO move to filesUtils, why we return name?
     def rename_file(self, accession, name):
-        """
-        Rename a file and returns its new name.
-
-        :param accession: file accession
-        :type accession: str
-        :param name: name
-        :type name: str
-        :return: new name
-        :rtype: str
-        """
-        # TODO java return name because javascript require it for callback, should we support same interface in python?
-        return self.invoke('renameFile', accession, name)
+        sys.stderr.write('Deprecated: use FilesUtil.rename_file instead\n')
+        FilesUtil(self.connection).rename_file(accession, name)
 
     def replace_file_reference(self, accession, key, accession_to_remove, accession_to_add):
         """
@@ -161,13 +116,16 @@ class CLApplication(Application):
         If ``accession_to_remove`` or ``accession_to_add`` is not found,
         an exception will be thrown.
 
-        :param accession: accession of file
+        :param accession: file accession or accession list
         :param key: key for source files
         :param accession_to_remove: accession to remove
         :param accession_to_add: accession to add
         :return: None
         """
-        self.invoke('replaceFileReference', accession, key, accession_to_remove, accession_to_add)
+        self.invoke('replaceFileReference', self.__to_list(accession), key, accession_to_remove, accession_to_add)
+
+    def __to_list(self, string_or_list):
+        return string_or_list if isinstance(string_or_list, list) else [string_or_list]
 
 
 class TestCLApplication(CLApplication):
@@ -208,6 +166,15 @@ class MergeRawReadsApplication(Application):
         return self.invoke('createFiles', sources_folder, grouping_key)
 
 
+# preprocess microarrays
+
+class AffymetrixMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/affymetrix-normalisation'
+
+
+class AgilentMicroarraysNormalisationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/agilent-normalisation'
+
 
 # preprocess mapped reads
 
@@ -221,6 +188,10 @@ class RemoveDuplicated(CLApplication):
 
 class MergeMappedReadsApplication(CLApplication):
     APPLICATION_ID = 'genestack/merge-mapped-reads'
+
+
+class AlignedReadsSubsamplingApplication(CLApplication):
+    APPLICATION_ID = 'genestack/aligned-subsampling'
 
 
 # preprocess variants
@@ -281,6 +252,7 @@ class VariationCaller2Application(CLApplication):
 class NormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/normalization'
 
+
 class IntersectGenomicFeaturesMapped(CLApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
@@ -289,6 +261,10 @@ class IntersectGenomicFeaturesMapped(CLApplication):
 
 class ExpressionNavigatorforGenes(CLApplication):
     APPLICATION_ID = 'genestack/expressionNavigator'
+
+
+class SingleCellRNASeqAnalysisApplication(CLApplication):
+    APPLICATION_ID = 'genestack/rnaseq'
 
 
 # analyse FPKM counts
@@ -308,11 +284,19 @@ class GOEnrichmentAnalysis(CLApplication):
 class EffectPredictionApplication(CLApplication):
     APPLICATION_ID = 'genestack/snpeff'
 
+
 class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
 
+
 class IntersectGenomicFeaturesVariants(CLApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
+
+
+# Analyse microbiome content
+
+class QiimeMicrobiomeAnalysis(CLApplication):
+    APPLICATION_ID = 'genestack/qiime-report'
 
 
 # Explore apps
@@ -331,3 +315,15 @@ class AlignedReadsQC(CLApplication):
 
 class TargetedSequencingQC(CLApplication):
     APPLICATION_ID = 'genestack/alignedreads-qc-enrichment'
+
+
+class ArrayQualityMetricsApplication(CLApplication):
+    APPLICATION_ID = 'genestack/arrayqualitymetrics'
+
+
+class DoseResponseApplication(CLApplication):
+    APPLICATION_ID = 'genestack/dose-response'
+
+
+class SingleCellRNASeqVisualiserApplication(CLApplication):
+    APPLICATION_ID = 'genestack/scrvis'

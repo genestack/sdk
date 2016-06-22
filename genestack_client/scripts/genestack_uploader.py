@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -15,7 +15,10 @@ from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
 from argparse import RawTextHelpFormatter
-from genestack_client import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
+from genestack_client import (make_connection_parser, get_connection,
+                              DataImporter, FilesUtil, SpecialFolders)
+from genestack_client.genestack_exceptions import (GenestackServerException,
+                                                   GenestackVersionException)
 
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
@@ -107,7 +110,6 @@ def get_files(paths):
                 folder_path = os.path.join(base, f)
                 if os.path.islink(folder_path):
                     sys.stderr.write("WARNING: Symlink %s was skipped!\n" % folder_path)
-                    sys.stderr.flush()
     return files_list, total_size
 
 
@@ -140,7 +142,7 @@ def recognize_files(connection, accession_file_map, new_folder):
             for info in sources:
                 recognized_accessions.add(info['accession'])
 
-    created_files = application.invoke('createFiles', recognised_files)
+    created_files = application.invoke('createFiles', recognised_files, None)
     groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
         print name
@@ -162,11 +164,16 @@ def recognize_files(connection, accession_file_map, new_folder):
         print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
 
 
-if __name__ == '__main__':
+def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
-    connection = get_connection(args)
+    try:
+        connection = get_connection(args)
+    except GenestackVersionException as e:
+        sys.stderr.write(str(e))
+        sys.stderr.write('\n')
+        exit(13)
     new_folder, folder_name, accessions = upload_files(connection, files)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
     if args.no_recognition:
@@ -175,3 +182,7 @@ if __name__ == '__main__':
         recognize_files(connection, accessions, new_folder)
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
+        exit(1)
+
+if __name__ == '__main__':
+    main()

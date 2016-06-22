@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -9,6 +9,10 @@
 #
 
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
+
+
+CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
+EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 
 
 class SpecialFolders:
@@ -30,20 +34,6 @@ class FilesUtil(Application):
     """
     APPLICATION_ID = 'genestack/filesUtil'
 
-    # TODO remove in 0.1.10
-    # File class constants are renamed in 0.1.9
-    # Start deprecated constants
-    IFile = 'com.genestack.api.files.IFile'
-    IUnalignedReads = 'com.genestack.bio.files.IUnalignedReads'
-    IFolder = 'com.genestack.api.files.IFolder'
-    IAlignedReads = 'com.genestack.bio.files.IAlignedReads'
-    IVariationFile = 'com.genestack.bio.files.IVariationFile'
-    IExperiment = 'com.genestack.bio.files.IExperiment'
-    IApplicationPageFile = 'com.genestack.files.IApplicationPageFile'
-    IContainerFile = 'com.genestack.api.files.IContainerFile'
-    IReferenceGenome = 'com.genestack.bio.files.IReferenceGenome'
-    # end deprecated constants
-
     CONTAINER = 'com.genestack.api.files.IContainerFile'
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
@@ -52,7 +42,7 @@ class FilesUtil(Application):
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
     ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
     VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
-    APPLICATION_PAGE_FILE = 'com.genestack.files.IApplicationPageFile'
+    APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
     REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
     AUXILIARY_FILE = 'com.genestack.api.files.IAuxiliaryFile'
     INDEX_FILE = 'com.genestack.api.files.IIndexFile'
@@ -62,9 +52,11 @@ class FilesUtil(Application):
     GENOME_ANNOTATIONS = 'com.genestack.bio.files.IGenomeAnnotations'
     HTSEQ_COUNTS = 'com.genestack.bio.files.IHTSeqCounts'
     EXTERNAL_DATABASE = 'com.genestack.bio.files.IExternalDataBase'
-    PREFERENCES_FILE = 'com.genestack.files.IPreferencesFile'
-    REPORT_FILE = 'com.genestack.files.IReportFile'
-    RAW_FILE = 'com.genestack.files.IRawFile'
+    PREFERENCES_FILE = 'com.genestack.api.files.IPreferencesFile'
+    REPORT_FILE = 'com.genestack.api.files.IReportFile'
+    RAW_FILE = 'com.genestack.api.files.IRawFile'
+    MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
+    SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -192,7 +184,7 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('linkFile', accession, parent)
+        self.invoke('linkFiles', {accession: [parent]})
 
     def unlink_file(self, accession, parent):
         """
@@ -204,7 +196,30 @@ class FilesUtil(Application):
         :type parent: str
         :rtype: None
         """
-        self.invoke('unlinkFile', accession, parent)
+        self.invoke('unlinkFiles', {accession: [parent]})
+
+    def link_files(self, children_to_parents_dict):
+        """
+        Link files to containers.
+
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to link, and
+            values are lists of accessions of the containers to link into
+        :type: dict
+
+        :rtype: None
+        """
+        self.invoke('linkFiles', children_to_parents_dict)
+
+    def unlink_files(self, children_to_parents_dict):
+        """
+        Unlink files from containers.
+        
+        :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
+            values are lists of accessions of the containers to unlink from
+        :type: dict
+        :rtype: None
+        """
+        self.invoke('unlinkFiles', children_to_parents_dict)
 
     def clear_container(self, container_accession):
         """
@@ -273,6 +288,20 @@ class FilesUtil(Application):
         :rtype: None
         """
         self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
+
+    def get_metainfo_values_as_strings(self, accessions_list, keys_list):
+        """
+        Retrieve metainfo values as strings for specific files and metainfo keys.
+        The function returns a dictionary.
+
+        :param accessions_list: accessions of the files to retrieve
+        :type: accessions: list[str]
+        :param keys_list: metainfo keys to retrieve
+        :type: keys: list[str]
+        :return: a two-level dictionary with the following structure: accession -> key -> value
+        :rtype: dict
+        """
+        return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
 
     def get_special_folder(self, name):
         """
@@ -473,3 +502,49 @@ class FilesUtil(Application):
         :rtype: list
         """
         return self.invoke('getInfos', accession_list)
+
+    def rename_file(self, accession, name):
+        """
+        Rename a file.
+
+        :param accession: file accession
+        :type accession: str
+        :param name: name
+        :type name: str
+        :rtype: None
+        """
+        self.invoke('renameFile', accession, name)
+
+    def mark_for_tests(self, app_file):
+        """
+        Mark Genestack file as test one by adding corresponding key to metainfo.
+        Test file will calculate md5 checksums of its encapsulated physical files
+        during initialization.
+
+        :param app_file: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
+        self.add_metainfo_values(app_file, metainfo)
+
+    def add_checksums(self, app_file, expected_checksums):
+        """
+        Add expected MD5 checksum to the metainfo of a CLA file.
+        Expected checksums are calculated in the following way:
+
+            - The number of checksums equals number of entries in storage.
+              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
+            - If there are multiple files in one entry, they will be concatenated in the same order
+              as they were ``PUT`` to storage by the initialization script.
+            - If a file is marked for testing, then after initialization its metainfo
+              will contain both expected and actual checksum values.
+
+        :param app_file: accession of application file
+        :param expected_checksums: collection of MD5 checksums
+        :return: None
+        """
+        metainfo = Metainfo()
+        for key, value in expected_checksums.items():
+            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
+        self.add_metainfo_values(app_file, metainfo)

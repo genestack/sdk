@@ -18,11 +18,13 @@ Usage
 
     {usage}
 
+``{name}`` exits with ``0`` return code in case of success, ``1`` if
+recognition failed, and ``13`` if server requires newer Python Client version.
 """
 
 
 def main():
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack-uploader')) as f:
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack_client', 'scripts', 'genestack_uploader.py')) as f:
         module = imp.new_module('shell_name')
         exec(f.read(), module.__dict__)
 

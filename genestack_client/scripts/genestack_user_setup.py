@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2011-2015 Genestack Limited
+# Copyright (c) 2011-2016 Genestack Limited
 # All Rights Reserved
 # THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
 # The copyright notice above does not evidence any
@@ -13,8 +13,9 @@ from argparse import ArgumentParser
 
 import os
 import re
+import sys
 from getpass import getpass
-from genestack_client import GenestackException, get_connection
+from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.settings import DEFAULT_HOST, User, config
 
@@ -132,6 +133,7 @@ def select_user(users, selected=None):
 class SetPassword(Command):
     COMMAND = 'password'
     DESCRIPTION = 'Set password for user.'
+    OFFLINE = True
 
     def update_parser(self, parent):
         parent.add_argument('alias', metavar='<alias>', help='Alias for user to change password', nargs='?')
@@ -144,7 +146,7 @@ class SetPassword(Command):
             user = select_user(users, None)  # TODO get current user for shell and command line
 
         while True:
-            user.password = getpass('Input password for %s: ' % user.alias)
+            user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
             try:
                 user.get_connection()
                 break
@@ -274,30 +276,46 @@ class Init(Command):
         return parser
 
     def run(self):
-        config_path = config.get_settings_file()
-        if os.path.exists(config_path):
-            print "A config file was already found at %s" % config_path
-            return
-        print "If you do not have a Genestack account, you need to create one first."
+        """
+        Create config file if it is not present.
 
-        connection, user = ask_email_and_password(self.args.host)
-        config.add_user(user)  # adding first user make him default.
-        print "Initialization finished. Config file created at %s" % config_path
-        return connection
+        Catch ``KeyboardInterrupt`` and ``EOFError`` is required here for case
+        when this command is run for first time and in shell mode.
+        If we don't quit here, shell will continue execution and ask credentials once more.
+        """
+        try:
+            config_path = config.get_settings_file()
+            if os.path.exists(config_path):
+                print "A config file was already found at %s" % config_path
+                return
+            print "If you do not have a Genestack account, you need to create one first."
+
+            connection, user = ask_email_and_password(self.args.host)
+            config.add_user(user)  # adding first user make him default.
+            print "Initialization finished. Config file created at %s" % config_path
+        except (KeyboardInterrupt, EOFError):
+            sys.stdout.flush()
+            sys.stderr.write('\nError: Init is not finished\n')
+            exit(1)
 
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
     COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
+    intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
+    prompt = 'user_setup> '
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print "No config file was found; starting init."
-            self.process_command(Init(), ['--host', args.host], None)
-        GenestackShell.set_shell_user(self, args)
+            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], None)
+            args.host = None  # do not provide host for future use of arguments
 
 
-if __name__ == '__main__':
+def main():
     shell = UserManagement()
     shell.cmdloop()
+
+if __name__ == '__main__':
+    main()
