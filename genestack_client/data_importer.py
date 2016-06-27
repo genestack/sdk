@@ -65,6 +65,7 @@ class DataImporter(object):
     """
     def __init__(self, connection):
         self.connection = connection
+        self.importer = connection.application('genestack/upload')
 
     def __process_links(self, metainfo):
         all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
@@ -109,14 +110,9 @@ class DataImporter(object):
             return url_parse.path
         return None
 
-    def __invoke_loader(self, application, method, parent, metainfo):
+    def __invoke_loader(self, parent, type_, metainfo):
         self.__process_links(metainfo)
-        fileinfo = self.connection.application(application).invoke(method, parent, metainfo)
-        # FIXME: Use only `fileinfo['accession']` after Dotorg is compatible with this change
-        try:
-            return fileinfo['accession']
-        except:
-            return fileinfo['Accession']
+        return self.importer.invoke('createFile', parent, type_, metainfo)['accession']
 
     def load_raw(self, file_path):
         """
@@ -153,7 +149,7 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/bedLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'bedFiles', metainfo)
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
@@ -179,7 +175,7 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/variationFileLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'variationFiles', metainfo)
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
@@ -206,7 +202,7 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/wigLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'wigFiles', metainfo)
 
     def create_bam(self,
                    parent=None,
@@ -247,7 +243,7 @@ class DataImporter(object):
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, url)
-        return self.__invoke_loader('genestack/alignedReadsLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
@@ -270,7 +266,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         description and metainfo.add_string(BioMetainfo.DESCRIPTION, description)
-        return self.__invoke_loader('genestack/experimentLoader', 'addExperiment', parent, metainfo)
+        return self.__invoke_loader(parent, 'experiment', metainfo)
 
     def create_microarray_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
@@ -303,7 +299,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/experimentLoader', 'addMicroarrayAssay', parent, metainfo)
+        return self.__invoke_loader(parent, 'microarrays', metainfo)
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
@@ -336,7 +332,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, url)
-        return self.__invoke_loader('genestack/experimentLoader', 'addSequencingAssay', parent, metainfo)
+        return self.__invoke_loader(parent, 'sequencingAssay', metainfo)
 
     def create_unaligned_read(self, parent=None, name=None, urls=None,
                               method=None, organism=None, metainfo=None):
@@ -370,7 +366,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetainfo.READS_LINK, url)
-        return self.__invoke_loader('genestack/unalignedReadsLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'rawReads', metainfo)
 
     def create_genome_annotation(self, parent=None, url=None, name=None,
                                  organism=None, reference_genome=None,
@@ -406,11 +402,11 @@ class DataImporter(object):
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if url:
             metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/genome-annotation-loader', 'addGOAnnotationFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'genomeAnnotations', metainfo)
 
     def create_codon_table(self, parent=None, metainfo=None):
         metainfo = metainfo or BioMetainfo()
-        return self.__invoke_loader('genestack/codonTableLoader', 'addCodonTable', parent, metainfo)
+        return self.__invoke_loader(parent, 'codonTables', metainfo)
 
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
@@ -438,7 +434,7 @@ class DataImporter(object):
         organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
         if url:
             metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/variationDatabaseLoader', 'addDbNSFP', parent, metainfo)
+        return self.__invoke_loader(parent, 'dbnsfp', metainfo)
 
     def create_reference_genome(self,
                                 parent=None,
@@ -493,7 +489,7 @@ class DataImporter(object):
         metainfo.add_string(metainfo.DESCRIPTION, description or '')
         for seq_link in sequence_urls:
             metainfo.add_external_link(SEQUENCE_KEY, seq_link, text='Sequence data link')
-        return self.__invoke_loader('genestack/referenceGenomeLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'genomes', metainfo)
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
         """
@@ -519,7 +515,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/reportLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'reportFiles', metainfo)
 
     def create_mapped_reads_count(self,
                                   parent=None,
@@ -550,7 +546,7 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/mappedReadsCountLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
         """
@@ -573,4 +569,4 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
-        return self.__invoke_loader('genestack/owlOntologyFileLoader', 'importFile', parent, metainfo)
+        return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
