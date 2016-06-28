@@ -110,9 +110,9 @@ class DataImporter(object):
             return url_parse.path
         return None
 
-    def __invoke_loader(self, parent, type_, metainfo):
+    def __invoke_loader(self, parent, importer_type, metainfo):
         self.__process_links(metainfo)
-        return self.importer.invoke('createFile', parent, type_, metainfo)['accession']
+        return self.importer.invoke('createFile', parent, importer_type, metainfo)['accession']
 
     def load_raw(self, file_path):
         """
