@@ -1,14 +1,6 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
 
@@ -17,7 +9,7 @@ setup(
     version=__version__,
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
     url='',
-    license='',
+    license='MIT',
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
@@ -29,5 +21,8 @@ setup(
             'genestack-application-manager = genestack_client.scripts.genestack_application_manager:main',
             'genestack-uploader = genestack_client.scripts.genestack_uploader:main',
         ],
-    }
+    },
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+    ],
 )
