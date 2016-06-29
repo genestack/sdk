@@ -5,3 +5,7 @@ div.highlight-sh div pre {
 div.highlight-none div pre {
     background-color: lightgray;
 }
+
+img.logo {
+  height: 100px !important;
+}

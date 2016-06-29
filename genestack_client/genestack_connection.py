@@ -103,7 +103,9 @@ class Connection:
 
         if compatible <= my_version:
             return
-        raise GenestackVersionException(my_version, compatible)
+
+        # use original version message in exception. str(StrictVersion('0.7.0')) == '0.7'
+        raise GenestackVersionException(my_version, version_map[COMPATIBLE])
 
     def logout(self):
         """

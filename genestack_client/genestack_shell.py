@@ -344,10 +344,10 @@ class GenestackShell(cmd.Cmd):
 
     def get_commands_for_help(self):
         """
-        Return list of command - description paires to shown in shell help command.
+        Return list of command - description pairs to shown in shell help command.
 
         :return: command - description pairs
-        :rtype list[(str, str)]
+        :rtype: list[(str, str)]
         """
         commands = [('quit', 'Exit shell.')]
         for name, value in self.COMMANDS.items():
