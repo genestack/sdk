@@ -9,7 +9,7 @@ setup(
     version=__version__,
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
     url='',
-    license='',
+    license='MIT',
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
@@ -21,5 +21,8 @@ setup(
             'genestack-application-manager = genestack_client.scripts.genestack_application_manager:main',
             'genestack-uploader = genestack_client.scripts.genestack_uploader:main',
         ],
-    }
+    },
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+    ],
 )
