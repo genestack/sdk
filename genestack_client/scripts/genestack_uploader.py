@@ -1,22 +1,16 @@
 #!python
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 import os
 import sys
 from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
 from argparse import RawTextHelpFormatter
-from genestack_client import make_connection_parser, DataImporter, get_connection, FilesUtil, SpecialFolders, GenestackServerException
-
+from genestack_client import (make_connection_parser, get_connection,
+                              DataImporter, FilesUtil, SpecialFolders)
+from genestack_client.genestack_exceptions import (GenestackServerException,
+                                                   GenestackVersionException)
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
 
@@ -57,6 +51,8 @@ group.add_argument('paths',
                    help='path to files or folders',
                    metavar='<paths>', nargs='+')
 group.add_argument('-n', '--no-recognition', help="don't try to recognize files", action='store_true')
+group.add_argument('-F', '--folder_name', metavar='<name>',
+                   help='name of the upload folder, if name is not specified it will be generated')
 
 
 def friendly_number(number):
@@ -110,11 +106,11 @@ def get_files(paths):
     return files_list, total_size
 
 
-def upload_files(connection, files):
+def upload_files(connection, files, folder_name):
     importer = DataImporter(connection)
     fu = FilesUtil(connection)
     upload = fu.get_special_folder(SpecialFolders.UPLOADED)
-    folder_name = datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
+    folder_name = folder_name or datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
     new_folder = fu.create_folder(folder_name, parent=upload,
                                   description='Files uploaded by genestack-uploader')
     accession_file_map = {}
@@ -139,7 +135,7 @@ def recognize_files(connection, accession_file_map, new_folder):
             for info in sources:
                 recognized_accessions.add(info['accession'])
 
-    created_files = application.invoke('createFiles', recognised_files, None)
+    created_files = application.invoke('createFiles', recognised_files, [], None)
     groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
         print name
@@ -165,8 +161,13 @@ def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
     print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
-    connection = get_connection(args)
-    new_folder, folder_name, accessions = upload_files(connection, files)
+    try:
+        connection = get_connection(args)
+    except GenestackVersionException as e:
+        sys.stderr.write(str(e))
+        sys.stderr.write('\n')
+        exit(13)
+    new_folder, folder_name, accessions = upload_files(connection, files, args.folder_name)
     print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
     if args.no_recognition:
         exit(0)
@@ -174,6 +175,8 @@ def main():
         recognize_files(connection, accessions, new_folder)
     except GenestackServerException as e:
         sys.stderr.write("Recognition failed: %s\n" % e)
+        exit(1)
+
 
 if __name__ == '__main__':
     main()

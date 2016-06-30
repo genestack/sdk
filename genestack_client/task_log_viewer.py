@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 import time
 import sys
 from genestack_client import Application, GenestackException
@@ -22,8 +14,9 @@ class TaskLogViewer(Application):
 
     STDERR = 'stderr'
     STDOUT = 'stdout'
+    MAX_CHUNK_SIZE = 128000
 
-    def view_log(self, accession, log_type=None, follow=True):
+    def view_log(self, accession, log_type=None, follow=True, offset=0):
         """
         Print a file's latest task initialization logs to `stdout`.
         Raises an exception if the file is not found or has no associated initialization task.
@@ -34,31 +27,34 @@ class TaskLogViewer(Application):
         :param accession: file accession
         :param log_type: `stdout` or `stderr`
         :param follow: if enabled, wait and display new lines as they appear (similar to ``tail --follow``)
+        :param offset: offset from which to start retrieving the logs. Set to `-1` if you want to start retrieving
+          logs from the latest chunk.
         """
         if not log_type:
             log_type = self.STDOUT
-        offset = -1
-        limit = 128000
+        waiting_message_shown = True
 
         while True:
-            log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, limit)
+            log_chunk = self.invoke('getFileInitializationLog', accession, log_type, offset, self.MAX_CHUNK_SIZE)
             if not log_chunk:
-                raise GenestackException('File %s not found or have no tasks' % accession)
+                raise GenestackException('File %s not found or has no initialization task' % accession)
 
-            if log_chunk['content'] is None and not follow:
-                break
-            elif log_chunk['content'] is None and log_chunk['isTerminal']:
-                print 'This log is empty (perhaps there was no log produced)'
-                break
-            elif log_chunk['content'] is None and not log_chunk['isTerminal']:
-                if follow:
-                    time.sleep(0.5)
-                else:
-                    print 'No log produced yet...'
-                    break
-            elif log_chunk['content'] is not None:
+            if log_chunk['content'] is not None:
                 sys.stdout.write(log_chunk['content'])
                 sys.stdout.flush()
-            if log_chunk['isTerminal'] or not follow:
-                break
-            offset = log_chunk['offset']
+                offset += len(log_chunk['content'])
+            else:
+                # the current chunk is empty
+                if offset == 0:
+                    if log_chunk['isTerminal']:
+                        print "No logs were produced."
+                    elif follow and not waiting_message_shown:
+                        print "No logs produced yet..."
+                        waiting_message_shown = True
+
+                if log_chunk['isTerminal'] or not follow:
+                    break
+
+                if follow:
+                    time.sleep(0.5)
+

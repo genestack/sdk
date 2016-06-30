@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 import sys
 
 from genestack_client import Application, FilesUtil
@@ -263,6 +255,10 @@ class ExpressionNavigatorforGenes(CLApplication):
     APPLICATION_ID = 'genestack/expressionNavigator'
 
 
+class SingleCellRNASeqAnalysisApplication(CLApplication):
+    APPLICATION_ID = 'genestack/rnaseq'
+
+
 # analyse FPKM counts
 
 class ExpressionNavigatorforIsoforms(CLApplication):
@@ -289,6 +285,12 @@ class IntersectGenomicFeaturesVariants(CLApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
 
 
+# Analyse microbiome content
+
+class QiimeMicrobiomeAnalysis(CLApplication):
+    APPLICATION_ID = 'genestack/qiime-report'
+
+
 # Explore apps
 
 class UnalignedReadsQC(CLApplication):
@@ -313,3 +315,7 @@ class ArrayQualityMetricsApplication(CLApplication):
 
 class DoseResponseApplication(CLApplication):
     APPLICATION_ID = 'genestack/dose-response'
+
+
+class SingleCellRNASeqVisualiserApplication(CLApplication):
+    APPLICATION_ID = 'genestack/scrvis'

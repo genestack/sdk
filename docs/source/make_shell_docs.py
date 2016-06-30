@@ -36,6 +36,9 @@ Use ``help command`` to get help for a specific command.
 
 See :ref:`Connection` for more information about connection arguments.
 
+``{name}`` exits with ``0`` return code in case of success, ``1`` in case of
+various nondescript errors, and ``13`` if server requires newer Python Client
+version.
 
 Commands
 --------

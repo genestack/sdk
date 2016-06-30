@@ -157,6 +157,14 @@ GenestackServerException
         :show-inheritance:
 
 
+GenestackAuthenticationException
+--------------------------------
+
+.. autoclass:: genestack_client.GenestackAuthenticationException
+        :members:
+        :show-inheritance:
+
+
 Others
 ******
 

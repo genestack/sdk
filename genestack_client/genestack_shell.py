@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 from argparse import ArgumentParser
 import sys
 import os
@@ -15,7 +7,7 @@ import cmd
 import shlex
 from traceback import print_exc
 
-from genestack_client import GenestackAuthenticationException, GenestackServerException
+from genestack_client import (GenestackVersionException, GenestackAuthenticationException, GenestackException)
 from version import __version__
 
 from utils import isatty, make_connection_parser, get_connection
@@ -144,6 +136,17 @@ class Command(object):
     def run(self):
         """
         Override this method to implement the command action.
+
+        Return value of this method is always ignored.
+        If this method raises an exception, the command will be treated as failed.
+
+        If this command is executed in the shell mode,
+        the failed state is ignored, otherwise exit code ``1`` is returned.
+
+        Raise :py:class:`~genestack_client.genestack_exceptions.GenestackException` to indicate command failure
+        without showing the stacktrace.
+
+        :rtype: None
         """
         raise NotImplementedError()
 
@@ -217,7 +220,12 @@ class GenestackShell(cmd.Cmd):
         return parser
 
     def setup_connection(self, args=None):
-        self.connection = get_connection(args)
+        try:
+            self.connection = get_connection(args)
+        except GenestackVersionException as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            exit(13)
 
     def preloop(self):
         # Entry point. Check whether we should run a script and exit, or start an interactive shell.
@@ -258,8 +266,8 @@ class GenestackShell(cmd.Cmd):
                 parser = self.get_shell_parser(offline=True)
                 _, others = parser.parse_known_args()
 
-            self.process_command(command, others)
-            exit(0)
+            exit_code = self.process_command(command, others)
+            exit(exit_code)
 
         # do shell
         try:
@@ -298,7 +306,7 @@ class GenestackShell(cmd.Cmd):
 
     def process_command(self, command, argument_list, shell=False):
         """
-        Run a command with arguments.
+        Runs the given command with the provided arguments and returns the exit code
 
         :param command: command
         :type command: Command
@@ -306,6 +314,9 @@ class GenestackShell(cmd.Cmd):
         :type argument_list: list
         :param shell: should we use shell mode?
         :type shell: bool
+        :return: 0 if the command was executed successfully, 1 otherwise
+
+        :rtype: int
         """
         if shell or command.OFFLINE:
             p = command.get_command_parser()
@@ -314,21 +325,34 @@ class GenestackShell(cmd.Cmd):
         try:
             args = p.parse_args(argument_list)
         except SystemExit:
-            return
+            return 1
         command.set_connection(self.connection)
         command.set_arguments(args)
         try:
-            return command.run()
+            command.run()
+            return 0
         except (KeyboardInterrupt, EOFError):
             print
             print "Command interrupted."
-            return
-        except GenestackServerException as e:
+        except GenestackException as e:
             sys.stdout.flush()
             sys.stderr.write('%s\n' % e)
         except Exception:
             sys.stdout.flush()
             print_exc()
+        return 1
+
+    def get_commands_for_help(self):
+        """
+        Return list of command - description pairs to shown in shell help command.
+
+        :return: command - description pairs
+        :rtype: list[(str, str)]
+        """
+        commands = [('quit', 'Exit shell.')]
+        for name, value in self.COMMANDS.items():
+            commands.append((name, value().get_short_description()))
+        return sorted(commands)
 
     def do_help(self, line):
         print
@@ -339,15 +363,14 @@ class GenestackShell(cmd.Cmd):
             return
 
         if not line:
-            commands = {'quit': 'Exit shell.'}
-            for name, value in self.COMMANDS.items():
-                commands[name] = value().get_short_description()
             print self.doc_header
             print '=' * len(self.doc_header)
-            for command_name, short_description in sorted(commands.items()):
-                print '%-20s%s' % (command_name, short_description)
+            commands = self.get_commands_for_help()
+            max_size = max(len(command_name) for command_name, _ in commands)
+            help_size = max((20, max_size + 3))
+            for command_name, short_description in self.get_commands_for_help():
+                print '%-*s%s' % (help_size, command_name, short_description)
             print '=' * len(self.doc_header)
-            return
 
         try:
             getattr(self, 'help_' + line)()
@@ -370,7 +393,12 @@ class GenestackShell(cmd.Cmd):
         pass
 
     def default(self, line):
-        args = shlex.split(line)
+        try:
+            args = shlex.split(line)
+        except Exception as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            return
         if args and args[0] in self.COMMANDS:
             self.process_command(self.COMMANDS[args[0]](), args[1:], shell=True)
         else:

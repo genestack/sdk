@@ -1,17 +1,12 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
 import argparse
 import json
 import shlex
 from datetime import datetime
+
+import sys
 
 from genestack_client.genestack_shell import GenestackShell, Command
 
@@ -73,8 +68,23 @@ class Time(Call):
 class Shell(GenestackShell):
     COMMAND_LIST = [Time, Call]
 
+    def get_commands_for_help(self):
+        commands = GenestackShell.get_commands_for_help(self)
+        for data in self.connection.application(APPLICATION_SHELL).invoke('getCommands'):
+            commands.append((data['name'],
+                            'args: %s returns: %s. %s' % (
+                                                ', '.join(data['params']) or 'None',
+                                                data['returns'],
+                                                data['docs'] or 'No documentation')))
+        return commands
+
     def default(self, line):
-        args = shlex.split(line)
+        try:
+            args = shlex.split(line)
+        except Exception as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            return
         if args and args[0] in self.COMMANDS:
             self.process_command(self.COMMANDS[args[0]](), args[1:], self.connection)
         else:

@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 from genestack_client import Metainfo
 
 
@@ -34,6 +26,7 @@ class BioMetainfo(Metainfo):
     READS_LINK = 'genestack.url:reads'
     DATA_LINK = 'genestack.url:data'
     BAM_FILE_LINK = 'genestack.url:bamfile'
+    REFERENCE_SEQUENCES = 'genestack.bio:referenceSequences'
     REFERENCE_GENOME = 'genestack.bio:referenceGenome'
     REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
     REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
