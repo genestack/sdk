@@ -38,12 +38,7 @@ SCOPE_DICT = {
 }
 DEFAULT_SCOPE = 'user'
 
-
-VISIBILITY_DICT = {
-    'group': 'GROUP',
-    'organization': 'ORGANIZATION',
-    'all': 'ALL'
-}
+VISIBILITIES = ['group', 'organization', 'all']
 
 
 class Info(Command):
@@ -182,9 +177,9 @@ class ListVersions(Command):
                 output_string += '%12s' % ('released' if visibility_map[item]['released'] else 'not released')
             if self.args.show_visibilities:
                 levels = visibility_map[item]['visibilityLevels']
-                visibility_description = 'all: ' + ('+' if 'ALL' in levels else '-')
-                visibility_description += ', owner\'s organization: ' + ('+' if 'ORGANIZATION' in levels else '-')
-                visibility_description += ', groups: ' + ('-' if 'GROUP' not in levels else '\'' + ('\', \''.join(levels['GROUP'])) + '\'')
+                visibility_description = 'all: ' + ('+' if 'all' in levels else '-')
+                visibility_description += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
+                visibility_description += ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
                 output_string += '    %s' % visibility_description
             print output_string
 
@@ -205,8 +200,8 @@ class Visibility(Command):
             'version', metavar='<version>', help='application version'
         )
         p.add_argument(
-            'level', metavar='<level>', choices=VISIBILITY_DICT.keys(),
-            help='Visibility level which will be set to application: %s' % (' | '.join(VISIBILITY_DICT.keys()))
+            'level', metavar='<level>', choices=VISIBILITIES,
+            help='Visibility level which will be set to application: %s' % (' | '.join(VISIBILITIES))
         )
         p.add_argument(
             'accessions', metavar='<accessions>', nargs='*',
@@ -216,7 +211,7 @@ class Visibility(Command):
     def run(self):
         change_applications_visibility(
             self.args.remove, self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version,
-            VISIBILITY_DICT[self.args.level], self.args.accessions
+            self.args.level, self.args.accessions
         )
 
 
@@ -482,7 +477,7 @@ def upload_single_file(application, file_path, version, override,
     if release:
         release_applications(application, app_info.identifiers, version, released_version)
         change_applications_visibility(
-            False, application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
+            False, application, app_info.identifiers, released_version, 'all'
         )
 
     if not stable:
