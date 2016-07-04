@@ -15,7 +15,7 @@ import os
 import re
 import sys
 from getpass import getpass
-from genestack_client import GenestackException
+from genestack_client import GenestackAuthenticationException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.settings import DEFAULT_HOST, User, config
 
@@ -71,7 +71,7 @@ def ask_email_and_password(host, alias=None):
         try:
             connection = user.get_connection()
             break
-        except GenestackException:
+        except GenestackAuthenticationException:
             print 'Your username or password was incorrect. Please try again.'
     return connection, user
 
@@ -150,7 +150,7 @@ class SetPassword(Command):
             try:
                 user.get_connection()
                 break
-            except GenestackException:
+            except GenestackAuthenticationException:
                 continue
         config.change_password(user.alias, user.password)
         print 'Password was changed.'
