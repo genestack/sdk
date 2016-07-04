@@ -507,9 +507,6 @@ def release_applications(application, app_ids, version, new_version):
 
 def change_applications_visibility(remove, application, app_ids, version, level, accessions=None):
     def invoke_change(group_accession=None):
-        params = [app_id, version, level]
-        if group_accession:
-            params.append(group_accession)
         application.invoke(
             'removeVisibility' if remove else 'addVisibility',
             app_id, version, level, group_accession if group_accession else None
