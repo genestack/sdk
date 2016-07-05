@@ -204,8 +204,8 @@ class Visibility(Command):
             help='Visibility level which will be set to application: %s' % (' | '.join(VISIBILITIES))
         )
         p.add_argument(
-            'accessions', metavar='<accessions>', nargs='*',
-            help='Accessions of groups for group visibility rule'
+            'accessions', metavar='<groups_accessions>', nargs='*',
+            help='Accessions of groups for \'group\' visibility rule'
         )
 
     def run(self):
