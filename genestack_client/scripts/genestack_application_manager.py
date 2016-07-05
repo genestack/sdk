@@ -205,7 +205,7 @@ class Visibility(Command):
         )
         p.add_argument(
             'accessions', metavar='<groups_accessions>', nargs='*',
-            help='Accessions of groups for \'group\' visibility rule'
+            help="Accessions of groups for 'group' visibility rule"
         )
 
     def run(self):
