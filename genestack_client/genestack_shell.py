@@ -291,7 +291,7 @@ class GenestackShell(cmd.Cmd):
             self.prompt = '%s> ' % email
         except GenestackAuthenticationException:
             self.prompt = 'anonymous>'
-        self.intro = '\ngenestack_client v%s\n%s' % (__version__, self.INTRO)
+        self.intro = 'genestack_client v%s\ndebug: %s\n%s' % (__version__, self.connection.debug, self.INTRO)
 
     def postloop(self):
         try:
@@ -342,6 +342,10 @@ class GenestackShell(cmd.Cmd):
             print_exc()
         return 1
 
+    def do_debug(self, line):
+        self.connection.debug = not self.connection.debug
+        print 'debug: %s' % self.connection.debug
+
     def get_commands_for_help(self):
         """
         Return list of command - description pairs to shown in shell help command.
@@ -349,7 +353,7 @@ class GenestackShell(cmd.Cmd):
         :return: command - description pairs
         :rtype: list[(str, str)]
         """
-        commands = [('quit', 'Exit shell.')]
+        commands = [('quit', 'Exit shell.'), ('debug', 'Toggle debug for connection.')]
         for name, value in self.COMMANDS.items():
             commands.append((name, value().get_short_description()))
         return sorted(commands)
