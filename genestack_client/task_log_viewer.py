@@ -17,6 +17,10 @@ class TaskLogViewer(Application):
     MAX_CHUNK_SIZE = 128000
 
     def view_log(self, accession, log_type=None, follow=True, offset=0):
+        sys.stderr.write('Usage of `TaskLogViewer.view_log` deprecated, use `TaskLogViewer.print_log` instead.\n')
+        self.print_log(accession, log_type=log_type, follow=follow, offset=offset)
+
+    def print_log(self, accession, log_type=None, follow=True, offset=0):
         """
         Print a file's latest task initialization logs to `stdout`.
         Raises an exception if the file is not found or has no associated initialization task.
