@@ -29,10 +29,11 @@ ENCODE_URL_PATTERN = "https://www.encodeproject.org/files/{0}/@@download/{0}.fas
 
 # parse script arguments
 parser = make_connection_parser()
-parser.add_argument('csv_file', help='Path to the local comma-delimited CSV file containing the data')
+parser.add_argument('tsv_file', metavar='<tsv_file>',
+                    help='Path to the local tab-delimited file containing the data')
 
 args = parser.parse_args()
-csv_input = args.csv_file
+tsv_input = args.tsv_file
 
 print "Connecting to Genestack..."
 
@@ -49,8 +50,8 @@ print "Created a new experiment with accession %s..." % experiment
 created_pairs = set()
 
 # parse the CSV file
-with open(csv_input, 'r') as the_file:
-    reader = csv.DictReader(the_file, delimiter="\t")
+with open(tsv_input, 'r') as the_file:
+    reader = csv.DictReader(the_file, dialect='excel_tab')
     field_names = reader.fieldnames
 
     for file_data in reader:
