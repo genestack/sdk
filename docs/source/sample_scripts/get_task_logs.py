@@ -19,4 +19,4 @@ connection = get_connection(arguments)
 log_viewer = TaskLogViewer(connection)
 
 # print task logs
-log_viewer.view_log(arguments.accession, log_type=arguments.type, follow=arguments.follow)
+log_viewer.print_log(arguments.accession, log_type=arguments.type, follow=arguments.follow)
