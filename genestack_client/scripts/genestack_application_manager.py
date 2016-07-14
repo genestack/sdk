@@ -38,12 +38,7 @@ SCOPE_DICT = {
 }
 DEFAULT_SCOPE = 'user'
 
-
-VISIBILITY_DICT = {
-    'owner': 'OWNER',
-    'all': 'ALL'
-}
-DEFAULT_VISIBILITY = 'owner'
+VISIBILITIES = ['group', 'organization', 'all']
 
 
 class Info(Command):
@@ -177,19 +172,27 @@ class ListVersions(Command):
                     'U' if item == stable_versions.get('USER') else '-',
                     'E' if item == stable_versions.get('SESSION') else '-'
                 )
-            output_string += '%-*s' % (max_len, item)
-            if self.args.show_visibilities:
-                output_string += '%8s' % visibility_map[item]['visibilityLevel']
+            output_string += '%-*s' % (max_len + 2, item)
             if self.args.show_release_state:
-                output_string += '   %s' % ('released' if visibility_map[item]['released'] else 'not released')
+                output_string += '%12s' % ('released' if visibility_map[item]['released'] else 'not released')
+            if self.args.show_visibilities:
+                levels = visibility_map[item]['visibilityLevels']
+                visibility_description = 'all: ' + ('+' if 'all' in levels else '-')
+                visibility_description += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
+                visibility_description += ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
+                output_string += '    %s' % visibility_description
             print output_string
 
 
 class Visibility(Command):
     COMMAND = 'visibility'
-    DESCRIPTION = 'Set visibility for application'
+    DESCRIPTION = 'Set or remove visibility for application'
 
     def update_parser(self, p):
+        p.add_argument(
+            '-r', '--remove', action='store_true', dest='remove',
+            help='Specifies if visibility must be removed (by default specific visibility will be added)'
+        )
         p.add_argument(
             'app_id', metavar='<appId>', help='application identifier'
         )
@@ -197,17 +200,18 @@ class Visibility(Command):
             'version', metavar='<version>', help='application version'
         )
         p.add_argument(
-            'level', metavar='<level>', choices=VISIBILITY_DICT.keys(),
-            default=DEFAULT_VISIBILITY,
-            help='Visibility level which will be set to application'
-                 ' (default is \'%s\'): %s' %
-                 (DEFAULT_VISIBILITY, ' | '.join(VISIBILITY_DICT.keys()))
+            'level', metavar='<level>', choices=VISIBILITIES,
+            help='Visibility level which will be set to application: %s' % (' | '.join(VISIBILITIES))
+        )
+        p.add_argument(
+            'accessions', metavar='<groups_accessions>', nargs='*',
+            help="Accessions of groups for 'group' visibility rule"
         )
 
     def run(self):
-        set_applications_visibility(
-            self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version,
-            VISIBILITY_DICT[self.args.level]
+        change_applications_visibility(
+            self.args.remove, self.connection.application(APPLICATION_ID), [self.args.app_id], self.args.version,
+            self.args.level, self.args.accessions
         )
 
 
@@ -472,8 +476,8 @@ def upload_single_file(application, file_path, version, override,
     released_version = version + '-released'
     if release:
         release_applications(application, app_info.identifiers, version, released_version)
-        set_applications_visibility(
-            application, app_info.identifiers, released_version, VISIBILITY_DICT['all']
+        change_applications_visibility(
+            False, application, app_info.identifiers, released_version, 'all'
         )
 
     if not stable:
@@ -501,18 +505,31 @@ def release_applications(application, app_ids, version, new_version):
             sys.stdout.flush()
 
 
-def set_applications_visibility(application, app_ids, version, level):
-    print('Setting visibility %s for version "%s"' % (level, version))
-    for app_id in app_ids:
-        if not validate_application_id(app_id):
-            sys.stderr.write('Invalid application id: %s\n' % app_id)
-            continue
-        sys.stdout.write('%-40s ... ' % app_id)
-        sys.stdout.flush()
-        if wait_application_loading(application, app_id, version):
-            application.invoke('setVisibility', app_id, version, level)
+def change_applications_visibility(remove, application, app_ids, version, level, accessions=None):
+    def invoke_change(group_accession=None):
+        application.invoke(
+            'removeVisibility' if remove else 'addVisibility',
+            app_id, version, level, group_accession if group_accession else None
+        )
+    try:
+        print('%s visibility %s for version "%s"' % ('Removing' if remove else 'Setting', level, version))
+        for app_id in app_ids:
+            if not validate_application_id(app_id):
+                sys.stderr.write('Invalid application id: %s\n' % app_id)
+                continue
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            if accessions:
+                for accession in accessions:
+                    invoke_change(accession)
+            else:
+                invoke_change()
             sys.stdout.write('ok\n')
             sys.stdout.flush()
+    except GenestackException as e:
+        sys.stderr.write('%s\n' % e.message)
+        return 1
+    return
 
 
 def get_application_descriptor(application, application_id, version):

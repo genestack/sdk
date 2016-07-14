@@ -1,3 +1,6 @@
+* 0.8.1a1
+  * Added support of 'group' and 'organization' visibilities
+
 * 0.6.2
   * Removed backward compatibility hack for `release` command
     (use `ApplicationManagerApplication.releaseApplication(string, string, string)` method only)
