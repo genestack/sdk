@@ -19,7 +19,7 @@ class FileInitializer(Application):
         """
         self.invoke('initialize', accessions)
 
-    # TODO replace to getFileInfo
+    # TODO deprecate and use FilesUtil(self.connection).get_infos(accessions) instead
     def load_info(self, accessions):
         """
         Takes as input a list of file accessions and returns a list of dictionaries (one for each accession)
