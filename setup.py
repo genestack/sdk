@@ -13,7 +13,7 @@ setup(
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
-    install_requires=['keyring', 'requests'],
+    install_requires=['keyring', 'requests', 'keyrings.alt'],
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
