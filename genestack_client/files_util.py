@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
 
@@ -213,7 +205,7 @@ class FilesUtil(Application):
     def unlink_files(self, children_to_parents_dict):
         """
         Unlink files from containers.
-        
+
         :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
             values are lists of accessions of the containers to unlink from
         :type: dict
