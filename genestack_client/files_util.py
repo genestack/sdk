@@ -317,7 +317,7 @@ class FilesUtil(Application):
         """
         Share files and links them to folder.
 
-        :param accessions: accession or collection accessions to be shared
+        :param accessions: accession or list/tuple/set accessions to be shared
         :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
         :type group: str
