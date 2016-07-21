@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#
-# Copyright (c) 2011-2016 Genestack Limited
-# All Rights Reserved
-# THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-# The copyright notice above does not evidence any
-# actual or intended publication of such source code.
-#
-
 import os
 import sys
 import urllib
@@ -111,7 +103,9 @@ class Connection:
 
         if compatible <= my_version:
             return
-        raise GenestackVersionException(my_version, compatible)
+
+        # use original version message in exception. str(StrictVersion('0.7.0')) == '0.7'
+        raise GenestackVersionException(my_version, version_map[COMPATIBLE])
 
     def logout(self):
         """
