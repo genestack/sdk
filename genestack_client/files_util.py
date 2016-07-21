@@ -315,21 +315,25 @@ class FilesUtil(Application):
 
     def share_files(self, accessions, group, destination_folder=None, password=None):
         """
-        Share files.
+        Share files and links them to folder.
 
-        :param accessions: files accessions
-        :type accessions: list
+        :param accessions: accession or collection accessions to be shared
+        :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
         :type group: str
-        :param destination_folder: folder in which to link the shared files. No links are created if ``None``.
+        :param destination_folder: accession of folder where to link shared files.
+               No links are created if ``None``.
         :type destination_folder: str
         :param password: password for sharing.
-            If not specified, will be asked in an interactive prompt (if supported)
+               If not specified, will be asked in an interactive prompt (if supported)
         :type: str
         :rtype: None
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
         share_utils = self.connection.application('genestack/shareutils')
+
+        accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
+
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
