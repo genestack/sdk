@@ -2,7 +2,7 @@
 
 ### Documentation
 
-   [stable](http://genestack-client.readthedocs.org/en/stable/)
+   [stable](http://genestack-client.readthedocs.io/en/stable/)
 
 ### Installation
    
