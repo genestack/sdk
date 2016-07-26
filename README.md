@@ -5,12 +5,12 @@
    [stable](http://genestack-client.readthedocs.io/en/stable/)
 
 ### Installation
-   
+
    - install library
      - `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`
    - setup default user
      - `genestack-user-setup init`
-   
+
 ### Repo
 
   ```
@@ -32,4 +32,4 @@
  - `make html`
 
 **Note!** `make` use script `make_shell_docs.py` that generates documentation for shell applications
- 
+
