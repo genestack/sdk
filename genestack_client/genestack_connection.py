@@ -95,17 +95,16 @@ class Connection:
         :param version: version in format suitable for distutils.version.StrictVersion
         :return: None
         """
-        version_map = self.application('genestack/clientVersion').invoke('getCurrentVersion')
-        COMPATIBLE = 'compatible'
+        compatible_version = self.application('genestack/clientVersion').invoke('getCompatibleVersion')
 
         my_version = StrictVersion(__version__)
-        compatible = StrictVersion(version_map[COMPATIBLE])
+        compatible = StrictVersion(compatible_version)
 
         if compatible <= my_version:
             return
 
         # use original version message in exception. str(StrictVersion('0.7.0')) == '0.7'
-        raise GenestackVersionException(my_version, version_map[COMPATIBLE])
+        raise GenestackVersionException(my_version, compatible_version)
 
     def logout(self):
         """
