@@ -95,7 +95,8 @@ class Connection:
         :param version: version in format suitable for distutils.version.StrictVersion
         :return: None
         """
-        compatible_version = self.application('genestack/clientVersion').invoke('getCompatibleVersion')
+        compatible_version = self.application('genestack/clientVersion'
+                                             ).invoke('getCompatibleVersion')
 
         my_version = StrictVersion(__version__)
         compatible = StrictVersion(compatible_version)
