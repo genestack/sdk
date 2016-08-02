@@ -585,7 +585,8 @@ class DataImporter(object):
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
-        :param annotation_type: type of loaded annotation
+        :param annotation_type: type of annotation being loaded,
+            an element of :py:class:`~DataImporter.MICROARRAY_ANNOTATION_TYPES`
         :type annotation_type: str
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
