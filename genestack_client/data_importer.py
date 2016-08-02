@@ -55,6 +55,19 @@ class DataImporter(object):
 
     If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
+
+    # FIXME: make them appear in Sphinx docs
+    #: Affymetrix microarray annotation type
+    AFFYMETRIX_ANNOTATION = 'affymetrixMicroarrayAnnotation'
+    #: Agilent microarray annotation type
+    AGILENT_ANNOTATION = 'agilentMicroarrayAnnotation'
+
+    #: List of available microarray annotation types
+    MICROARRAY_ANNOTATION_TYPES = (
+        AGILENT_ANNOTATION,
+        AFFYMETRIX_ANNOTATION,
+        )
+
     def __init__(self, connection):
         self.connection = connection
         self.importer = connection.application('genestack/upload')
@@ -562,3 +575,35 @@ class DataImporter(object):
         name and metainfo.add_string(BioMetainfo.NAME, name)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
+
+    def create_microarray_annotation(self, annotation_type, parent=None,
+                                     name=None, url=None, metainfo=None):
+        """
+        Create a Dictionary file from a local or remote microarray annotation
+        file.
+        ``name`` and ``url`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.BioMetainfo` instance.
+
+        :param annotation_type: type of loaded annotation
+        :type annotation_type: str
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param metainfo: metainfo object
+        :type metainfo: BioMetainfo
+        :return: file accession
+        :rtype: str
+        """
+        if annotation_type not in self.MICROARRAY_ANNOTATION_TYPES:
+            raise GenestackException("Microarray annotation type '%s' is not "
+                                     "supported, use something from "
+                                     "`DataImporter.MICROARRAY_ANNOTATION_TYPES`"
+                                     % annotation_type)
+        metainfo = metainfo or BioMetainfo()
+        name and metainfo.add_string(BioMetainfo.NAME, name)
+        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        return self.__invoke_loader(parent, annotation_type, metainfo)
