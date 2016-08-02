@@ -62,7 +62,7 @@ class DataImporter(object):
     #: Agilent microarray annotation type
     AGILENT_ANNOTATION = 'agilentMicroarrayAnnotation'
 
-    #: List of available microarray annotation types
+    #: Supported microarray annotation types
     MICROARRAY_ANNOTATION_TYPES = (
         AGILENT_ANNOTATION,
         AFFYMETRIX_ANNOTATION,
