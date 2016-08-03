@@ -56,7 +56,6 @@ class DataImporter(object):
     If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
 
-    # FIXME: make them appear in Sphinx docs
     #: Affymetrix microarray annotation type
     AFFYMETRIX_ANNOTATION = 'affymetrixMicroarrayAnnotation'
     #: Agilent microarray annotation type
@@ -586,7 +585,7 @@ class DataImporter(object):
         via a :py:class:`~genestack_client.BioMetainfo` instance.
 
         :param annotation_type: type of annotation being loaded,
-            an element of :py:class:`~DataImporter.MICROARRAY_ANNOTATION_TYPES`
+            an element of :py:attr:`~genestack_client.DataImporter.MICROARRAY_ANNOTATION_TYPES`
         :type annotation_type: str
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
