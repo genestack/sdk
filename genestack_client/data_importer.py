@@ -578,8 +578,7 @@ class DataImporter(object):
     def create_microarray_annotation(self, annotation_type, parent=None,
                                      name=None, url=None, metainfo=None):
         """
-        Create a Dictionary file from a local or remote microarray annotation
-        file.
+        Create a Dictionary file from a local or remote microarray annotation file.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
