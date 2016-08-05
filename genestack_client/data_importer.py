@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 from urllib import quote
 from urlparse import urlparse
-import os
 
 from genestack_client import GenestackException, BioMetainfo
 
@@ -556,8 +557,14 @@ class DataImporter(object):
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
+        sys.stderr.write('DataImporter.create_owl_ontology method is deprecated, '
+                         'it is renamed to DataImporter.create_dictionary\n')
+        return self.create_dictionary(parent=parent, name=name, url=url, metainfo=metainfo)
+
+    def create_dictionary(self, parent=None, name=None, url=None, metainfo=None):
         """
-        Create a Dictionary file from a local or remote owl file.
+        Create a Dictionary file from a local or remote file.
+        `owl`, `obo`, and `csv` formats are supported.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.BioMetainfo` instance.
