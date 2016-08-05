@@ -60,11 +60,14 @@ class DataImporter(object):
     AFFYMETRIX_ANNOTATION = 'affymetrixMicroarrayAnnotation'
     #: Agilent microarray annotation type
     AGILENT_ANNOTATION = 'agilentMicroarrayAnnotation'
+    #: TSV (GenePix etc) microarray annotation type
+    TSV_ANNOTATION = 'TSVMicroarrayAnnotation'
 
     #: Supported microarray annotation types
     MICROARRAY_ANNOTATION_TYPES = (
         AGILENT_ANNOTATION,
         AFFYMETRIX_ANNOTATION,
+        TSV_ANNOTATION,
         )
 
     def __init__(self, connection):
