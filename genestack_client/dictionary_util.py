@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
+import sys
 
 from genestack_client import Application, FilesUtil, SpecialFolders, GenestackException
 
 
 class DictionaryUtil(Application):
     APPLICATION_ID = 'genestack/bio-dictionary-util'
+
+    def __init__(self, connection, application_id=None):
+        sys.stderr.write(
+            'Usage of this class is deprecated, '
+            'old syle dictionaries should not be created anymore '
+            'use DataImporter.create_dictionary to create dictionary files.\n'
+                         )
+        Application.__init__(self, connection, application_id)
 
     def create(self, name, parent=None):
         """
