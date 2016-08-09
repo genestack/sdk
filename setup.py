@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from distutils.core import setup
+
+import sys
+
 exec(open('genestack_client/version.py').read())
 
 setup(
@@ -13,7 +16,7 @@ setup(
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
-    install_requires=['keyring', 'requests', 'pyOpenSSL'],
+    install_requires=['keyring', 'requests'] + ['pyOpenSSL'] if sys.platform.startswith('linux') else [],
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
