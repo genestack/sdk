@@ -1,3 +1,7 @@
+* 0.9.0
+  * Rename `DataImporter.create_owl_ontology` to `DataImporter.create_dictionary`
+  * Add `DataImporter.create_microarray_annotation`
+
 * 0.8.1a1
   * Added support of 'group' and 'organization' visibilities
 

@@ -208,7 +208,7 @@ class FilesUtil(Application):
 
         :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
             values are lists of accessions of the containers to unlink from
-        :type: dict
+        :type children_to_parents_dict: dict[str, list[str]]
         :rtype: None
         """
         self.invoke('unlinkFiles', children_to_parents_dict)
