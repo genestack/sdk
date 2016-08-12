@@ -299,6 +299,7 @@ class Remove(Command):
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
             help='identifier of the application to remove'
+                 ' (or `ALL` for removing all _your_ applications with specified version)'
         )
 
     def run(self):
