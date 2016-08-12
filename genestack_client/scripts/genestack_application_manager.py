@@ -303,7 +303,9 @@ class Remove(Command):
 
     def run(self):
         apps_ids = self.args.app_id_list
-        if not all(map(validate_application_id, apps_ids)):
+        if len(apps_ids) == 1 and apps_ids[0] == 'ALL':
+            apps_ids = None
+        elif not all(map(validate_application_id, apps_ids)):
             return
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
@@ -416,10 +418,17 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     print('Removing application(s) with version "%s"' % version)
-    for app_id in app_id_list:
-        sys.stdout.write('%-40s ... ' % app_id)
+    if app_id_list is not None:
+        for app_id in app_id_list:
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            application.invoke('removeApplication', app_id, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+    else:
+        sys.stdout.write('ALL ... ')
         sys.stdout.flush()
-        application.invoke('removeApplication', app_id, version)
+        application.invoke('removeApplications', version)
         sys.stdout.write('ok\n')
         sys.stdout.flush()
 
@@ -622,19 +631,23 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 
 REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
- %s
-Do you want to continue'''
+ %s'''
 
 
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
-    apps = get_system_stable_apps_version(application, apps_ids, version)
+    if apps_ids:
+        apps = get_system_stable_apps_version(application, apps_ids, version)
+    else:
+        apps = application.invoke('getSystemStableIdsByVersion', version)
+
     if not apps:
         return True
 
     message = REMOVE_PROMPT % (version, '\n '.join(apps))
     try:
-        return ask_confirmation(message)
+        print message
+        return ask_confirmation('Do you want to continue')
     except KeyboardInterrupt:
         return False
 
