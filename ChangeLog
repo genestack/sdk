@@ -1,4 +1,5 @@
-* 0.9.1
+* 0.10.0
+  * remove `DictionaryUtil`
   * Added ability to remove applications by specified version
 
 * 0.9.0
