@@ -419,7 +419,7 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     print('Removing application(s) with version "%s"' % version)
-    if app_id_list is not None:
+    if app_id_list:
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
