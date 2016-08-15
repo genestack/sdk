@@ -304,7 +304,7 @@ class Remove(Command):
 
     def run(self):
         apps_ids = self.args.app_id_list
-        if len(apps_ids) == 1 and apps_ids[0] == 'ALL':
+        if len(apps_ids) == 1 and apps_ids == ['ALL']:
             apps_ids = None
         elif not all(map(validate_application_id, apps_ids)):
             return
