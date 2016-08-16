@@ -303,17 +303,17 @@ class Remove(Command):
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
-        if len(apps_ids) == 1 and apps_ids == ['ALL']:
-            apps_ids = None
-        elif not all(map(validate_application_id, apps_ids)):
+        app_ids = self.args.app_id_list
+        if app_ids == ['ALL']:
+            app_ids = None
+        elif not all(map(validate_application_id, app_ids)):
             return
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
-        if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
+        if not self.args.force and not prompt_removing_stable_version(application, app_ids, version):
             raise GenestackException('Removing was aborted by user')
         return remove_applications(
-            self.connection.application(APPLICATION_ID), self.args.version, apps_ids
+            self.connection.application(APPLICATION_ID), self.args.version, app_ids
         )
 
 
