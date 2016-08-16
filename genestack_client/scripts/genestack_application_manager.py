@@ -429,8 +429,10 @@ def remove_applications(application, version, app_id_list):
     else:
         sys.stdout.write('ALL ... ')
         sys.stdout.flush()
-        application.invoke('removeApplications', version)
+        removed_apps = application.invoke('removeApplications', version)
         sys.stdout.write('ok\n')
+        sys.stdout.flush()
+        sys.stdout.write('Following applications were removed:\n %s\n' % ('\n '.join(sorted(removed_apps))))
         sys.stdout.flush()
 
 
@@ -645,7 +647,7 @@ def prompt_removing_stable_version(application, apps_ids, version):
     if not apps:
         return True
 
-    message = REMOVE_PROMPT % (version, '\n '.join(apps))
+    message = REMOVE_PROMPT % (version, '\n '.join(sorted(apps)))
     try:
         print message
         return ask_confirmation('Do you want to continue')
