@@ -166,7 +166,7 @@ class ListVersions(Command):
         max_len = max(len(x) for x in result)
         for item in result:
             output_string = ''
-            if stable_versions is not None:
+            if stable_versions:
                 output_string += '%s%s%s ' % (
                     'S' if item == stable_versions.get('SYSTEM') else '-',
                     'U' if item == stable_versions.get('USER') else '-',
