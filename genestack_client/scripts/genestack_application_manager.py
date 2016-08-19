@@ -634,7 +634,8 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 
 REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
- %s'''
+ %s
+ '''
 
 
 def prompt_removing_stable_version(application, apps_ids, version):
@@ -649,7 +650,8 @@ def prompt_removing_stable_version(application, apps_ids, version):
 
     message = REMOVE_PROMPT % (version, '\n '.join(sorted(apps)))
     try:
-        print message
+        sys.stdout.write(message)
+        sys.stdout.flush()
         return ask_confirmation('Do you want to continue')
     except KeyboardInterrupt:
         return False
