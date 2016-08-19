@@ -166,7 +166,7 @@ class ListVersions(Command):
         max_len = max(len(x) for x in result)
         for item in result:
             output_string = ''
-            if stable_versions is not None:
+            if stable_versions:
                 output_string += '%s%s%s ' % (
                     'S' if item == stable_versions.get('SYSTEM') else '-',
                     'U' if item == stable_versions.get('USER') else '-',
@@ -299,18 +299,21 @@ class Remove(Command):
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
             help='identifier of the application to remove'
+                 ' (or `ALL` for removing all _your_ applications with specified version)'
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
-        if not all(map(validate_application_id, apps_ids)):
+        app_ids = self.args.app_id_list
+        if app_ids == ['ALL']:
+            app_ids = None
+        elif not all(map(validate_application_id, app_ids)):
             return
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
-        if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
+        if not self.args.force and not prompt_removing_stable_version(application, app_ids, version):
             raise GenestackException('Removing was aborted by user')
         return remove_applications(
-            self.connection.application(APPLICATION_ID), self.args.version, apps_ids
+            self.connection.application(APPLICATION_ID), self.args.version, app_ids
         )
 
 
@@ -416,11 +419,20 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     print('Removing application(s) with version "%s"' % version)
-    for app_id in app_id_list:
-        sys.stdout.write('%-40s ... ' % app_id)
+    if app_id_list:
+        for app_id in app_id_list:
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            application.invoke('removeApplication', app_id, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+    else:
+        sys.stdout.write('ALL ... ')
         sys.stdout.flush()
-        application.invoke('removeApplication', app_id, version)
+        removed_apps = application.invoke('removeApplications', version)
         sys.stdout.write('ok\n')
+        sys.stdout.flush()
+        sys.stdout.write('Following applications were removed:\n %s\n' % ('\n '.join(sorted(removed_apps))))
         sys.stdout.flush()
 
 
@@ -623,18 +635,24 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
  %s
-Do you want to continue'''
+ '''
 
 
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
-    apps = get_system_stable_apps_version(application, apps_ids, version)
+    if apps_ids:
+        apps = get_system_stable_apps_version(application, apps_ids, version)
+    else:
+        apps = application.invoke('getSystemStableIdsByVersion', version)
+
     if not apps:
         return True
 
-    message = REMOVE_PROMPT % (version, '\n '.join(apps))
+    message = REMOVE_PROMPT % (version, '\n '.join(sorted(apps)))
     try:
-        return ask_confirmation(message)
+        sys.stdout.write(message)
+        sys.stdout.flush()
+        return ask_confirmation('Do you want to continue')
     except KeyboardInterrupt:
         return False
 
