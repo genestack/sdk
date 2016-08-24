@@ -1,5 +1,5 @@
 * 0.10.0
-  * Added term_type to dictionary uploader
+  * Added `term_type` to dictionary uploader
   * Added ability to remove applications by specified version
   * Added `FilesUtil.mark_obsolete` method
   * Removed `DictionaryUtil`
