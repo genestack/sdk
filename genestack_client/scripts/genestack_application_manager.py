@@ -83,11 +83,6 @@ class Install(Command):
             help='Run installation without any prompts (use with caution)'
         )
         p.add_argument(
-            '-r', '--release', action='store_true',
-            default=False,
-            help='Release installed applications and set them visible for all'
-        )
-        p.add_argument(
             '-o', '--override', action='store_true',
             help='overwrite old version of the applications with the new one'
         )
@@ -103,6 +98,10 @@ class Install(Command):
                  (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
         )
         p.add_argument(
+            '-i', '--visibility', metavar='<visibility>',
+            help='set initial visibility'
+        )
+        p.add_argument(
             'version', metavar='<version>',
             help='version of applications to upload'
         )
@@ -116,7 +115,7 @@ class Install(Command):
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.release
+            self.args.stable, self.args.scope, self.args.force, self.args.visibility
         )
 
 
@@ -446,19 +445,16 @@ def reload_applications(application, version, app_id_list):
         sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope, force, release):
-    if stable and release:
-        raise GenestackException('Flags \'-r\' and \'-s\' cannot be used at once')
-
+def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility):
     for file_path in files_list:
         upload_single_file(
             application, file_path, version, override,
-            stable, scope, force, release
+            stable, scope, force, initial_visibility
         )
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, release=False):
+                       stable, scope, force=False, initial_visibility=None):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -485,11 +481,11 @@ def upload_single_file(application, file_path, version, override,
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
-    released_version = version + '-released'
-    if release:
-        release_applications(application, app_info.identifiers, version, released_version)
+    if initial_visibility:
         change_applications_visibility(
-            False, application, app_info.identifiers, released_version, 'all'
+            False, application, app_info.identifiers, version,
+            'organization' if initial_visibility == 'organization' else 'group',
+            None if initial_visibility == 'organization' else [initial_visibility]
         )
 
     if not stable:
@@ -497,7 +493,7 @@ def upload_single_file(application, file_path, version, override,
 
     return mark_as_stable(
         application,
-        released_version if release and not SCOPE_DICT[scope] == 'SYSTEM' else version,
+        version,
         app_info.identifiers,
         scope
     )
@@ -524,7 +520,7 @@ def change_applications_visibility(remove, application, app_ids, version, level,
             app_id, version, level, group_accession if group_accession else None
         )
     try:
-        print('%s visibility %s for version "%s"' % ('Removing' if remove else 'Setting', level, version))
+        print('%s visibility "%s" for version "%s"' % ('Removing' if remove else 'Setting', level, version))
         for app_id in app_ids:
             if not validate_application_id(app_id):
                 sys.stderr.write('Invalid application id: %s\n' % app_id)
