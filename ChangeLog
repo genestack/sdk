@@ -1,8 +1,8 @@
 * 0.10.0
-  * Add term_type to dictionary uploader
-  * Remove `DictionaryUtil`
+  * Added `term_type` to dictionary uploader
   * Added ability to remove applications by specified version
-  * Add `FilesUtil.mark_obsolete` method
+  * Added `FilesUtil.mark_obsolete` method
+  * Removed `DictionaryUtil`
 
 * 0.9.0
   * Rename `DataImporter.create_owl_ontology` to `DataImporter.create_dictionary`
