@@ -99,7 +99,8 @@ class Install(Command):
         )
         p.add_argument(
             '-i', '--visibility', metavar='<visibility>',
-            help='set initial visibility'
+            help='set initial visibility (use `-i organization` for setting organization visibility or '
+                 '`-i <group_accession>` for group visibility)'
         )
         p.add_argument(
             'version', metavar='<version>',
