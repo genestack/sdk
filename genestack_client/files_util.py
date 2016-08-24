@@ -520,6 +520,17 @@ class FilesUtil(Application):
         metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
         self.add_metainfo_values(app_file, metainfo)
 
+    def mark_obsolete(self, accession):
+        """
+        Mark Genestack file as obsolete one by adding corresponding key to metainfo.
+
+        :param accession: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean('genestack:obsolete', True)
+        self.add_metainfo_values(accession, metainfo)
+
     def add_checksums(self, app_file, expected_checksums):
         """
         Add expected MD5 checksum to the metainfo of a CLA file.

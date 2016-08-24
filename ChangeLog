@@ -1,6 +1,7 @@
 * 0.10.0
   * remove `DictionaryUtil`
   * Added ability to remove applications by specified version
+  * Add `FilesUtil.mark_obsolete` method
 
 * 0.9.0
   * Rename `DataImporter.create_owl_ontology` to `DataImporter.create_dictionary`
