@@ -1,8 +1,8 @@
 * 0.10.0
-  * Added `-i` flag in `install` command of application manager for setting up initial application visibility
   * Added `term_type` to dictionary uploader
   * Added ability to remove applications by specified version
   * Added `FilesUtil.mark_obsolete` method
+  * Added `-i` flag in `install` command of application manager for setting up initial application visibility
   * Removed `DictionaryUtil`
   * Removed `-r` flag in `install` command of application manager
 
