@@ -561,7 +561,7 @@ class DataImporter(object):
                          'it is renamed to DataImporter.create_dictionary\n')
         return self.create_dictionary(parent=parent, name=name, url=url, metainfo=metainfo)
 
-    def create_dictionary(self, parent=None, name=None, url=None, metainfo=None):
+    def create_dictionary(self, parent=None, name=None, url=None, term_type=None, metainfo=None):
         """
         Create a Dictionary file from a local or remote file.
         `owl`, `obo`, and `csv` formats are supported.
@@ -575,6 +575,9 @@ class DataImporter(object):
         :param name: name of the file
         :type name: str
         :param url: URL of a file
+        :type url: str
+        :param term_type: dictionary term type
+        :type term_type: str
         :param metainfo: metainfo object
         :type metainfo: BioMetainfo
         :return: file accession
@@ -583,6 +586,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
         url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        term_type and metainfo.add_string('genestack.dictionary:termType', term_type)
         return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
 
     def create_microarray_annotation(self, annotation_type, parent=None,
