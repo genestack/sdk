@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 import sys
 from uuid import uuid4
 import pytest
@@ -147,6 +148,34 @@ def test_get_metainfo_strings(files_utils):
     assert set(infos[special_folder].keys()) == {Metainfo.NAME, Metainfo.DESCRIPTION}
     assert infos[special_folder][Metainfo.NAME] == "Created files"
     assert infos[special_folder][Metainfo.DESCRIPTION] == "Files you created with various applications"
+
+
+def test_create_samples(files_utils):
+    temp_folder = files_utils.get_special_folder(SpecialFolders.TEMPORARY)
+    folder = files_utils.find_or_create_folder('Folder for testing samples and studies', parent = temp_folder)
+    files_utils.create_sample(name = 'Sample 1', parent = folder)
+
+    time.sleep(1)
+
+    samples_in_folder = files_utils.find_samples(parent = folder)
+    samples_by_name = files_utils.find_samples(name = 'Sample 1', parent = folder)
+
+    metainfo = Metainfo()
+    metainfo.add_string(Metainfo.NAME, 'Sample 1')
+    samples_by_metainfo = files_utils.find_samples(metainfo = metainfo, parent = folder)
+
+    accession = samples_by_metainfo['result'][0]['accession']
+    retrieved_metainfo = files_utils.get_metainfo(accession)
+
+    found_studies = files_utils.find_studies(parent = folder)
+
+    files_utils.unlink_file(folder, temp_folder)
+
+    assert samples_in_folder['total'] == 1
+    assert samples_by_name['total'] == 1
+    assert samples_by_metainfo['total'] == 1
+    assert found_studies['total'] == 0
+    assert Metainfo.NAME in retrieved_metainfo
 
 
 if __name__ == '__main__':

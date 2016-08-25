@@ -2,6 +2,7 @@
 
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
+MAX_SEARCH_LIMIT = 100
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -49,6 +50,7 @@ class FilesUtil(Application):
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
+
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -551,3 +553,107 @@ class FilesUtil(Application):
         for key, value in expected_checksums.items():
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
+
+
+    def create_sample(self, parent = None, name = None, metainfo = None):
+        """
+        Create a report file with type ``sample``.
+        ``name`` is a required field
+        It can be specified through the arguments or
+        via a :py:class:`~genestack_client.BioMetainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Created files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return:
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        return self.invoke('create', 'sample', metainfo, parent)
+
+    def create_study(self, parent = None, name = None, metainfo = None):
+        """
+        Create a report file with type ``study``.
+        ``name`` is a required field
+        It can be specified through the arguments or
+        via a :py:class:`~genestack_client.BioMetainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Created files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return:
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        return self.invoke('create', 'study', metainfo, parent)
+
+    def _find_files(self, type, parent, name, metainfo, offset, limit):
+        if offset < 0:
+            raise ValueError("Expected nonnegative offset, got %d" % offset)
+        if limit < 1 or limit > MAX_SEARCH_LIMIT:
+            raise ValueError("Expected limit to be >0 and <=%d, got %d" % (MAX_SEARCH_LIMIT, limit))
+
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        return self.invoke('find', type, metainfo, offset, limit, parent)
+
+
+    def find_samples(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
+        """
+        Search samples by name, folder and metainfo.
+        Returns a list of dictionaries with complete information about each of the specified files.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be searched in all folders)
+        :type parent: str
+        :param name: file name (optional)
+        :type name: str
+        :param metainfo: metainfo attributes to build search query
+        :type metainfo: Metainfo
+        :param offset: offset to start retrieving samples. must be >= 0
+        :type offset: int
+        :param limit:
+        :return: list of file info dictionaries.
+        :rtype: list
+        """
+        return self._find_files('sample', parent, name, metainfo, offset, limit)
+
+    def find_studies(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
+        """
+        Search studies by name, folder and metainfo.
+        Returns a list of dictionaries with complete information about each of the specified files.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be searched in all folders)
+        :type parent: str
+        :param name: file name (optional)
+        :type name: str
+        :param metainfo: metainfo attributes to build search query
+        :type metainfo: Metainfo
+        :param offset: offset to start retrieving samples. must be >= 0
+        :type offset: int
+        :param limit:
+        :return: list of file info dictionaries.
+        :rtype: list
+        """
+        return self._find_files('study', parent, name, metainfo, offset, limit)
+
+    def get_metainfo(self, accession):
+        """
+        Get file metainfo
+
+        :param accession: file accession
+        :type accession: str
+        :return: file metainfo
+        :rtype: Metainfo
+        """
+        return self.invoke('getMetainfo', accession)
+
