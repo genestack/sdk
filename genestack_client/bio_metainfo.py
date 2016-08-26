@@ -1,48 +1,20 @@
 # -*- coding: utf-8 -*-
+import sys
 
-from genestack_client import Metainfo
+
+from genestack_client.genestack_metainfo import Metainfo
+from genestack_client.bio_meta_keys import BioMetaKeys
 
 
-class BioMetainfo(Metainfo):
+class BioMetainfo(Metainfo, BioMetaKeys):
     """
     A metainfo representation with additional methods for biological metadata.
     """
 
-    METHOD = 'genestack.bio:method'
-    ORGANISM = 'genestack.bio:organism'
-    STRAIN = 'genestack.bio:strain-breed-cultivar'
-    BREED = STRAIN
-    CULTIVAR = STRAIN
-    TISSUE = 'genestack.bio:tissue'
-    CELL_TYPE = 'genestack.bio:cellType'
-    CELL_LINE = 'genestack.bio:cellLine'
-    DEVELOPMENTAL_STAGE = 'genestack.bio:developmentalStage'
-    DISEASE_STATE = 'genestack.bio:disease'
-    DISEASE_STAGE = 'genestack.bio:diseaseStage'
-    COMPOUND = 'genestack.bio:compoundTreatment/compound'
-    AGE = 'genestack.bio:age'
-    SEX = 'genestack.bio:sex'
-    HUMAN_ETHNIC_GROUP = 'genestack.bio:humanEthnicGroup'
-    READS_LINK = 'genestack.url:reads'
-    DATA_LINK = 'genestack.url:data'
-    BAM_FILE_LINK = 'genestack.url:bamfile'
-    REFERENCE_SEQUENCES = 'genestack.bio:referenceSequences'
-    REFERENCE_GENOME = 'genestack.bio:referenceGenome'
-    REFERENCE_GENOME_ASSEMBLY = 'genestack.bio:referenceGenomeAssembly'
-    REFERENCE_GENOME_RELEASE = 'genestack.bio:referenceGenomeRelease'
-    STUDY_SHORT_NAME = 'genestack.bio:shortName'
-    DATABASE_ID = 'genestack.bio:databaseId'
-
-    RNASEQ_TECHNOLOGY = 'Expression profiling by high throughput sequencing'
-    DNASEQ_TECHNOLOGY = 'Genome variation profiling by high throughput sequencing'
-    CHIPSEQ_TECHNOLOGY = 'Genome binding/occupancy profiling by high throughput sequencing'
-    MICROARRAY_TECHNOLOGY = 'Expression profiling by array'
-    DNA_MICROARRAY_TECHNOLOGY = 'Genome variation profiling by SNP array'
-    # SAMPLE_ID = 'genestack.bio:sampleId'      # still used in 1000 loader.
-    EXTRACTED_MOLECULE = 'genestack.bio:extractedMolecule'
-    PLATFORM = 'genestack.bio:platform'
-    SOURCE_DATA_PREFIX = 'sourceData:'
-    SECONDARY_ACCESSION = 'genestack.bio:secondaryAccession'
+    def __init__(self, iterable=None, **kwargs):
+        sys.stderr.write('BioMetainfo class is deprecated, '
+                         'use Metainfo class instead\n')
+        super(BioMetainfo, self).__init__(iterable, **kwargs)
 
     def add_organism(self, key, value):
         """
@@ -54,6 +26,9 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
+        sys.stderr.write('BioMetainfo.add_organism method is deprecated, '
+                         'use Metainfo.add_string instead\n')
+
         self.add_string(key, value)
 
     def add_ethnic_group(self, key, value):
@@ -66,4 +41,6 @@ class BioMetainfo(Metainfo):
         :type value: str
         :rtype: None
         """
+        sys.stderr.write('BioMetainfo.add_ethnic_group method is deprecated, '
+                         'use Metainfo.add_string instead\n')
         self.add_string(key, value)
