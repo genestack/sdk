@@ -81,6 +81,7 @@ def test_get_path_private(files_utils):
 
 
 def test_get_path_find_long_paths(files_utils):
+    pytest.skip("Outdated test")
     assert files_utils.get_folder(files_utils.get_home_folder(), 'Test data created', 'Dependent tasks', 'Multiple dependency', create=False)
 
 
@@ -150,14 +151,19 @@ def test_get_metainfo_strings(files_utils):
     assert infos[special_folder][Metainfo.DESCRIPTION] == "Files you created with various applications"
 
 
-def test_create_samples(files_utils):
+def test_create_samples_studies(files_utils):
     temp_folder = files_utils.get_special_folder(SpecialFolders.TEMPORARY)
-    folder = files_utils.find_or_create_folder('Folder for testing samples and studies', parent = temp_folder)
-    files_utils.create_sample(name = 'Sample 1', parent = folder)
 
+    folder_name = 'Sample_study_folder_%s' % uuid4()
+    folder = files_utils.create_folder(folder_name, parent = temp_folder)
+    sample_file_info = files_utils.create_sample(name = 'Sample 1', parent = folder)
+    sample_file_accession = sample_file_info['accession']
+
+    # wait for newly created file to be available in Solr
     time.sleep(1)
 
     samples_in_folder = files_utils.find_samples(parent = folder)
+
     samples_by_name = files_utils.find_samples(name = 'Sample 1', parent = folder)
 
     metainfo = Metainfo()
@@ -169,13 +175,51 @@ def test_create_samples(files_utils):
 
     found_studies = files_utils.find_studies(parent = folder)
 
+    files_utils.unlink_file(sample_file_accession, folder)
     files_utils.unlink_file(folder, temp_folder)
 
     assert samples_in_folder['total'] == 1
+    assert len(samples_in_folder['result']) == 1
     assert samples_by_name['total'] == 1
+    assert len(samples_by_name['result']) == 1
     assert samples_by_metainfo['total'] == 1
+    assert len(samples_by_metainfo['result']) == 1
     assert found_studies['total'] == 0
+    assert len(found_studies['result']) == 0
     assert Metainfo.NAME in retrieved_metainfo
+
+def test_metainfo_modification(files_utils):
+    temp_folder = files_utils.get_special_folder(SpecialFolders.TEMPORARY)
+    file_name = 'File for metainfo tests %s' % uuid4()
+    test_file_info = files_utils.create_study(name = file_name, parent = temp_folder)
+    test_file_accession = test_file_info['accession']
+
+    metainfo = files_utils.get_metainfo(test_file_accession)
+    assert metainfo[Metainfo.NAME][0]['value'] == file_name
+
+    metainfo_to_add = Metainfo()
+    key = 'test_key'
+    value = 'test_value'
+    metainfo_to_add.add_string(key, value)
+    files_utils.add_metainfo_values_for_file(test_file_accession, metainfo_to_add)
+
+    metainfo = files_utils.get_metainfo(test_file_accession)
+    assert metainfo[key][0]['value'] == value
+
+    metainfo_to_replace = Metainfo()
+    replaced_value = 'replaced_value'
+    metainfo_to_replace.add_string(key, replaced_value)
+    files_utils.replace_metainfo_values(test_file_accession, metainfo_to_replace)
+
+    metainfo = files_utils.get_metainfo(test_file_accession)
+    assert metainfo[key][0]['value'] == replaced_value
+
+    files_utils.remove_metainfo_value_for_file(test_file_accession, key)
+
+    metainfo = files_utils.get_metainfo(test_file_accession)
+    assert key not in metainfo
+
+    files_utils.unlink_file(test_file_accession, temp_folder)
 
 
 if __name__ == '__main__':

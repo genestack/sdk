@@ -603,7 +603,16 @@ class FilesUtil(Application):
 
         metainfo = metainfo or Metainfo()
         name and metainfo.add_string(Metainfo.NAME, name)
-        return self.invoke('find', type, metainfo, offset, limit, parent)
+
+        params = {
+            'type' : type,
+            'metainfo' : metainfo,
+            'offset' : offset,
+            'limit' : limit,
+            'parentAccession' : parent
+        }
+
+        return self.invoke('find', params)
 
 
     def find_samples(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
@@ -652,8 +661,43 @@ class FilesUtil(Application):
 
         :param accession: file accession
         :type accession: str
-        :return: file metainfo
-        :rtype: Metainfo
+        :return: file metainfo dictionary
+        :rtype: dict
         """
         return self.invoke('getMetainfo', accession)
 
+    def add_metainfo_values_for_file(self, accession, metainfo):
+        """
+        Add metainfo to a specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param metainfo: metainfo to add
+        :type metainfo: Metainfo
+        :return: None
+        """
+        self.invoke("addMetainfoValues", accession, metainfo)
+
+    def replace_metainfo_values(self, accession, metainfo):
+        """
+        Replaces metainfo values for specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param metainfo: metainfo to replace
+        :type metainfo: Metainfo
+        :return: None
+        """
+        self.invoke("replaceMetainfoValues", accession, metainfo)
+
+    def remove_metainfo_value_for_file(self, accession, key):
+        """
+        Delete a key from the metainfo of specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param key: metainfo key
+        :type key: str
+        :return: None
+        """
+        self.invoke("removeMetainfoValue", accession, key)
