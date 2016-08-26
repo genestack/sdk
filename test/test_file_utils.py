@@ -201,7 +201,7 @@ def test_metainfo_modification(files_utils):
     key = 'test_key'
     value = 'test_value'
     metainfo_to_add.add_string(key, value)
-    files_utils.add_metainfo_values_for_file(test_file_accession, metainfo_to_add)
+    files_utils.add_metainfo(test_file_accession, metainfo_to_add)
 
     metainfo = files_utils.get_metainfo(test_file_accession)
     assert metainfo[key][0]['value'] == value
@@ -209,12 +209,13 @@ def test_metainfo_modification(files_utils):
     metainfo_to_replace = Metainfo()
     replaced_value = 'replaced_value'
     metainfo_to_replace.add_string(key, replaced_value)
-    files_utils.replace_metainfo_values(test_file_accession, metainfo_to_replace)
+    files_utils.replace_metainfo(test_file_accession, metainfo_to_replace)
 
     metainfo = files_utils.get_metainfo(test_file_accession)
     assert metainfo[key][0]['value'] == replaced_value
 
-    files_utils.remove_metainfo_value_for_file(test_file_accession, key)
+    files_utils.remove_metainfo_key(test_file_accession, key)
+    files_utils.remove_metainfo_keys(test_file_accession, [key])
 
     metainfo = files_utils.get_metainfo(test_file_accession)
     assert key not in metainfo

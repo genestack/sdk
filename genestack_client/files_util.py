@@ -666,7 +666,7 @@ class FilesUtil(Application):
         """
         return self.invoke('getMetainfo', accession)
 
-    def add_metainfo_values_for_file(self, accession, metainfo):
+    def add_metainfo(self, accession, metainfo):
         """
         Add metainfo to a specified file.
 
@@ -678,7 +678,7 @@ class FilesUtil(Application):
         """
         self.invoke("addMetainfoValues", accession, metainfo)
 
-    def replace_metainfo_values(self, accession, metainfo):
+    def replace_metainfo(self, accession, metainfo):
         """
         Replaces metainfo values for specified file.
 
@@ -690,7 +690,7 @@ class FilesUtil(Application):
         """
         self.invoke("replaceMetainfoValues", accession, metainfo)
 
-    def remove_metainfo_value_for_file(self, accession, key):
+    def remove_metainfo_key(self, accession, key):
         """
         Delete a key from the metainfo of specified file.
 
@@ -700,4 +700,16 @@ class FilesUtil(Application):
         :type key: str
         :return: None
         """
-        self.invoke("removeMetainfoValue", accession, key)
+        self.invoke("removeMetainfoKey", accession, key)
+
+    def remove_metainfo_keys(self, accession, keys):
+        """
+        Delete multiple keys from the metainfo of specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param keys: list of metainfo keys
+        :type keys: list
+        :return: None
+        """
+        self.invoke("removeMetainfoKeys", accession, keys)
