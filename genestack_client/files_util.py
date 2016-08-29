@@ -560,7 +560,7 @@ class FilesUtil(Application):
         Create a report file with type ``sample``.
         ``name`` is a required field
         It can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Created files`` folder)
@@ -580,7 +580,7 @@ class FilesUtil(Application):
         Create a report file with type ``study``.
         ``name`` is a required field
         It can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Created files`` folder)
@@ -630,7 +630,7 @@ class FilesUtil(Application):
         :param offset: offset to start retrieving samples. must be >= 0
         :type offset: int
         :param limit:
-        :return: list of file info dictionaries.
+        :return: list of file info dictionaries
         :rtype: list
         """
         return self._find_files('sample', parent, name, metainfo, offset, limit)
@@ -650,14 +650,14 @@ class FilesUtil(Application):
         :param offset: offset to start retrieving samples. must be >= 0
         :type offset: int
         :param limit:
-        :return: list of file info dictionaries.
+        :return: list of file info dictionaries
         :rtype: list
         """
         return self._find_files('study', parent, name, metainfo, offset, limit)
 
     def get_metainfo(self, accession):
         """
-        Get file metainfo
+        Get file metainfo.
 
         :param accession: file accession
         :type accession: str
