@@ -595,11 +595,11 @@ class FilesUtil(Application):
         name and metainfo.add_string(Metainfo.NAME, name)
         return self.invoke('create', 'study', metainfo, parent)
 
-    def _find_files(self, type, parent, name, metainfo, offset, limit):
+    def __find_files(self, type, parent, name, metainfo, offset, limit):
         if offset < 0:
-            raise ValueError("Expected nonnegative offset, got %d" % offset)
+            raise GenestackException('Expected nonnegative offset, got %d' % offset)
         if limit < 1 or limit > MAX_SEARCH_LIMIT:
-            raise ValueError("Expected limit to be >0 and <=%d, got %d" % (MAX_SEARCH_LIMIT, limit))
+            raise GenestackException('Expected limit to be >0 and <=%d, got %d' % (MAX_SEARCH_LIMIT, limit))
 
         metainfo = metainfo or Metainfo()
         name and metainfo.add_string(Metainfo.NAME, name)
@@ -633,7 +633,7 @@ class FilesUtil(Application):
         :return: list of file info dictionaries
         :rtype: list
         """
-        return self._find_files('sample', parent, name, metainfo, offset, limit)
+        return self.__find_files('sample', parent, name, metainfo, offset, limit)
 
     def find_studies(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
         """
@@ -653,7 +653,7 @@ class FilesUtil(Application):
         :return: list of file info dictionaries
         :rtype: list
         """
-        return self._find_files('study', parent, name, metainfo, offset, limit)
+        return self.__find_files('study', parent, name, metainfo, offset, limit)
 
     def get_metainfo(self, accession):
         """
