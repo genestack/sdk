@@ -560,6 +560,7 @@ class FilesUtil(Application):
         ``name`` is a required field
         It can be specified through the arguments or
         via a :py:class:`~genestack_client.Metainfo` instance.
+        Returns file info dictionary with the same structure as dictionaries returned by ``get_infos`` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Created files`` folder)
@@ -568,7 +569,8 @@ class FilesUtil(Application):
         :type name: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
-        :return:
+        :return: file info dictionary
+        :rtype: dict
         """
         metainfo = metainfo or Metainfo()
         name and metainfo.add_string(Metainfo.NAME, name)
@@ -580,6 +582,7 @@ class FilesUtil(Application):
         ``name`` is a required field
         It can be specified through the arguments or
         via a :py:class:`~genestack_client.Metainfo` instance.
+        Returns file info dictionary with the same structure as dictionaries returned by ``get_infos`` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Created files`` folder)
@@ -588,7 +591,8 @@ class FilesUtil(Application):
         :type name: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
-        :return:
+        :return: file info dictionary
+        :rtype: dict
         """
         metainfo = metainfo or Metainfo()
         name and metainfo.add_string(Metainfo.NAME, name)
@@ -615,8 +619,10 @@ class FilesUtil(Application):
 
     def find_samples(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
         """
-        Search samples by name, folder and metainfo.
+        Search samples by name and metainfo.
+        Searches only in ``parent`` folder if provided, otherwise everywhere.
         Returns a list of dictionaries with complete information about each of the specified files.
+        Dictionaries have the same structure as dictionaries returned by ``get_infos`` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be searched in all folders)
@@ -635,8 +641,10 @@ class FilesUtil(Application):
 
     def find_studies(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
         """
-        Search studies by name, folder and metainfo.
+        Search studies by name and metainfo.
+        Searches only in ``parent`` folder if provided, otherwise everywhere.
         Returns a list of dictionaries with complete information about each of the specified files.
+        Dictionaries have the same structure as dictionaries returned by ``get_infos`` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be searched in all folders)
