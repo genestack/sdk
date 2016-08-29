@@ -554,8 +554,7 @@ class FilesUtil(Application):
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
 
-
-    def create_sample(self, parent = None, name = None, metainfo = None):
+    def create_sample(self, parent=None, name=None, metainfo=None):
         """
         Create a report file with type ``sample``.
         ``name`` is a required field
@@ -575,7 +574,7 @@ class FilesUtil(Application):
         name and metainfo.add_string(Metainfo.NAME, name)
         return self.invoke('create', 'sample', metainfo, parent)
 
-    def create_study(self, parent = None, name = None, metainfo = None):
+    def create_study(self, parent=None, name=None, metainfo=None):
         """
         Create a report file with type ``study``.
         ``name`` is a required field
@@ -605,17 +604,16 @@ class FilesUtil(Application):
         name and metainfo.add_string(Metainfo.NAME, name)
 
         params = {
-            'type' : type,
-            'metainfo' : metainfo,
-            'offset' : offset,
-            'limit' : limit,
-            'parentAccession' : parent
+            'type': type,
+            'metainfo': metainfo,
+            'offset': offset,
+            'limit': limit,
+            'parentAccession': parent
         }
 
         return self.invoke('find', params)
 
-
-    def find_samples(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
+    def find_samples(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
         """
         Search samples by name, folder and metainfo.
         Returns a list of dictionaries with complete information about each of the specified files.
@@ -635,7 +633,7 @@ class FilesUtil(Application):
         """
         return self.__find_files('sample', parent, name, metainfo, offset, limit)
 
-    def find_studies(self, parent = None, name = None, metainfo = None, offset = 0, limit = MAX_SEARCH_LIMIT):
+    def find_studies(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
         """
         Search studies by name, folder and metainfo.
         Returns a list of dictionaries with complete information about each of the specified files.
