@@ -157,17 +157,16 @@ def samples_temp_folder(files_utils):
 
     folder_name = 'Sample_study_folder_%s' % uuid4()
     folder = files_utils.create_folder(folder_name, parent=temp_folder)
-    file_info = files_utils.create_sample(name='Sample 1', parent=folder)
-    accession = file_info['accession']
 
     yield folder
 
-    files_utils.unlink_file(accession, folder)
     files_utils.unlink_file(folder, temp_folder)
 
 
 def test_create_samples_studies(files_utils, samples_temp_folder):
     folder = samples_temp_folder
+    file_info = files_utils.create_sample(name='Sample 1', parent=folder)
+    created_accession = file_info['accession']
 
     # wait for newly created file to be available in Solr
     time.sleep(1)
@@ -181,6 +180,8 @@ def test_create_samples_studies(files_utils, samples_temp_folder):
     samples_by_metainfo = files_utils.find_samples(metainfo=metainfo, parent=folder)
 
     accession = samples_by_metainfo['result'][0]['accession']
+    assert accession == created_accession
+
     retrieved_metainfo = files_utils.get_metainfo(accession)
 
     found_studies = files_utils.find_studies(parent=folder)
