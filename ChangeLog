@@ -6,9 +6,9 @@
   * Added class with bio constant `genestack_client.BioMetaKeys`
   * Removed `DictionaryUtil`
   * Removed `-r` flag in `install` command of application manager
-  * Deprecated `Biometainfo`
-    * `add_ethnic_group` and `add_organism` replaced by `Metainfo.add_string`
-    * Keys moved to  `bio_meta_keys.BioMetaKeys`
+  * Deprecated `genestack_client.BioMetainfo`
+      * Methods `add_ethnic_group` and `add_organism` replaced by `Metainfo.add_string`
+      * Constants with metainfo keys moved to `bio_meta_keys.BioMetaKeys`
 
 
 * 0.9.0
