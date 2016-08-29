@@ -560,10 +560,13 @@ class FilesUtil(Application):
         ``name`` is a required field
         It can be specified through the arguments or
         via a :py:class:`~genestack_client.Metainfo` instance.
-        Returns file info dictionary with the same structure as dictionaries returned by ``get_infos`` method.
+
+        Returns file info dictionary with the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
 
         :param parent: accession of parent folder
-            (if not provided, files will be created in the ``Created files`` folder)
+            (if not provided, files will be created in
+            the :py:data:`SpecialFolders.CREATED <genestack_client.SpecialFolders.CREATED>` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -582,10 +585,13 @@ class FilesUtil(Application):
         ``name`` is a required field
         It can be specified through the arguments or
         via a :py:class:`~genestack_client.Metainfo` instance.
-        Returns file info dictionary with the same structure as dictionaries returned by ``get_infos`` method.
+
+        Returns file info dictionary with the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
 
         :param parent: accession of parent folder
-            (if not provided, files will be created in the ``Created files`` folder)
+            (if not provided, files will be created in
+            the :py:data:`SpecialFolders.CREATED <genestack_client.SpecialFolders.CREATED>` folder)
         :type parent: str
         :param name: name of the file
         :type name: str
@@ -621,8 +627,10 @@ class FilesUtil(Application):
         """
         Search samples by name and metainfo.
         Searches only in ``parent`` folder if provided, otherwise everywhere.
+
         Returns a list of dictionaries with complete information about each of the specified files.
-        Dictionaries have the same structure as dictionaries returned by ``get_infos`` method.
+        Dictionaries have the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be searched in all folders)
@@ -631,9 +639,10 @@ class FilesUtil(Application):
         :type name: str
         :param metainfo: metainfo attributes to build search query
         :type metainfo: Metainfo
-        :param offset: offset to start retrieving samples. must be >= 0
+        :param offset: offset to start retrieving samples. Must be >= 0
         :type offset: int
-        :param limit:
+        :param limit: maximum number of files to retrieve. Must be <= 100.
+        :type limit: int
         :return: list of file info dictionaries
         :rtype: list
         """
@@ -643,8 +652,10 @@ class FilesUtil(Application):
         """
         Search studies by name and metainfo.
         Searches only in ``parent`` folder if provided, otherwise everywhere.
+
         Returns a list of dictionaries with complete information about each of the specified files.
-        Dictionaries have the same structure as dictionaries returned by ``get_infos`` method.
+        Dictionaries have the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
 
         :param parent: accession of parent folder
             (if not provided, files will be searched in all folders)
@@ -655,7 +666,8 @@ class FilesUtil(Application):
         :type metainfo: Metainfo
         :param offset: offset to start retrieving samples. must be >= 0
         :type offset: int
-        :param limit:
+        :param limit: maximum number of files to retrieve. Must be <= 100.
+        :type limit: int
         :return: list of file info dictionaries
         :rtype: list
         """
@@ -663,7 +675,26 @@ class FilesUtil(Application):
 
     def get_metainfo(self, accession):
         """
-        Get file metainfo.
+        Get file metainfo dictionary.
+        Returns dictionary that maps metainfo keys to lists of dictionaries with the following fields:
+
+            - Metainfo value type
+            - Metainfo value
+
+        Example dictionary::
+
+            {
+                'key1': [
+                    {
+                        'type': 'string',
+                        'value': 'value1'
+                    },
+                    {
+                        'type': 'string',
+                        'value': 'value2'
+                    }
+                ]
+            }
 
         :param accession: file accession
         :type accession: str
@@ -680,19 +711,20 @@ class FilesUtil(Application):
         :type accession: str
         :param metainfo: metainfo to add
         :type metainfo: Metainfo
-        :return: None
+        :rtype: None
         """
         self.invoke("addMetainfoValues", accession, metainfo)
 
     def replace_metainfo(self, accession, metainfo):
         """
-        Replaces metainfo values for specified file.
+        Replaces metainfo values for specified file. Only the keys present in ``metainfo`` are affected, other keys
+        remain the same.
 
         :param accession: file accession
         :type accession: str
         :param metainfo: metainfo to replace
         :type metainfo: Metainfo
-        :return: None
+        :rtype: None
         """
         self.invoke("replaceMetainfoValues", accession, metainfo)
 
@@ -704,7 +736,7 @@ class FilesUtil(Application):
         :type accession: str
         :param key: metainfo key
         :type key: str
-        :return: None
+        :rtype: None
         """
         self.invoke("removeMetainfoKey", accession, key)
 
@@ -716,6 +748,6 @@ class FilesUtil(Application):
         :type accession: str
         :param keys: list of metainfo keys
         :type keys: list
-        :return: None
+        :rtype: None
         """
         self.invoke("removeMetainfoKeys", accession, keys)
