@@ -247,7 +247,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         url and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, url)
@@ -302,7 +302,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if urls:
             for url in urls:
@@ -335,7 +335,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if urls:
             for url in urls:
@@ -369,7 +369,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         method and metainfo.add_string(BioMetainfo.METHOD, method)
         if urls:
             for url in urls:
@@ -405,7 +405,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
         if url:
@@ -439,7 +439,7 @@ class DataImporter(object):
         metainfo = metainfo or BioMetainfo()
         metainfo.add_string(BioMetainfo.DATABASE_ID, 'dbNSFP')
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         if url:
             metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
         return self.__invoke_loader(parent, 'dbnsfp', metainfo)
@@ -489,7 +489,7 @@ class DataImporter(object):
         """
         metainfo = metainfo or BioMetainfo()
         name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        organism and metainfo.add_string(BioMetainfo.ORGANISM, organism)
         strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
         assembly and metainfo.add_string(BioMetainfo.REFERENCE_GENOME_ASSEMBLY, assembly)
         release and metainfo.add_string(BioMetainfo.REFERENCE_GENOME_RELEASE, release)
