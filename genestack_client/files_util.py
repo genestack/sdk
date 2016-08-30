@@ -491,7 +491,7 @@ class FilesUtil(Application):
         :param accession_list: list of valid accessions.
         :type accession_list: list
         :return: list of file info dictionaries.
-        :rtype: list
+        :rtype: list[dict[str, object]]
         """
         return self.invoke('getInfos', accession_list)
 
