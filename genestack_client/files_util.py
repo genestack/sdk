@@ -699,7 +699,7 @@ class FilesUtil(Application):
         :param accession: file accession
         :type accession: str
         :return: file metainfo dictionary
-        :rtype: dict
+        :rtype: dict[str, list[dict[str, object]]]
         """
         return self.invoke('getMetainfo', accession)
 
