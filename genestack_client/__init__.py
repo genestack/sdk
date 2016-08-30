@@ -15,6 +15,7 @@ from genestack_exceptions import (GenestackException, GenestackServerException,
 from genestack_connection import Connection, Application
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo
+from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
 from sudo_utils import SudoUtils
