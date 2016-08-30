@@ -6,9 +6,13 @@ from genestack_client.genestack_metainfo import Metainfo
 from genestack_client.bio_meta_keys import BioMetaKeys
 
 
+# FIXME: add deprecation warnign to access for all attributes of class via __getattribute__()
 class BioMetainfo(Metainfo, BioMetaKeys):
     """
     A metainfo representation with additional methods for biological metadata.
+    
+    This class is deprecated, use :py:class:`~genestack_client.Metainfo` instead.
+    Constants are moved to BioMetaKeys.
     """
 
     def __init__(self, iterable=None, **kwargs):
@@ -19,6 +23,8 @@ class BioMetainfo(Metainfo, BioMetaKeys):
     def add_organism(self, key, value):
         """
         Add an organism value.
+        
+        This method is deprecated use :py:meth:`~genestack_client.Metainfo.add_string` instead.
 
         :param key: key
         :type key: str
@@ -34,6 +40,8 @@ class BioMetainfo(Metainfo, BioMetaKeys):
     def add_ethnic_group(self, key, value):
         """
         Add an ethnic group value.
+        
+        This method is deprecated use :py:meth:`~genestack_client.Metainfo.add_string` instead.
 
         :param key: key
         :type key: str
