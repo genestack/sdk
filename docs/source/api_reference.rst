@@ -92,13 +92,6 @@ Metainfo
         .. autoattribute:: genestack_client.Metainfo.SECOND
         .. autoattribute:: genestack_client.Metainfo.MILLISECOND
 
-BioMetainfo
------------
-
-.. autoclass:: genestack_client.BioMetainfo
-        :members:
-        :show-inheritance:
-
 
 Users and Connections
 *********************
