@@ -4,14 +4,14 @@
 import csv
 
 from genestack_client import (FilesUtil, make_connection_parser,
-                              get_connection, GenestackException, BioMetainfo)
+                              get_connection, GenestackException, BioMetaKeys, Metainfo)
 
 
 # keys that have existing dedicated "Genestack" metainfo key names
-SPECIAL_KEYS = {'name': BioMetainfo.NAME, 'organism': BioMetainfo.ORGANISM,
-                'method': BioMetainfo.METHOD, 'sex': BioMetainfo.SEX,
-                'gender': BioMetainfo.SEX, 'age': BioMetainfo.AGE,
-                'cell line': BioMetainfo.CELL_LINE, 'accession': BioMetainfo.ACCESSION}
+SPECIAL_KEYS = {'name': Metainfo.NAME, 'organism': BioMetaKeys.ORGANISM,
+                'method': BioMetaKeys.METHOD, 'sex': BioMetaKeys.SEX,
+                'gender': BioMetaKeys.SEX, 'age': BioMetaKeys.AGE,
+                'cell line': BioMetaKeys.CELL_LINE, 'accession': Metainfo.ACCESSION}
 
 
 # Logic to parse 'boolean-like' values as metainfo booleans
@@ -67,8 +67,8 @@ if __name__ == "__main__":
                 print "Warning: no match found for file name '%s'" % local_identifier
                 continue
 
-            # prepare a BioMetainfo object
-            metainfo = BioMetainfo()
+            # prepare a Metainfo object
+            metainfo = Metainfo()
             for key in field_names:
                 # key parsing logic
                 value = file_data[key]
@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 if key == args.local_key:
                     continue
                 if key == "organism":
-                    metainfo.add_organism(BioMetainfo.ORGANISM, value)
+                    metainfo.add_string(BioMetaKeys.ORGANISM, value)
                 else:
                     metainfo_key = SPECIAL_KEYS.get(key.lower(), key)
                     if parse_as_boolean(value) is not None:

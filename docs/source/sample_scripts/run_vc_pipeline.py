@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from genestack_client import (FilesUtil, BowtieApplication, AlignedReadsQC, VariationCaller2Application,
-                              BioMetainfo, SpecialFolders, make_connection_parser, get_connection)
+                              BioMetaKeys, SpecialFolders, make_connection_parser, get_connection)
 
 
 # base class to create multiple files with a CLA
@@ -53,8 +53,8 @@ class BowtieBatchFilesCreator(BatchFilesCreator):
         output = BatchFilesCreator._create_output_file(self, source)
         # replace reference genome
         if self._ref_genome:
-            self._files_util.remove_metainfo_value([output], BioMetainfo.REFERENCE_GENOME)
-            self._cla.replace_file_reference(output, BioMetainfo.REFERENCE_GENOME, None, self._ref_genome)
+            self._files_util.remove_metainfo_value([output], BioMetaKeys.REFERENCE_GENOME)
+            self._cla.replace_file_reference(output, BioMetaKeys.REFERENCE_GENOME, None, self._ref_genome)
         return output
 
 # These CLA arguments correspond to all default options except the type of variants to look for (SNPs only).
