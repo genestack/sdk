@@ -123,12 +123,11 @@ class DataImporter(object):
         return self.importer.invoke('createFile', parent, importer_type, metainfo)['accession']
 
     def __add_to_metainfo(self, metainfo, key, value, setter, required=False):
-        if value is None:
-            if required:
-                if metainfo.get(key) is None:
-                    raise GenestackException('Missed required key "%s", '
-                                             'it should be specified as function argument '
-                                             'or in metainfo' % key)
+        if value is None and required:
+            if required and metainfo.get(key) is None:
+                raise GenestackException('Missed required key "%s", '
+                                         'it should be specified as function argument '
+                                         'or in metainfo' % key)
         else:
             if metainfo.get(key) is not None:
                 raise GenestackException('Key "%s", is passed both as function argument '
