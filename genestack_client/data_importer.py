@@ -125,9 +125,9 @@ class DataImporter(object):
     def __add_to_metainfo(self, metainfo, key, value, setter, required=False):
         if value is None and required:
             if required and metainfo.get(key) is None:
-                raise GenestackException('Missed required key "%s", '
-                                         'it should be specified as function argument '
-                                         'or in metainfo' % key)
+                raise GenestackException('Missing required key "%s", '
+                                         'it should be passed as function argument '
+                                         'or in metainfo object' % key)
         else:
             if metainfo.get(key) is not None:
                 raise GenestackException('Key "%s", is passed both as function argument '
