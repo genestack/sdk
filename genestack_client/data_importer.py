@@ -123,6 +123,23 @@ class DataImporter(object):
         return self.importer.invoke('createFile', parent, importer_type, metainfo)['accession']
 
     def __add_to_metainfo(self, metainfo, key, value, setter, required=False):
+        """
+        Add value to metainfo, check if value is not already present,
+         checks required fields.
+
+        :param metainfo: metainfo object to be updated
+        :type metainfo: Metainfo
+        :param key: key to add
+        :type key: str
+        :param value: value to add
+        :type value: object
+        :param setter: function to add value
+        :type setter: function
+        :param required: flag if value is required
+        :type required: bool
+        :return: None
+        """
+
         if value is None and required:
             if required and metainfo.get(key) is None:
                 raise GenestackException('Missing required key "%s", '
