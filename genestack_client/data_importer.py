@@ -130,7 +130,7 @@ class DataImporter(object):
                                          'or in metainfo object' % key)
         else:
             if metainfo.get(key) is not None:
-                raise GenestackException('Key "%s", is passed both as function argument '
+                raise GenestackException('Key "%s" is passed both as function argument '
                                          'and inside metainfo object' % key)
             setter(key, value)
 
