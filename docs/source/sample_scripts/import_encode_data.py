@@ -6,7 +6,7 @@
 
 import csv
 
-from genestack_client import (DataImporter, BioMetainfo,
+from genestack_client import (DataImporter, BioMetaKeys,
                               make_connection_parser, get_connection,
                               Metainfo)
 
@@ -18,11 +18,11 @@ PAIRED_ACCESSION = "Paired with"
 VALID_FIELDS = {
     FILE_ACCESSION: Metainfo.NAME,
     "Experiment accession": None,
-    "Biosample sex": BioMetainfo.SEX,
-    "Biosample organism": BioMetainfo.ORGANISM,
+    "Biosample sex": BioMetaKeys.SEX,
+    "Biosample organism": BioMetaKeys.ORGANISM,
     "Biosample Age": None,
-    "Biosample term name": BioMetainfo.CELL_TYPE,
-    "Platform": BioMetainfo.PLATFORM
+    "Biosample term name": BioMetaKeys.CELL_TYPE,
+    "Platform": BioMetaKeys.PLATFORM
 }
 
 ENCODE_URL_PATTERN = "https://www.encodeproject.org/files/{0}/@@download/{0}.fastq.gz"
@@ -60,16 +60,16 @@ with open(tsv_input, 'r') as the_file:
         if file_data[FILE_ACCESSION] in created_pairs:
             continue
 
-        # for each entry, prepare a BioMetainfo object
-        metainfo = BioMetainfo()
+        # for each entry, prepare a Metainfo object
+        metainfo = Metainfo()
         for key in VALID_FIELDS.keys():
             metainfo.add_string(VALID_FIELDS.get(key) or key, file_data[key])
-        metainfo.add_external_link(BioMetainfo.READS_LINK, ENCODE_URL_PATTERN.format(file_data[FILE_ACCESSION]))
+        metainfo.add_external_link(BioMetaKeys.READS_LINK, ENCODE_URL_PATTERN.format(file_data[FILE_ACCESSION]))
 
         if file_data.get(PAIRED_ACCESSION):
             # add URL of second mate if the reads are paired-end
             metainfo.add_string(FILE_ACCESSION, PAIRED_ACCESSION)
-            metainfo.add_external_link(BioMetainfo.READS_LINK, ENCODE_URL_PATTERN.format(file_data[PAIRED_ACCESSION]))
+            metainfo.add_external_link(BioMetaKeys.READS_LINK, ENCODE_URL_PATTERN.format(file_data[PAIRED_ACCESSION]))
             created_pairs.add(file_data[PAIRED_ACCESSION])
 
         # create the sequencing assay on Genestack
