@@ -83,11 +83,6 @@ class Install(Command):
             help='Run installation without any prompts (use with caution)'
         )
         p.add_argument(
-            '-r', '--release', action='store_true',
-            default=False,
-            help='Release installed applications and set them visible for all'
-        )
-        p.add_argument(
             '-o', '--override', action='store_true',
             help='overwrite old version of the applications with the new one'
         )
@@ -103,6 +98,11 @@ class Install(Command):
                  (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
         )
         p.add_argument(
+            '-i', '--visibility', metavar='<visibility>',
+            help='set initial visibility (use `-i organization` for setting organization visibility or '
+                 '`-i <group_accession>` for group visibility)'
+        )
+        p.add_argument(
             'version', metavar='<version>',
             help='version of applications to upload'
         )
@@ -116,7 +116,7 @@ class Install(Command):
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.release
+            self.args.stable, self.args.scope, self.args.force, self.args.visibility
         )
 
 
@@ -166,7 +166,7 @@ class ListVersions(Command):
         max_len = max(len(x) for x in result)
         for item in result:
             output_string = ''
-            if stable_versions is not None:
+            if stable_versions:
                 output_string += '%s%s%s ' % (
                     'S' if item == stable_versions.get('SYSTEM') else '-',
                     'U' if item == stable_versions.get('USER') else '-',
@@ -299,18 +299,21 @@ class Remove(Command):
         p.add_argument(
             'app_id_list', metavar='<appId>', nargs='+',
             help='identifier of the application to remove'
+                 ' (or `ALL` for removing all _your_ applications with specified version)'
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
-        if not all(map(validate_application_id, apps_ids)):
+        app_ids = self.args.app_id_list
+        if app_ids == ['ALL']:
+            app_ids = None
+        elif not all(map(validate_application_id, app_ids)):
             return
         application = self.connection.application(APPLICATION_ID)
         version = self.args.version
-        if not self.args.force and not prompt_removing_stable_version(application, apps_ids, version):
+        if not self.args.force and not prompt_removing_stable_version(application, app_ids, version):
             raise GenestackException('Removing was aborted by user')
         return remove_applications(
-            self.connection.application(APPLICATION_ID), self.args.version, apps_ids
+            self.connection.application(APPLICATION_ID), self.args.version, app_ids
         )
 
 
@@ -416,11 +419,20 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 def remove_applications(application, version, app_id_list):
     print('Removing application(s) with version "%s"' % version)
-    for app_id in app_id_list:
-        sys.stdout.write('%-40s ... ' % app_id)
+    if app_id_list:
+        for app_id in app_id_list:
+            sys.stdout.write('%-40s ... ' % app_id)
+            sys.stdout.flush()
+            application.invoke('removeApplication', app_id, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+    else:
+        sys.stdout.write('ALL ... ')
         sys.stdout.flush()
-        application.invoke('removeApplication', app_id, version)
+        removed_apps = application.invoke('removeApplications', version)
         sys.stdout.write('ok\n')
+        sys.stdout.flush()
+        sys.stdout.write('Following applications were removed:\n %s\n' % ('\n '.join(sorted(removed_apps))))
         sys.stdout.flush()
 
 
@@ -434,19 +446,16 @@ def reload_applications(application, version, app_id_list):
         sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope, force, release):
-    if stable and release:
-        raise GenestackException('Flags \'-r\' and \'-s\' cannot be used at once')
-
+def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility):
     for file_path in files_list:
         upload_single_file(
             application, file_path, version, override,
-            stable, scope, force, release
+            stable, scope, force, initial_visibility
         )
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, release=False):
+                       stable, scope, force=False, initial_visibility=None):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -473,11 +482,11 @@ def upload_single_file(application, file_path, version, override,
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
-    released_version = version + '-released'
-    if release:
-        release_applications(application, app_info.identifiers, version, released_version)
+    if initial_visibility:
         change_applications_visibility(
-            False, application, app_info.identifiers, released_version, 'all'
+            False, application, app_info.identifiers, version,
+            'organization' if initial_visibility == 'organization' else 'group',
+            None if initial_visibility == 'organization' else [initial_visibility]
         )
 
     if not stable:
@@ -485,7 +494,7 @@ def upload_single_file(application, file_path, version, override,
 
     return mark_as_stable(
         application,
-        released_version if release and not SCOPE_DICT[scope] == 'SYSTEM' else version,
+        version,
         app_info.identifiers,
         scope
     )
@@ -512,7 +521,7 @@ def change_applications_visibility(remove, application, app_ids, version, level,
             app_id, version, level, group_accession if group_accession else None
         )
     try:
-        print('%s visibility %s for version "%s"' % ('Removing' if remove else 'Setting', level, version))
+        print('%s visibility "%s" for version "%s"' % ('Removing' if remove else 'Setting', level, version))
         for app_id in app_ids:
             if not validate_application_id(app_id):
                 sys.stderr.write('Invalid application id: %s\n' % app_id)
@@ -623,18 +632,24 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
 REMOVE_PROMPT = '''You are going to remove following system stable applications with version "%s":
  %s
-Do you want to continue'''
+ '''
 
 
 def prompt_removing_stable_version(application, apps_ids, version):
     check_tty()
-    apps = get_system_stable_apps_version(application, apps_ids, version)
+    if apps_ids:
+        apps = get_system_stable_apps_version(application, apps_ids, version)
+    else:
+        apps = application.invoke('getSystemStableIdsByVersion', version)
+
     if not apps:
         return True
 
-    message = REMOVE_PROMPT % (version, '\n '.join(apps))
+    message = REMOVE_PROMPT % (version, '\n '.join(sorted(apps)))
     try:
-        return ask_confirmation(message)
+        sys.stdout.write(message)
+        sys.stdout.flush()
+        return ask_confirmation('Do you want to continue')
     except KeyboardInterrupt:
         return False
 
@@ -655,8 +670,8 @@ def check_tty():
 
 class ApplicationManager(GenestackShell):
     DESCRIPTION = ('The Genestack Application Manager is a command-line utility'
-                   'that allows you to upload and manage'
-                   'your applications on a specific Genestack instance ')
+                   ' that allows you to upload and manage'
+                   ' your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
     COMMAND_LIST = [
         Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release

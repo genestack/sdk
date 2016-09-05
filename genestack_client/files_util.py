@@ -2,6 +2,7 @@
 
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
+MAX_SEARCH_LIMIT = 100
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -49,6 +50,7 @@ class FilesUtil(Application):
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
+
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -491,7 +493,7 @@ class FilesUtil(Application):
         :param accession_list: list of valid accessions.
         :type accession_list: list
         :return: list of file info dictionaries.
-        :rtype: list
+        :rtype: list[dict[str, object]]
         """
         return self.invoke('getInfos', accession_list)
 
@@ -520,6 +522,17 @@ class FilesUtil(Application):
         metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
         self.add_metainfo_values(app_file, metainfo)
 
+    def mark_obsolete(self, accession):
+        """
+        Mark Genestack file as obsolete one by adding corresponding key to metainfo.
+
+        :param accession: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean('genestack:obsolete', True)
+        self.add_metainfo_values(accession, metainfo)
+
     def add_checksums(self, app_file, expected_checksums):
         """
         Add expected MD5 checksum to the metainfo of a CLA file.
@@ -540,3 +553,201 @@ class FilesUtil(Application):
         for key, value in expected_checksums.items():
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
+
+    def create_sample(self, parent=None, name=None, metainfo=None):
+        """
+        Create a report file with type ``sample``.
+        ``name`` is a required field
+        It can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        Returns file info dictionary with the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in
+            the :py:data:`SpecialFolders.CREATED <genestack_client.SpecialFolders.CREATED>` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file info dictionary
+        :rtype: dict
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        return self.invoke('create', 'sample', metainfo, parent)
+
+    def create_study(self, parent=None, name=None, metainfo=None):
+        """
+        Create a report file with type ``study``.
+        ``name`` is a required field
+        It can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        Returns file info dictionary with the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in
+            the :py:data:`SpecialFolders.CREATED <genestack_client.SpecialFolders.CREATED>` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file info dictionary
+        :rtype: dict
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        return self.invoke('create', 'study', metainfo, parent)
+
+    def __find_files(self, type, parent, name, metainfo, offset, limit):
+        if offset < 0:
+            raise GenestackException('Expected nonnegative offset, got %d' % offset)
+        if limit < 1 or limit > MAX_SEARCH_LIMIT:
+            raise GenestackException('Expected limit to be >0 and <=%d, got %d' % (MAX_SEARCH_LIMIT, limit))
+
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+
+        params = {
+            'type': type,
+            'metainfo': metainfo,
+            'offset': offset,
+            'limit': limit,
+            'parentAccession': parent
+        }
+
+        return self.invoke('find', params)
+
+    def find_samples(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
+        """
+        Search samples by name and metainfo.
+        Searches only in ``parent`` folder if provided, otherwise everywhere.
+
+        Returns a list of dictionaries with complete information about each of the specified files.
+        Dictionaries have the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be searched in all folders)
+        :type parent: str
+        :param name: file name (optional)
+        :type name: str
+        :param metainfo: metainfo attributes to build search query
+        :type metainfo: Metainfo
+        :param offset: offset to start retrieving samples. Must be >= 0
+        :type offset: int
+        :param limit: maximum number of files to retrieve. Must be <= 100.
+        :type limit: int
+        :return: list of file info dictionaries
+        :rtype: list
+        """
+        return self.__find_files('sample', parent, name, metainfo, offset, limit)
+
+    def find_studies(self, parent=None, name=None, metainfo=None, offset=0, limit=MAX_SEARCH_LIMIT):
+        """
+        Search studies by name and metainfo.
+        Searches only in ``parent`` folder if provided, otherwise everywhere.
+
+        Returns a list of dictionaries with complete information about each of the specified files.
+        Dictionaries have the same structure as dictionaries
+        returned by :py:meth:`~genestack_client.FilesUtil.get_infos` method.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be searched in all folders)
+        :type parent: str
+        :param name: file name (optional)
+        :type name: str
+        :param metainfo: metainfo attributes to build search query
+        :type metainfo: Metainfo
+        :param offset: offset to start retrieving samples. must be >= 0
+        :type offset: int
+        :param limit: maximum number of files to retrieve. Must be <= 100.
+        :type limit: int
+        :return: list of file info dictionaries
+        :rtype: list
+        """
+        return self.__find_files('study', parent, name, metainfo, offset, limit)
+
+    def get_metainfo(self, accession):
+        """
+        Get file metainfo dictionary.
+        Returns dictionary that maps metainfo keys to lists of dictionaries with the following fields:
+
+            - Metainfo value type
+            - Metainfo value
+
+        Example dictionary::
+
+            {
+                'key1': [
+                    {
+                        'type': 'string',
+                        'value': 'value1'
+                    },
+                    {
+                        'type': 'string',
+                        'value': 'value2'
+                    }
+                ]
+            }
+
+        :param accession: file accession
+        :type accession: str
+        :return: file metainfo dictionary
+        :rtype: dict[str, list[dict[str, object]]]
+        """
+        return self.invoke('getMetainfo', accession)
+
+    def add_metainfo(self, accession, metainfo):
+        """
+        Add metainfo to a specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param metainfo: metainfo to add
+        :type metainfo: Metainfo
+        :rtype: None
+        """
+        self.invoke("addMetainfoValues", accession, metainfo)
+
+    def replace_metainfo(self, accession, metainfo):
+        """
+        Replaces metainfo values for specified file. Only the keys present in ``metainfo`` are affected, other keys
+        remain the same.
+
+        :param accession: file accession
+        :type accession: str
+        :param metainfo: metainfo to replace
+        :type metainfo: Metainfo
+        :rtype: None
+        """
+        self.invoke("replaceMetainfoValues", accession, metainfo)
+
+    def remove_metainfo_key(self, accession, key):
+        """
+        Delete a key from the metainfo of specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param key: metainfo key
+        :type key: str
+        :rtype: None
+        """
+        self.invoke("removeMetainfoKey", accession, key)
+
+    def remove_metainfo_keys(self, accession, keys):
+        """
+        Delete multiple keys from the metainfo of specified file.
+
+        :param accession: file accession
+        :type accession: str
+        :param keys: list of metainfo keys
+        :type keys: list
+        :rtype: None
+        """
+        self.invoke("removeMetainfoKeys", accession, keys)
