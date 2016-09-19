@@ -3,8 +3,13 @@
   * Added ability to remove applications by specified version
   * Added `FilesUtil.mark_obsolete` method
   * Added `-i` flag in `install` command of application manager for setting up initial application visibility
+  * Added class with bio constant `genestack_client.BioMetaKeys`
   * Removed `DictionaryUtil`
   * Removed `-r` flag in `install` command of application manager
+  * Deprecated `genestack_client.BioMetainfo`
+      * Methods `add_ethnic_group` and `add_organism` replaced by `Metainfo.add_string`
+      * Constants with metainfo keys moved to `bio_meta_keys.BioMetaKeys`
+
 
 * 0.9.0
   * Added `DataImporter.create_microarray_annotation`

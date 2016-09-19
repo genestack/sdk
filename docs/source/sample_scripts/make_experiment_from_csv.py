@@ -3,16 +3,16 @@
 
 import csv
 
-from genestack_client import (unaligned_reads, DataImporter, BioMetainfo,
+from genestack_client import (unaligned_reads, DataImporter, BioMetaKeys, Metainfo,
                               make_connection_parser, get_connection, GenestackException)
 
 # keys that must be supplied in the CSV file
 MANDATORY_KEYS = ['name', 'link']
 
 # keys that have existing dedicated "Genestack" metainfo key names
-SPECIAL_KEYS = {'name': BioMetainfo.NAME, 'organism': BioMetainfo.ORGANISM,
-                'method': BioMetainfo.METHOD, 'sex': BioMetainfo.SEX,
-                'cell line': BioMetainfo.CELL_LINE}
+SPECIAL_KEYS = {'name': Metainfo.NAME, 'organism': BioMetaKeys.ORGANISM,
+                'method': BioMetaKeys.METHOD, 'sex': BioMetaKeys.SEX,
+                'cell line': BioMetaKeys.CELL_LINE}
 
 # parse script arguments
 parser = make_connection_parser()
@@ -52,15 +52,15 @@ with open(csv_input, 'r') as the_file:
 
     for file_data in reader:
 
-        # for each entry, prepare a BioMetainfo object
-        metainfo = BioMetainfo()
+        # for each entry, prepare a Metainfo object
+        metainfo = Metainfo()
         for key in field_names:
             # 'link' and 'organism' are treated separately, as they are added to the metainfo using specific methods
             if key == "link":
                 url = file_data[key]
-                metainfo.add_external_link(key=BioMetainfo.READS_LINK, text="link", url=url, fmt=file_format)
+                metainfo.add_external_link(key=BioMetaKeys.READS_LINK, text="link", url=url, fmt=file_format)
             elif key == "organism":
-                metainfo.add_organism(BioMetainfo.ORGANISM, file_data[key])
+                metainfo.add_string(BioMetaKeys.ORGANISM, file_data[key])
             # all the other keys are added as strings
             else:
                 metainfo_key = SPECIAL_KEYS.get(key.lower(), key)
