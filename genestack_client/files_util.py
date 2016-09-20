@@ -151,7 +151,7 @@ class FilesUtil(Application):
                 sys.stdout.flush()
             all_files += self.invoke('getFileChildren', container_accession, i, FILE_BATCH_SIZE)
         if show_large_folder_progress:
-            sys.stdout.write('\n')
+            sys.stdout.write('Retrieving container children (%d/%d)...\n' % (count, count))
             sys.stdout.flush()
         return all_files
 
