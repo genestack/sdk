@@ -223,7 +223,7 @@ class FilesUtil(Application):
 
         :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
             values are lists of accessions of the containers to unlink from
-        :type: dict
+        :type children_to_parents_dict: dict[str, list[str]]
         :rtype: None
         """
         self.invoke('unlinkFiles', children_to_parents_dict)
@@ -506,7 +506,7 @@ class FilesUtil(Application):
         :param accession_list: list of valid accessions.
         :type accession_list: list
         :return: list of file info dictionaries.
-        :rtype: list
+        :rtype: list[dict[str, object]]
         """
         return self.invoke('getInfos', accession_list)
 
@@ -534,6 +534,17 @@ class FilesUtil(Application):
         metainfo = Metainfo()
         metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
         self.add_metainfo_values(app_file, metainfo)
+
+    def mark_obsolete(self, accession):
+        """
+        Mark Genestack file as obsolete one by adding corresponding key to metainfo.
+
+        :param accession: accession of file
+        :return: None
+        """
+        metainfo = Metainfo()
+        metainfo.add_boolean('genestack:obsolete', True)
+        self.add_metainfo_values(accession, metainfo)
 
     def add_checksums(self, app_file, expected_checksums):
         """
