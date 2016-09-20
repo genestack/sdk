@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
-FILE_BATCH_SIZE = 1000
+FILE_BATCH_SIZE = 500
 
 class SpecialFolders:
     """
@@ -129,12 +130,14 @@ class FilesUtil(Application):
         """
         return self.invoke('countFileChildren', container_accession)
 
-    def get_file_children(self, container_accession):
+    def get_file_children(self, container_accession, show_large_folder_progress=False):
         """
         Return accessions of files linked to current container.
 
         :param container_accession:  accession of container
         :type container_accession: str
+        :param show_large_folder_progress: should a progress indicator be shown for large containers (> 500 children)
+        :type show_large_folder_progress: bool
         :return: list of accessions
         :rtype: list
         """
@@ -143,7 +146,13 @@ class FilesUtil(Application):
             return self.invoke('getFileChildren', container_accession)
         all_files = []
         for i in xrange(0, count, FILE_BATCH_SIZE):
-            all_files += self.invoke('getFileChildren', container_accession, i, i + FILE_BATCH_SIZE)
+            if show_large_folder_progress:
+                sys.stdout.write('\rRetrieving container children (%d/%d)...' % (i, count))
+                sys.stdout.flush()
+            all_files += self.invoke('getFileChildren', container_accession, i, FILE_BATCH_SIZE)
+        if show_large_folder_progress:
+            sys.stdout.write('\n')
+            sys.stdout.flush()
         return all_files
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
