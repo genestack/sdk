@@ -31,6 +31,7 @@ class Metainfo(dict):
     CONTACT_PERSON = 'genestack:contactPerson'
     EXTERNAL_LINK = 'genestack:links'
     CREATION_DATE = 'genestack:dateCreated'
+    PARENT_DICTIONARY = 'genestack.dictionary:parent'
 
     YEAR = 'YEAR'
     MONTH = 'MONTH'
