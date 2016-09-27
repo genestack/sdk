@@ -130,28 +130,30 @@ class FilesUtil(Application):
         """
         return self.invoke('countFileChildren', container_accession)
 
-    def get_file_children(self, container_accession, show_large_folder_progress=False):
+    def get_file_children(self, container_accession, show_progress=False):
         """
         Return accessions of files linked to current container.
 
         :param container_accession:  accession of container
         :type container_accession: str
-        :param show_large_folder_progress: should a progress indicator be shown for large containers (> 500 children)
-        :type show_large_folder_progress: bool
+        :param show_progress: should a progress indicator be shown
+        :type show_progress: bool
         :return: list of accessions
         :rtype: list
         """
-        count = self.count_file_children(container_accession)
-        if count <= FILE_BATCH_SIZE:
-            return self.invoke('getFileChildren', container_accession)
         all_files = []
-        for i in xrange(0, count, FILE_BATCH_SIZE):
-            if show_large_folder_progress:
-                sys.stdout.write('\rRetrieving container children (%d/%d)...' % (i, count))
+        count = 0
+        while True:
+            if show_progress:
+                sys.stdout.write('\rRetrieving container children (%d)...' % count)
                 sys.stdout.flush()
-            all_files += self.invoke('getFileChildren', container_accession, i, FILE_BATCH_SIZE)
-        if show_large_folder_progress:
-            sys.stdout.write('Retrieving container children (%d/%d)...\n' % (count, count))
+            batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
+            all_files += batch
+            count += len(batch)
+            if len(batch) < FILE_BATCH_SIZE:
+                break
+        if show_progress:
+            sys.stdout.write('Retrieving container children (%d)...\n' % count)
             sys.stdout.flush()
         return all_files
 
