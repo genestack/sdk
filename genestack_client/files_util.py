@@ -153,7 +153,7 @@ class FilesUtil(Application):
             if len(batch) < FILE_BATCH_SIZE:
                 break
         if show_progress:
-            sys.stdout.write('Retrieving container children (%d)...\n' % count)
+            sys.stdout.write('\rRetrieving container children (%d)...\n' % count)
             sys.stdout.flush()
         return all_files
 
