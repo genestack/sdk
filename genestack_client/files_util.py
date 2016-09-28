@@ -127,6 +127,7 @@ class FilesUtil(Application):
         :param container_accession: accession of container
         :type container_accession: str
         :return: number of children
+        :rtype int:
         """
         return self.invoke('countFileChildren', container_accession)
 
