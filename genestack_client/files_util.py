@@ -123,7 +123,7 @@ class FilesUtil(Application):
 
     def count_file_children(self, container_accession):
         """
-        Count children of a container (not recursive, retrieves up to 1000 files).
+        Count children of a container (not recursive).
         :param container_accession: accession of container
         :type container_accession: str
         :return: number of children
