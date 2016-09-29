@@ -2,7 +2,7 @@
 
 import sys
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
-from genestack_client.utils import isatty
+from genestack_client.utils import overwrite_stdout
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -144,20 +144,20 @@ class FilesUtil(Application):
         """
         all_files = []
         count = 0
+        is_first_message = True
         while True:
             if show_progress:
                 message = 'Retrieving container children (%d)...' % count
-                sys.stdout.write('\r%s' % message if isatty() else '%s\n' % message)
-                sys.stdout.flush()
+                overwrite_stdout(message, first_line=is_first_message)
+                is_first_message = False
             batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
             all_files += batch
             count += len(batch)
             if len(batch) < FILE_BATCH_SIZE:
                 break
         if show_progress:
-            message = 'Retrieving container children (%d)...\n' % count
-            sys.stdout.write('\r%s' % message if isatty() else message)
-            sys.stdout.flush()
+            message = 'Retrieving container children (%d)...' % count
+            overwrite_stdout(message, last_line=True)
         return all_files
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
