@@ -2,7 +2,7 @@
 
 import sys
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
-
+from genestack_client.utils import isatty
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -146,7 +146,8 @@ class FilesUtil(Application):
         count = 0
         while True:
             if show_progress:
-                sys.stdout.write('\rRetrieving container children (%d)...' % count)
+                message = 'Retrieving container children (%d)...' % count
+                sys.stdout.write('\r%s' % message if isatty() else '%s\n' % message)
                 sys.stdout.flush()
             batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
             all_files += batch
@@ -154,7 +155,8 @@ class FilesUtil(Application):
             if len(batch) < FILE_BATCH_SIZE:
                 break
         if show_progress:
-            sys.stdout.write('\rRetrieving container children (%d)...\n' % count)
+            message = 'Retrieving container children (%d)...\n' % count
+            sys.stdout.write('\r%s' % message if isatty() else message)
             sys.stdout.flush()
         return all_files
 
