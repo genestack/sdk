@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
-from genestack_client.utils import overwrite_stdout
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 FILE_BATCH_SIZE = 500
+
 
 class SpecialFolders:
     """
