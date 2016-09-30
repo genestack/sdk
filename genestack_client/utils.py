@@ -19,27 +19,6 @@ def isatty():
         return False
 
 
-def overwrite_stdout(message, first_line=False, last_line=False):
-    """
-    Prepends a carriage return `\r` to the message to overwrite
-    previous line if `stdout` is a tty device.
-    The current line must be longer than the previous one in order for it to be fully overwritten.
-    The first and last line of the block of lines that should be overwritten must be signaled using
-    the appropriate flag.
-    """
-    if first_line and last_line:
-        raise GenestackException("`first_line` and `last_line` cannot both be `True`")
-    if isatty():
-        if not first_line:
-            message = '\r%s' % message
-        if last_line:
-            message += '\n'
-        sys.stdout.write(message)
-        sys.stdout.flush()
-    else:
-        print message
-
-
 def make_connection_parser(user=None, password=None, host=None):
     """
     Creates an argument parser with the provided connection parameters.

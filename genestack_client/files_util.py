@@ -131,33 +131,23 @@ class FilesUtil(Application):
         """
         return self.invoke('countFileChildren', container_accession)
 
-    def get_file_children(self, container_accession, show_progress=False):
+    def get_file_children(self, container_accession):
         """
         Return accessions of files linked to current container.
 
         :param container_accession:  accession of container
         :type container_accession: str
-        :param show_progress: should a progress indicator be shown
-        :type show_progress: bool
         :return: list of accessions
         :rtype: list
         """
         all_files = []
         count = 0
-        is_first_message = True
         while True:
-            if show_progress:
-                message = 'Retrieving container children (%d)...' % count
-                overwrite_stdout(message, first_line=is_first_message)
-                is_first_message = False
             batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
             all_files += batch
             count += len(batch)
             if len(batch) < FILE_BATCH_SIZE:
                 break
-        if show_progress:
-            message = 'Retrieving container children (%d)...' % count
-            overwrite_stdout(message, last_line=True)
         return all_files
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
