@@ -2,9 +2,9 @@
 
 from genestack_client import GenestackException, Metainfo, Application, SudoUtils
 
-
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
+FILE_BATCH_SIZE = 500
 
 
 class SpecialFolders:
@@ -120,6 +120,16 @@ class FilesUtil(Application):
         """
         return self.invoke('collectInitializableFilesInContainer', accession)
 
+    def count_file_children(self, container_accession):
+        """
+        Count children of a container (not recursive).
+        :param container_accession: accession of container
+        :type container_accession: str
+        :return: number of children
+        :rtype int:
+        """
+        return self.invoke('countFileChildren', container_accession)
+
     def get_file_children(self, container_accession):
         """
         Return accessions of files linked to current container.
@@ -129,7 +139,15 @@ class FilesUtil(Application):
         :return: list of accessions
         :rtype: list
         """
-        return self.invoke('getFileChildren', container_accession)
+        all_files = []
+        count = 0
+        while True:
+            batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
+            all_files += batch
+            count += len(batch)
+            if len(batch) < FILE_BATCH_SIZE:
+                break
+        return all_files
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
         """
