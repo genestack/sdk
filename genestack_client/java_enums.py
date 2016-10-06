@@ -14,9 +14,9 @@ class JavaClassEnum(object):
     def get_full_name(cls, name, fail_if_not_found=True):
         if name not in cls.get_all_types():
             if fail_if_not_found:
-                raise GenestackException("Unknown entry: '%s'" % name)
+                raise GenestackException("Entry '%s' not found in %s enumeration" % (name, cls.__name__))
             return None
-        return "%s.%s" % (cls._CLASS_NAME, name)
+        return "%s.%s" % (cls._CLASS_NAME, name) if cls._CLASS_NAME is not None else name
 
 
 class CoreFileType(JavaClassEnum):
@@ -62,3 +62,11 @@ class GenestackPermission(JavaClassEnum):
     FILE_READ_CONTENT = "readContent"
     FILE_WRITE = "write"
     FILE_CLONE_DATA = "cloneData"
+
+
+class SortOrder(JavaClassEnum):
+
+    BY_NAME = "BY_NAME"
+    BY_ACCESSION = "BY_ACCESSION"
+    BY_LAST_UPDATE = "BY_LAST_UPDATE"
+    DEFAULT = "DEFAULT"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, SortOrder
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -513,8 +513,9 @@ class FilesUtil(Application):
         """
         return self.invoke('getInfos', accession_list)
 
-    def find_files(self, file_filter, sort_order=None, increasing=True, offset=0, limit=100):
-        return self.invoke('findFiles', file_filter.get_dict(), sort_order, increasing, offset, limit)
+    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, increasing=False, offset=0, limit=100):
+        return self.invoke('findFiles', file_filter.get_dict(), SortOrder.get_full_name(sort_order),
+                           increasing, offset, limit)
 
     def rename_file(self, accession, name):
         """
