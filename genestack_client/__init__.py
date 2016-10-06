@@ -19,9 +19,9 @@ from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
 from sudo_utils import SudoUtils
+from java_enums import *
 from files_util import FilesUtil, SpecialFolders
 from task_log_viewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
 from cla import *
-from java_enums import *
 from file_filters import *

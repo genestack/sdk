@@ -77,7 +77,7 @@ class HasInProvenanceFileFilter(FileFilter):
 class PermissionFileFilter(FileFilter):
     def __init__(self, group, permission):
         super(PermissionFileFilter, self).__init__()
-        self._dict = {'group': group, 'value': GenestackPermission.get_full_name(permission)}
+        self._dict = {'permission': {'group': group, 'value': GenestackPermission.get_full_name(permission)}}
 
 
 class NotFileFilter(FileFilter):
@@ -89,10 +89,10 @@ class NotFileFilter(FileFilter):
 class AndFileFilter(FileFilter):
     def __init__(self, *args):
         super(AndFileFilter, self).__init__()
-        self._dict = {'and': list(args)}
+        self._dict = {'and': [file_filter.get_dict() for file_filter in args]}
 
 
 class OrFileFilter(FileFilter):
     def __init__(self, *args):
         super(OrFileFilter, self).__init__()
-        self._dict = {'or': list(args)}
+        self._dict = {'or': [file_filter.get_dict() for file_filter in args]}

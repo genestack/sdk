@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, SortOrder
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -569,3 +569,7 @@ class FilesUtil(Application):
         for key, value in expected_checksums.items():
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
+
+    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, ascending=False, offset=0, limit=100):
+        return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
+
