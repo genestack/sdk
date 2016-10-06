@@ -24,4 +24,5 @@ from task_log_viewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
 from cla import *
 from java_enums import *
+from metainfo_values import *
 from file_filters import *
