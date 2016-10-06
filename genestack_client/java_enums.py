@@ -8,7 +8,7 @@ class JavaClassEnum(object):
 
     @classmethod
     def get_all_types(cls):
-        return {name for name in dir(cls) if not name.startswith("_")}
+        return {value for attr, value in vars(cls).iteritems() if not attr.startswith("_")}
 
     @classmethod
     def get_full_name(cls, name, fail_if_not_found=True):
