@@ -23,3 +23,5 @@ from files_util import FilesUtil, SpecialFolders
 from task_log_viewer import TaskLogViewer
 from utils import get_connection, make_connection_parser, get_user
 from cla import *
+from java_enums import BioFileType, CoreFileType, GenestackPermission
+from file_filters import *

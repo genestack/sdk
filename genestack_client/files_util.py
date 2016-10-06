@@ -513,6 +513,9 @@ class FilesUtil(Application):
         """
         return self.invoke('getInfos', accession_list)
 
+    def find_files(self, file_filter, sort_order=None, increasing=True, offset=0, limit=100):
+        return self.invoke('findFiles', file_filter.get_dict(), sort_order, increasing, offset, limit)
+
     def rename_file(self, accession, name):
         """
         Rename a file.
