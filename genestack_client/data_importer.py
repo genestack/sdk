@@ -626,3 +626,27 @@ class DataImporter(object):
         name and metainfo.add_string(Metainfo.NAME, name)
         url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, annotation_type, metainfo)
+
+    def create_gct_microarray(self, parent=None, name=None, url=None, metainfo=None):
+        """
+        Create a GCT Microarray file from a local or remote GCT data file.
+        ``name`` and ``url`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :type url: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, 'Gene Cluster Text Microarray', metainfo)
