@@ -1,5 +1,5 @@
 import json
-
+import copy
 
 class FrontendObject(object):
 
@@ -10,6 +10,9 @@ class FrontendObject(object):
 
     def set_data(self, dic):
         self._data = ['%s.%s' % (self._JAVA_CLASS_PREFIX, self.__class__.__name__), dic]
+
+    def get_data(self):
+        return copy.deepcopy(self._data)
 
     def serialize(self):
         return json.dumps(self._data)

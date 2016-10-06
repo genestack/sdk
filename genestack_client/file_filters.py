@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import BioFileType, CoreFileType, GenestackPermission, FrontendObject
+from genestack_client import BioFileType, CoreFileType, GenestackPermission, FrontendObject, FilesUtil
 
 
 class FileFilter(FrontendObject):
@@ -19,7 +19,7 @@ class TypeFileFilter(FileFilter):
 class MetainfoKeyValueFileFilter(FileFilter):
     def __init__(self, key, value):
         super(MetainfoKeyValueFileFilter, self).__init__()
-        self.set_data({'key': key, 'value': value._data})
+        self.set_data({'key': key, 'value': value.get_data()})
 
 
 class OwnerFileFilter(FileFilter):
@@ -79,16 +79,16 @@ class PermissionFileFilter(FileFilter):
 class NotFileFilter(FileFilter):
     def __init__(self, other_filter):
         super(NotFileFilter, self).__init__()
-        self.set_data({'not': other_filter.get_dict()})
+        self.set_data({'base': other_filter.get_data()})
 
 
 class AndFileFilter(FileFilter):
     def __init__(self, first, second):
         super(AndFileFilter, self).__init__()
-        self.set_data({'first': first, 'second': second})
+        self.set_data({'first': first.get_data(), 'second': second.get_data()})
 
 
 class OrFileFilter(FileFilter):
     def __init__(self, first, second):
         super(OrFileFilter, self).__init__()
-        self.set_data({'first': first, 'second': second})
+        self.set_data({'first': first.get_data(), 'second': second.get_data()})
