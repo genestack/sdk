@@ -1,3 +1,6 @@
+* 0.12.0a1
+  * Added `DataImporter.create_gct_microarray`
+
 * 0.10.0
   * Added `term_type` to dictionary uploader
   * Added ability to remove applications by specified version
