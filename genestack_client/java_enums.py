@@ -20,6 +20,9 @@ class JavaClassEnum(object):
 
 
 class CoreFileType(JavaClassEnum):
+    """
+    Core Genestack file types in Java.
+    """
     _CLASS_NAME = "com.genestack.api.files"
 
     AUXILIARY_FILE = "IAuxilaryFile"
@@ -35,6 +38,9 @@ class CoreFileType(JavaClassEnum):
 
 
 class BioFileType(JavaClassEnum):
+    """
+    Biological Genestack file types in Java.
+    """
     _CLASS_NAME = "com.genestack.bio.files"
 
     EXPERIMENT = "IExperiment"
@@ -56,6 +62,9 @@ class BioFileType(JavaClassEnum):
 
 
 class GenestackPermission(JavaClassEnum):
+    """
+    Genestack file permissions.
+    """
     _CLASS_NAME = "com.genestack.file"
 
     FILE_ACCESS = "access"
@@ -65,6 +74,9 @@ class GenestackPermission(JavaClassEnum):
 
 
 class SortOrder(JavaClassEnum):
+    """
+    Sort order for file search queries.
+    """
 
     BY_NAME = "BY_NAME"
     BY_ACCESSION = "BY_ACCESSION"

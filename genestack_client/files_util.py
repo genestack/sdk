@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, SortOrder
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, SortOrder, FileFilter
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -49,6 +49,8 @@ class FilesUtil(Application):
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
+
+    MAX_FILE_SEARCH_LIMIT = 100
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -570,6 +572,33 @@ class FilesUtil(Application):
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
 
-    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, ascending=False, offset=0, limit=100):
+    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, ascending=False, offset=0, limit=MAX_FILE_SEARCH_LIMIT):
+        """
+        Search for files using filters.
+
+        :param file_filter: file filter
+        :type file_filter: FileFilter
+        :param sort_order: sorting order for the results (see :py:class:`~genestack_client.java_enums.SortOrder`)
+        :type sort_order: str
+        :param ascending: should the results be in ascending order? (default: False)
+        :type ascending: bool
+        :param offset: search offset (default: 0, cannot be negative)
+        :type offset: int
+        :param limit: maximum number of results to return (max and default: 100)
+        :type limit: int
+        :return: a dictionary with entries the following entries:
+
+            - total (int): total number of files on the platform matching the search filter
+            - result (list): list of file info dictionaries for the matching files between ``offset`` and ``offset+limit``.
+              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the structure of these
+              objects.
+
+        :rtype: dict
+        """
+        limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)
+        if offset < 0 or limit < 0:
+            raise GenestackException("Search offset/limit cannot be negative")
+        if sort_order not in SortOrder.get_all_types():
+            raise GenestackException("Sort order must be one of: %s" % ", ".join(SortOrder.get_all_types()))
         return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
 

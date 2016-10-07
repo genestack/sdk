@@ -73,8 +73,8 @@ CLApplication
 
 .. include:: _cla_reference.rst
 
-Metainfo Objects
-****************
+Genestack Objects
+*****************
 
 Metainfo
 --------
@@ -92,6 +92,19 @@ Metainfo
         .. autoattribute:: genestack_client.Metainfo.SECOND
         .. autoattribute:: genestack_client.Metainfo.MILLISECOND
 
+File filters
+------------
+
+.. automodule:: genestack_client.file_filters
+        :members:
+
+Enumerations
+------------
+
+.. automodule:: genestack_client.java_enums
+        :members:
+        :undoc-members:
+        :exclude-members: JavaClassEnum
 
 Users and Connections
 *********************
