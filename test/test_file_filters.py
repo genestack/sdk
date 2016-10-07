@@ -4,6 +4,7 @@
 import sys
 import os
 import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from genestack_client.file_filters import *
@@ -33,6 +34,7 @@ def test_find_files(files_utils):
 
     result = files_utils.find_files(test_filter, SortOrder.BY_LAST_UPDATE, True, 4, 80)
     assert result['total'] > 0
+
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])
