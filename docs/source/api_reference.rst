@@ -83,14 +83,12 @@ Metainfo
         :members:
         :show-inheritance:
 
-        .. autoattribute:: genestack_client.Metainfo.YEAR
-        .. autoattribute:: genestack_client.Metainfo.MONTH
-        .. autoattribute:: genestack_client.Metainfo.WEEK
-        .. autoattribute:: genestack_client.Metainfo.DAY
-        .. autoattribute:: genestack_client.Metainfo.HOUR
-        .. autoattribute:: genestack_client.Metainfo.MINUTE
-        .. autoattribute:: genestack_client.Metainfo.SECOND
-        .. autoattribute:: genestack_client.Metainfo.MILLISECOND
+Metainfo scalar values
+----------------------
+
+.. automodule:: genestack_client.metainfo_scalar_values
+        :members:
+        :undoc-members:
 
 File filters
 ------------

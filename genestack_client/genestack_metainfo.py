@@ -1,22 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-import os
-from urlparse import urlparse, unquote
-
-from genestack_client import GenestackException
-
-
-def xstr(arg):
-    """
-    Convert the input argument to a string if it is not ``None``.
-
-    :param arg: input object
-    :type arg: object
-    :return: string representation of the object
-    :rtype: str
-    """
-    return str(arg) if arg is not None else None
+from genestack_client import (GenestackException, MetainfoScalarValue, StringValue, BooleanValue, IntegerValue,
+                              MemorySizeValue, DecimalValue, ExternalLink, Person, Publication, Organization,
+                              DateTimeValue, FileReference, xstr)
 
 
 class Metainfo(dict):
@@ -53,6 +39,20 @@ class Metainfo(dict):
     def _create_dict_with_type(type):
         return {'type': type}
 
+    def add_value(self, key, value):
+        """
+        Add a scalar value to a metainfo key.
+        If adding to an existing key, the value will be appended to the list of existing values.
+        :param key: key
+        :type key: str
+        :param value: value
+        :type value: MetainfoScalarValue
+        :rtype None:
+        """
+        if not isinstance(value, MetainfoScalarValue):
+            raise GenestackException("Value is not an instance of `MetainfoScalarValue`")
+        self.setdefault(key, []).append(value)
+
     def add_string(self, key, value):
         """
         Add a string value.
@@ -63,7 +63,7 @@ class Metainfo(dict):
         :type value: str
         :rtype: None
         """
-        self._add_value(key, value, 'string')
+        self.add_value(key, StringValue(value))
 
     def add_boolean(self, key, value):
         """
@@ -75,7 +75,7 @@ class Metainfo(dict):
         :type value: bool
         :rtype: None
         """
-        self._add_value(key, value, 'boolean')
+        self.add_value(key, BooleanValue(value))
 
     def add_integer(self, key, value):
         """
@@ -87,7 +87,7 @@ class Metainfo(dict):
         :type value: int
         :rtype: None
         """
-        self._add_value(key, value, 'integer')
+        self.add_value(key, IntegerValue(value))
 
     def add_memory_size(self, key, value):
         """
@@ -99,7 +99,7 @@ class Metainfo(dict):
         :type value: int
         :rtype: None
         """
-        self._add_value(key, value, 'memorySize')
+        self.add_value(key, MemorySizeValue(value))
 
     def add_decimal(self, key, value):
         """
@@ -111,7 +111,7 @@ class Metainfo(dict):
         :type value: float or str
         :rtype: None
         """
-        self._add_value(key, value, 'decimal')
+        self.add_value(key, DecimalValue(value))
 
     def add_external_link(self, key, url, text=None, fmt=None):
         """
@@ -127,13 +127,7 @@ class Metainfo(dict):
         :type fmt: dict
         :rtype: None
         """
-        if not text:
-            text = os.path.basename(urlparse(unquote(url)).path)
-        result = Metainfo._create_dict_with_type('externalLink')
-        result['text'] = xstr(text)
-        result['url'] = xstr(url)
-        result['format'] = fmt
-        self.setdefault(key, []).append(result)
+        self.add_value(key, ExternalLink(url, text, fmt))
 
     def add_person(self, key, name, phone=None, email=None):
         """
@@ -150,11 +144,7 @@ class Metainfo(dict):
         :type email: str
         :rtype: None
         """
-        result = Metainfo._create_dict_with_type('person')
-        result['name'] = xstr(name)
-        result['phone'] = xstr(phone)
-        result['email'] = xstr(email)
-        self.setdefault(key, []).append(result)
+        self.add_value(key, Person(name, phone, email))
 
     def add_publication(self, key, title, authors, journal_name,
                         issue_date, identifiers=None, issue_number=None, pages=None):
@@ -180,16 +170,8 @@ class Metainfo(dict):
         :type pages: str
         :rtype: None
         """
-        result = Metainfo._create_dict_with_type('publication')
-        result['identifiers'] = identifiers if identifiers else {}
-        result['journalName'] = xstr(journal_name)
-        result['issueDate'] = xstr(issue_date)
-        result['title'] = xstr(title)
-        result['authors'] = xstr(authors)
-        result['issueNumber'] = xstr(issue_number)
-        result['pages'] = xstr(pages)
-
-        self.setdefault(key, []).append(result)
+        self.add_value(key, Publication(title, authors, journal_name, issue_date,
+                                        identifiers, issue_number, pages))
 
     def add_organization(self, key, name, department=None, country=None, city=None, street=None,
                          postal_code=None, state=None, phone=None, email=None, url=None):
@@ -221,19 +203,10 @@ class Metainfo(dict):
         :type url: str
         :rtype: None
         """
-        result = Metainfo._create_dict_with_type('organization')
-        result['name'] = xstr(name)
-        result['department'] = xstr(department)
-        result['country'] = xstr(country)
-        result['city'] = xstr(city)
-        result['street'] = xstr(street)
-        result['postalCode'] = xstr(postal_code)
-        result['state'] = xstr(state)
-        result['phone'] = xstr(phone)
-        result['email'] = xstr(email)
-        result['url'] = xstr(url)
-        self.setdefault(key, []).append(result)
+        self.add_value(key, Organization(name, department, country, city, street,
+                                         postal_code, state, phone, email, url))
 
+    @DeprecationWarning
     def add_time(self, key, value, unit):
         """
         Add a time value (like an age, or the duration of an experiment for example).
@@ -263,6 +236,7 @@ class Metainfo(dict):
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
+    @DeprecationWarning
     def add_temperature(self, key, value, unit):
         """
         Add a temperature value.
@@ -297,9 +271,7 @@ class Metainfo(dict):
         :type accession: str
         :rtype: None
         """
-        result = Metainfo._create_dict_with_type('file')
-        result['accession'] = xstr(accession)
-        self.setdefault(key, []).append(result)
+        self.add_value(key, FileReference(accession))
 
     def add_date_time(self, key, time):
         """
@@ -316,32 +288,4 @@ class Metainfo(dict):
         :param time: time value
         :rtype: None
         """
-        date_time_format = '%Y-%m-%d %H:%M:%S'
-        date_format = '%Y-%m-%d'
-        result = Metainfo._create_dict_with_type('datetime')
-
-        if isinstance(time, basestring):
-            try:
-                time = datetime.datetime.strptime(time, date_time_format)
-            except ValueError:
-                try:
-                    time = datetime.datetime.strptime(time, date_format)
-                except ValueError:
-                    raise GenestackException('Unexpected datetime string format: %s, '
-                                             'specify date in on of the next format: "%s", "%s"' % (time,
-                                                                                                    date_time_format,
-                                                                                                    date_format))
-
-        if isinstance(time, datetime.datetime):
-            diff = time - datetime.datetime(1970, 1, 1)
-            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + diff.microseconds / 1000
-        elif isinstance(time, datetime.date):
-            diff = time - datetime.date(1970, 1, 1)
-            milliseconds = diff.days * 24 * 60 * 60 * 1000
-        elif isinstance(time, float):
-            milliseconds = int(time * 1000)
-        else:
-            raise GenestackException('Unexpected datetime input type: %s' % type(time))
-
-        result['date'] = xstr(milliseconds)
-        self.setdefault(key, []).append(result)
+        self.add_value(key, DateTimeValue(time))
