@@ -2,7 +2,7 @@
 
 from genestack_client import (GenestackException, MetainfoScalarValue, StringValue, BooleanValue, IntegerValue,
                               MemorySizeValue, DecimalValue, ExternalLink, Person, Publication, Organization,
-                              DateTimeValue, FileReference, xstr)
+                              DateTimeValue, FileReference)
 
 
 class Metainfo(dict):
@@ -33,7 +33,7 @@ class Metainfo(dict):
     FAHRENHEIT = 'FAHRENHEIT'
 
     def _add_value(self, key, value, type):
-        self.setdefault(key, []).append({'type': type, 'value': xstr(value)})
+        self.setdefault(key, []).append({'type': type, 'value': MetainfoScalarValue._xstr(value)})
 
     @staticmethod
     def _create_dict_with_type(type):
@@ -232,7 +232,7 @@ class Metainfo(dict):
         :rtype: None
         """
         result = Metainfo._create_dict_with_type('time')
-        result['value'] = xstr(value)
+        result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
@@ -257,7 +257,7 @@ class Metainfo(dict):
         :rtype: None
         """
         result = Metainfo._create_dict_with_type('temperature')
-        result['value'] = xstr(value)
+        result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 

@@ -4,18 +4,6 @@ from urlparse import urlparse, unquote
 from genestack_client import GenestackException
 
 
-def xstr(arg):
-    """
-    Convert the input argument to a string if it is not ``None``.
-
-    :param arg: input object
-    :type arg: object
-    :return: string representation of the object
-    :rtype: str
-    """
-    return str(arg) if arg is not None else None
-
-
 class MetainfoScalarValue(dict):
     _TYPE = None
 
@@ -26,14 +14,26 @@ class MetainfoScalarValue(dict):
             if stringify:
                 for key in val:
                     if not isinstance(val[key], dict):
-                        val[key] = xstr(val[key])
+                        val[key] = self._xstr(val[key])
             self.update(val)
         else:
-            self.update({'type': self._TYPE, 'value': xstr(value)})
+            self.update({'type': self._TYPE, 'value': self._xstr(value)})
 
     def __init__(self, value):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields(value)
+
+    @staticmethod
+    def _xstr(arg):
+        """
+        Convert the input argument to a string if it is not ``None``.
+
+        :param arg: input object
+        :type arg: object
+        :return: string representation of the object
+        :rtype: str
+        """
+        return str(arg) if arg is not None else None
 
 
 class StringValue(MetainfoScalarValue):
