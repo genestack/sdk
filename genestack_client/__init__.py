@@ -13,8 +13,8 @@ from version import __version__
 from genestack_exceptions import (GenestackException, GenestackServerException,
                                   GenestackAuthenticationException, GenestackVersionException)
 from genestack_connection import Connection, Application
-from file_types import *
-from file_permissions import *
+from file_types import JavaFileTypes
+from file_permissions import Permissions
 from metainfo_scalar_values import *
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo

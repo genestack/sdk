@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from genestack_client import GenestackException, is_file_type, is_permission
+from genestack_client import GenestackException, JavaFileTypes, Permissions
 
 
 class FileFilter(object):
@@ -27,12 +27,12 @@ class FileFilter(object):
 
 class TypeFileFilter(FileFilter):
     """
-    Filter to select files with a given file type. See :py:class:`~genestack_client.java_enums.CoreFileType` and
-    :py:class:`~genestack_client.java_enums.BioFileType` for a list of possible file types.
+    Filter to select files with a given file type.
+    See :ref:`fileTypes` for a list of possible file types.
     """
     def __init__(self, file_type):
         super(TypeFileFilter, self).__init__()
-        if not is_file_type(file_type):
+        if not JavaFileTypes.is_file_type(file_type):
             raise GenestackException("Invalid file type")
         self._dict = {'type': file_type}
 
@@ -94,10 +94,12 @@ class ActualOwnerFileFilter(FileFilter):
 class ActualPermissionFileFilter(FileFilter):
     """
     Filter to select files for which the current user has a specific permission.
-    See :py:class:`~genestack_client.java_enums.GenestackPermission`.
+    See :ref:`permissions`.
     """
     def __init__(self, permission):
         super(ActualPermissionFileFilter, self).__init__()
+        if not Permissions.is_permission(permission):
+            raise GenestackException("Invalid permission")
         self._dict = {'access': permission}
 
 
@@ -122,11 +124,11 @@ class HasInProvenanceFileFilter(FileFilter):
 class PermissionFileFilter(FileFilter):
     """
     Filter to select files for which a specific group has a specific permission.
-    See :py:class:`~genestack_client.java_enums.GenestackPermission`.
+    See :ref:`permissions`.
     """
     def __init__(self, group, permission):
         super(PermissionFileFilter, self).__init__()
-        if not is_permission(permission):
+        if not Permissions.is_permission(permission):
             raise GenestackException("Invalid permission")
         self._dict = {'permission': {'group': group, 'value': permission}}
 

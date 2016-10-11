@@ -96,13 +96,23 @@ File filters
 .. automodule:: genestack_client.file_filters
         :members:
 
-Enumerations
-------------
+.. _fileTypes:
 
-.. automodule:: genestack_client.java_enums
+File Types
+----------
+
+.. autoclass:: genestack_client.file_types.JavaFileTypes
         :members:
         :undoc-members:
-        :exclude-members: JavaClassEnum
+
+.. _permissions:
+
+File Permissions
+----------------
+
+.. autoclass:: genestack_client.file_permissions.Permissions
+        :members:
+        :undoc-members:
 
 Users and Connections
 *********************

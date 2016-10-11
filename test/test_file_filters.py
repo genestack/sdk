@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client.file_filters import *
 from genestack_client.metainfo_scalar_values import *
 from genestack_client import (Metainfo, FilesUtil, get_connection, make_connection_parser,
-                              FILE_ACCESS, EXPERIMENT, SortOrder)
+                              Permissions, JavaFileTypes, SortOrder)
 
 SOME_KEY = "someKey"
 PUBLIC_FOLDER = "public"
@@ -26,14 +26,14 @@ def files_utils():
 def test_find_files(files_utils):
     test_filter = FileFilter.OR(
         OwnerFileFilter(PUBLIC_USER),
-        AndFileFilter(TypeFileFilter(EXPERIMENT), FixedValueFileFilter(True)),
+        AndFileFilter(TypeFileFilter(JavaFileTypes.EXPERIMENT), FixedValueFileFilter(True)),
         MetainfoValuePatternFileFilter(Metainfo.ACCESSION, "GSF"),
         ChildrenFileFilter(PUBLIC_FOLDER),
         ContainsFileFilter(PUBLIC_FOLDER),
         ActualOwnerFileFilter(),
-        ActualPermissionFileFilter(FILE_ACCESS),
+        ActualPermissionFileFilter(Permissions.FILE_ACCESS),
         HasInProvenanceFileFilter("public"),
-        PermissionFileFilter("world", FILE_ACCESS),
+        PermissionFileFilter("world", Permissions.FILE_ACCESS),
         KeyValueFileFilter(Metainfo.NAME, "Test")
     )
 
