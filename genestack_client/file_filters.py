@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from genestack_client import BioFileType, CoreFileType, GenestackPermission
-from copy import deepcopy
 
 
 class FileFilter(object):
@@ -12,7 +11,7 @@ class FileFilter(object):
         self._dict = {}
 
     def get_dict(self):
-        return deepcopy(self._dict)
+        return self._dict.copy()
 
 
 class TypeFileFilter(FileFilter):
