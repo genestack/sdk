@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, SortOrder, FileFilter
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -18,6 +18,21 @@ class SpecialFolders:
     CREATED = 'created'
     TEMPORARY = 'temporary'
     UPLOADED = 'uploaded'
+
+
+class SortOrder:
+    """
+    Sort orders for file search queries
+    """
+    BY_NAME = "BY_NAME"
+    BY_ACCESSION = "BY_ACCESSION"
+    BY_LAST_UPDATE = "BY_LAST_UPDATE"
+    DEFAULT = "DEFAULT"
+
+    @staticmethod
+    def is_sort_order(order):
+        orders = {v for k, v in SortOrder.__dict__.iteritems() if not k.startswith("_") and isinstance(v, basestring)}
+        return order in orders
 
 
 class FilesUtil(Application):
@@ -578,7 +593,7 @@ class FilesUtil(Application):
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results (see :py:class:`~genestack_client.java_enums.SortOrder`)
+        :param sort_order: sorting order for the results (see :py:class:`~genestack_client.files_util.SortOrder`)
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
@@ -593,12 +608,12 @@ class FilesUtil(Application):
               See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the structure of these
               objects.
 
-        :rtype: dict
+        :rtype: dict[str, int|list[dict[str, str|dict]]]
         """
         limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)
         if offset < 0 or limit < 0:
             raise GenestackException("Search offset/limit cannot be negative")
-        if sort_order not in SortOrder.get_all_types():
-            raise GenestackException("Sort order must be one of: %s" % ", ".join(SortOrder.get_all_types()))
+        if not SortOrder.is_sort_order(sort_order):
+            raise GenestackException("Invalid sort order")
         return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
 

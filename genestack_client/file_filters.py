@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from genestack_client import BioFileType, CoreFileType, GenestackPermission
+from genestack_client import GenestackException, is_file_type, is_permission
 
 
 class FileFilter(object):
@@ -13,6 +12,18 @@ class FileFilter(object):
     def get_dict(self):
         return self._dict.copy()
 
+    @staticmethod
+    def AND(*args):
+        full_filter = FileFilter()
+        full_filter._dict = {'and': [f.get_dict() for f in args]}
+        return full_filter
+
+    @staticmethod
+    def OR(*args):
+        full_filter = FileFilter()
+        full_filter._dict = {'or': [f.get_dict() for f in args]}
+        return full_filter
+
 
 class TypeFileFilter(FileFilter):
     """
@@ -21,8 +32,9 @@ class TypeFileFilter(FileFilter):
     """
     def __init__(self, file_type):
         super(TypeFileFilter, self).__init__()
-        full_type = BioFileType.get_full_name(file_type, False) or CoreFileType.get_full_name(file_type)
-        self._dict = {'type': full_type}
+        if not is_file_type(file_type):
+            raise GenestackException("Invalid file type")
+        self._dict = {'type': file_type}
 
 
 class KeyValueFileFilter(FileFilter):
@@ -45,7 +57,7 @@ class OwnerFileFilter(FileFilter):
 
 class MetainfoValuePatternFileFilter(FileFilter):
     """
-    Filter to select files matching a given metainfo key-value pattern.
+    Filter to select files matching a specific substring value for a metainfo key.
     """
     def __init__(self, key, value):
         super(MetainfoValuePatternFileFilter, self).__init__()
@@ -86,8 +98,7 @@ class ActualPermissionFileFilter(FileFilter):
     """
     def __init__(self, permission):
         super(ActualPermissionFileFilter, self).__init__()
-
-        self._dict = {'access': GenestackPermission.get_full_name(permission)}
+        self._dict = {'access': permission}
 
 
 class FixedValueFileFilter(FileFilter):
@@ -115,7 +126,9 @@ class PermissionFileFilter(FileFilter):
     """
     def __init__(self, group, permission):
         super(PermissionFileFilter, self).__init__()
-        self._dict = {'permission': {'group': group, 'value': GenestackPermission.get_full_name(permission)}}
+        if not is_permission(permission):
+            raise GenestackException("Invalid permission")
+        self._dict = {'permission': {'group': group, 'value': permission}}
 
 
 class NotFileFilter(FileFilter):
@@ -129,17 +142,17 @@ class NotFileFilter(FileFilter):
 
 class AndFileFilter(FileFilter):
     """
-    "AND" combination of other file filters.
+    "AND" combination of two file filters.
     """
-    def __init__(self, *args):
+    def __init__(self, first, second):
         super(AndFileFilter, self).__init__()
-        self._dict = {'and': [file_filter.get_dict() for file_filter in args]}
+        self._dict = {'and': [first.get_dict(), second.get_dict()]}
 
 
 class OrFileFilter(FileFilter):
     """
-    "OR" combination of other file filters.
+    "OR" combination of two file filters.
     """
-    def __init__(self, *args):
+    def __init__(self, first, second):
         super(OrFileFilter, self).__init__()
-        self._dict = {'or': [file_filter.get_dict() for file_filter in args]}
+        self._dict = {'or': [first.get_dict(), second.get_dict()]}
