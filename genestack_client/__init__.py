@@ -10,10 +10,10 @@ if not ((2, 7, 5) <= sys.version_info < (3, 0)):
 
 from version import __version__
 
-from genestack_exceptions import (GenestackException, GenestackServerException,
-                                  GenestackAuthenticationException, GenestackVersionException)
+from genestack_exceptions import (GenestackAuthenticationException, GenestackException,
+                                  GenestackServerException, GenestackVersionException)
 from genestack_connection import Connection, Application
-from utils import get_connection, make_connection_parser, get_user, validate_constant
+from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_types import FileTypes
 from file_permissions import Permissions
 from metainfo_scalar_values import *
@@ -24,6 +24,6 @@ from data_importer import DataImporter
 from file_initializer import FileInitializer
 from sudo_utils import SudoUtils
 from file_filters import *
-from files_util import FilesUtil, SpecialFolders, SortOrder
+from files_util import FilesUtil, SortOrder, SpecialFolders
 from task_log_viewer import TaskLogViewer
 from cla import *
