@@ -16,7 +16,7 @@ class FileFilter(object):
     def AND(self, other):
         """
         Return a new filter combining this one with another one in an AND clause.
-        
+
         :param other: other filter
         :type other: FileFilter
         :rtype: FileFilter
