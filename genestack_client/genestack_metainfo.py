@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from genestack_client import (GenestackException, MetainfoScalarValue, StringValue, BooleanValue, IntegerValue,
                               MemorySizeValue, DecimalValue, ExternalLink, Person, Publication, Organization,
                               DateTimeValue, FileReference)
@@ -206,7 +208,6 @@ class Metainfo(dict):
         self.add_value(key, Organization(name, department, country, city, street,
                                          postal_code, state, phone, email, url))
 
-    @DeprecationWarning
     def add_time(self, key, value, unit):
         """
         Add a time value (like an age, or the duration of an experiment for example).
@@ -231,6 +232,9 @@ class Metainfo(dict):
         :type unit: str
         :rtype: None
         """
+        sys.stderr.write("Method `Metainfo.add_time` is deprecated. "
+                         "Use compound metainfo keys to store a value with a unit "
+                         "(e.g. two separate keys: 'myKey/value' and 'myKey/unit').\n")
         result = Metainfo._create_dict_with_type('time')
         result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
@@ -256,6 +260,9 @@ class Metainfo(dict):
         :type unit: str
         :rtype: None
         """
+        sys.stderr.write("Method `Metainfo.add_temperature` is deprecated. "
+                         "Use compound metainfo keys to store a value with a unit "
+                         "(e.g. two separate keys: 'myKey/value' and 'myKey/unit').\n")
         result = Metainfo._create_dict_with_type('temperature')
         result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
