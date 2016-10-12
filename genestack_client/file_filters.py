@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from genestack_client import GenestackException, JavaFileTypes, Permissions
+from genestack_client import GenestackException, FileTypes, Permissions, validate_constant
+from copy import deepcopy
 
 
 class FileFilter(object):
@@ -10,16 +11,50 @@ class FileFilter(object):
         self._dict = {}
 
     def get_dict(self):
-        return self._dict.copy()
+        return deepcopy(self._dict)
+
+    def AND(self, other):
+        """
+        Return a new filter combining this one with another one in an AND clause.
+        
+        :param other: other filter
+        :type other: FileFilter
+        :rtype: FileFilter
+        """
+        return AndFileFilter(self, other)
+
+    def OR(self, other):
+        """
+        Return a new filter combining this one with another one in an OR clause.
+
+        :param other: other filter
+        :type other: FileFilter
+        :rtype: FileFilter
+        """
+        return OrFileFilter(self, other)
 
     @staticmethod
-    def AND(*filters):
+    def and_filters(*filters):
+        """
+        Combine multiple file filters with an "AND" clause.
+
+        :param filters: file filters to combine
+        :type filters: FileFilter
+        :rtype: FileFilter
+        """
         full_filter = FileFilter()
         full_filter._dict.update({'and': [f.get_dict() for f in filters]})
         return full_filter
 
     @staticmethod
-    def OR(*filters):
+    def or_filters(*filters):
+        """
+        Combine multiple file filters with an "OR" clause.
+
+        :param filters: file filters to combine
+        :type filters: FileFilter
+        :rtype: FileFilter
+        """
         full_filter = FileFilter()
         full_filter._dict.update({'or': [f.get_dict() for f in filters]})
         return full_filter
@@ -32,7 +67,7 @@ class TypeFileFilter(FileFilter):
     """
     def __init__(self, file_type):
         super(TypeFileFilter, self).__init__()
-        if not JavaFileTypes.is_file_type(file_type):
+        if not validate_constant(FileTypes, file_type):
             raise GenestackException("Invalid file type")
         self._dict.update({'type': file_type})
 
@@ -98,7 +133,7 @@ class ActualPermissionFileFilter(FileFilter):
     """
     def __init__(self, permission):
         super(ActualPermissionFileFilter, self).__init__()
-        if not Permissions.is_permission(permission):
+        if not validate_constant(Permissions, permission):
             raise GenestackException("Invalid permission")
         self._dict.update({'access': permission})
 
@@ -128,7 +163,7 @@ class PermissionFileFilter(FileFilter):
     """
     def __init__(self, group, permission):
         super(PermissionFileFilter, self).__init__()
-        if not Permissions.is_permission(permission):
+        if not validate_constant(Permissions, permission):
             raise GenestackException("Invalid permission")
         self._dict.update({'permission': {'group': group, 'value': permission}})
 

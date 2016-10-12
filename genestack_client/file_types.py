@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-class JavaFileTypes(object):
-
-    @classmethod
-    def is_file_type(cls, type_str):
-        types = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
-        return type_str in types
+class FileTypes(object):
 
     _JAVA_PKG = "com.genestack.api.files."
+    _JAVA_BIO_PKG = "com.genestack.bio.files."
+
+    # Core file types
 
     AUXILIARY_FILE = _JAVA_PKG + "IAuxilaryFile"
     FOLDER = _JAVA_PKG + "IFolder"
@@ -21,7 +19,7 @@ class JavaFileTypes(object):
     RAW_FILE = _JAVA_PKG + "IRawFile"
     REPORT_FILE = _JAVA_PKG + "IReportFile"
 
-    _JAVA_BIO_PKG = "com.genestack.bio.files."
+    # Biological file types
 
     EXPERIMENT = _JAVA_BIO_PKG + "IExperiment"
     REFERENCE_GENOME = _JAVA_BIO_PKG + "IReferenceGenome"

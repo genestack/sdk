@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -28,11 +28,6 @@ class SortOrder:
     BY_ACCESSION = "BY_ACCESSION"
     BY_LAST_UPDATE = "BY_LAST_UPDATE"
     DEFAULT = "DEFAULT"
-
-    @staticmethod
-    def is_sort_order(order):
-        orders = {v for k, v in SortOrder.__dict__.iteritems() if not k.startswith("_") and isinstance(v, basestring)}
-        return order in orders
 
 
 class FilesUtil(Application):
@@ -613,7 +608,7 @@ class FilesUtil(Application):
         limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)
         if offset < 0 or limit < 0:
             raise GenestackException("Search offset/limit cannot be negative")
-        if not SortOrder.is_sort_order(sort_order):
+        if not validate_constant(SortOrder, sort_order):
             raise GenestackException("Invalid sort order")
         return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
 

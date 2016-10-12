@@ -101,7 +101,7 @@ File filters
 File Types
 ----------
 
-.. autoclass:: genestack_client.file_types.JavaFileTypes
+.. autoclass:: genestack_client.file_types.FileTypes
         :members:
         :undoc-members:
 

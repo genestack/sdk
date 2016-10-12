@@ -13,7 +13,8 @@ from version import __version__
 from genestack_exceptions import (GenestackException, GenestackServerException,
                                   GenestackAuthenticationException, GenestackVersionException)
 from genestack_connection import Connection, Application
-from file_types import JavaFileTypes
+from utils import get_connection, make_connection_parser, get_user, validate_constant
+from file_types import FileTypes
 from file_permissions import Permissions
 from metainfo_scalar_values import *
 from genestack_metainfo import Metainfo
@@ -25,5 +26,4 @@ from sudo_utils import SudoUtils
 from file_filters import *
 from files_util import FilesUtil, SpecialFolders, SortOrder
 from task_log_viewer import TaskLogViewer
-from utils import get_connection, make_connection_parser, get_user
 from cla import *

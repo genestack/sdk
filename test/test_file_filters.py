@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client.file_filters import *
 from genestack_client.metainfo_scalar_values import *
 from genestack_client import (Metainfo, FilesUtil, get_connection, make_connection_parser,
-                              Permissions, JavaFileTypes, SortOrder)
+                              Permissions, FileTypes, SortOrder)
 
 SOME_KEY = "someKey"
 PUBLIC_FOLDER = "public"
@@ -24,9 +24,9 @@ def files_utils():
 
 
 def test_find_files(files_utils):
-    test_filter = FileFilter.OR(
+    test_filter = FileFilter.or_filters(
         OwnerFileFilter(PUBLIC_USER),
-        AndFileFilter(TypeFileFilter(JavaFileTypes.EXPERIMENT), FixedValueFileFilter(True)),
+        TypeFileFilter(FileTypes.EXPERIMENT).AND(FixedValueFileFilter(True)),
         MetainfoValuePatternFileFilter(Metainfo.ACCESSION, "GSF"),
         ChildrenFileFilter(PUBLIC_FOLDER),
         ContainsFileFilter(PUBLIC_FOLDER),
@@ -51,7 +51,7 @@ def test_find_files_with_metainfo_scalar_values(files_utils):
     )
 
     filters = [KeyValueFileFilter(SOME_KEY, v) for v in values]
-    test_filter = FileFilter.OR(*filters)
+    test_filter = FileFilter.or_filters(*filters)
     result = files_utils.find_files(test_filter, SortOrder.DEFAULT)
     assert result is not None
 

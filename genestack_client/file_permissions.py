@@ -3,11 +3,6 @@
 
 class Permissions(object):
 
-    @classmethod
-    def is_permission(cls, permission_str):
-        permissions = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
-        return permission_str in permissions
-
     _JAVA_PKG = "com.genestack.file"
 
     FILE_ACCESS = _JAVA_PKG + "access"
