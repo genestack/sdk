@@ -13,15 +13,15 @@ class FileFilter(object):
         return self._dict.copy()
 
     @staticmethod
-    def AND(*args):
+    def AND(*filters):
         full_filter = FileFilter()
-        full_filter._dict = {'and': [f.get_dict() for f in args]}
+        full_filter._dict.update({'and': [f.get_dict() for f in filters]})
         return full_filter
 
     @staticmethod
-    def OR(*args):
+    def OR(*filters):
         full_filter = FileFilter()
-        full_filter._dict = {'or': [f.get_dict() for f in args]}
+        full_filter._dict.update({'or': [f.get_dict() for f in filters]})
         return full_filter
 
 
@@ -34,7 +34,7 @@ class TypeFileFilter(FileFilter):
         super(TypeFileFilter, self).__init__()
         if not JavaFileTypes.is_file_type(file_type):
             raise GenestackException("Invalid file type")
-        self._dict = {'type': file_type}
+        self._dict.update({'type': file_type})
 
 
 class KeyValueFileFilter(FileFilter):
@@ -43,7 +43,7 @@ class KeyValueFileFilter(FileFilter):
     """
     def __init__(self, key, value):
         super(KeyValueFileFilter, self).__init__()
-        self._dict = {'keyValue': {'key': key, 'value': value}}
+        self._dict.update({'keyValue': {'key': key, 'value': value}})
 
 
 class OwnerFileFilter(FileFilter):
@@ -52,7 +52,7 @@ class OwnerFileFilter(FileFilter):
     """
     def __init__(self, email):
         super(OwnerFileFilter, self).__init__()
-        self._dict = {'owner': email}
+        self._dict.update({'owner': email})
 
 
 class MetainfoValuePatternFileFilter(FileFilter):
@@ -61,7 +61,7 @@ class MetainfoValuePatternFileFilter(FileFilter):
     """
     def __init__(self, key, value):
         super(MetainfoValuePatternFileFilter, self).__init__()
-        self._dict = {'pattern': {'key': key, 'value': value}}
+        self._dict.update({'pattern': {'key': key, 'value': value}})
 
 
 class ChildrenFileFilter(FileFilter):
@@ -70,7 +70,7 @@ class ChildrenFileFilter(FileFilter):
     """
     def __init__(self, container, recursive=False):
         super(ChildrenFileFilter, self).__init__()
-        self._dict = {'children': {'file': container, 'recursive': recursive}}
+        self._dict.update({'children': {'file': container, 'recursive': recursive}})
 
 
 class ContainsFileFilter(FileFilter):
@@ -79,7 +79,7 @@ class ContainsFileFilter(FileFilter):
     """
     def __init__(self, file_accession):
         super(ContainsFileFilter, self).__init__()
-        self._dict = {'contains': file_accession}
+        self._dict.update({'contains': file_accession})
 
 
 class ActualOwnerFileFilter(FileFilter):
@@ -88,7 +88,7 @@ class ActualOwnerFileFilter(FileFilter):
     """
     def __init__(self):
         super(ActualOwnerFileFilter, self).__init__()
-        self._dict = {'owned': None}
+        self._dict.update({'owned': None})
 
 
 class ActualPermissionFileFilter(FileFilter):
@@ -100,7 +100,7 @@ class ActualPermissionFileFilter(FileFilter):
         super(ActualPermissionFileFilter, self).__init__()
         if not Permissions.is_permission(permission):
             raise GenestackException("Invalid permission")
-        self._dict = {'access': permission}
+        self._dict.update({'access': permission})
 
 
 class FixedValueFileFilter(FileFilter):
@@ -109,7 +109,7 @@ class FixedValueFileFilter(FileFilter):
     """
     def __init__(self, value):
         super(FixedValueFileFilter, self).__init__()
-        self._dict = {'fixed': value}
+        self._dict.update({'fixed': value})
 
 
 class HasInProvenanceFileFilter(FileFilter):
@@ -118,7 +118,7 @@ class HasInProvenanceFileFilter(FileFilter):
     """
     def __init__(self, file_accession):
         super(HasInProvenanceFileFilter, self).__init__()
-        self._dict = {'hasInProvenance': file_accession}
+        self._dict.update({'hasInProvenance': file_accession})
 
 
 class PermissionFileFilter(FileFilter):
@@ -130,7 +130,7 @@ class PermissionFileFilter(FileFilter):
         super(PermissionFileFilter, self).__init__()
         if not Permissions.is_permission(permission):
             raise GenestackException("Invalid permission")
-        self._dict = {'permission': {'group': group, 'value': permission}}
+        self._dict.update({'permission': {'group': group, 'value': permission}})
 
 
 class NotFileFilter(FileFilter):
@@ -139,7 +139,7 @@ class NotFileFilter(FileFilter):
     """
     def __init__(self, other_filter):
         super(NotFileFilter, self).__init__()
-        self._dict = {'not': other_filter.get_dict()}
+        self._dict.update({'not': other_filter.get_dict()})
 
 
 class AndFileFilter(FileFilter):
@@ -148,7 +148,7 @@ class AndFileFilter(FileFilter):
     """
     def __init__(self, first, second):
         super(AndFileFilter, self).__init__()
-        self._dict = {'and': [first.get_dict(), second.get_dict()]}
+        self._dict.update({'and': [first.get_dict(), second.get_dict()]})
 
 
 class OrFileFilter(FileFilter):
@@ -157,4 +157,4 @@ class OrFileFilter(FileFilter):
     """
     def __init__(self, first, second):
         super(OrFileFilter, self).__init__()
-        self._dict = {'or': [first.get_dict(), second.get_dict()]}
+        self._dict.update({'or': [first.get_dict(), second.get_dict()]})
