@@ -33,31 +33,11 @@ class FileFilter(object):
         """
         return OrFileFilter(self, other)
 
-    @staticmethod
-    def and_filters(*filters):
-        """
-        Combine multiple file filters with an "AND" clause.
+    def __and__(self, other):
+        return self.AND(other)
 
-        :param filters: file filters to combine
-        :type filters: FileFilter
-        :rtype: FileFilter
-        """
-        full_filter = FileFilter()
-        full_filter._dict.update({'and': [f.get_dict() for f in filters]})
-        return full_filter
-
-    @staticmethod
-    def or_filters(*filters):
-        """
-        Combine multiple file filters with an "OR" clause.
-
-        :param filters: file filters to combine
-        :type filters: FileFilter
-        :rtype: FileFilter
-        """
-        full_filter = FileFilter()
-        full_filter._dict.update({'or': [f.get_dict() for f in filters]})
-        return full_filter
+    def __or__(self, other):
+        return self.OR(other)
 
 
 class TypeFileFilter(FileFilter):

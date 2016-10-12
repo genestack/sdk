@@ -13,7 +13,6 @@ from version import __version__
 from genestack_exceptions import (GenestackAuthenticationException, GenestackException,
                                   GenestackServerException, GenestackVersionException)
 from genestack_connection import Connection, Application
-from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_types import FileTypes
 from file_permissions import Permissions
 from metainfo_scalar_values import *
@@ -23,6 +22,7 @@ from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
 from sudo_utils import SudoUtils
+from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_filters import *
 from files_util import FilesUtil, SortOrder, SpecialFolders
 from task_log_viewer import TaskLogViewer

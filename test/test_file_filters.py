@@ -24,9 +24,9 @@ def files_utils():
 
 
 def test_find_files(files_utils):
-    test_filter = FileFilter.or_filters(
+    test_filter = reduce(lambda x,y: x.OR(y), [
         OwnerFileFilter(PUBLIC_USER),
-        TypeFileFilter(FileTypes.EXPERIMENT).AND(FixedValueFileFilter(True)),
+        TypeFileFilter(FileTypes.EXPERIMENT) & FixedValueFileFilter(True),
         MetainfoValuePatternFileFilter(Metainfo.ACCESSION, "GSF"),
         ChildrenFileFilter(PUBLIC_FOLDER),
         ContainsFileFilter(PUBLIC_FOLDER),
@@ -35,7 +35,7 @@ def test_find_files(files_utils):
         HasInProvenanceFileFilter("public"),
         PermissionFileFilter("world", Permissions.FILE_ACCESS),
         KeyValueFileFilter(Metainfo.NAME, "Test")
-    )
+    ])
 
     result = files_utils.find_files(test_filter, SortOrder.BY_LAST_UPDATE, True, 4, 80)
     assert result['total'] > 0
@@ -50,8 +50,7 @@ def test_find_files_with_metainfo_scalar_values(files_utils):
               Publication('My Publication', 'Myself', 'Journal of Me', '23/12/2014', pages="12-23")
     )
 
-    filters = [KeyValueFileFilter(SOME_KEY, v) for v in values]
-    test_filter = FileFilter.or_filters(*filters)
+    test_filter = reduce(lambda x,y: x.OR(y), [KeyValueFileFilter(SOME_KEY, v) for v in values])
     result = files_utils.find_files(test_filter, SortOrder.DEFAULT)
     assert result is not None
 
