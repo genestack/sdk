@@ -240,7 +240,6 @@ class Metainfo(dict):
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
-    @DeprecationWarning
     def add_temperature(self, key, value, unit):
         """
         Add a temperature value.
