@@ -1,4 +1,4 @@
-* 0.11.0
+* 0.12.0
   * Added `FileFilter` objects and `FilesUtil.find_files` method for complete file search API
   * Added `MetainfoScalarValue` objects
   * Added `Permissions`, `SortOrder` and `FileTypes` enumerations
