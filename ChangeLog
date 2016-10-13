@@ -1,3 +1,9 @@
+* 0.12.0
+  * Added `FileFilter` objects and `FilesUtil.find_files` method for complete file search API
+  * Added `MetainfoScalarValue` objects
+  * Added `Permissions`, `SortOrder` and `FileTypes` enumerations
+  * Deprecated `Metainfo.add_temperature`, `Metainfo.add_time`
+
 * 0.10.0
   * Added `term_type` to dictionary uploader
   * Added ability to remove applications by specified version
