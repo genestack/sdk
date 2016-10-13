@@ -295,3 +295,56 @@ class Metainfo(dict):
         :rtype: None
         """
         self.add_value(key, DateTimeValue(time))
+
+    @classmethod
+    def parse_metainfo_from_dict(cls, source_dict):
+        output = Metainfo()
+        for key in source_dict:
+            for scalar_value in map(cls.parse_scalar_value, source_dict[key]):
+                output.add_value(key, scalar_value)
+        return output
+
+    @staticmethod
+    def parse_scalar_value(source_dict):
+        java_type = source_dict.pop('type')
+
+        if java_type == BooleanValue._TYPE:
+            return BooleanValue(source_dict['value'])
+        elif java_type == DateTimeValue._TYPE:
+            return DateTimeValue(source_dict['date'])
+        elif java_type == ExternalLink._TYPE:
+            return ExternalLink(
+                source_dict['url'], source_dict['text'],
+                source_dict.get('format')
+            )
+        elif java_type == IntegerValue._TYPE:
+            return IntegerValue(source_dict['value'])
+        elif java_type == DecimalValue._TYPE:
+            return DecimalValue(source_dict['value'])
+        elif java_type == MemorySizeValue._TYPE:
+            return MemorySizeValue(source_dict['value'])
+        elif java_type == Organization._TYPE:
+            return Organization(
+                source_dict['name'], source_dict['department'],
+                source_dict['street'], source_dict['city'],
+                source_dict['state'], source_dict['postalCode'],
+                source_dict['country'], source_dict['email'],
+                source_dict['phone'], source_dict['url']
+            )
+        elif java_type == Person._TYPE:
+            return Person(source_dict['name'], source_dict['phone'], source_dict['email'])
+        elif java_type == Publication._TYPE:
+            return Publication(
+                source_dict['title'], source_dict['authors'],
+                source_dict['journalName'], source_dict['issueDate'],
+                source_dict['identifiers'], source_dict['issueNumber'],
+                source_dict['pages']
+            )
+        elif java_type == StringValue._TYPE:
+            return StringValue(source_dict['value'])
+        elif java_type == FileReference._TYPE:
+            return FileReference(source_dict['accession'])
+        else:
+            # this is safer than raising an exception, since new metainfo types
+            # can be added in Java (and some deprecated ones like physical values are not handled here)
+            return MetainfoScalarValue(source_dict)

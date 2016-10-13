@@ -39,21 +39,36 @@ class MetainfoScalarValue(dict):
 class StringValue(MetainfoScalarValue):
     _TYPE = 'string'
 
+    def get_string(self):
+        return self._xstr(self.get('value'))
+
 
 class BooleanValue(MetainfoScalarValue):
     _TYPE = 'boolean'
+
+    def get_boolean(self):
+        return bool(self.get('value'))
 
 
 class IntegerValue(MetainfoScalarValue):
     _TYPE = 'integer'
 
+    def get_integer(self):
+        return int(self.get('value'))
+
 
 class MemorySizeValue(MetainfoScalarValue):
     _TYPE = 'memorySize'
 
+    def get_int(self):
+        return int(self.get('value'))
+
 
 class DecimalValue(MetainfoScalarValue):
     _TYPE = 'decimal'
+
+    def get_decimal(self):
+        return float(self.get('value'))
 
 
 class ExternalLink(MetainfoScalarValue):
@@ -65,6 +80,15 @@ class ExternalLink(MetainfoScalarValue):
             text = os.path.basename(urlparse(unquote(url)).path)
         self._set_fields({'text': text, 'url': url, 'format': fmt})
 
+    def get_text(self):
+        return self.get('text')
+
+    def get_url(self):
+        return self.get('url')
+
+    def get_format(self):
+        return self.get('format')
+
 
 class FileReference(MetainfoScalarValue):
     _TYPE = 'file'
@@ -72,6 +96,9 @@ class FileReference(MetainfoScalarValue):
     def __init__(self, accession):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields({'accession': accession})
+
+    def get_accession(self):
+        return self.get('accession')
 
 
 class DateTimeValue(MetainfoScalarValue):
@@ -85,9 +112,19 @@ class DateTimeValue(MetainfoScalarValue):
         milliseconds = self._parse_date_time(time)
         self._set_fields({'date': milliseconds})
 
+    @staticmethod
+    def _can_be_cast_to_int(time_str):
+        try:
+            int(time_str)
+            return True
+        except ValueError:
+            return False
+
     @classmethod
     def _parse_date_time(cls, time):
         if isinstance(time, basestring):
+            if cls._can_be_cast_to_int(time):
+                return int(time)
             try:
                 time = datetime.datetime.strptime(time, cls._DATE_TIME_FORMAT)
             except ValueError:
@@ -110,6 +147,12 @@ class DateTimeValue(MetainfoScalarValue):
             raise GenestackException('Unexpected datetime input type: %s' % type(time))
         return milliseconds
 
+    def get_milliseconds(self):
+        return float(self.get('date'))
+
+    def get_date(self):
+        return datetime.datetime.fromtimestamp(self.get_milliseconds()/1000.0)
+
 
 class Person(MetainfoScalarValue):
     _TYPE = 'person'
@@ -117,6 +160,9 @@ class Person(MetainfoScalarValue):
     def __init__(self, name, phone=None, email=None):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields({'name': name, 'phone': phone, 'email': email})
+
+    def get_person(self):
+        return {key: self.get(key) for key in {'name', 'phone', 'email'}}
 
 
 class Publication(MetainfoScalarValue):
@@ -133,6 +179,10 @@ class Publication(MetainfoScalarValue):
             'issueNumber': issue_number,
             'pages': pages
         })
+
+    def get_publication(self):
+        return {key: self.get(key) for key in {'identifiers', 'journalName', 'issueDate', 'title', 'authors',
+                                               'issueNumber', 'pages'}}
 
 
 class Organization(MetainfoScalarValue):
@@ -153,3 +203,8 @@ class Organization(MetainfoScalarValue):
             'email': email,
             'url': url
         })
+
+    def get_organization(self):
+        return {key: self.get(key) for key in {'name', 'department', 'country', 'city', 'street',
+                                               'postalCode', 'state', 'phone', 'email', 'url'}}
+

@@ -9,7 +9,8 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from genestack_client.metainfo_scalar_values import *
-from genestack_client import get_connection, make_connection_parser, DataImporter, Metainfo, FilesUtil, SpecialFolders
+from genestack_client import (get_connection, make_connection_parser, DataImporter, Metainfo, FilesUtil,
+                              SpecialFolders, BioMetaKeys)
 
 
 TEST_URL = "https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-4265/E-MTAB-4265.raw.1.zip/SKMM1_nonorm_NT_A.txt"
@@ -20,16 +21,9 @@ def conn():
     return conn
 
 
-def test_create_report_with_info(conn):
+def test_metainfo_io(conn):
     data_importer = DataImporter(conn)
     fu = FilesUtil(conn)
-    values = (BooleanValue(True), FileReference("GSF12345"), DateTimeValue("2015-12-13"),
-              IntegerValue(239), DecimalValue(238.486), StringValue("hello"), MemorySizeValue(25738),
-              ExternalLink("https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-4265/E-MTAB-4265.raw.1.zip"
-                           "/SKMM1_nonorm_NT_A.txt"),
-              Person('Rosalind Franklin', "+1-202-555-0123", "rosalind@cam.ac.uk"),
-              Publication('My Publication', 'Myself', 'Journal of Me', '23/12/2014', pages="12-23")
-    )
 
     created = fu.get_special_folder(SpecialFolders.CREATED)
     info = Metainfo()
@@ -46,6 +40,21 @@ def test_create_report_with_info(conn):
     report_file = None
     try:
         report_file = data_importer.create_report_file(metainfo=info, urls=[TEST_URL], parent=created)
+        metainfo = fu.get_metainfo([report_file])[0]
+        assert metainfo.get('a')[0].get_boolean()
+        assert isinstance(metainfo.get('b')[0].get_accession(), str)
+        assert metainfo.get('c')[0].get_date() == datetime.datetime.strptime('2015-12-13', '%Y-%m-%d')
+        assert metainfo.get('d')[0].get_integer() == 239
+        assert metainfo.get('e')[0].get_decimal() == 238.583
+        assert metainfo.get('f')[0].get_string() == "hello"
+        assert metainfo.get('g')[0].get_int() == 2847633
+        assert metainfo.get('i')[0].get_person() == {'name': 'Rosalind Franklin', 'phone': '+1-202-555-0123',
+                                                     'email': 'rosalind@cam.ac.uk'}
+        assert metainfo.get('j')[0].get_publication() == {'title': 'My Publication', 'authors': 'Myself',
+                                                          'journalName': 'Journal of Me', 'issueDate': '23/12/2014',
+                                                          'pages': '12-23', 'issueNumber': None, 'identifiers': {}}
+        assert metainfo.get(Metainfo.NAME)[0].get_string() == "Test report file"
+        assert metainfo.get(BioMetaKeys.DATA_LINK)[0].get_url() == TEST_URL
     finally:
         if report_file is not None:
             fu.unlink_file(report_file, created)

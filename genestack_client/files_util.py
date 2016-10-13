@@ -612,3 +612,13 @@ class FilesUtil(Application):
             raise GenestackException("Invalid sort order")
         return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
 
+    def get_metainfo(self, accessions):
+        """
+        Get complete metainfo of a file or list of files.
+
+        :param accessions: list of accessions
+        :type accessions: list[str]
+        :return: list of metainfo objects
+        :rtype: list[Metainfo]
+        """
+        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
