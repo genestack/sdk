@@ -27,3 +27,4 @@ from file_filters import *
 from files_util import FilesUtil, SortOrder, SpecialFolders
 from task_log_viewer import TaskLogViewer
 from cla import *
+from expression_navigator import *
