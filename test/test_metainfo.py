@@ -32,6 +32,7 @@ def test_metainfo_io(conn):
     info.add_date_time("c", "2015-12-13")
     info.add_integer("d", 239)
     info.add_decimal("e", 238.583)
+    info.add_decimal("e", -13.4)
     info.add_string("f", "hello")
     info.add_memory_size("g", 2847633)
     info.add_person("i", "Rosalind Franklin", "+1-202-555-0123", "rosalind@cam.ac.uk")
@@ -46,6 +47,7 @@ def test_metainfo_io(conn):
         assert metainfo.get('c')[0].get_date() == datetime.datetime.strptime('2015-12-13', '%Y-%m-%d')
         assert metainfo.get('d')[0].get_integer() == 239
         assert metainfo.get('e')[0].get_decimal() == 238.583
+        assert metainfo.get('e')[1].get_decimal() == -13.4
         assert metainfo.get('f')[0].get_string() == "hello"
         assert metainfo.get('g')[0].get_int() == 2847633
         assert metainfo.get('i')[0].get_person() == {'name': 'Rosalind Franklin', 'phone': '+1-202-555-0123',
