@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from genestack_client import (FilesUtil, get_connection, make_connection_parser,
+from genestack_client import (FilesUtil, get_connection, make_connection_parser, get_user,
                               ExpressionNavigatorforGenes, ExpressionNavigatorforIsoforms,
                               ExpressionNavigatorforMicroarrays, AffymetrixMicroarraysNormalisationApplication,
                               SpecialFolders)
@@ -16,12 +16,18 @@ from genestack_client import (FilesUtil, get_connection, make_connection_parser,
 RNA_SEQ_GROUPS = [['GSF1431884', 'GSF1431882', 'GSF1431885'], ['GSF1431881', 'GSF1431887'],
                   ['GSF1431886', 'GSF1431883']]
 ISOFORM_GROUPS = [['GSF1431850', 'GSF1431861', 'GSF1431860'], ['GSF1431852', 'GSF1431854']]
-MICROARRAY_GROUPS = [['GSF10775149', 'GSF10776705', 'GSF10775737'], ['GSF10777735', 'GSF10775001', 'GSF10776783']]
-HG_U133_ANNOTATION = "GSF12952829"
+MICROARRAY_GROUPS = [['GSF10777989', 'GSF10776354'], ['GSF10776502', 'GSF10777824'], ['GSF10776014', 'GSF10774867'],
+                     ['GSF10777773', 'GSF10776962']]
+RAT_AFFY_ANNOTATION = "GSF14640591"
+
 
 @pytest.fixture(scope='module')
 def conn():
-    connection = get_connection(make_connection_parser().parse_args())
+    args = make_connection_parser().parse_args()
+    if get_user(args).host != "internal-dev.genestack.com":
+        sys.stderr.write("Tests must be run on internal-dev")
+        sys.exit(1)
+    connection = get_connection()
     return connection
 
 
@@ -57,7 +63,7 @@ def test_en_microarrays(conn):
     norm_file = None
     try:
         norm_file = norm_app.create_file([f for group in MICROARRAY_GROUPS for f in group])
-        en_file = en.create_file(norm_file, MICROARRAY_GROUPS, HG_U133_ANNOTATION)
+        en_file = en.create_file(norm_file, MICROARRAY_GROUPS, RAT_AFFY_ANNOTATION, control_group=0)
     finally:
         pass
         # created = fu.get_special_folder(SpecialFolders.CREATED)
