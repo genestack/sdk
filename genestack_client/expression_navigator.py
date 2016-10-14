@@ -37,7 +37,7 @@ class ExpressionNavigatorforMicroarrays(_BaseExpressionNavigator):
 
         :param normalized_microarray_file: accession of normalized microarray file
         :param groups: list of lists of accessions of the source assays defining the groups
-        to use for differential expression
+                       to use for differential expression
         :param microarray_annotation: accession of the microarray annotation file
         :param control_group: index of the control group in ``groups`` (0-based)
         :type control_group: int
@@ -68,7 +68,7 @@ class ExpressionNavigatorforGenes(_BaseExpressionNavigator):
         Create an expression navigator file from RNA-seq gene counts files.
 
         :param groups: list of lists of gene counts files accessions describing the groups
-        to use for differential expression
+                       to use for differential expression
         :param r_package: name of R package to use for differential expression (either ``edgeR`` or ``DESeq2``)
         :param group_names: names of the groups
         :param group_descriptions: descriptions of the groups
@@ -93,7 +93,7 @@ class ExpressionNavigatorforIsoforms(_BaseExpressionNavigator):
         Create an expression navigator file from RNA-seq isoform FPKM counts files.
 
         :param groups: list of lists of isoform counts files accessions describing the groups
-        to use for differential expression
+                       to use for differential expression
         :param fragment_bias_corr: apply correction for fragment bias
         :type fragment_bias_corr: bool
         :param multi_mapping_corr: apply correction for reads with multiple mappings
