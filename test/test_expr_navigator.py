@@ -39,8 +39,8 @@ def test_en_rna_seq(conn):
         en_file = en.create_file(RNA_SEQ_GROUPS, r_package=en.PKG_DESEQ, organism="new organism")
     finally:
         pass
-        # if en_file is not None:
-        #     fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
+        if en_file is not None:
+            fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
 
 
 def test_en_isoforms(conn):
@@ -51,8 +51,8 @@ def test_en_isoforms(conn):
         en_file = en.create_file(ISOFORM_GROUPS, multi_mapping_corr=True)
     finally:
         pass
-        # if en_file is not None:
-        #     fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
+        if en_file is not None:
+            fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
 
 
 def test_en_microarrays(conn):
@@ -66,10 +66,10 @@ def test_en_microarrays(conn):
         en_file = en.create_file(norm_file, MICROARRAY_GROUPS, RAT_AFFY_ANNOTATION, control_group=0)
     finally:
         pass
-        # created = fu.get_special_folder(SpecialFolders.CREATED)
-        # for f in (norm_file, en_file):
-        #   if f is not None:
-        #       fu.unlink_file(f, created)
+        created = fu.get_special_folder(SpecialFolders.CREATED)
+        for f in (norm_file, en_file):
+          if f is not None:
+              fu.unlink_file(f, created)
 
 
 if __name__ == '__main__':
