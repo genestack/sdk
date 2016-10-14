@@ -614,7 +614,7 @@ class FilesUtil(Application):
 
     def get_metainfo(self, accessions):
         """
-        Get complete metainfo of a file or list of files.
+        Get complete metainfo of a list of files.
 
         :param accessions: list of accessions
         :type accessions: list[str]
