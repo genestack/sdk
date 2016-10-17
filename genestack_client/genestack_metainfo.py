@@ -14,12 +14,16 @@ class Metainfo(dict):
     NAME = 'genestack:name'
     DESCRIPTION = 'genestack:description'
     ACCESSION = 'genestack:accession'
-    # METHOD =      'genestack.bio:method'
     ORGANIZATION = 'genestack:organization'
     CONTACT_PERSON = 'genestack:contactPerson'
     EXTERNAL_LINK = 'genestack:links'
     CREATION_DATE = 'genestack:dateCreated'
     PARENT_DICTIONARY = 'genestack.dictionary:parent'
+    SOURCE_DATA = 'genestack:sourceData'
+    INDEX_DATA_SIZE = 'genestack:indexDataSize'
+    DATABASE_SIZE = 'genestack:databaseDataSize'
+    DATA_TYPE = 'genestack:dataType'
+    LAST_UPDATE_DATE = 'genestack:file.last-update'
 
     YEAR = 'YEAR'
     MONTH = 'MONTH'
@@ -300,12 +304,12 @@ class Metainfo(dict):
     def parse_metainfo_from_dict(cls, source_dict):
         output = Metainfo()
         for key in source_dict:
-            for scalar_value in map(cls.parse_scalar_value, source_dict[key]):
+            for scalar_value in map(cls._parse_scalar_value, source_dict[key]):
                 output.add_value(key, scalar_value)
         return output
 
     @staticmethod
-    def parse_scalar_value(source_dict):
+    def _parse_scalar_value(source_dict):
         java_type = source_dict.pop('type')
 
         if java_type == BooleanValue._TYPE:
