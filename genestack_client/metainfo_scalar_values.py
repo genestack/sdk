@@ -53,7 +53,7 @@ class BooleanValue(MetainfoScalarValue):
 class IntegerValue(MetainfoScalarValue):
     _TYPE = 'integer'
 
-    def get_integer(self):
+    def get_int(self):
         return int(self.get('value'))
 
 

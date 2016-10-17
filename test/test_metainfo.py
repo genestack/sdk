@@ -45,7 +45,7 @@ def test_metainfo_io(conn):
         assert metainfo.get('a')[0].get_boolean()
         assert isinstance(metainfo.get('b')[0].get_accession(), str)
         assert metainfo.get('c')[0].get_date() == datetime.datetime.strptime('2015-12-13', '%Y-%m-%d')
-        assert metainfo.get('d')[0].get_integer() == 239
+        assert metainfo.get('d')[0].get_int() == 239
         assert metainfo.get('e')[0].get_decimal() == 238.583
         assert metainfo.get('e')[1].get_decimal() == -13.4
         assert metainfo.get('f')[0].get_string() == "hello"
