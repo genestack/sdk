@@ -22,51 +22,67 @@ RAT_AFFY_ANNOTATION = "GSF14640591"
 
 
 @pytest.fixture(scope='module')
-def conn():
-    args = make_connection_parser().parse_args()
+def args():
+    p = make_connection_parser()
+    p.add_argument('--keep', action='store_true', help='Keep created test files for manual inspection or initialization')
+    return p.parse_args()
+
+
+@pytest.fixture(scope='module')
+def keep_files(args):
+    return args.keep
+
+
+@pytest.fixture(scope='module')
+def conn(args):
     if get_user(args).host != "internal-dev.genestack.com":
         sys.stderr.write("Tests must be run on internal-dev")
         sys.exit(1)
-    connection = get_connection()
+    connection = get_connection(args)
     return connection
 
 
-def test_en_rna_seq(conn):
+def test_en_rna_seq(conn, keep_files):
     fu = FilesUtil(conn)
     en = ExpressionNavigatorforGenes(conn)
     en_file = None
     try:
-        en_file = en.create_file(RNA_SEQ_GROUPS, r_package=en.PKG_DESEQ, organism="new organism")
+        groups = [{'accessions': accs} for accs in RNA_SEQ_GROUPS]
+        en_file = en.create_file(groups, r_package=en.PKG_DESEQ, organism="new organism")
     finally:
-        if en_file is not None:
+        if (not keep_files) and (en_file is not None):
             fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
 
 
-def test_en_isoforms(conn):
+def test_en_isoforms(conn, keep_files):
     fu = FilesUtil(conn)
     en = ExpressionNavigatorforIsoforms(conn)
     en_file = None
     try:
-        en_file = en.create_file(ISOFORM_GROUPS, multi_mapping_corr=True)
+        groups = [{'accessions': accs} for accs in ISOFORM_GROUPS]
+        en_file = en.create_file(groups, multi_mapping_corr=True)
     finally:
-        if en_file is not None:
+        if (not keep_files) and (en_file is not None):
             fu.unlink_file(en_file, fu.get_special_folder(SpecialFolders.CREATED))
 
 
-def test_en_microarrays(conn):
+def test_en_microarrays(conn, keep_files):
     fu = FilesUtil(conn)
     en = ExpressionNavigatorforMicroarrays(conn)
     norm_app = AffymetrixMicroarraysNormalisationApplication(conn)
     en_file = None
     norm_file = None
     try:
+        groups = [{'accessions': accs} for accs in MICROARRAY_GROUPS]
+        groups[0]['is_control'] = True
         norm_file = norm_app.create_file([f for group in MICROARRAY_GROUPS for f in group])
-        en_file = en.create_file(norm_file, MICROARRAY_GROUPS, RAT_AFFY_ANNOTATION, control_group=0)
+        en_file = en.create_file(groups, norm_file, RAT_AFFY_ANNOTATION)
     finally:
-        created = fu.get_special_folder(SpecialFolders.CREATED)
-        for f in (norm_file, en_file):
-            if f is not None:
-                fu.unlink_file(f, created)
+        if not keep_files:
+            created = fu.get_special_folder(SpecialFolders.CREATED)
+            for f in (norm_file, en_file):
+                if f is not None:
+                    fu.unlink_file(f, created)
 
 
 if __name__ == '__main__':
