@@ -48,7 +48,6 @@ class ExpressionNavigatorforMicroarrays(_BaseExpressionNavigator):
         :param organism: organism
         :return: accession of the created Expression Navigator file
         """
-
         control_group = None
         for i, group in enumerate(groups, 1):
             if group.get("is_control"):
@@ -83,7 +82,6 @@ class ExpressionNavigatorforGenes(_BaseExpressionNavigator):
         :param organism: organism
         :return: accession of the created Expression Navigator file
         """
-
         if r_package not in {self.PKG_DESEQ, self.PKG_EDGER}:
             raise GenestackException("Invalid package option for differential expression '%s'" % r_package)
         options = {'package': {'value': r_package}}
@@ -111,7 +109,6 @@ class ExpressionNavigatorforIsoforms(_BaseExpressionNavigator):
         :param organism: organism
         :return: accession of the created Expression Navigator file
         """
-
         options = {
             'fragmentBiasCorrectOption': {'value': 'Yes' if fragment_bias_corr else 'No'},
             'multiReadsCorrectOption': {'value': 'Yes' if multi_mapping_corr else 'No'}
