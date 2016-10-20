@@ -302,6 +302,12 @@ class Metainfo(dict):
 
     @classmethod
     def parse_metainfo_from_dict(cls, source_dict):
+        """
+        Parse a Java map representing a metainfo object and create a Python Client Metainfo.
+        :param source_dict: Java map
+        :type source_dict: dict
+        :rtype: Metainfo
+        """
         output = Metainfo()
         for key in source_dict:
             for scalar_value in map(cls._parse_scalar_value, source_dict[key]):
