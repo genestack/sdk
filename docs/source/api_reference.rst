@@ -61,6 +61,13 @@ TaskLogViewer
         :members:
         :show-inheritance:
 
+Expression Navigator
+--------------------
+
+.. automodule:: genestack_client.expression_navigator
+        :members:
+        :undoc-members:
+
 Command-Line Applications
 *************************
 
