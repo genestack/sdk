@@ -311,15 +311,15 @@ class FilesUtil(Application):
         """
         self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
 
-    def get_metainfo_values_as_strings(self, accessions_list, keys_list):
+    def get_metainfo_values_as_strings(self, accessions_list, keys_list=None):
         """
         Retrieve metainfo values as strings for specific files and metainfo keys.
         The function returns a dictionary.
 
         :param accessions_list: accessions of the files to retrieve
         :type: accessions: list[str]
-        :param keys_list: metainfo keys to retrieve
-        :type: keys: list[str]
+        :param keys_list: metainfo keys to retrieve (if ``None``, all non-technical keys are retrieved for each file)
+        :type: keys: list[str]|None
         :return: a two-level dictionary with the following structure: accession -> key -> value
         :rtype: dict
         """
@@ -612,3 +612,13 @@ class FilesUtil(Application):
             raise GenestackException("Invalid sort order")
         return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
 
+    def collect_metainfos(self, accessions):
+        """
+        Get complete metainfo of a list of files.
+
+        :param accessions: list of accessions
+        :type accessions: list[str]
+        :return: list of metainfo objects
+        :rtype: list[Metainfo]
+        """
+        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
