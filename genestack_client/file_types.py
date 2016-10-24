@@ -33,7 +33,7 @@ class FileTypes(object):
     SEQUENCING_ASSAY = _JAVA_BIO_PKG + "ISequencingAssay"
     MICROARRAY_ASSAY = _JAVA_BIO_PKG + "IMicroarrayAssay"
 
-    DIFFERENTIAL_EXPRESSION_FILE = _JAVA_BIO_PKG + "IDifferentialExpressionFile"
+    DIFFERENTIAL_EXPRESSION_FILE = _JAVA_BIO_PKG + "differentialExpression.IDifferentialExpressionFile"
 
     GENOME_BED_DATA = _JAVA_BIO_PKG + "IGenomeBEDData"
     GENOME_WIGGLE_DATA = _JAVA_BIO_PKG + "IGenomeWiggleData"
