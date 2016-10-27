@@ -95,8 +95,14 @@ class Connection:
         :param version: version in format suitable for distutils.version.StrictVersion
         :return: None
         """
-        compatible_version = self.application('genestack/clientVersion'
-                                             ).invoke('getCompatibleVersion')
+        try:
+            compatible_version = self.application('genestack/clientVersion'
+                                                 ).invoke('getCompatibleVersion')
+        except GenestackServerException, e:
+            # We don't know what happened, but it might be due to incompatible client/API versions.
+            # Rethrow exception, making sure we tell the user to update.
+            e.prompt_update = True
+            raise e
 
         my_version = StrictVersion(__version__)
         compatible = StrictVersion(compatible_version)

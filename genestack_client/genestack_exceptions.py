@@ -14,7 +14,7 @@ class GenestackServerException(GenestackException):
     Should be thrown when a server sends a response with an error message from Java code.
     """
 
-    def __init__(self, message, path, post_data, debug=False, stack_trace=None):
+    def __init__(self, message, path, post_data, debug=False, stack_trace=None, prompt_update=False):
         """
         :param message: exception message
         :type message: str
@@ -28,12 +28,13 @@ class GenestackServerException(GenestackException):
         """
         message = message.encode('utf-8', 'ignore') if isinstance(message, unicode) else message
 
-        GenestackException.__init__(self, message, path, post_data, debug, stack_trace)
+        GenestackException.__init__(self, message, path, post_data, debug, stack_trace, prompt_update)
         self.message = message
         self.debug = debug
         self.stack_trace = stack_trace
         self.path = path
         self.post_data = post_data
+        self.prompt_update = prompt_update
 
     def __str__(self):
         if isinstance(self.post_data, dict):
@@ -53,6 +54,12 @@ class GenestackServerException(GenestackException):
                 message += '\nStacktrace from server is:\n%s' % self.stack_trace
             else:
                 message += '\nEnable debug option to retrieve traceback'
+
+        if self.prompt_update:
+            message += '\nWe encountered an unknown error while querying the Genestack API.  Please' \
+                       ' verify that you\'re running the latest version via:' \
+                       ' `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`'
+
         return message
 
 
