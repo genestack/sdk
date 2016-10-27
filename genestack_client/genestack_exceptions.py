@@ -56,9 +56,9 @@ class GenestackServerException(GenestackException):
                 message += '\nEnable debug option to retrieve traceback'
 
         if self.prompt_update:
-            message += '\nWe encountered an unknown error while querying the Genestack API.  Please' \
-                       ' verify that you\'re running the latest version via:' \
-                       ' `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`'
+            message += "\nWe encountered an unknown error while querying the Genestack API.  Please" \
+                       " verify that you're running the latest version via:" \
+                       " `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`"
 
         return message
 
