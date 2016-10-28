@@ -5,10 +5,22 @@ class GenomeQuery(object):
     _DELIMITER = '|'
 
     class SortingOrder(object):
-        BY_P_VALUE = 'ByPValue'
+        BY_FDR = 'ByPValue'
+        BY_LOG_FOLD_CHANGE = 'ByLogFoldChange'
+        BY_LOG_COUNTS = 'ByLogCountsPerMillion'
+
+    class Filter(object):
+        MAX_FDR = 'maximumFDR'
+        MIN_LOG_FOLD_CHANGE = 'minimumLogFoldChange'
+        MIN_LOG_COUNTS = 'minimumLogCountsPerMillion'
+        REGULATION = 'regulation'
+
+    class Regulation(object):
+        UP = 'up'
+        DOWN = 'down'
 
     def __init__(self):
-        self._map = {}
+        self._map = {'filter': {}}
 
     def set_feature_ids(self, features):
         features = features if isinstance(features, list) else [features]
@@ -35,6 +47,9 @@ class GenomeQuery(object):
     def set_sorting_order(self, order):
         self._map['sortingOrder'] = order
         return self
+
+    def add_filter(self, key, value):
+        self._map['filter'][key] = str(value)
 
     def get_map(self):
         return self._map.copy()
