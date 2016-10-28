@@ -14,7 +14,7 @@ class GenestackServerException(GenestackException):
     Should be thrown when a server sends a response with an error message from Java code.
     """
 
-    def __init__(self, message, path, post_data, debug=False, stack_trace=None, prompt_update=False):
+    def __init__(self, message, path, post_data, debug=False, stack_trace=None):
         """
         :param message: exception message
         :type message: str
@@ -28,13 +28,12 @@ class GenestackServerException(GenestackException):
         """
         message = message.encode('utf-8', 'ignore') if isinstance(message, unicode) else message
 
-        GenestackException.__init__(self, message, path, post_data, debug, stack_trace, prompt_update)
+        GenestackException.__init__(self, message, path, post_data, debug, stack_trace)
         self.message = message
         self.debug = debug
         self.stack_trace = stack_trace
         self.path = path
         self.post_data = post_data
-        self.prompt_update = prompt_update
 
     def __str__(self):
         if isinstance(self.post_data, dict):
@@ -55,11 +54,6 @@ class GenestackServerException(GenestackException):
             else:
                 message += '\nEnable debug option to retrieve traceback'
 
-        if self.prompt_update:
-            message += "\nWe encountered an unknown error while querying the Genestack API.  Please" \
-                       " verify that you're running the latest version via:" \
-                       " `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`"
-
         return message
 
 
@@ -75,9 +69,16 @@ class GenestackVersionException(GenestackException):
     Exception thrown if old version of client is used.
     """
 
-    def __init__(self, my_version, compatible):
-        message = ('Your Genestack Client version "{version}" is too old, at least "{req_version}" is required.\n'
+    def __init__(self, my_version, compatible=None):
+        if compatible:
+            required_message = ', at least "{req_version}" is required.'.format(req_version=compatible)
+            package = 'v{req_version}.zip'.format(req_version=compatible)
+        else:
+            required_message = ''
+            package = 'stable.zip'
+
+        message = ('Your Genestack Client version "{version}" is too old{required_message}.\n'
                    'You can update it with the following command:\n'
-                   '    pip install https://github.com/genestack/python-client/archive/v{req_version}.zip'
-                   ).format(version=my_version, req_version=compatible)
+                   '    pip install https://github.com/genestack/python-client/archive/{package}'
+                   ).format(version=my_version, required_message=required_message, package=package)
         super(GenestackVersionException, self).__init__(message)
