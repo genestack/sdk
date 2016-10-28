@@ -1,5 +1,8 @@
-
 class GenomeQuery(object):
+    """
+    Class describing a genome query.
+    """
+    _DELIMITER = '|'
 
     class SortingOrder(object):
         BY_P_VALUE = 'ByPValue'
@@ -9,7 +12,7 @@ class GenomeQuery(object):
 
     def set_feature_ids(self, features):
         features = features if isinstance(features, list) else [features]
-        self._map['featureId'] = '|'.join(features)
+        self._map['featureId'] = self._DELIMITER.join(features)
         return self
 
     def set_offset(self, offset):
@@ -24,8 +27,9 @@ class GenomeQuery(object):
         self._map['ascending'] = ascending
         return self
 
-    def set_contrast(self, contrast):
-        self._map['contrastLevel'] = contrast
+    def set_contrasts(self, contrasts):
+        contrasts = contrasts if isinstance(contrasts, list) else [contrasts]
+        self._map['contrastLevel'] = self._DELIMITER.join(contrasts)
         return self
 
     def set_sorting_order(self, order):

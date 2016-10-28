@@ -624,10 +624,11 @@ class FilesUtil(Application):
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
 
-    def get_differential_expression_stats(self, accession, query):
+    def get_differential_expression_stats(self, accessions_to_queries):
         """
-        Get differential expression statistics from a file.
-        This method returns a list of statistics dictionaries. Each dictionary has the following structure:
+        Get differential expression statistics from files.
+        This method returns a dictionary where values are list of statistics dictionaries.
+        Each statistics dictionary has the following structure:
 
             - pValue
             - logFoldChange
@@ -650,10 +651,12 @@ class FilesUtil(Application):
 
             - contrastLevel
 
-        :param accession: accession of a differential expression file
-        :param query:
-        :type query: GenomeQuery
-        :return: list of statistics with the structure described above
-        :rtype: list[dict]
+        :param accessions_to_queries: a dictionary whose keys are accessions of differential expression files,
+                                      and whose values are ``GenomeQuery`` objects
+        :type accessions_to_queries: dict[GenomeQuery]
+        :return: dictionary whose keys are file accessions and values are lists of dictionaries with the format
+                 described above
+        :rtype: dict[list[dict]]
         """
-        return self.invoke('getDifferentialExpressionStats', accession, query.get_map())
+        return self.invoke('getDifferentialExpressionStats', {acc: query.get_map() for acc, query in
+                                                              accessions_to_queries.iteritems()})
