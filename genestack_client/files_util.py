@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
+from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant,
+                              GenomeQuery)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -622,3 +623,37 @@ class FilesUtil(Application):
         :rtype: list[Metainfo]
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
+
+    def get_differential_expression_stats(self, accession, query):
+        """
+        Get differential expression statistics from a file.
+        This method returns a list of statistics dictionaries. Each dictionary has the following structure:
+
+            - pValue
+            - logFoldChange
+            - adjustedPValue
+            - genomeFeature (dict):
+
+                - featureType
+                - featureId
+                - subregions (list)
+                - featureName
+                - location (dict):
+
+                    - to
+                    - from
+                    - contigName
+                    - normalizedContigName
+
+                - parentId
+                - attributes (dict)
+
+            - contrastLevel
+
+        :param accession: accession of a differential expression file
+        :param query:
+        :type query: GenomeQuery
+        :return: list of statistics with the structure described above
+        :rtype: list[dict]
+        """
+        return self.invoke('getDifferentialExpressionStats', accession, query.get_map())
