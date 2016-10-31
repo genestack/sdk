@@ -628,7 +628,7 @@ class FilesUtil(Application):
         """
         Get differential expression statistics from files.
         This method returns a dictionary where values are list of statistics dictionaries.
-        Each statistics dictionary has the following structure:
+        Each statistics dictionary has the following structure: (all fields are always present)
 
             - pValue
             - logFoldChange
@@ -637,17 +637,17 @@ class FilesUtil(Application):
 
                 - featureType
                 - featureId
-                - subregions (list)
+                - subregions (list)  (``[]`` if unavailable)
                 - featureName
                 - location (dict):
 
-                    - to
-                    - from (0-based)
-                    - contigName
-                    - normalizedContigName
+                    - to (``-1`` if unavailable)
+                    - from (0-based, ``-1`` if unavailable)
+                    - contigName (``''`` if unavailable)
+                    - normalizedContigName (``''`` if unavailable)
 
-                - parentId
-                - attributes (dict)
+                - parentId  (``None`` if unavailable)
+                - attributes (dict) (``{}`` if unavailable)
 
             - contrastLevel
 
