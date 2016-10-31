@@ -642,7 +642,7 @@ class FilesUtil(Application):
                 - location (dict):
 
                     - to
-                    - from
+                    - from (0-based)
                     - contigName
                     - normalizedContigName
 

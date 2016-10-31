@@ -20,6 +20,18 @@ class GenomeQuery(object):
         DOWN = 'down'
 
     def __init__(self):
+        """
+        Create a new genome query.
+        The default parameters for a query are:
+
+            - offset = 0
+            - limit = 5000
+            - no filters
+            - search across all contrasts
+            - sorting by increasing FDR
+
+        :rtype: GenomeQuery
+        """
         self._map = {'filter': {}}
 
     def set_feature_ids(self, features):
@@ -32,6 +44,12 @@ class GenomeQuery(object):
         return self
 
     def set_limit(self, limit):
+        """
+        Set maximum number of entries to retrieve **per contrast**.
+
+        :param limit:
+        :return:
+        """
         self._map['limit'] = limit
         return self
 

@@ -93,7 +93,10 @@ def test_get_en_stats(conn):
     query.add_filter(GenomeQuery.Filter.MIN_LOG_FOLD_CHANGE, 0.1)
     query.add_filter(GenomeQuery.Filter.REGULATION, GenomeQuery.Regulation.UP)
 
-    assert fu.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
+    result = fu.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
+    entries = result.values()[0]
+    assert len(entries) == 30  # limit of 15 * 2 contrasts in file
+    assert entries[0]['genomeFeature']['featureName'] == u'ENSG00000175745'
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])
