@@ -114,7 +114,7 @@ class Metainfo(dict):
         :param key: key
         :type key: str
         :param value: integer value
-        :type value: float or str
+        :type value: float | str
         :rtype: None
         """
         self.add_value(key, DecimalValue(value))
