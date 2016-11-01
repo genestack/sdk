@@ -79,13 +79,13 @@ class GenestackVersionException(GenestackException):
         """
         if compatible:
             required_message = ', at least "{req_version}" is required.'.format(req_version=compatible)
-            package = 'master' if compatible.prerelease else 'stable'
+            branch = 'master' if compatible.prerelease else 'stable'
         else:
             required_message = ''
-            package = 'stable'
+            branch = 'stable'
 
         message = ('Your Genestack Client version "{version}" is too old{required_message}.\n'
                    'You can update it with the following command:\n'
-                   '    pip install https://github.com/genestack/python-client/archive/{package}.zip'
-                   ).format(version=my_version, required_message=required_message, package=package)
+                   '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
+                   ).format(version=my_version, required_message=required_message, branch=branch)
         super(GenestackVersionException, self).__init__(message)
