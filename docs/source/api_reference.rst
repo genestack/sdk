@@ -103,6 +103,13 @@ File filters
 .. automodule:: genestack_client.file_filters
         :members:
 
+Genome Queries
+--------------
+
+.. autoclass:: genestack_client.genome_query.GenomeQuery
+        :members:
+        :undoc-members:
+
 .. _fileTypes:
 
 File Types

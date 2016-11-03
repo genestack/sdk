@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
+from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant,
+                              GenomeQuery)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'

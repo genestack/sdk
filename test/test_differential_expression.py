@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (FilesUtil, get_connection, make_connection_parser, get_user,
                               ExpressionNavigatorforGenes, ExpressionNavigatorforIsoforms,
                               ExpressionNavigatorforMicroarrays, AffymetrixMicroarraysNormalisationApplication,
-                              SpecialFolders)
+                              SpecialFolders, GenomeQuery)
 
 # Tests must be run on internal-dev
 RNA_SEQ_GROUPS = [['GSF1431884', 'GSF1431882', 'GSF1431885'], ['GSF1431881', 'GSF1431887'],
@@ -19,7 +19,7 @@ ISOFORM_GROUPS = [['GSF1431850', 'GSF1431861', 'GSF1431860'], ['GSF1431852', 'GS
 MICROARRAY_GROUPS = [['GSF10777989', 'GSF10776354'], ['GSF10776502', 'GSF10777824'], ['GSF10776014', 'GSF10774867'],
                      ['GSF10777773', 'GSF10776962']]
 RAT_AFFY_ANNOTATION = "GSF14640591"
-
+EN_TUTORIAL_FILE = 'GSF1433129'
 
 @pytest.fixture(scope='module')
 def args():
@@ -84,6 +84,19 @@ def test_en_microarrays(conn, keep_files):
                 if f is not None:
                     fu.unlink_file(f, created)
 
+
+def test_get_en_stats(conn):
+    en = ExpressionNavigatorforGenes(conn)
+    query = GenomeQuery().set_order_ascending(True).set_limit(15).set_offset(0)
+    query.set_sorting_order(GenomeQuery.SortingOrder.BY_FDR).set_contrasts(["r1", "r2"])
+    query.add_filter(GenomeQuery.Filter.MAX_FDR, 0.2)
+    query.add_filter(GenomeQuery.Filter.MIN_LOG_FOLD_CHANGE, 0.1)
+    query.add_filter(GenomeQuery.Filter.REGULATION, GenomeQuery.Regulation.UP)
+
+    result = en.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
+    entries = result.values()[0]
+    assert len(entries) == 30  # limit of 15 * 2 contrasts in file
+    assert entries[0]['genomeFeature']['featureName'] == u'ENSG00000175745'
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])
