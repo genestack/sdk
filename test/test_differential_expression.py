@@ -86,14 +86,14 @@ def test_en_microarrays(conn, keep_files):
 
 
 def test_get_en_stats(conn):
-    fu = FilesUtil(conn)
+    en = ExpressionNavigatorforGenes(conn)
     query = GenomeQuery().set_order_ascending(True).set_limit(15).set_offset(0)
     query.set_sorting_order(GenomeQuery.SortingOrder.BY_FDR).set_contrasts(["r1", "r2"])
     query.add_filter(GenomeQuery.Filter.MAX_FDR, 0.2)
     query.add_filter(GenomeQuery.Filter.MIN_LOG_FOLD_CHANGE, 0.1)
     query.add_filter(GenomeQuery.Filter.REGULATION, GenomeQuery.Regulation.UP)
 
-    result = fu.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
+    result = en.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
     entries = result.values()[0]
     assert len(entries) == 30  # limit of 15 * 2 contrasts in file
     assert entries[0]['genomeFeature']['featureName'] == u'ENSG00000175745'
