@@ -144,13 +144,14 @@ class DataImporter(object):
         :type required: bool
         :return: None
         """
+        current_value = metainfo.get(key)
         if value is None:
-            if required and metainfo.get(key) is None:
+            if required and current_value is None:
                 raise GenestackException('Missing required key "%s", '
                                          'it should be passed as function argument '
                                          'or in metainfo object' % key)
         else:
-            if metainfo.get(key) is not None:
+            if current_value is not None:
                 raise GenestackException('Key "%s" is passed both as function argument '
                                          'and inside metainfo object' % key)
             metainfo.add_value(key, value_type(value))
