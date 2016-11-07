@@ -5,6 +5,8 @@ import sys
 from urllib import quote
 from urlparse import urlparse
 
+from genestack_client.metainfo_scalar_values import FileReference, ExternalLink, StringValue
+
 from genestack_client import BioMetaKeys
 from genestack_client import GenestackException
 from genestack_client import Metainfo
@@ -124,25 +126,25 @@ class DataImporter(object):
         self.__process_links(metainfo)
         return self.importer.invoke('createFile', parent, importer_type, metainfo)['accession']
 
-    def __add_to_metainfo(self, metainfo, key, value, setter, required=False):
+    @staticmethod
+    def __add_to_metainfo(metainfo, key, value, value_type, required=False):
         """
         Add value to metainfo, check if value is not already present,
-         checks required fields.
+        checks required fields.
 
         :param metainfo: metainfo object to be updated
         :type metainfo: Metainfo
         :param key: key to add
         :type key: str
         :param value: value to add
-        :type value: object
-        :param setter: function to add value
-        :type setter: function
+        :type value: MetainfoScalarValue
+        :param value_type: value class
+        :type value_type: T => genestack_client.metainfo_scalar_values.MetainfoScalarValue
         :param required: flag if value is required
         :type required: bool
         :return: None
         """
-
-        if value is None and required:
+        if value is None:
             if required and metainfo.get(key) is None:
                 raise GenestackException('Missing required key "%s", '
                                          'it should be passed as function argument '
@@ -151,7 +153,7 @@ class DataImporter(object):
             if metainfo.get(key) is not None:
                 raise GenestackException('Key "%s" is passed both as function argument '
                                          'and inside metainfo object' % key)
-            setter(key, value)
+            metainfo.add_value(key, value_type(value))
 
     def load_raw(self, file_path):
         """
@@ -185,12 +187,10 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome,
-                               metainfo.add_file_reference)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME,
+                               reference_genome, FileReference)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'bedFiles', metainfo)
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -214,11 +214,11 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue,
+                               required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME,
+                               reference_genome, FileReference)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'variationFiles', metainfo)
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -243,11 +243,11 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue,
+                               required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME,
+                               reference_genome, FileReference)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'wigFiles', metainfo)
 
     def create_bam(self,
@@ -284,13 +284,11 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
-        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.STRAIN, strain, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome, FileReference)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
@@ -312,9 +310,8 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        description and metainfo.add_string(BioMetaKeys.DESCRIPTION, description)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.DESCRIPTION, description, StringValue)
         return self.__invoke_loader(parent, 'experiment', metainfo)
 
     def create_microarray_assay(self, parent, name=None, urls=None,
@@ -342,13 +339,14 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        method and metainfo.add_string(BioMetaKeys.METHOD, method)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.METHOD, method, StringValue)
         if urls:
+            urls = (url for url in urls)
+            self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, urls.next(), ExternalLink)
             for url in urls:
-                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+                metainfo.add_value(BioMetaKeys.DATA_LINK, ExternalLink(url))
         return self.__invoke_loader(parent, 'microarrays', metainfo)
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
@@ -376,13 +374,14 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        method and metainfo.add_string(BioMetaKeys.METHOD, method)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.METHOD, method, StringValue)
         if urls:
+            urls = (url for url in urls)
+            self.__add_to_metainfo(metainfo, BioMetaKeys.READS_LINK, urls.next(), ExternalLink)
             for url in urls:
-                metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
+                metainfo.add_value(BioMetaKeys.READS_LINK, ExternalLink(url))
         return self.__invoke_loader(parent, 'sequencingAssay', metainfo)
 
     def create_unaligned_read(self, parent=None, name=None, urls=None,
@@ -411,13 +410,14 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        method and metainfo.add_string(BioMetaKeys.METHOD, method)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.METHOD, method, StringValue)
         if urls:
+            urls = (url for url in urls)
+            self.__add_to_metainfo(metainfo, BioMetaKeys.READS_LINK, urls.next(), ExternalLink)
             for url in urls:
-                metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
+                metainfo.add_value(BioMetaKeys.READS_LINK, ExternalLink(url))
         return self.__invoke_loader(parent, 'rawReads', metainfo)
 
     def create_genome_annotation(self, parent=None, url=None, name=None,
@@ -448,11 +448,10 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
-        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.STRAIN, strain, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome, FileReference)
         if url:
             metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'genomeAnnotations', metainfo)
@@ -483,11 +482,9 @@ class DataImporter(object):
         """
         metainfo = metainfo or Metainfo()
         metainfo.add_string(BioMetaKeys.DATABASE_ID, 'dbNSFP')
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        if url:
-            metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink)
         return self.__invoke_loader(parent, 'dbnsfp', metainfo)
 
     def create_reference_genome(self,
@@ -534,16 +531,19 @@ class DataImporter(object):
         :return:
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
-        assembly and metainfo.add_string(BioMetaKeys.REFERENCE_GENOME_ASSEMBLY, assembly)
-        release and metainfo.add_string(BioMetaKeys.REFERENCE_GENOME_RELEASE, release)
-        annotation_url and metainfo.add_external_link(ANNOTATION_KEY, annotation_url, text='Annotations data link')
-        metainfo.add_string(metainfo.DESCRIPTION, description or '')
-        for seq_link in sequence_urls:
-            metainfo.add_external_link(SEQUENCE_KEY, seq_link, text='Sequence data link')
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.STRAIN, strain, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_ASSEMBLY, assembly, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_RELEASE, release, StringValue)
+        self.__add_to_metainfo(metainfo, ANNOTATION_KEY, annotation_url, ExternalLink)
+        self.__add_to_metainfo(metainfo, metainfo.DESCRIPTION, description, StringValue)
+
+        if sequence_urls:
+            sequence_urls = (url for url in sequence_urls)
+            self.__add_to_metainfo(metainfo, SEQUENCE_KEY, sequence_urls.next(), ExternalLink)
+            for seq_link in sequence_urls:
+                metainfo.add_value(SEQUENCE_KEY, ExternalLink(seq_link))
         return self.__invoke_loader(parent, 'genomes', metainfo)
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
@@ -566,11 +566,12 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
         if urls:
+            urls = (url for url in urls)
+            self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, urls.next(), ExternalLink)
             for url in urls:
-                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+                metainfo.add_value(BioMetaKeys.DATA_LINK, ExternalLink(url))
         return self.__invoke_loader(parent, 'reportFiles', metainfo)
 
     def create_mapped_reads_count(self,
@@ -599,11 +600,9 @@ class DataImporter(object):
         :rtype: str
         """
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome, FileReference)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
@@ -637,12 +636,10 @@ class DataImporter(object):
         """
 
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name,
-                               metainfo.add_string, required=True)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
-        self.__add_to_metainfo(metainfo, Metainfo.PARENT_DICTIONARY, metainfo.add_file_reference)
-        term_type and metainfo.add_string('genestack.dictionary:termType', term_type)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.PARENT_DICTIONARY, parent_dictionary, FileReference)
+        self.__add_to_metainfo(metainfo, 'genestack.dictionary:termType', term_type, StringValue)
         return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
 
     def create_microarray_annotation(self, annotation_type, parent=None,
@@ -673,8 +670,6 @@ class DataImporter(object):
                                      "`DataImporter.MICROARRAY_ANNOTATION_TYPES`"
                                      % annotation_type)
         metainfo = metainfo or Metainfo()
-        self.__add_to_metainfo(metainfo, BioMetaKeys.NAME, name,
-                               metainfo.add_string, required=True)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
-                               metainfo.add_external_link, required=True)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, annotation_type, metainfo)
