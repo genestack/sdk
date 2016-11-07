@@ -4,4 +4,4 @@ docs/build
 .DS_Store
 build/
 docs/source/scripts/genestack-user-setup.rst
-
+.cache

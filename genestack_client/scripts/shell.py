@@ -8,6 +8,8 @@ from datetime import datetime
 
 import sys
 
+from genestack_client import FilesUtil
+
 from genestack_client.genestack_shell import GenestackShell, Command
 
 APPLICATION_SHELL = 'genestack/shell'
@@ -61,8 +63,19 @@ class Time(Call):
         print 'Execution time: %s' % (datetime.now() - start)
 
 
+class Groups(Command):
+    DESCRIPTION = 'print information about user groups'
+    COMMAND = 'groups'
+
+    def run(self):
+        fu = FilesUtil(self.connection)
+        print 'User groups:'
+        for accession, name in fu.get_groups_to_share().items():
+            print '  %s (%s)' % (name, accession)
+
+
 class Shell(GenestackShell):
-    COMMAND_LIST = [Time, Call]
+    COMMAND_LIST = [Time, Call, Groups]
 
     def get_commands_for_help(self):
         commands = GenestackShell.get_commands_for_help(self)

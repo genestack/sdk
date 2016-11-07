@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils
-
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
+FILE_BATCH_SIZE = 500
 
 
 class SpecialFolders:
@@ -18,6 +18,16 @@ class SpecialFolders:
     CREATED = 'created'
     TEMPORARY = 'temporary'
     UPLOADED = 'uploaded'
+
+
+class SortOrder:
+    """
+    Sort orders for file search queries
+    """
+    BY_NAME = "BY_NAME"
+    BY_ACCESSION = "BY_ACCESSION"
+    BY_LAST_UPDATE = "BY_LAST_UPDATE"
+    DEFAULT = "DEFAULT"
 
 
 class FilesUtil(Application):
@@ -49,6 +59,8 @@ class FilesUtil(Application):
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
+
+    MAX_FILE_SEARCH_LIMIT = 100
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -120,6 +132,16 @@ class FilesUtil(Application):
         """
         return self.invoke('collectInitializableFilesInContainer', accession)
 
+    def count_file_children(self, container_accession):
+        """
+        Count children of a container (not recursive).
+        :param container_accession: accession of container
+        :type container_accession: str
+        :return: number of children
+        :rtype int:
+        """
+        return self.invoke('countFileChildren', container_accession)
+
     def get_file_children(self, container_accession):
         """
         Return accessions of files linked to current container.
@@ -129,7 +151,15 @@ class FilesUtil(Application):
         :return: list of accessions
         :rtype: list
         """
-        return self.invoke('getFileChildren', container_accession)
+        all_files = []
+        count = 0
+        while True:
+            batch = self.invoke('getFileChildren', container_accession, count, FILE_BATCH_SIZE)
+            all_files += batch
+            count += len(batch)
+            if len(batch) < FILE_BATCH_SIZE:
+                break
+        return all_files
 
     def create_folder(self, name, parent=None, description=None, metainfo=None):
         """
@@ -281,15 +311,15 @@ class FilesUtil(Application):
         """
         self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
 
-    def get_metainfo_values_as_strings(self, accessions_list, keys_list):
+    def get_metainfo_values_as_strings(self, accessions_list, keys_list=None):
         """
         Retrieve metainfo values as strings for specific files and metainfo keys.
         The function returns a dictionary.
 
         :param accessions_list: accessions of the files to retrieve
         :type: accessions: list[str]
-        :param keys_list: metainfo keys to retrieve
-        :type: keys: list[str]
+        :param keys_list: metainfo keys to retrieve (if ``None``, all non-technical keys are retrieved for each file)
+        :type: keys: list[str]|None
         :return: a two-level dictionary with the following structure: accession -> key -> value
         :rtype: dict
         """
@@ -551,3 +581,44 @@ class FilesUtil(Application):
         for key, value in expected_checksums.items():
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
+
+    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, ascending=False, offset=0, limit=MAX_FILE_SEARCH_LIMIT):
+        """
+        Search for files using filters.
+
+        :param file_filter: file filter
+        :type file_filter: FileFilter
+        :param sort_order: sorting order for the results (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :type sort_order: str
+        :param ascending: should the results be in ascending order? (default: False)
+        :type ascending: bool
+        :param offset: search offset (default: 0, cannot be negative)
+        :type offset: int
+        :param limit: maximum number of results to return (max and default: 100)
+        :type limit: int
+        :return: a dictionary with entries the following entries:
+
+            - total (int): total number of files on the platform matching the search filter
+            - result (list): list of file info dictionaries for the matching files between ``offset`` and ``offset+limit``.
+              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the structure of these
+              objects.
+
+        :rtype: dict[str, int|list[dict[str, str|dict]]]
+        """
+        limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)
+        if offset < 0 or limit < 0:
+            raise GenestackException("Search offset/limit cannot be negative")
+        if not validate_constant(SortOrder, sort_order):
+            raise GenestackException("Invalid sort order")
+        return self.invoke('findFiles', file_filter.get_dict(), sort_order, ascending, offset, limit)
+
+    def collect_metainfos(self, accessions):
+        """
+        Get complete metainfo of a list of files.
+
+        :param accessions: list of accessions
+        :type accessions: list[str]
+        :return: list of metainfo objects
+        :rtype: list[Metainfo]
+        """
+        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))

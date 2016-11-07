@@ -110,3 +110,8 @@ def ask_confirmation(question, default=None):
         if text in ('n', 'no'):
             return False
         print 'Unexpected response please input "y[es]" or "n[o]"'
+
+
+def validate_constant(cls, key):
+    constants = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
+    return key in constants
