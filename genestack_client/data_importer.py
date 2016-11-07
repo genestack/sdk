@@ -641,7 +641,7 @@ class DataImporter(object):
                                metainfo.add_string, required=True)
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url,
                                metainfo.add_external_link, required=True)
-        parent_dictionary and metainfo.add_file_reference(Metainfo.PARENT_DICTIONARY, parent_dictionary)
+        self.__add_to_metainfo(metainfo, Metainfo.PARENT_DICTIONARY, metainfo.add_file_reference)
         term_type and metainfo.add_string('genestack.dictionary:termType', term_type)
         return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
 
