@@ -78,14 +78,17 @@ class GenestackVersionException(GenestackException):
         :type compatible: distutils.version.StrictVersion
         """
         if compatible:
-            required_message = ', at least "{req_version}" is required.'.format(req_version=compatible)
             branch = 'master' if compatible.prerelease else 'stable'
+            message = (
+                'Your Genestack Client version "{version}" is too old, '
+                'at least "{req_version}" is required.\n'
+                       ).format(version=my_version, req_version=compatible)
         else:
-            required_message = ''
             branch = 'stable'
+            message = 'Cannot get required version from server.\n'.format(version=my_version)
 
-        message = ('Your Genestack Client version "{version}" is too old{required_message}.\n'
-                   'You can update it with the following command:\n'
-                   '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
-                   ).format(version=my_version, required_message=required_message, branch=branch)
+        message += (
+            'You can update it with the following command:\n'
+            '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
+        ).format(branch)
         super(GenestackVersionException, self).__init__(message)
