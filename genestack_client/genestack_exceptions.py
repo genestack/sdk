@@ -69,23 +69,26 @@ class GenestackVersionException(GenestackException):
     Exception thrown if old version of client is used.
     """
 
-    def __init__(self, my_version, compatible=None):
+    def __init__(self, current_version, required_version=None):
         """
 
-        :param my_version: current version
-        :type my_version: distutils.version.StrictVersion
-        :param compatible: compatible version
-        :type compatible: distutils.version.StrictVersion
+        :param current_version: current version
+        :type current_version: distutils.version.StrictVersion
+        :param required_version: minimum required version
+        :type required_version: distutils.version.StrictVersion
         """
-        if compatible:
-            required_message = ', at least "{req_version}" is required.'.format(req_version=compatible)
-            branch = 'master' if compatible.prerelease else 'stable'
+        if required_version:
+            branch = 'master' if required_version.prerelease else 'stable'
+            message = (
+                'Your Genestack Client version "{current_version}" is too old, '
+                'at least "{required_version}" is required.\n'
+                       ).format(current_version=current_version, required_version=required_version)
         else:
-            required_message = ''
             branch = 'stable'
+            message = 'Cannot get required version from server.\n'
 
-        message = ('Your Genestack Client version "{version}" is too old{required_message}.\n'
-                   'You can update it with the following command:\n'
-                   '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
-                   ).format(version=my_version, required_message=required_message, branch=branch)
+        message += (
+            'You can update client with the following command:\n'
+            '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
+        ).format(branch=branch)
         super(GenestackVersionException, self).__init__(message)
