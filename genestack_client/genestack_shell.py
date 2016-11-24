@@ -291,7 +291,15 @@ class GenestackShell(cmd.Cmd):
             self.prompt = '%s> ' % email
         except GenestackAuthenticationException:
             self.prompt = 'anonymous>'
-        self.intro = 'genestack_client v%s\ndebug: %s\n%s' % (__version__, self.connection.debug, self.INTRO)
+        if self.connection.debug:
+            debug_string = ' in debug mode'
+        else:
+            debug_string = ''
+        self.intro = ('genestack_client v{version}{debug_string}\n'
+                      '{intro}'.format(version=__version__,
+                                       debug_string=debug_string,
+                                       intro=self.INTRO)
+                      )
 
     def postloop(self):
         try:
@@ -344,7 +352,10 @@ class GenestackShell(cmd.Cmd):
 
     def do_debug(self, line):
         self.connection.debug = not self.connection.debug
-        print 'debug: %s' % self.connection.debug
+        if self.connection.debug:
+            print 'debug enabled'
+        else:
+            print 'debug disabled'
 
     def get_commands_for_help(self):
         """
