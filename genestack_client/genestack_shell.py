@@ -292,7 +292,7 @@ class GenestackShell(cmd.Cmd):
         except GenestackAuthenticationException:
             self.prompt = 'anonymous>'
         if self.connection.debug:
-            debug_string = ' in debug mode'
+            debug_string = ' (with debug enabled)'
         else:
             debug_string = ''
         self.intro = ('genestack_client v{version}{debug_string}\n'
@@ -353,9 +353,9 @@ class GenestackShell(cmd.Cmd):
     def do_debug(self, line):
         self.connection.debug = not self.connection.debug
         if self.connection.debug:
-            print 'debug enabled'
+            print 'Debug enabled'
         else:
-            print 'debug disabled'
+            print 'Debug disabled'
 
     def get_commands_for_help(self):
         """

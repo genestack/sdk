@@ -672,7 +672,7 @@ class ApplicationManager(GenestackShell):
     DESCRIPTION = ('The Genestack Application Manager is a command-line utility'
                    ' that allows you to upload and manage'
                    ' your applications on a specific Genestack instance ')
-    INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
+    INTRO = "Application manager shell.\nType 'help' for list of available commands.\n"
     COMMAND_LIST = [
         Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
     ]
