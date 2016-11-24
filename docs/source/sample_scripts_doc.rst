@@ -3,10 +3,28 @@ Sample Scripts
 
 This section provides reusable examples of scripts that allow you to perform actions on Genestack that would be tedious to accomplish through the web interface, such as multiple file uploads with custom metadata.
 
+Retrieving task logs
+--------------------
+
+This is a simple script to retrieve and print the logs of an initialization task on Genestack.
+
+.. literalinclude:: sample_scripts/get_task_logs.py
+    :linenos:
+    :language: python
+
+The script connects to Genestack and uses the ``TaskLogViewer`` class defined in the client library, to retrieve the
+logs for a file whose accession should be passed as a command-line parameter to the script.
+
+``TaskLogViewer`` is a child class of ``Application``, and it provides an interface to the Genestack application
+``genestack/task-log-viewer`` which exposes a public Java method (``getFileInitializationLog``) to access the
+initialization logs of a file.
+
 Uploading multiple files with custom metainfo
 ---------------------------------------------
 
-A typical situation when you want to upload data is that you have some raw sequencing files somewhere (on an FTP site, on your local computer, etc.) and a spreadsheet with information about these files, that you would want to record in Genestack.
+A typical situation when you want to upload data is that you have some raw sequencing files somewhere
+(on an FTP site, on your local computer, etc.) and a spreadsheet with information about these files,
+that you would want to record in Genestack.
 
 So let's imagine that we have a comma-delimited CSV file with the following format:
 
@@ -44,6 +62,46 @@ The metainfo of each Sequencing Assay specified inside the CSV file needs to con
 .. note::
 
     One could easily extend this script to support two files per sample (in the case of paired-end reads).
+
+Importing ENCODE RNA-seq data
+------------------------------
+
+We can extend the previous script to download data from the `ENCODE project <https://www.encodeproject
+.org/matrix/?type=Experiment>`__ .
+If we select a list of experiments from the ENCODE experiment matrix, we can obtain a link to a CSV file which contains
+all the metadata and data for the matching assays. For instance, this is the link for
+`all FASTQ files for human RNA-seq experiments <https://www.encodeproject.org/metadata/type=Experiment&replicates
+.library.biosample.donor.organism.scientific_name=Homo+sapiens&files.file_type=fastq&assay_title=RNA-seq/metadata
+.tsv>`__ .
+
+By browsing this TSV file, we see that it contains the following useful fields:
+
+    * ``File accession``
+    * ``Experiment accession``
+    * ``Biosample sex``
+    * ``Biosample organism``
+    * ``Biosample term name``: cell line or tissue
+    * ``Biosample Age``
+    * ``Paired with``: if the sample was paired-end, this field points to the file accession of the other mate
+
+We also notice that file download URLs always follow the template:
+
+.. code-block:: none
+
+    https://www.encodeproject.org/files/<FILE_ACCESSION>/@@download/<FILE_ACCESSION>.fastq.gz
+
+We can use this observation to generate the reads URLs from the fields ``File accession`` and possibly ``Paired with``.
+We use the following logic: we read through the metadata file, while keeping a set of all the accessions of the
+paired FASTQ files handled so far.
+If the current line corresponds to a file that has already been created (second mate of a paired-end
+file), then we skip it. Otherwise we prepare a metainfo object for the file and create the Genestack file.
+
+If the row contains a ``Paired with`` accession, we also add the corresponding URL to the current metadata, and add
+the accession to the set of FASTQ files seen so far.
+
+.. literalinclude:: sample_scripts/import_encode_data.py
+    :linenos:
+    :language: python
 
 Editing the metainfo of existing files
 --------------------------------------

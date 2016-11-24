@@ -1,7 +1,39 @@
+* 0.12.0
+  * Added wrapper classes for Expression Navigator applications (for RNA-seq counts, isoforms and microarrays)
+  * Added `COMPOUND_*` complex keys in `BioMetaKeys` class
+  * Added a method `FilesUtil.collect_metainfos` to retrieve the full metainfo of a list of files
+  * Added methods to convert a map sent from Java into a client `Metainfo` object
+  * Added getters on `MetainfoScalarValue` subclasses mimicking the Java API
+  * Added possibility to not supply keys to `FilesUtil.get_metainfo_values_as_strings`, in which case all non-technical keys are fetched
+  * Added `FileFilter` objects and `FilesUtil.find_files` method for complete file search API
+  * Added `MetainfoScalarValue` objects
+  * Added `Permissions`, `SortOrder` and `FileTypes` enumerations
+  * Deprecated `Metainfo.add_temperature`, `Metainfo.add_time`
+
+* 0.10.0
+  * Added `term_type` to dictionary uploader
+  * Added ability to remove applications by specified version
+  * Added `FilesUtil.mark_obsolete` method
+  * Added `-i` flag in `install` command of application manager for setting up initial application visibility
+  * Added class with bio constant `genestack_client.BioMetaKeys`
+  * Removed `DictionaryUtil`
+  * Removed `-r` flag in `install` command of application manager
+  * Deprecated `genestack_client.BioMetainfo`
+      * Methods `add_ethnic_group` and `add_organism` replaced by `Metainfo.add_string`
+      * Constants with metainfo keys moved to `bio_meta_keys.BioMetaKeys`
+
+
+* 0.9.0
+  * Added `DataImporter.create_microarray_annotation`
+  * Renamed `DataImporter.create_owl_ontology` to `DataImporter.create_dictionary`
+
+* 0.8.1a1
+  * Added support of 'group' and 'organization' visibilities
+
 * 0.6.2
+  * Added waiting of application loading to `release`, `visibility`, and `markAsStable` (for SYSTEM scope only) commands
   * Removed backward compatibility hack for `release` command
     (use `ApplicationManagerApplication.releaseApplication(string, string, string)` method only)
-  * Added waiting of application loading to `release`, `visibility`, and `markAsStable` (for SYSTEM scope only) commands
 
 * 0.6.1
   * `Connection.login` raises GenestackAuthenticationException is authentication is failed
@@ -9,89 +41,90 @@
   * fix infinite ask password loop in case of use of old version
 
 * version 0.5.2
-  * fix GenestackServerException constructor to correctly pass exceptions
+  * Fix GenestackServerException constructor to correctly pass exceptions
     thrown in pool processes
   * `release_applications` fixed according to last changes in application-manager application
     (removed `override` argument)
 
 * version 0.5.1
-  * fix error on print exception in shell
+  * Fix error on print exception in shell
 
 * version 0.5.0
-  * add `visibility` and `release` commands to `genestack-application-manager`
-  * add `release` flag to `install` command in `genestack-application-manager`
-  * add `create_owl_ontology` to `DataImporter`
-  * add support for retrieving application logs
-  * make `genestack.bio:strain/breed/cultivar` deprecated, use `genestack.bio:strainBreedCultivar` instead
+  * Added `visibility` and `release` commands to `genestack-application-manager`
+  * Added `release` flag to `install` command in `genestack-application-manager`
+  * Added `create_owl_ontology` to `DataImporter`
+  * Added support for retrieving application logs
+  * Deprecated `genestack.bio:strain/breed/cultivar`, use `genestack.bio:strainBreedCultivar` instead
 
 * version 0.4.1
-  * Fix genestack-uploader crash
+  * Fixed genestack-uploader crash
 
 * version 0.4.0
-  * add `add_publication`, `add_memory_size`, and `add_temperature` methods to Metainfo
-  * improve confirmation dialog
+  * Added `add_publication`, `add_memory_size`, and `add_temperature` methods to Metainfo
+  * Changed confirmation dialog
 
 * version 0.3.0
-  * move `rename_file` method form `CLAplication` to `FilesUtil`, return type changed to `None`
-  * add `DictionaryUtil`
-  * add new methods `get_metainfo_values_as_strings`, `link_files` and `unlink_files` to `FilesUtil`
+  * Added `DictionaryUtil`
+  * Added new methods `get_metainfo_values_as_strings`, `link_files` and `unlink_files` to `FilesUtil`
+  * Moved `rename_file` method form `CLAplication` to `FilesUtil`, return type changed to `None`
 
 * version 0.2.1
-  * allow to run genestack-user-setup init with -H/--host argument
+  * Allow to run `genestack-user-setup` init with ``-H/--host argument`
 
 * version 0.2.0
-  * compatibility fixes according to the upcoming changes in the genestack platform
+  * Compatibility fixes according to the upcoming changes in the genestack platform
     * new core returns JSON with application response stored in 'result' field
     * chunked upload completion is marked as 'lastChunkUploaded' : true
-  * updated documentation
+  * Updated documentation
 
 * version 0.1.9
-  * percent encode incoming urls for s3 in `DataImporter`
-  * rename `GenestackShell` module to `genestack_shell`
-  * rename `UnalignedReads` to `unaligned_reads`
-  * add new method `create_mapped_reads_count` to `DataImporter`
+  * Percent encode incoming urls for s3 in `DataImporter`
+  * Renamed `GenestackShell` module to `genestack_shell`
+  * Renamed `UnalignedReads` to `unaligned_reads`
+  * Added new method `create_mapped_reads_count` to `DataImporter`
 
 * version 0.1.8
-  * rename pythonSDK to Python Client Library, `genestack` -> 'genestack-client'
+  * Renamed pythonSDK to Python Client Library, `genestack` -> 'genestack-client'
 
 * version 0.1.7
-  * add TaskLogViewer application binding
-  * rename arguments with `link` in name to `url` in DataImporter fro
+  * Added TaskLogViewer application binding
+  * Renamed arguments with `link` in name to `url` in DataImporter fro
     consistency (old arguments still present, for compatibility, will be removed
     on next release.)
-  * remove extension from all installable scripts
+  * Removed extension from all installable scripts
     `genestack-application-manager.py` -> `genestack-application-manager`
-  * server version checked at login. If version is not compatible raise exception
+  * Server version checked at login. If version is not compatible raise exception
 
 * version 0.1.6
-  * application ID without vendor is not supported by Connection
-  * add more classes for CLA
-  * change signature of add_external_link, now text argument is optional. Order
+  * Added more classes for CLA
+  * Added `get_infos` and `get_complete_infos` methods to `FilesUtils`.
+  * Application ID without vendor is not supported by Connection
+  * Changed signature of add_external_link, now text argument is optional. Order
     of arguments changed need to update all files.
-  * drop support for short application ID
-  * add `get_infos` and `get_complete_infos` methods to `FilesUtils`.
+  * Droped support for short application ID
+
 
 * version 0.1.2
-  * improve console output for shell based scripts
-  * add chunked upload feature
+  * Improved console output for shell based scripts
+  * Added chunked upload feature
     * new dependency `requests` was added
     * upload speed improved for files more then 5mb
     * upload can be resumed in case of interrupt
-  * add warning if vendor is not specified in application ID
-  * remove Admin application (move it to core scripts)
-  * remove optional accession param from FileUtils.create_folder()
-  * add constant SECONDARY_ACCESSION to BioMetainfo
-  * make parent optional for DataImporter, use Imported folder as default.
-  * replace PRIVATE and PUBLIC constants in FilesUtils with methods.
+  * Added warning if vendor is not specified in application ID
+  * Added constant SECONDARY_ACCESSION to BioMetainfo
+  * Removed Admin application (move it to core scripts)
+  * Removed optional accession param from FileUtils.create_folder()
+  * Made parent optional for DataImporter, use Imported folder as default.
+  * Replaced PRIVATE and PUBLIC constants in FilesUtils with methods.
 
 * version 0.1.1
-  * remove login and logout from Admin
-  * remove get_string_value from Metainfo
-  * remove link_name argument form create_dbnsfp
+  * Removed login and logout from Admin
+  * Removed get_string_value from Metainfo
+  * Removed link_name argument form create_dbnsfp
 
 * version 0.1.0
-  * add `remove` command to genestack-user-setup.py
-  * add version.py, use same version in github releases and documentation
+  * Added `remove` command to genestack-user-setup.py
+  * Added version.py, use same version in github releases and documentation
 
 * version 0
-  * add python sdk
+  * Added python sdk

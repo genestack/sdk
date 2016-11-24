@@ -79,8 +79,10 @@ def get_connection(args=None):
     :return: connection
     :rtype: ~genestack_client.Connection
     """
+    if args is None:
+        args = make_connection_parser().parse_args()
     user = get_user(args)
-    return user.get_connection(interactive=True, debug=args and args.debug, show_logs=args and args.show_logs)
+    return user.get_connection(interactive=True, debug=args.debug, show_logs=args.show_logs)
 
 
 def ask_confirmation(question, default=None):
@@ -108,3 +110,8 @@ def ask_confirmation(question, default=None):
         if text in ('n', 'no'):
             return False
         print 'Unexpected response please input "y[es]" or "n[o]"'
+
+
+def validate_constant(cls, key):
+    constants = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
+    return key in constants

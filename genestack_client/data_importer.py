@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 from urllib import quote
 from urlparse import urlparse
-import os
 
-from genestack_client import GenestackException, BioMetainfo
+from genestack_client import BioMetaKeys
+from genestack_client import GenestackException
+from genestack_client import Metainfo
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
@@ -16,14 +19,14 @@ class DataImporter(object):
     If no ``parent`` is specified, the files are created in the special folder ``Imported files``
 
     Required and recommended values can be set by arguments directly
-    or passed inside a :py:class:`~genestack_client.BioMetainfo`::
+    or passed inside a :py:class:`~genestack_client.Metainfo`::
 
        create_bed(name="Bed", url="some/url")
 
        # is equivalent to:
-       metainfo = BioMetainfo()
-       metainfo.add_string(BioMetainfo.NAME, "Bed")
-       metainfo.add_external_link(BioMetainfo.DATA_LINK, "some/url", text="link name")
+       metainfo = Metainfo()
+       metainfo.add_string(Metainfo.NAME, "Bed")
+       metainfo.add_external_link(Metainfo.DATA_LINK, "some/url", text="link name")
        create_bed(metainfo=metainfo)
 
     However, **do not** pass the same value both through the arguments and inside a metainfo object.
@@ -55,6 +58,21 @@ class DataImporter(object):
 
     If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
+
+    #: Affymetrix microarray annotation type
+    AFFYMETRIX_ANNOTATION = 'affymetrixMicroarrayAnnotation'
+    #: Agilent microarray annotation type
+    AGILENT_ANNOTATION = 'agilentMicroarrayAnnotation'
+    #: TSV (GenePix etc) microarray annotation type
+    TSV_ANNOTATION = 'TSVMicroarrayAnnotation'
+
+    #: Supported microarray annotation types
+    MICROARRAY_ANNOTATION_TYPES = (
+        AGILENT_ANNOTATION,
+        AFFYMETRIX_ANNOTATION,
+        TSV_ANNOTATION,
+        )
+
     def __init__(self, connection):
         self.connection = connection
         self.importer = connection.application('genestack/upload')
@@ -121,7 +139,7 @@ class DataImporter(object):
         """
         Create a Genestack BED Track from a local or remote BED file.
         ``name`` and ``url`` are mandatory fields. They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -133,21 +151,21 @@ class DataImporter(object):
         :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'bedFiles', metainfo)
 
     def create_vcf(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """
         Create a Genestack Variants file from a local or remote VCF file.
         ``name`` and ``url`` are required fields. They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -159,14 +177,14 @@ class DataImporter(object):
         :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'variationFiles', metainfo)
 
     def create_wig(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
@@ -174,7 +192,7 @@ class DataImporter(object):
         Create a Genestack Wiggle Track from a local or remote WIG file.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -186,14 +204,14 @@ class DataImporter(object):
         :param url: URL or local path to file
         :type url: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'wigFiles', metainfo)
 
     def create_bam(self,
@@ -209,7 +227,7 @@ class DataImporter(object):
         Create a Genestack Aligned Reads file from a local or remote BAM file.
         ``name``, ``url`` and ``organism`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
 
         :param parent: accession of parent folder
@@ -224,24 +242,24 @@ class DataImporter(object):
         :type strain:
         :param reference_genome: reference genome accession
         :type reference_genome: str
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :param metainfo: metainfo object
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.BAM_FILE_LINK, url)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetaKeys.BAM_FILE_LINK, url)
         return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
         """
         Create a Genestack Experiment. The ``name`` parameter is required.
         It can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -251,13 +269,13 @@ class DataImporter(object):
         :param description: experiment description
         :type description: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        description and metainfo.add_string(BioMetainfo.DESCRIPTION, description)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        description and metainfo.add_string(Metainfo.DESCRIPTION, description)
         return self.__invoke_loader(parent, 'experiment', metainfo)
 
     def create_microarray_assay(self, parent, name=None, urls=None,
@@ -267,7 +285,7 @@ class DataImporter(object):
         If ``parent`` is not an Experiment, an exception will be raised.
         ``name`` and ``urls`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent experiment
         :type parent: str
@@ -280,17 +298,17 @@ class DataImporter(object):
         :param organism: organism
         :type organism: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        method and metainfo.add_string(BioMetainfo.METHOD, method)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        method and metainfo.add_string(BioMetaKeys.METHOD, method)
         if urls:
             for url in urls:
-                metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'microarrays', metainfo)
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
@@ -300,7 +318,7 @@ class DataImporter(object):
         an exception will be raised.
         ``name`` and ``urls`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of the parent experiment
         :type parent: str
@@ -313,17 +331,17 @@ class DataImporter(object):
         :param organism: organism
         :type organism: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        method and metainfo.add_string(BioMetainfo.METHOD, method)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        method and metainfo.add_string(BioMetaKeys.METHOD, method)
         if urls:
             for url in urls:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
+                metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
         return self.__invoke_loader(parent, 'sequencingAssay', metainfo)
 
     def create_unaligned_read(self, parent=None, name=None, urls=None,
@@ -333,7 +351,7 @@ class DataImporter(object):
         Most common file formats encoding
         sequencing reads with quality scores are accepted (FASTQ 33/64, SRA, FASTA+QUAL, SFF, FAST5).
         ``name`` and ``urls`` are required fields.
-        They can be specified through the arguments or via a :py:class:`~genestack_client.BioMetainfo` instance.
+        They can be specified through the arguments or via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -347,17 +365,17 @@ class DataImporter(object):
         :param organism: organism
         :type organism: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        method and metainfo.add_string(BioMetainfo.METHOD, method)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        method and metainfo.add_string(BioMetaKeys.METHOD, method)
         if urls:
             for url in urls:
-                metainfo.add_external_link(BioMetainfo.READS_LINK, url)
+                metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
         return self.__invoke_loader(parent, 'rawReads', metainfo)
 
     def create_genome_annotation(self, parent=None, url=None, name=None,
@@ -367,7 +385,7 @@ class DataImporter(object):
         Create a Genestack Genome Annotation file from a local or remote file.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -383,28 +401,28 @@ class DataImporter(object):
         :param strain: strain
         :type strain: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
         if url:
-            metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+            metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'genomeAnnotations', metainfo)
 
     def create_codon_table(self, parent=None, metainfo=None):
-        metainfo = metainfo or BioMetainfo()
+        metainfo = metainfo or Metainfo()
         return self.__invoke_loader(parent, 'codonTables', metainfo)
 
     def create_dbnsfp(self, parent=None, url=None, name=None, organism=None, metainfo=None):
         """
         Create a Genestack Variation Database file. ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -416,16 +434,16 @@ class DataImporter(object):
         :param organism: organism
         :type organism: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        metainfo.add_string(BioMetainfo.DATABASE_ID, 'dbNSFP')
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
+        metainfo = metainfo or Metainfo()
+        metainfo.add_string(BioMetaKeys.DATABASE_ID, 'dbNSFP')
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
         if url:
-            metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+            metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'dbnsfp', metainfo)
 
     def create_reference_genome(self,
@@ -445,7 +463,7 @@ class DataImporter(object):
         annotation file. ``name``, ``sequence_urls``, ``organism`` and
         ``annotation_url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
 
         :param parent: accession of parent folder
@@ -468,15 +486,15 @@ class DataImporter(object):
         :param strain: strain
         :type strain: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return:
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        organism and metainfo.add_organism(BioMetainfo.ORGANISM, organism)
-        strain and metainfo.add_string(BioMetainfo.STRAIN, strain)
-        assembly and metainfo.add_string(BioMetainfo.REFERENCE_GENOME_ASSEMBLY, assembly)
-        release and metainfo.add_string(BioMetainfo.REFERENCE_GENOME_RELEASE, release)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        strain and metainfo.add_string(BioMetaKeys.STRAIN, strain)
+        assembly and metainfo.add_string(BioMetaKeys.REFERENCE_GENOME_ASSEMBLY, assembly)
+        release and metainfo.add_string(BioMetaKeys.REFERENCE_GENOME_RELEASE, release)
         annotation_url and metainfo.add_external_link(ANNOTATION_KEY, annotation_url, text='Annotations data link')
         metainfo.add_string(metainfo.DESCRIPTION, description or '')
         for seq_link in sequence_urls:
@@ -488,7 +506,7 @@ class DataImporter(object):
         Create a Genestack Report File from a local or remote data file.
         ``name`` and ``urls`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -498,15 +516,15 @@ class DataImporter(object):
         :param urls: URL or list of URLs of local file paths
         :type urls: list or str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
         if urls:
             for url in urls:
-                metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'reportFiles', metainfo)
 
     def create_mapped_reads_count(self,
@@ -519,7 +537,7 @@ class DataImporter(object):
         Create a Mapped Reads Count file from a local or remote mapped reads count file.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -530,22 +548,28 @@ class DataImporter(object):
         :param reference_genome: reference genome accession
         :type reference_genome: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        reference_genome and metainfo.add_file_reference(BioMetainfo.REFERENCE_GENOME, reference_genome)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        reference_genome and metainfo.add_file_reference(BioMetaKeys.REFERENCE_GENOME, reference_genome)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
+        sys.stderr.write('DataImporter.create_owl_ontology method is deprecated, '
+                         'it is renamed to DataImporter.create_dictionary\n')
+        return self.create_dictionary(parent=parent, name=name, url=url, metainfo=metainfo)
+
+    def create_dictionary(self, parent=None, name=None, url=None, term_type=None, metainfo=None, parent_dictionary=None):
         """
-        Create a Dictionary file from a local or remote owl file.
+        Create a Dictionary file from a local or remote file.
+        `owl`, `obo`, and `csv` formats are supported.
         ``name`` and ``url`` are required fields.
         They can be specified through the arguments or
-        via a :py:class:`~genestack_client.BioMetainfo` instance.
+        via a :py:class:`~genestack_client.Metainfo` instance.
 
         :param parent: accession of parent folder
             (if not provided, files will be created in the ``Imported files`` folder)
@@ -553,12 +577,52 @@ class DataImporter(object):
         :param name: name of the file
         :type name: str
         :param url: URL of a file
+        :type url: str
+        :param term_type: dictionary term type
+        :type term_type: str
         :param metainfo: metainfo object
-        :type metainfo: BioMetainfo
+        :type metainfo: Metainfo
+        :param parent_dictionary: accession of parent dictionary
+        :type parent_dictionary: str
         :return: file accession
         :rtype: str
         """
-        metainfo = metainfo or BioMetainfo()
-        name and metainfo.add_string(BioMetainfo.NAME, name)
-        url and metainfo.add_external_link(BioMetainfo.DATA_LINK, url)
+
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        parent_dictionary and metainfo.add_file_reference(Metainfo.PARENT_DICTIONARY, parent_dictionary)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        term_type and metainfo.add_string('genestack.dictionary:termType', term_type)
         return self.__invoke_loader(parent, 'dictionaryFiles', metainfo)
+
+    def create_microarray_annotation(self, annotation_type, parent=None,
+                                     name=None, url=None, metainfo=None):
+        """
+        Create a Dictionary file from a local or remote microarray annotation file.
+        ``name`` and ``url`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param annotation_type: type of annotation being loaded,
+            an element of :py:attr:`~genestack_client.DataImporter.MICROARRAY_ANNOTATION_TYPES`
+        :type annotation_type: str
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        if annotation_type not in self.MICROARRAY_ANNOTATION_TYPES:
+            raise GenestackException("Microarray annotation type '%s' is not "
+                                     "supported, use something from "
+                                     "`DataImporter.MICROARRAY_ANNOTATION_TYPES`"
+                                     % annotation_type)
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, annotation_type, metainfo)

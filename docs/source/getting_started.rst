@@ -159,7 +159,7 @@ Have a look at the following example:
     bob@email.com does not have a unicorn :(
 
 .. warning::
-    
+
     If you use custom arguments, make sure to follow the syntax of the previous script: first, retrieve the parser with ``make_connection_parser()``, then add the new argument to it, parse the command-line arguments and finally send them to ``get_connection``.
 
 Arguments Accepted by the Connection Parser
@@ -176,13 +176,13 @@ You can also supply the parameters ``-u <email> -H <host> -p <password>``. By de
     $ python my_script.py -u user@email.com -H platform.genestack.org -p password
 
 
-Using Hard-coded Connection Parameters 
+Using Hard-coded Connection Parameters
 --------------------------------------
 
 You can also supply hard-coded parameters for the connection directly inside your script.
 
 .. warning::
-    
+
     This approach is only provided for reference, but it is **strongly discouraged**, as it requires you (among other things) to store your e-mail and password in plain text inside your code.
 
 
@@ -343,7 +343,7 @@ See :ref:`DataImporter` for more info.
 TaskLogViewer
 -------------
 
-The Task Log Viewer allows you to access the contents of initialization logs programatically. 
+The Task Log Viewer allows you to access the contents of initialization logs programatically.
 
 Again, we start by opening a connection and instantiating the class::
 
@@ -354,7 +354,7 @@ Again, we start by opening a connection and instantiating the class::
 
 Then we can check the error log of a file::
 
-    >>> log_viewer.view_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
+    >>> log_viewer.print_log('GSF000001', log_type=TaskLogViewer.STDERR, follow=False)
     This log is empty (perhaps there was no log produced)
 
 See :ref:`TaskLogViewer` for more info.

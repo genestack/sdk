@@ -7,6 +7,10 @@ import re
 from datetime import datetime
 from io import BytesIO
 from threading import Thread, Lock, Condition
+
+import sys
+
+from OpenSSL.SSL import SysCallError
 from requests.exceptions import RequestException
 
 from genestack_client.utils import isatty
@@ -37,7 +41,7 @@ class Chunk(object):
         self.size = size
 
     def __str__(self):
-        return "Chunk %s %s for %s" % (self.data['resumableChunkNumber'], self.size, self.data['resumableRelativePath'])
+        return "Chunk %s %s bytes for %s" % (self.data['resumableChunkNumber'], self.size, self.data['resumableRelativePath'])
 
     def get_file(self):
         container = BytesIO()
@@ -215,20 +219,17 @@ class ChunkedUpload(object):
                                                           data=chunk.data,
                                                           files={'file': file_cache},
                                                           follow=False)
-            except RequestException as e:
+            except (RequestException, SysCallError) as e:
                 # check that any type of connection error occurred and retry.
                 time.sleep(RETRY_INTERVAL)
                 error = str(e)
+                if self.connection.debug:
+                    sys.stderr.write('%s/%s attempt to upload %s failed. Connection error: %s\n' % (attempt + 1, RETRY_ATTEMPTS, chunk, error))
                 continue
             # done without errors
             if response.status_code == 200:
                 self.__update_progress(chunk.size)
                 data = json.loads(response.text)
-
-                # FIXME: Remove after 0.26.0 dotorg update
-                if 'applicationResult' in data:
-                    data['result'] = data['applicationResult']
-                    data['lastChunkUploaded'] = True
 
                 if data.get('lastChunkUploaded', False):
                     self.application_result = data['result']

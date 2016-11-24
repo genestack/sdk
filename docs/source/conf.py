@@ -10,11 +10,12 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+import os.path
 import sys
 
 import sphinx_rtd_theme
 
-sys.path.insert(0, '../../')  # Use Python Client Library from current repository
+sys.path.insert(0, os.path.abspath('../../'))  # Use Python Client Library from current repository
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

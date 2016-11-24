@@ -61,6 +61,13 @@ TaskLogViewer
         :members:
         :show-inheritance:
 
+Expression Navigator
+--------------------
+
+.. automodule:: genestack_client.expression_navigator
+        :members:
+        :undoc-members:
+
 Command-Line Applications
 *************************
 
@@ -73,8 +80,8 @@ CLApplication
 
 .. include:: _cla_reference.rst
 
-Metainfo Objects
-****************
+Genestack Objects
+*****************
 
 Metainfo
 --------
@@ -83,22 +90,43 @@ Metainfo
         :members:
         :show-inheritance:
 
-        .. autoattribute:: genestack_client.Metainfo.YEAR
-        .. autoattribute:: genestack_client.Metainfo.MONTH
-        .. autoattribute:: genestack_client.Metainfo.WEEK
-        .. autoattribute:: genestack_client.Metainfo.DAY
-        .. autoattribute:: genestack_client.Metainfo.HOUR
-        .. autoattribute:: genestack_client.Metainfo.MINUTE
-        .. autoattribute:: genestack_client.Metainfo.SECOND
-        .. autoattribute:: genestack_client.Metainfo.MILLISECOND
+Metainfo scalar values
+----------------------
 
-BioMetainfo
------------
-
-.. autoclass:: genestack_client.BioMetainfo
+.. automodule:: genestack_client.metainfo_scalar_values
         :members:
-        :show-inheritance:
+        :undoc-members:
 
+File filters
+------------
+
+.. automodule:: genestack_client.file_filters
+        :members:
+
+Genome Queries
+--------------
+
+.. autoclass:: genestack_client.genome_query.GenomeQuery
+        :members:
+        :undoc-members:
+
+.. _fileTypes:
+
+File Types
+----------
+
+.. autoclass:: genestack_client.file_types.FileTypes
+        :members:
+        :undoc-members:
+
+.. _permissions:
+
+File Permissions
+----------------
+
+.. autoclass:: genestack_client.file_permissions.Permissions
+        :members:
+        :undoc-members:
 
 Users and Connections
 *********************

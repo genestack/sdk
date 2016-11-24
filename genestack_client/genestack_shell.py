@@ -429,5 +429,6 @@ class GenestackShell(cmd.Cmd):
         # TODO on ctrl+C don't exit
         try:
             cmd.Cmd.cmdloop(self, intro=intro)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
+            print
             self.postloop()

@@ -251,18 +251,9 @@ class IntersectGenomicFeaturesMapped(CLApplication):
 
 # analyse raw counts
 
-class ExpressionNavigatorforGenes(CLApplication):
-    APPLICATION_ID = 'genestack/expressionNavigator'
-
 
 class SingleCellRNASeqAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/rnaseq'
-
-
-# analyse FPKM counts
-
-class ExpressionNavigatorforIsoforms(CLApplication):
-    APPLICATION_ID = 'genestack/expressionNavigator-isoforms'
 
 
 # analyse Differential Expression Statistics
