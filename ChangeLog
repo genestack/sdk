@@ -1,4 +1,4 @@
-* 0.12.1
+* 0.12.1a1
   * Added flag ``-l` to `versions` command in application manager for viewing loading state of
     application with specific version
 
