@@ -134,6 +134,10 @@ class ListVersions(Command):
             help='display visibility of each version'
         )
         p.add_argument(
+            '-l', action="store_true", dest='show_loading_state',
+            help='display loading state of application with specific version'
+        )
+        p.add_argument(
             '-r', action="store_true", dest='show_release_state',
             help='display release state of version'
         )
@@ -172,8 +176,10 @@ class ListVersions(Command):
                     'E' if 'SESSION' in version_details['stableScope'] else '-'
                 )
             output_string += '%-*s' % (max_len + 2, version_name)
+            if self.args.show_loading_state:
+                output_string += '%7s' % (version_details['loadingState'].lower())
             if self.args.show_release_state:
-                output_string += '%12s' % ('released' if version_details['released'] else 'not released')
+                output_string += '%15s' % ('released' if version_details['released'] else 'not released')
             if self.args.show_visibilities:
                 levels = version_details['visibilityLevels']
                 visibility = 'all: ' + ('+' if 'all' in levels else '-')
