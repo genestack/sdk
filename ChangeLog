@@ -1,4 +1,6 @@
 * 0.12.0
+  * Minor improvements
+* 0.12.0
   * Added wrapper classes for Expression Navigator applications (for RNA-seq counts, isoforms and microarrays)
   * Added `COMPOUND_*` complex keys in `BioMetaKeys` class
   * Added a method `FilesUtil.collect_metainfos` to retrieve the full metainfo of a list of files
