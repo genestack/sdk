@@ -9,7 +9,7 @@ import xml.dom.minidom as minidom
 import json
 import time
 import zipfile
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.utils import isatty, ask_confirmation
@@ -134,6 +134,10 @@ class ListVersions(Command):
             help='display visibility of each version'
         )
         p.add_argument(
+            '-l', action="store_true", dest='show_loading_state',
+            help='display loading state of application with specific version'
+        )
+        p.add_argument(
             '-r', action="store_true", dest='show_release_state',
             help='display release state of version'
         )
@@ -150,37 +154,39 @@ class ListVersions(Command):
         app_id = self.args.app_id
         if not validate_application_id(app_id):
             return
-        stable_versions = None
-        if self.args.show_stable:
-            stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
-        result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
-        if not result:
+        app_info = self.connection.application(APPLICATION_ID).invoke(
+            'getApplicationVersionsInfo',
+            app_id,
+            self.args.show_owned
+        )
+        if not app_info:
             sys.stderr.write('No suitable versions found for "%s"\n' % app_id)
             return
-        result.sort()
+        app_info = OrderedDict(sorted(app_info.items()))
 
-        visibility_map = None
-        if self.args.show_visibilities or self.args.show_release_state:
-            visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
-
-        max_len = max(len(x) for x in result)
-        for item in result:
+        max_len = max(len(x) for x in app_info.keys())
+        for item in app_info.items():
+            version_name = item[0]
+            version_details = item[1]
             output_string = ''
-            if stable_versions:
+            if self.args.show_stable:
                 output_string += '%s%s%s ' % (
-                    'S' if item == stable_versions.get('SYSTEM') else '-',
-                    'U' if item == stable_versions.get('USER') else '-',
-                    'E' if item == stable_versions.get('SESSION') else '-'
+                    'S' if 'SYSTEM' in version_details['stableScopes'] else '-',
+                    'U' if 'USER' in version_details['stableScopes'] else '-',
+                    'E' if 'SESSION' in version_details['stableScopes'] else '-'
                 )
-            output_string += '%-*s' % (max_len + 2, item)
+            output_string += '%-*s' % (max_len + 2, version_name)
+            if self.args.show_loading_state:
+                output_string += '%7s' % (version_details['loadingState'].lower())
             if self.args.show_release_state:
-                output_string += '%12s' % ('released' if visibility_map[item]['released'] else 'not released')
+                output_string += '%15s' % ('released' if version_details['released'] else 'not released')
             if self.args.show_visibilities:
-                levels = visibility_map[item]['visibilityLevels']
-                visibility_description = 'all: ' + ('+' if 'all' in levels else '-')
-                visibility_description += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
-                visibility_description += ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
-                output_string += '    %s' % visibility_description
+                levels = version_details['visibilityLevels']
+                visibility = 'all: ' + ('+' if 'all' in levels else '-')
+                visibility += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
+                visibility +=\
+                    ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
+                output_string += '    %s' % visibility
             print output_string
 
 
