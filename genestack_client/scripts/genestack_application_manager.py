@@ -171,9 +171,9 @@ class ListVersions(Command):
             output_string = ''
             if self.args.show_stable:
                 output_string += '%s%s%s ' % (
-                    'S' if 'SYSTEM' in version_details['stableScope'] else '-',
-                    'U' if 'USER' in version_details['stableScope'] else '-',
-                    'E' if 'SESSION' in version_details['stableScope'] else '-'
+                    'S' if 'SYSTEM' in version_details['stableScopes'] else '-',
+                    'U' if 'USER' in version_details['stableScopes'] else '-',
+                    'E' if 'SESSION' in version_details['stableScopes'] else '-'
                 )
             output_string += '%-*s' % (max_len + 2, version_name)
             if self.args.show_loading_state:
