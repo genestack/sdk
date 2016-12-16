@@ -103,6 +103,10 @@ class Install(Command):
                  '`-i <group_accession>` for group visibility)'
         )
         p.add_argument(
+            '-w', '--wait', action='store_true',
+            help='wait until all installed applications will be completely loaded'
+        )
+        p.add_argument(
             'version', metavar='<version>',
             help='version of applications to upload'
         )
@@ -116,7 +120,7 @@ class Install(Command):
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.visibility
+            self.args.stable, self.args.scope, self.args.force, self.args.visibility, self.args.wait
         )
 
 
@@ -452,16 +456,16 @@ def reload_applications(application, version, app_id_list):
         sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility):
+def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, wait_loading):
     for file_path in files_list:
         upload_single_file(
             application, file_path, version, override,
-            stable, scope, force, initial_visibility
+            stable, scope, force, initial_visibility, wait_loading
         )
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, initial_visibility=None):
+                       stable, scope, force=False, initial_visibility=None, wait_loading=False):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -487,6 +491,10 @@ def upload_single_file(application, file_path, version, override,
             print result
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
+
+    if wait_loading:
+        for app_id in app_info.identifiers:
+            wait_application_loading(application, app_id, version)
 
     if initial_visibility:
         change_applications_visibility(
