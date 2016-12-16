@@ -1,6 +1,8 @@
 * 0.12.1a1
   * Added flag ``-l` to `versions` command in application manager for viewing loading state of
     application with specific version
+  * Added flag `-w` to `install` command for waiting full loading of module (including sending scripts and creating
+    minified resources for each application in module)
 
 * 0.12.0
   * Minor improvements
