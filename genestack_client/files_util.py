@@ -344,7 +344,7 @@ class FilesUtil(Application):
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
-    def share_files(self, accessions, group, destination_folder=None, password=None):
+    def share_files(self, accessions, group, recursive=True, destination_folder=None, password=None):
         """
         Share files.
 
@@ -361,7 +361,7 @@ class FilesUtil(Application):
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
         share_utils = self.connection.application('genestack/shareutils')
-        share_utils.invoke('shareFilesForViewing', accessions, [group])
+        share_utils.invoke('shareFilesForViewing', accessions, [group], recursive)
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
 
