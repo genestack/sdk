@@ -1,3 +1,6 @@
+* 0.14.0a1
+  * Added ability to share specified folder only without its children (when `recursive` is set to false in ShareUtils)
+
 * 0.13.0
   * Added flag ``-l` to `versions` command in application manager for viewing loading state of
     application with specific version
