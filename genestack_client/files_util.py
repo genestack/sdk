@@ -344,7 +344,7 @@ class FilesUtil(Application):
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
-    def share_files(self, accessions, group, recursive=True, destination_folder=None, password=None):
+    def share_files(self, accessions, group, destination_folder=None, password=None, recursive=True):
         """
         Share files.
 
