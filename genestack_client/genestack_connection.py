@@ -32,6 +32,37 @@ class _NoRedirectError(urllib2.HTTPErrorProcessor):
     http_error_301 = http_error_302 = http_error_303 = http_error_307
 
 
+class Response(object):
+    """Represents response from Genestack server."""
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def error(self):
+        return self._data.get('error')
+
+    @property
+    def error_stack_trace(self):
+        return self._data.get('errorStackTrace')
+
+    @property
+    def log(self):
+        return self._data['log']
+
+    @property
+    def result(self):
+        return self._data['result']
+
+    @property
+    def trace(self):
+        return self._data.get('trace')
+
+    @property
+    def elapsed_microseconds(self):
+        return self._data.get('elapsedMicroseconds')
+
+
 class Connection:
     """
     A class to handle a connection to a specified Genestack server.
@@ -192,22 +223,46 @@ class Application:
 
     def __invoke(self, path, to_post):
         f = self.connection.open(path, to_post)
-        response = json.load(f)
+        response = Response(json.load(f))
 
-        error = response.get('error')
-        if error is not None:
+        if response.error is not None:
             raise GenestackServerException(
-                error, path, to_post,
+                response.error, path, to_post,
                 debug=self.connection.debug,
-                stack_trace=response.get('errorStackTrace')
+                stack_trace=response.error_stack_trace
             )
 
-        logs = response['log']
-        if logs and (self.connection.show_logs or self.connection.debug):
-            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in logs)
+        if response.log and (self.connection.show_logs or self.connection.debug):
+            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in response.log)
             print message
 
-        return response['result']
+        return response
+
+    def get_response(self, method, params=(), trace=True):
+        """
+        Invoke one of the application's public Java methods and return Response object.
+        Allow to access to logs and traces in code,
+        if you need only result use :py:meth:`~genestack_client.Connection.invoke`
+
+        :param method: name of the public Java method
+        :type method: str
+        :param params: arguments that will be passed to the Java method. Arguments must be JSON-serializable.
+        :type params: tuple
+        :param trace: request trace from server
+        :type trace: bool
+        :return: Response object
+        :rtype Response
+        """
+        to_post = {'method': method}
+        if trace:
+            to_post['trace'] = True
+        if params:
+            to_post['parameters'] = json.dumps(params)
+
+        path = '/application/invoke/%s' % self.application_id
+
+        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
+        return self.__invoke(path, to_post)
 
     def invoke(self, method, *params):
         """
@@ -218,15 +273,7 @@ class Application:
         :param params: arguments that will be passed to the Java method. Arguments must be JSON-serializable.
         :return: JSON-deserialized response.
         """
-
-        to_post = {'method': method}
-        if params:
-            to_post['parameters'] = json.dumps(params)
-
-        path = '/application/invoke/%s' % self.application_id
-
-        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
-        return self.__invoke(path, to_post)
+        return self.get_response(method, params).result
 
     def upload_chunked_file(self, file_path):
         return upload_by_chunks(self, file_path)
