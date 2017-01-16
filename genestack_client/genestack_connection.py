@@ -242,7 +242,7 @@ class Application:
         """
         Invoke one of the application's public Java methods and return Response object.
         Allow to access to logs and traces in code,
-        if you need only result use :py:meth:`~genestack_client.Connection.invoke`
+        if you need only result use :py:meth:`~genestack_client.Application.invoke`
 
         :param method: name of the public Java method
         :type method: str
