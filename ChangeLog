@@ -1,3 +1,7 @@
+* 0.14.0a1
+    * Added `Response` class, it represents response from server and allow to access logs and traces
+    * Added `Application.get_response` method
+
 * 0.13.0
   * Added flag ``-l` to `versions` command in application manager for viewing loading state of
     application with specific version
