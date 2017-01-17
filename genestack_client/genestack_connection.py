@@ -221,13 +221,13 @@ class Application:
         if len(self.application_id.split('/')) != 2:
             raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
-    def __invoke(self, path, to_post):
-        f = self.connection.open(path, to_post)
+    def __invoke(self, path, post_data):
+        f = self.connection.open(path, post_data)
         response = Response(json.load(f))
 
         if response.error is not None:
             raise GenestackServerException(
-                response.error, path, to_post,
+                response.error, path, post_data,
                 debug=self.connection.debug,
                 stack_trace=response.error_stack_trace
             )
@@ -253,16 +253,16 @@ class Application:
         :return: Response object
         :rtype Response
         """
-        to_post = {'method': method}
+        post_data = {'method': method}
         if trace:
-            to_post['trace'] = True
+            post_data['trace'] = True
         if params:
-            to_post['parameters'] = json.dumps(params)
+            post_data['parameters'] = json.dumps(params)
 
         path = '/application/invoke/%s' % self.application_id
 
-        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
-        return self.__invoke(path, to_post)
+        # there might be present also self.__invoke(path, post_data)['log'] -- show it?
+        return self.__invoke(path, post_data)
 
     def invoke(self, method, *params):
         """
