@@ -53,12 +53,13 @@ def test_wrong_login():
         connection.login(user_pwd, user_pwd)
 
 
-def test_time_mesure():
+def test_time_measurement():
     connection = Connection(server_url)
     connection.login(user_login, user_pwd)
     response = connection.application('genestack/signin').get_response('whoami', trace=True)
     assert isinstance(response.trace, list)
     assert isinstance(response.elapsed_microseconds, int)
+    assert response.elapsed_microseconds > 0
 
 
 if __name__ == '__main__':
