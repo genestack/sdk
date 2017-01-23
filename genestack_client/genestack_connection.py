@@ -299,7 +299,7 @@ class Application:
         path = '/application/upload/%s/%s/%s' % (
             self.application_id, token, urllib.quote(filename)
         )
-        return self.__invoke(path, file_to_upload)
+        return self.__invoke(path, file_to_upload).result
 
 
 class FileWithCallback(file):
