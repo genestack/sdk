@@ -251,7 +251,7 @@ class Application:
         :param trace: request trace from server
         :type trace: bool
         :return: Response object
-        :rtype Response
+        :rtype: Response
         """
         post_data = {'method': method}
         if trace:
