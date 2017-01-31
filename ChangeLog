@@ -1,4 +1,4 @@
-* 0.14.0a1
+* 0.14.0
     * Added `Response` class, it represents response from server and allow to access logs and traces
     * Added `Application.get_response` method
 
