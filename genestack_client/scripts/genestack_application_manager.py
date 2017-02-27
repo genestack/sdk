@@ -117,6 +117,8 @@ class Install(Command):
 
     def run(self):
         jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
+        if not jar_files:
+            raise GenestackException('No JAR file was found')
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
@@ -405,7 +407,7 @@ def resolve_jar_file(file_path):
         raise GenestackException('More than one JAR file was found inside %s:\n'
                                  ' %s' % (file_path, '\n '.join(jar_files)))
     elif not jar_files:
-        raise GenestackException('No JAR file was found inside %s' % file_path)
+        raise GenestackException('No JAR file was found inside: "%s"' % file_path)
 
     return jar_files[0]
 
