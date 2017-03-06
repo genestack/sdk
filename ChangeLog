@@ -1,3 +1,6 @@
+* 0.15.0
+    * Added `status` command for getting information about application loading state
+
 * 0.14.0
     * Added `Response` class, it represents response from server and allow to access logs and traces
     * Added `Application.get_response` method
