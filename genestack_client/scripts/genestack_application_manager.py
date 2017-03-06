@@ -194,6 +194,44 @@ class ListVersions(Command):
             print output_string
 
 
+class Status(Command):
+    COMMAND = 'status'
+    DESCRIPTION = 'Shows loading status of application and additional loading info'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'app_id_list', metavar='<appId>', nargs='+',
+            help='identifier of the application'
+        )
+        p.add_argument(
+            '-s', '--state-only', action='store_true', dest='state_only',
+            help='show only id and state, without error descriptions'
+        )
+
+    def run(self):
+        apps_ids = self.args.app_id_list
+        if not all(map(validate_application_id, apps_ids)):
+            return
+        version = self.args.version
+
+        for app_id in apps_ids:
+            app_info = self.connection.application(APPLICATION_ID).invoke(
+                'getApplicationVersionInfo', app_id, version
+            )
+            output_string = '%s' % app_id
+            output_string += '%9s' % app_info['loadingState'].lower()
+            if not self.args.state_only:
+                if app_info['loadingState'] == 'FAILED' and app_info['loadingErrors']:
+                    output_string += '\n\n%s' % 'Application jar was not loaded due to the following errors:\n'
+                    for error in app_info['loadingErrors']:
+                        output_string += '%s\n' % error
+                    output_string += '\n'
+            print output_string
+
+
 class Visibility(Command):
     COMMAND = 'visibility'
     DESCRIPTION = 'Set or remove visibility for application'
@@ -688,7 +726,7 @@ class ApplicationManager(GenestackShell):
                    ' your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n"
     COMMAND_LIST = [
-        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
+        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release, Status
     ]
 
 
