@@ -212,12 +212,12 @@ class Status(Command):
         )
 
     def run(self):
-        apps_ids = self.args.app_id_list
-        if not all(map(validate_application_id, apps_ids)):
+        app_ids = self.args.app_id_list
+        if not all(map(validate_application_id, app_ids)):
             return
         version = self.args.version
 
-        for app_id in apps_ids:
+        for app_id in app_ids:
             app_info = self.connection.application(APPLICATION_ID).invoke(
                 'getApplicationVersionInfo', app_id, version
             )
