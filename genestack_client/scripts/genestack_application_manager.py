@@ -219,12 +219,12 @@ class Status(Command):
 
         for app_id in app_ids:
             app_info = self.connection.application(APPLICATION_ID).invoke(
-                'getApplicationVersionInfo', app_id, version
+                'getApplicationDescriptor', app_id, version
             )
             output_string = '%s' % app_id
-            output_string += '%9s' % app_info['loadingState'].lower()
+            output_string += '%9s' % app_info['state'].lower()
             if not self.args.state_only:
-                if app_info['loadingState'] == 'FAILED' and app_info['loadingErrors']:
+                if app_info['state'] == 'FAILED' and app_info['loadingErrors']:
                     output_string += '\n\n%s' % 'Application jar was not loaded due to the following errors:\n'
                     for error in app_info['loadingErrors']:
                         output_string += '%s\n' % error
