@@ -1,5 +1,8 @@
 * 0.15.0
     * Added `status` command for getting information about application loading state
+    * Removed flag `-w`/`--wait` from `install` command
+    * Added flag `-n`/`--no-wait` to `install` command (for asynchronous loading of applications)
+    * Changed default behaviour of `install` command to wait applications loading
 
 * 0.14.0
     * Added `Response` class, it represents response from server and allow to access logs and traces
