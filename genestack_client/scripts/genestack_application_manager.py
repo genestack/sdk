@@ -600,14 +600,14 @@ def get_application_descriptor(application, application_id, version):
 def wait_application_loading(application, app_id, version, seconds=1):
     descriptor = get_application_descriptor(application, app_id, version)
     if descriptor['state'] != 'LOADED':
-        sys.stdout.write('\nApplication is not loaded yet. Waiting for loading (interrupt to abort)... ')
+        sys.stdout.write('\nApplication %s is not loaded yet. Waiting for loading (interrupt to abort)... ' % app_id)
         sys.stdout.flush()
     try:
         while descriptor['state'] != 'LOADED':
             time.sleep(seconds)
             descriptor = get_application_descriptor(application, app_id, version)
             if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application failed\n')
+                sys.stdout.write('\nLoading of application %s failed\n' % app_id)
                 return False
     except KeyboardInterrupt:
         sys.stdout.write('Action interrupted\n')
