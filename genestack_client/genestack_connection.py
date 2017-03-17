@@ -79,7 +79,6 @@ class Connection:
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
-        self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
         self.debug = debug
         self.show_logs = show_logs
@@ -221,7 +220,10 @@ class Application:
         if len(self.application_id.split('/')) != 2:
             raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
-    def __invoke(self, path, post_data):
+    def __invoke(self, path, post_data, trace=None):
+        self.connection.opener.addheaders = [('gs-extendSession', 'true')]
+        if trace:
+            self.connection.opener.addheaders.append(('gs-trace', 'true'))
         f = self.connection.open(path, post_data)
         response = Response(json.load(f))
 
@@ -254,15 +256,13 @@ class Application:
         :rtype: Response
         """
         post_data = {'method': method}
-        if trace:
-            post_data['trace'] = True
         if params:
             post_data['parameters'] = json.dumps(params)
 
         path = '/application/invoke/%s' % self.application_id
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
-        return self.__invoke(path, post_data)
+        return self.__invoke(path, post_data, trace=trace)
 
     def invoke(self, method, *params):
         """
