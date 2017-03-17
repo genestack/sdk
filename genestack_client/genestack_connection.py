@@ -255,11 +255,11 @@ class Application:
         :return: Response object
         :rtype: Response
         """
-        post_data = {'method': method}
+        post_data = {}
         if params:
             post_data['parameters'] = json.dumps(params)
 
-        path = '/application/invoke/%s' % self.application_id
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
         return self.__invoke(path, post_data, trace=trace)
