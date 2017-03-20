@@ -240,7 +240,7 @@ class Application:
 
         return response
 
-    def get_response(self, method, params=(), trace=True):
+    def get_response(self, method, params=None, trace=True):
         """
         Invoke one of the application's public Java methods and return Response object.
         Allow to access to logs and traces in code,
@@ -255,10 +255,10 @@ class Application:
         :return: Response object
         :rtype: Response
         """
-        post_data = {}
-        if params:
-            post_data['parameters'] = json.dumps(params)
+        if not params:
+            params = []
 
+        post_data = json.dumps(params)
         path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
