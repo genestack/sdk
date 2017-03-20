@@ -315,17 +315,17 @@ class FilesUtil(Application):
 
     def share_files(self, accessions, group, destination_folder=None, password=None):
         """
-        Share files and links them to folder.
+        Shares files and links them.
 
-        :param accessions: accession or list/tuple/set accessions to be shared
+        :param accessions: accession or list/tuple/set of accessions to be shared
         :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
         :type group: str
-        :param destination_folder: accession of folder where to link shared files.
+        :param destination_folder: accession of folder to link shared files into
                No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing.
-               If not specified, will be asked in an interactive prompt (if supported)
+        :param password: password for sharing,
+               if not specified, will be asked for in an interactive prompt (if possible)
         :type: str
         :rtype: None
         """
