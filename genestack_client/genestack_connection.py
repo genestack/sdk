@@ -166,9 +166,10 @@ class Connection:
             data = ''
         elif isinstance(data, dict):
             data = urllib.urlencode(data)
-        headers = list(headers)
-        headers.append(('gs-extendSession', 'true'))
-        self.opener.addheaders = headers
+
+        self.opener.addheaders = [('gs-extendSession', 'true')]
+        if headers:
+            self.opener.addheaders += headers
 
         try:
             if follow:
