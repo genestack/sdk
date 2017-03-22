@@ -229,7 +229,7 @@ class Application:
     def __invoke(self, path, post_data, trace=None):
         headers = []
         if trace:
-            headers.append(('gs-trace', 'true'))
+            headers.append(('Genestack-Trace', 'true'))
         f = self.connection.open(path, post_data, headers=headers)
         response = Response(json.load(f))
 
