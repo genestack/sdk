@@ -52,7 +52,7 @@ def get_user(args=None):
     :param args: result of commandline parse
     :type args: argparse.Namespace
     :return: user
-    :rtype: ~genestack_client.settings.User
+    :rtype: settings.User
     """
 
     from settings import config, User
@@ -77,7 +77,7 @@ def get_connection(args=None):
     :param args: argument from :attr:`argparse.parse_args`
     :type args: argparse.Namespace
     :return: connection
-    :rtype: ~genestack_client.Connection
+    :rtype: genestack_client.Connection
     """
     if args is None:
         args = make_connection_parser().parse_args()
@@ -93,6 +93,7 @@ def ask_confirmation(question, default=None):
     :param question: question to ask, without [y/n] suffix and question mark.
     :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
     :return:
+    :rtype: bool
     """
     if not isatty():
         raise GenestackException("Prompt cannot be called")

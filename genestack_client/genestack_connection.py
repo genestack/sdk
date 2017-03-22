@@ -68,13 +68,17 @@ class Connection:
     A class to handle a connection to a specified Genestack server.
     Instantiating the class does mean you are logged in to the server.
     To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
-
-    Connection support retrieving debug information.
-      - ``debug`` will print additional traceback from application
-      - ``show_logs`` will print application logs (received from server)
     """
 
     def __init__(self, server_url, debug=False, show_logs=False):
+        """
+        :param server_url: server url
+        :type server_url: str
+        :param debug:  will print additional traceback from application
+        :type debug: bool
+        :param show_logs: will print application logs (received from server)
+        :type show_logs: bool
+        """
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
@@ -246,7 +250,8 @@ class Application:
 
         :param method: name of the public Java method
         :type method: str
-        :param params: arguments that will be passed to the Java method. Arguments must be JSON-serializable.
+        :param params: arguments that will be passed to the Java method.
+                       Arguments must be JSON-serializable.
         :type params: tuple
         :param trace: request trace from server
         :type trace: bool
@@ -270,8 +275,9 @@ class Application:
 
         :param method: name of the public Java method
         :type method: str
-        :param params: arguments that will be passed to the Java method. Arguments must be JSON-serializable.
-        :return: JSON-deserialized response.
+        :param params: arguments that will be passed to the Java method.
+                       Arguments must be JSON-serializable.
+        :return: JSON-deserialized response
         """
         return self.get_response(method, params).result
 
