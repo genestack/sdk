@@ -150,13 +150,15 @@ class Connection:
         """
         self.application('genestack/signin').invoke('signOut')
 
-    def open(self, path, data=None, follow=True):
+    def open(self, path, data=None, follow=True, headers=None):
         """
         Sends data to a URL. The URL is the concatenation of the server URL and "path".
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
+        :param headers: additional headers as list of pairs
+        :type headers: list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
         """
@@ -164,6 +166,10 @@ class Connection:
             data = ''
         elif isinstance(data, dict):
             data = urllib.urlencode(data)
+        headers = list(headers)
+        headers.append(('gs-extendSession', 'true'))
+        self.opener.addheaders = headers
+
         try:
             if follow:
                 return self.opener.open(self.server_url + path, data)
@@ -221,10 +227,10 @@ class Application:
             raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
     def __invoke(self, path, post_data, trace=None):
-        self.connection.opener.addheaders = [('gs-extendSession', 'true')]
+        headers = []
         if trace:
-            self.connection.opener.addheaders.append(('gs-trace', 'true'))
-        f = self.connection.open(path, post_data)
+            headers.append(('gs-trace', 'true'))
+        f = self.connection.open(path, post_data, headers=headers)
         response = Response(json.load(f))
 
         if response.error is not None:
