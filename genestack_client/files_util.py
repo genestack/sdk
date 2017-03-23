@@ -321,7 +321,7 @@ class FilesUtil(Application):
         :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
         :type group: str
-        :param destination_folder: accession of folder to link shared files into
+        :param destination_folder: accession of folder to link shared files into.
                No links are created if ``None``.
         :type destination_folder: str
         :param password: password for sharing,
