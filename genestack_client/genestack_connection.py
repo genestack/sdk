@@ -79,7 +79,6 @@ class Connection:
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
-        self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
         self.debug = debug
         self.show_logs = show_logs
@@ -151,13 +150,15 @@ class Connection:
         """
         self.application('genestack/signin').invoke('signOut')
 
-    def open(self, path, data=None, follow=True):
+    def open(self, path, data=None, follow=True, headers=None):
         """
         Sends data to a URL. The URL is the concatenation of the server URL and "path".
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
+        :param headers: additional headers as list of pairs
+        :type headers: list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
         """
@@ -165,6 +166,11 @@ class Connection:
             data = ''
         elif isinstance(data, dict):
             data = urllib.urlencode(data)
+
+        self.opener.addheaders = [('gs-extendSession', 'true')]
+        if headers:
+            self.opener.addheaders += headers
+
         try:
             if follow:
                 return self.opener.open(self.server_url + path, data)
@@ -221,8 +227,11 @@ class Application:
         if len(self.application_id.split('/')) != 2:
             raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
-    def __invoke(self, path, post_data):
-        f = self.connection.open(path, post_data)
+    def __invoke(self, path, post_data, trace=None):
+        headers = []
+        if trace:
+            headers.append(('Genestack-Trace', 'true'))
+        f = self.connection.open(path, post_data, headers=headers)
         response = Response(json.load(f))
 
         if response.error is not None:
@@ -238,7 +247,7 @@ class Application:
 
         return response
 
-    def get_response(self, method, params=(), trace=True):
+    def get_response(self, method, params=None, trace=True):
         """
         Invoke one of the application's public Java methods and return Response object.
         Allow to access to logs and traces in code,
@@ -253,16 +262,14 @@ class Application:
         :return: Response object
         :rtype: Response
         """
-        post_data = {'method': method}
-        if trace:
-            post_data['trace'] = True
-        if params:
-            post_data['parameters'] = json.dumps(params)
+        if not params:
+            params = []
 
-        path = '/application/invoke/%s' % self.application_id
+        post_data = json.dumps(params)
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
-        return self.__invoke(path, post_data)
+        return self.__invoke(path, post_data, trace=trace)
 
     def invoke(self, method, *params):
         """
