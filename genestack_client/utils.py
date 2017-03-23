@@ -92,7 +92,7 @@ def ask_confirmation(question, default=None):
 
     :param question: question to ask, without [y/n] suffix and question mark.
     :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
-    :return:
+    :return: whether user confirms
     :rtype: bool
     """
     if not isatty():
