@@ -104,7 +104,7 @@ class Install(Command):
         )
         p.add_argument(
             '-n', '--no-wait', action='store_true', dest='no_wait',
-            help='Don\'t wait until all installed applications will be completely loaded'
+            help="Don't wait until all installed applications will be completely loaded"
         )
         p.add_argument(
             'version', metavar='<version>',
