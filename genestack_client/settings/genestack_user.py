@@ -27,7 +27,6 @@ class User(object):
         If you login interactively, no ``email`` or ``password`` is required.
         The alias is used to find the matching user in :py:func:`~genestack_client.get_user`
 
-
         :param email: email
         :type email: str
         :param alias: alias
@@ -56,7 +55,7 @@ class User(object):
         :param show_logs: print application logs (received from server)
         :type show_logs: bool
         :return: logged connection
-        :rtype: ~genestack_client.Connection
+        :rtype: genestack_client.Connection
         """
         connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.email and self.password:
