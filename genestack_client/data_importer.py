@@ -376,7 +376,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
-        return self.__invoke_loader(parent, 'rawReads', metainfo)
+        return self.__invoke_loader(parent, 'unalignedReads', metainfo)
 
     def create_genome_annotation(self, parent=None, url=None, name=None,
                                  organism=None, reference_genome=None,

@@ -67,7 +67,7 @@ if __name__ == "__main__":
     # parse script arguments
     parser = make_connection_parser()
     parser.add_argument('raw_reads_folder',
-                        help='Genestack accession of the folder containing the raw reads files to process')
+                        help='Genestack accession of the folder containing the sequence reads files to process')
     parser.add_argument('--name', default="New Project",
                         help='Name of the Genestack folder where to put the output files')
     parser.add_argument('--ref-genome', help='Accession of the reference genome to use for the mapping step')
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     vc_creator = BatchFilesCreator(variant_calling_app, project_folder, "Variants", custom_args=VC_ARGUMENTS_NO_INDELS)
 
     # collect files
-    print "Collecting raw reads..."
+    print "Collecting sequence reads..."
     raw_reads = files_util.get_file_children(args.raw_reads_folder)
     files_count = len(raw_reads)
     print "Found %d files to process" % files_count
