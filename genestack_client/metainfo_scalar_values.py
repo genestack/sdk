@@ -33,6 +33,8 @@ class MetainfoScalarValue(dict):
         :return: string representation of the object
         :rtype: str
         """
+        if isinstance(arg, float):
+            return '%f' % arg  # 1e-4 ==> '0.0001'
         return str(arg) if arg is not None else None
 
 
