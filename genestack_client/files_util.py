@@ -40,6 +40,7 @@ class FilesUtil(Application):
     CONTAINER = 'com.genestack.api.files.IContainerFile'
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
+    DATASET = 'com.genestack.api.files.IDataset'
 
     FILE = 'com.genestack.api.files.IFile'
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
