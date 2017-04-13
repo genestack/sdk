@@ -341,7 +341,7 @@ class DataImporter(object):
         if urls:
             for url in urls:
                 metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
-        return self.__invoke_loader(parent, 'microarraysData', metainfo)
+        return self.__invoke_loader(parent, 'microarrayData', metainfo)
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
