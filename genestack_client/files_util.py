@@ -60,6 +60,7 @@ class FilesUtil(Application):
     REPORT_FILE = 'com.genestack.api.files.IReportFile'
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
+    MICROARRAY_DATA = 'com.genestack.bio.files.IMicroarrayData'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
 
     MAX_FILE_SEARCH_LIMIT = 100
