@@ -3,6 +3,7 @@
     * Removed flag `-w`/`--wait` from `install` command
     * Added flag `-n`/`--no-wait` to `install` command (for asynchronous loading of applications)
     * Changed default behaviour of `install` command to wait applications loading
+    * Added `DataImporter.create_microarray_data` method
 
 * 0.14.0
     * Added `Response` class, it represents response from server and allow to access logs and traces

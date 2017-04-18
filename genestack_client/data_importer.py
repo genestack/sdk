@@ -311,6 +311,38 @@ class DataImporter(object):
                 metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'microarrays', metainfo)
 
+    def create_microarray_data(self, parent, name=None, urls=None,
+                                method=None, organism=None, metainfo=None):
+        """
+        Create a Genestack Microarray Data inside an folder.
+        ``name`` and ``urls`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param urls: list of urls
+        :type urls: list
+        :param method: method
+        :type method: str
+        :param organism: organism
+        :type organism: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        method and metainfo.add_string(BioMetaKeys.METHOD, method)
+        if urls:
+            for url in urls:
+                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, 'microarrayData', metainfo)
+
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
