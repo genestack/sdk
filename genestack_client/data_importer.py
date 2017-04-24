@@ -256,60 +256,12 @@ class DataImporter(object):
         return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
-        """
-        Create a Genestack Experiment. The ``name`` parameter is required.
-        It can be specified through the arguments or
-        via a :py:class:`~genestack_client.Metainfo` instance.
-
-        :param parent: accession of parent folder
-            (if not provided, files will be created in the ``Imported files`` folder)
-        :type parent: str
-        :param name: name of the file
-        :type name: str
-        :param description: experiment description
-        :type description: str
-        :param metainfo: metainfo object
-        :type metainfo: Metainfo
-        :return: file accession
-        :rtype: str
-        """
-        metainfo = metainfo or Metainfo()
-        name and metainfo.add_string(Metainfo.NAME, name)
-        description and metainfo.add_string(Metainfo.DESCRIPTION, description)
-        return self.__invoke_loader(parent, 'experiment', metainfo)
+        raise GenestackException('"create_experiment" is not available anymore')
 
     def create_microarray_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
-        """
-        Create a Genestack Microarray Assay inside an Experiment folder.
-        If ``parent`` is not an Experiment, an exception will be raised.
-        ``name`` and ``urls`` are required fields.
-        They can be specified through the arguments or
-        via a :py:class:`~genestack_client.Metainfo` instance.
-
-        :param parent: accession of parent experiment
-        :type parent: str
-        :param name: name of the file
-        :type name: str
-        :param urls: list of urls
-        :type urls: list
-        :param method: method
-        :type method: str
-        :param organism: organism
-        :type organism: str
-        :param metainfo: metainfo object
-        :type metainfo: Metainfo
-        :return: file accession
-        :rtype: str
-        """
-        metainfo = metainfo or Metainfo()
-        name and metainfo.add_string(Metainfo.NAME, name)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        method and metainfo.add_string(BioMetaKeys.METHOD, method)
-        if urls:
-            for url in urls:
-                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
-        return self.__invoke_loader(parent, 'microarrays', metainfo)
+        raise GenestackException('"create_microarray_assay" is not available anymore, '
+                                 'use "create_microarray_data" method')
 
     def create_microarray_data(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
@@ -345,36 +297,8 @@ class DataImporter(object):
 
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
-        """
-        Create a Genestack Sequencing Assay inside an Experiment folder. If ``parent`` is not an Experiment,
-        an exception will be raised.
-        ``name`` and ``urls`` are required fields.
-        They can be specified through the arguments or
-        via a :py:class:`~genestack_client.Metainfo` instance.
-
-        :param parent: accession of the parent experiment
-        :type parent: str
-        :param name: name of the file
-        :type name: str
-        :param urls: list of urls
-        :type urls: list
-        :param method: method
-        :type method: str
-        :param organism: organism
-        :type organism: str
-        :param metainfo: metainfo object
-        :type metainfo: Metainfo
-        :return: file accession
-        :rtype: str
-        """
-        metainfo = metainfo or Metainfo()
-        name and metainfo.add_string(Metainfo.NAME, name)
-        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
-        method and metainfo.add_string(BioMetaKeys.METHOD, method)
-        if urls:
-            for url in urls:
-                metainfo.add_external_link(BioMetaKeys.READS_LINK, url)
-        return self.__invoke_loader(parent, 'sequencingAssay', metainfo)
+        raise GenestackException('"create_sequencing_assay" is not available anymore, '
+                                 'use "create_unaligned_read" method')
 
     def create_unaligned_read(self, parent=None, name=None, urls=None,
                               method=None, organism=None, metainfo=None):
