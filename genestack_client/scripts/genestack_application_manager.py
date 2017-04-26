@@ -103,8 +103,8 @@ class Install(Command):
                  '`-i <group_accession>` for group visibility)'
         )
         p.add_argument(
-            '-w', '--wait', action='store_true',
-            help='wait until all installed applications will be completely loaded'
+            '-n', '--no-wait', action='store_true', dest='no_wait',
+            help="Don't wait until all installed applications will be completely loaded"
         )
         p.add_argument(
             'version', metavar='<version>',
@@ -117,10 +117,12 @@ class Install(Command):
 
     def run(self):
         jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
+        if not jar_files:
+            raise GenestackException('No JAR file was found')
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.visibility, self.args.wait
+            self.args.stable, self.args.scope, self.args.force, self.args.visibility, self.args.no_wait
         )
 
 
@@ -191,6 +193,44 @@ class ListVersions(Command):
                 visibility +=\
                     ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
                 output_string += '    %s' % visibility
+            print output_string
+
+
+class Status(Command):
+    COMMAND = 'status'
+    DESCRIPTION = 'Shows loading status of application and additional loading info'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'app_id_list', metavar='<appId>', nargs='+',
+            help='identifier of the application'
+        )
+        p.add_argument(
+            '-s', '--state-only', action='store_true', dest='state_only',
+            help='show only id and state, without error descriptions'
+        )
+
+    def run(self):
+        app_ids = self.args.app_id_list
+        if not all(map(validate_application_id, app_ids)):
+            return
+        version = self.args.version
+
+        for app_id in app_ids:
+            app_info = self.connection.application(APPLICATION_ID).invoke(
+                'getApplicationDescriptor', app_id, version
+            )
+            output_string = '%s' % app_id
+            output_string += '%9s' % app_info['state'].lower()
+            if not self.args.state_only:
+                if app_info['state'] == 'FAILED' and app_info['loadingErrors']:
+                    output_string += '\n\n%s' % 'Application jar was not loaded due to the following errors:\n'
+                    for error in app_info['loadingErrors']:
+                        output_string += '%s\n' % error
+                    output_string += '\n'
             print output_string
 
 
@@ -405,7 +445,8 @@ def resolve_jar_file(file_path):
         raise GenestackException('More than one JAR file was found inside %s:\n'
                                  ' %s' % (file_path, '\n '.join(jar_files)))
     elif not jar_files:
-        raise GenestackException('No JAR file was found inside %s' % file_path)
+        raise GenestackException('No JAR files were found within given files/directories: "%s"' %
+                                 file_path)
 
     return jar_files[0]
 
@@ -456,16 +497,16 @@ def reload_applications(application, version, app_id_list):
         sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, wait_loading):
+def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, no_wait):
     for file_path in files_list:
         upload_single_file(
             application, file_path, version, override,
-            stable, scope, force, initial_visibility, wait_loading
+            stable, scope, force, initial_visibility, no_wait
         )
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, initial_visibility=None, wait_loading=False):
+                       stable, scope, force=False, initial_visibility=None, no_wait=False):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -492,7 +533,7 @@ def upload_single_file(application, file_path, version, override,
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
-    if wait_loading:
+    if not no_wait:
         for app_id in app_info.identifiers:
             wait_application_loading(application, app_id, version)
 
@@ -562,14 +603,14 @@ def get_application_descriptor(application, application_id, version):
 def wait_application_loading(application, app_id, version, seconds=1):
     descriptor = get_application_descriptor(application, app_id, version)
     if descriptor['state'] != 'LOADED':
-        sys.stdout.write('\nApplication is not loaded yet. Waiting for loading (interrupt to abort)... ')
+        sys.stdout.write('\nApplication %s is not loaded yet. Waiting for loading (interrupt to abort)... ' % app_id)
         sys.stdout.flush()
     try:
         while descriptor['state'] != 'LOADED':
             time.sleep(seconds)
             descriptor = get_application_descriptor(application, app_id, version)
             if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application failed\n')
+                sys.stdout.write('\nLoading of application %s failed\n' % app_id)
                 return False
     except KeyboardInterrupt:
         sys.stdout.write('Action interrupted\n')
@@ -688,7 +729,7 @@ class ApplicationManager(GenestackShell):
                    ' your applications on a specific Genestack instance ')
     INTRO = "Application manager shell.\nType 'help' for list of available commands.\n"
     COMMAND_LIST = [
-        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
+        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release, Status
     ]
 
 
