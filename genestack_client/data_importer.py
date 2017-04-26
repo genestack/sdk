@@ -256,7 +256,8 @@ class DataImporter(object):
         return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     def create_experiment(self, parent=None, name=None, description=None, metainfo=None):
-        raise GenestackException('"create_experiment" is not available anymore')
+        raise GenestackException('"create_experiment" is not available anymore, '
+                                 'use "FilesUtil.create_dataset" method')
 
     def create_microarray_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
