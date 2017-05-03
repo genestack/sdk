@@ -221,23 +221,13 @@ class Status(Command):
         version = self.args.version
 
         lines = []
-        wrapper = TextWrapper(initial_indent='\t\t', subsequent_indent='\t\t', width=80)
         for app_id in app_ids:
             app_info = self.connection.application(APPLICATION_ID).invoke(
                 'getApplicationDescriptor', app_id, version
             )
             lines.append('%s%9s' % (app_id, app_info['state'].lower()))
             if not self.args.state_only:
-                if app_info['loadingWarnings']:
-                    lines.append('\t%s' % 'Warnings:')
-                    for warning in app_info['loadingWarnings']:
-                        lines.append(wrapper.fill(warning))
-                        lines.append('')  # Warnings separator
-                if app_info['state'] == 'FAILED' and app_info['loadingErrors']:
-                    lines.append('\t%s' % 'Errors:')
-                    for error in app_info['loadingErrors']:
-                        lines.append(wrapper.fill(error))
-                        lines.append('')  # Errors separator
+                lines.extend(format_loading_messages_by_lines(app_info['loadingErrors'], app_info['loadingWarnings']))
         print '\n'.join(lines)
 
 
@@ -543,6 +533,15 @@ def upload_single_file(application, file_path, version, override,
     if not no_wait:
         for app_id in app_info.identifiers:
             wait_application_loading(application, app_id, version)
+        if app_info.identifiers:
+            # Get jar loading messages from one of its applications:
+            descriptor = application.invoke('getApplicationDescriptor', app_info.identifiers[0], version)
+            if descriptor['loadingErrors'] or descriptor['loadingWarnings']:
+                lines = ['Module was loaded with following errors and warnings:']
+                lines.extend(
+                    format_loading_messages_by_lines(descriptor['loadingErrors'], descriptor['loadingWarnings'])
+                )
+                print '\n'.join(lines)
 
     if initial_visibility:
         change_applications_visibility(
@@ -612,18 +611,35 @@ def wait_application_loading(application, app_id, version, seconds=1):
     if descriptor['state'] != 'LOADED':
         sys.stdout.write('\nApplication %s is not loaded yet. Waiting for loading (interrupt to abort)... ' % app_id)
         sys.stdout.flush()
-    try:
-        while descriptor['state'] != 'LOADED':
-            time.sleep(seconds)
-            descriptor = get_application_descriptor(application, app_id, version)
-            if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application %s failed\n' % app_id)
-                return False
-    except KeyboardInterrupt:
-        sys.stdout.write('Action interrupted\n')
-        sys.stdout.flush()
-        return False
+    while descriptor['state'] != 'LOADED':
+        time.sleep(seconds)
+        descriptor = get_application_descriptor(application, app_id, version)
+        if descriptor['state'] == 'FAILED':
+            sys.stdout.write('\nLoading of application %s failed\n' % app_id)
+            return False
     return True
+
+
+def format_loading_messages_by_lines(errors, warnings):
+    wrapper = TextWrapper(initial_indent='\t\t', subsequent_indent='\t\t', width=80)
+    lines = []
+    if warnings:
+        lines.append('\t%s' % 'Warnings:')
+        first = True
+        for warning in warnings:
+            if not first:
+                lines.append('')  # Warnings separator
+            first = False
+            lines.append(wrapper.fill(warning))
+    if errors:
+        lines.append('\t%s' % 'Errors:')
+        first = True
+        for error in errors:
+            if not first:
+                lines.append('')  # Errors separator
+            first = False
+            lines.append(wrapper.fill(error))
+    return lines
 
 
 AppInfo = namedtuple('AppInfo', [
