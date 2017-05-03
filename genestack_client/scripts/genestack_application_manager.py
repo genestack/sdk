@@ -9,6 +9,7 @@ import xml.dom.minidom as minidom
 import json
 import time
 import zipfile
+from textwrap import TextWrapper
 from collections import namedtuple, OrderedDict
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
@@ -219,19 +220,25 @@ class Status(Command):
             return
         version = self.args.version
 
+        lines = []
+        wrapper = TextWrapper(initial_indent='\t\t', subsequent_indent='\t\t', width=80)
         for app_id in app_ids:
             app_info = self.connection.application(APPLICATION_ID).invoke(
                 'getApplicationDescriptor', app_id, version
             )
-            output_string = '%s' % app_id
-            output_string += '%9s' % app_info['state'].lower()
+            lines.append('%s%9s' % (app_id, app_info['state'].lower()))
             if not self.args.state_only:
+                if app_info['loadingWarnings']:
+                    lines.append('\t%s' % 'Warnings:')
+                    for warning in app_info['loadingWarnings']:
+                        lines.append(wrapper.fill(warning))
+                        lines.append('')  # Warnings separator
                 if app_info['state'] == 'FAILED' and app_info['loadingErrors']:
-                    output_string += '\n\n%s' % 'Application jar was not loaded due to the following errors:\n'
+                    lines.append('\t%s' % 'Errors:')
                     for error in app_info['loadingErrors']:
-                        output_string += '%s\n' % error
-                    output_string += '\n'
-            print output_string
+                        lines.append(wrapper.fill(error))
+                        lines.append('')  # Errors separator
+        print '\n'.join(lines)
 
 
 class Visibility(Command):
