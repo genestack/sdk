@@ -590,12 +590,8 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
-    def create_gene_list(self,
-                                  parent=None,
-                                  name=None,
-                                  url=None,
-                                  organism=None,
-                                  metainfo=None):
+    def create_gene_list(self, parent=None, name=None, url=None,
+                         organism=None, metainfo=None):
         """
         Create a Gene List file from a local or remote gene list file.
         ``name``, ``url`` and ``organism`` are required fields.
