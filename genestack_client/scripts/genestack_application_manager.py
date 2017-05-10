@@ -455,7 +455,7 @@ def mark_as_stable(application, version, app_id_list, scope):
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
         if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
-            if wait_application_loading(application, app_id, version):
+            if wait_application_loading(application, app_id, version)[0]:
                 application.invoke('markAsStable', app_id, scope, version)
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
@@ -531,13 +531,12 @@ def upload_single_file(application, file_path, version, override,
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     if not no_wait:
-        for app_id in app_info.identifiers:
-            wait_application_loading(application, app_id, version)
-        if app_info.identifiers:
-            # Get jar loading messages from one of its applications:
-            descriptor = get_application_descriptor(application, app_info.identifiers[0], version)
-            if descriptor['loadingErrors'] or descriptor['loadingWarnings']:
-                lines = ['Module was loaded with following errors and warnings:']
+        identifiers_number = len(app_info.identifiers)
+        for i, app_id in enumerate(app_info.identifiers):
+            success, descriptor = wait_application_loading(application, app_id, version)
+            if i == identifiers_number - 1:
+                if descriptor['loadingErrors'] or descriptor['loadingWarnings']:
+                    lines = ['Module was loaded with following errors and warnings:']
                 lines.extend(
                     format_loading_messages_by_lines(descriptor['loadingErrors'], descriptor['loadingWarnings'])
                 )
@@ -573,7 +572,7 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if wait_application_loading(application, app_id, version):
+        if wait_application_loading(application, app_id, version)[0]:
             application.invoke('releaseApplication', app_id, version, new_version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
@@ -620,8 +619,8 @@ def wait_application_loading(application, app_id, version, seconds=1):
         descriptor = get_application_descriptor(application, app_id, version)
         if descriptor['state'] == 'FAILED':
             sys.stdout.write('\nLoading of application %s failed\n' % app_id)
-            return False
-    return True
+            return False, descriptor
+    return True, descriptor
 
 
 def format_loading_messages_by_lines(errors, warnings):
