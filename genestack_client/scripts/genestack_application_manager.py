@@ -542,6 +542,10 @@ def upload_single_file(application, file_path, version, override,
                     format_loading_messages_by_lines(descriptor['loadingErrors'], descriptor['loadingWarnings'])
                 )
                 print '\n'.join(lines)
+    else:
+        sys.stdout.write("Uploading was done with 'no_wait' flag. Loading errors and warnings can be viewed"
+                         " with 'status' command.\n")
+        sys.stdout.flush()
 
     if initial_visibility:
         change_applications_visibility(
