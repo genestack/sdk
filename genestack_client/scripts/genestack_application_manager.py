@@ -535,7 +535,7 @@ def upload_single_file(application, file_path, version, override,
             wait_application_loading(application, app_id, version)
         if app_info.identifiers:
             # Get jar loading messages from one of its applications:
-            descriptor = application.invoke('getApplicationDescriptor', app_info.identifiers[0], version)
+            descriptor = get_application_descriptor(application, app_info.identifiers[0], version)
             if descriptor['loadingErrors'] or descriptor['loadingWarnings']:
                 lines = ['Module was loaded with following errors and warnings:']
                 lines.extend(
