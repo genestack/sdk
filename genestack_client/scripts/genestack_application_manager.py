@@ -628,20 +628,10 @@ def format_loading_messages_by_lines(errors, warnings):
     lines = []
     if warnings:
         lines.append('\t%s' % 'Warnings:')
-        first = True
-        for warning in warnings:
-            if not first:
-                lines.append('')  # Warnings separator
-            first = False
-            lines.append(wrapper.fill(warning))
+        lines.append('\n\n'.join([wrapper.fill(warning) for warning in warnings]))
     if errors:
         lines.append('\t%s' % 'Errors:')
-        first = True
-        for error in errors:
-            if not first:
-                lines.append('')  # Errors separator
-            first = False
-            lines.append(wrapper.fill(error))
+        lines.append('\n\n'.join([wrapper.fill(error) for error in errors]))
     return lines
 
 
