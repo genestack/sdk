@@ -1,4 +1,4 @@
-* 0.15.1
+* 0.16.0
     * Added support of 'warnings' to `status` command
     * Added jar loading errors and warnings output to `install` command
 
