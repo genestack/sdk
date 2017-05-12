@@ -227,8 +227,8 @@ class Status(Command):
             )
             lines.append('%s%9s' % (app_id, app_info['state'].lower()))
             if not self.args.state_only:
-                lines.extend(format_loading_messages_by_lines(app_info.get('loadingErrors', ''),
-                                                              app_info.get('loadingWarnings', '')))
+                lines.extend(format_loading_messages_by_lines(app_info.get('loadingErrors', []),
+                                                              app_info.get('loadingWarnings', [])))
         print '\n'.join(lines)
 
 
@@ -536,8 +536,8 @@ def upload_single_file(application, file_path, version, override,
         for i, app_id in enumerate(app_info.identifiers):
             success, descriptor = wait_application_loading(application, app_id, version)
             if i == identifiers_number - 1:
-                errors = descriptor.get('loadingErrors', '')
-                warns = descriptor.get('loadingWarnings', '')
+                errors = descriptor.get('loadingErrors', [])
+                warns = descriptor.get('loadingWarnings', [])
                 if errors or warns:
                     lines = ['Module was loaded with following errors and warnings:']
                     lines.extend(
