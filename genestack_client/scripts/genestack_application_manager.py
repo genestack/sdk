@@ -9,6 +9,7 @@ import xml.dom.minidom as minidom
 import json
 import time
 import zipfile
+from textwrap import TextWrapper
 from collections import namedtuple, OrderedDict
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
@@ -219,19 +220,16 @@ class Status(Command):
             return
         version = self.args.version
 
+        lines = []
         for app_id in app_ids:
             app_info = self.connection.application(APPLICATION_ID).invoke(
                 'getApplicationDescriptor', app_id, version
             )
-            output_string = '%s' % app_id
-            output_string += '%9s' % app_info['state'].lower()
+            lines.append('%s%9s' % (app_id, app_info['state'].lower()))
             if not self.args.state_only:
-                if app_info['state'] == 'FAILED' and app_info['loadingErrors']:
-                    output_string += '\n\n%s' % 'Application jar was not loaded due to the following errors:\n'
-                    for error in app_info['loadingErrors']:
-                        output_string += '%s\n' % error
-                    output_string += '\n'
-            print output_string
+                lines.extend(format_loading_messages_by_lines(app_info.get('loadingErrors', []),
+                                                              app_info.get('loadingWarnings', [])))
+        print '\n'.join(lines)
 
 
 class Visibility(Command):
@@ -305,7 +303,7 @@ class MarkAsStable(Command):
     def update_parser(self, p):
         p.add_argument(
             'version', metavar='<version>',
-            help='applications version or \'-\' (minus sign) to remove'
+            help='applications version or \'-\' (hyphen) to remove'
                  ' stable version'
         )
         p.add_argument(
@@ -458,7 +456,7 @@ def mark_as_stable(application, version, app_id_list, scope):
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
         if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
-            if wait_application_loading(application, app_id, version):
+            if wait_application_loading(application, app_id, version).success:
                 application.invoke('markAsStable', app_id, scope, version)
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
@@ -534,8 +532,22 @@ def upload_single_file(application, file_path, version, override,
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     if not no_wait:
-        for app_id in app_info.identifiers:
-            wait_application_loading(application, app_id, version)
+        identifiers_number = len(app_info.identifiers)
+        for i, app_id in enumerate(app_info.identifiers):
+            success, descriptor = wait_application_loading(application, app_id, version)
+            if i == identifiers_number - 1:
+                errors = descriptor.get('loadingErrors', [])
+                warns = descriptor.get('loadingWarnings', [])
+                if errors or warns:
+                    lines = ['Module was loaded with following errors and warnings:']
+                    lines.extend(
+                        format_loading_messages_by_lines(errors, warns)
+                    )
+                    print '\n'.join(lines)
+    else:
+        sys.stdout.write("Uploading was done with 'no_wait' flag. Loading errors and warnings can be viewed"
+                         " with 'status' command.\n")
+        sys.stdout.flush()
 
     if initial_visibility:
         change_applications_visibility(
@@ -563,7 +575,7 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if wait_application_loading(application, app_id, version):
+        if wait_application_loading(application, app_id, version).success:
             application.invoke('releaseApplication', app_id, version, new_version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
@@ -605,22 +617,34 @@ def wait_application_loading(application, app_id, version, seconds=1):
     if descriptor['state'] != 'LOADED':
         sys.stdout.write('\nApplication %s is not loaded yet. Waiting for loading (interrupt to abort)... ' % app_id)
         sys.stdout.flush()
-    try:
-        while descriptor['state'] != 'LOADED':
-            time.sleep(seconds)
-            descriptor = get_application_descriptor(application, app_id, version)
-            if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application %s failed\n' % app_id)
-                return False
-    except KeyboardInterrupt:
-        sys.stdout.write('Action interrupted\n')
-        sys.stdout.flush()
-        return False
-    return True
+    while descriptor['state'] != 'LOADED':
+        time.sleep(seconds)
+        descriptor = get_application_descriptor(application, app_id, version)
+        if descriptor['state'] == 'FAILED':
+            sys.stdout.write('\nLoading of application %s failed\n' % app_id)
+            return LoadingResult(False, descriptor)
+    return LoadingResult(True, descriptor)
+
+
+def format_loading_messages_by_lines(errors, warnings):
+    wrapper = TextWrapper(initial_indent='\t\t', subsequent_indent='\t\t', width=80)
+    lines = []
+    if warnings:
+        lines.append('\t%s' % 'Warnings:')
+        lines.append('\n\n'.join([wrapper.fill(warning) for warning in warnings]))
+    if errors:
+        lines.append('\t%s' % 'Errors:')
+        lines.append('\n\n'.join([wrapper.fill(error) for error in errors]))
+    return lines
 
 
 AppInfo = namedtuple('AppInfo', [
     'vendor', 'identifiers'
+])
+
+
+LoadingResult = namedtuple('LoadingResult', [
+    'success', 'descriptor'
 ])
 
 
