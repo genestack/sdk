@@ -23,7 +23,7 @@ def validate_alias(alias):
 
 
 def ask_alias(existed):
-    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), minus (-))'
+    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), hyphen (-))'
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
@@ -43,11 +43,11 @@ def ask_email_and_password(host, alias=None):
     user_login = None
     while True:
         if user_login:
-            res = raw_input('Please specify your user login(email) [%s]: ' % user_login).strip()
+            res = raw_input('Please specify your user login (email) [%s]: ' % user_login).strip()
             if res:
                 user_login = res
         else:
-            user_login = raw_input('Please specify your user login(email): ').strip()
+            user_login = raw_input('Please specify your user login (email): ').strip()
             if not user_login:
                 print 'Login cannot be empty.'
                 continue
@@ -102,7 +102,7 @@ def select_user(users, selected=None):
                 print ' ',
             print '%s) %s' % (i, user.alias)
 
-        raw_user_index = raw_input("Select default user name or number%s: " % default_message).strip()
+        raw_user_index = raw_input("Select user name or number%s: " % default_message).strip()
         if not raw_user_index and selected:
             return selected
 
@@ -185,7 +185,7 @@ class Remove(Command):
         if not user:
             user = select_user(users, config.default_user)
         if user.alias == config.default_user.alias:
-            print 'Cant delete default user'
+            print 'Cannot delete default user'
             return
         config.remove_user(user)
         print "%s was removed from config" % user.alias

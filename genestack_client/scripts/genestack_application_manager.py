@@ -303,7 +303,7 @@ class MarkAsStable(Command):
     def update_parser(self, p):
         p.add_argument(
             'version', metavar='<version>',
-            help='applications version or \'-\' (minus sign) to remove'
+            help='applications version or \'-\' (hyphen) to remove'
                  ' stable version'
         )
         p.add_argument(
