@@ -515,6 +515,33 @@ class DataImporter(object):
         url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
+    def create_gene_list(self, parent=None, name=None, url=None,
+                         organism=None, metainfo=None):
+        """
+        Create a Gene List file from a local or remote gene list file.
+        ``name``, ``url`` and ``organism`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param organism: organism name
+        :type reference_genome: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, 'geneList', metainfo)
+
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
         sys.stderr.write('DataImporter.create_owl_ontology method is deprecated, '
                          'it is renamed to DataImporter.create_dictionary\n')
