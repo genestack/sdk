@@ -44,6 +44,7 @@ class FilesUtil(Application):
 
     FILE = 'com.genestack.api.files.IFile'
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
+    UNALIGNED_READS_DATA = 'com.genestack.bio.files.IUnalignedReadsData'
     ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
     VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
     APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
