@@ -11,7 +11,7 @@ import time
 import zipfile
 from textwrap import TextWrapper
 from collections import namedtuple, OrderedDict
-from genestack_client import GenestackException
+from genestack_client import GenestackException, GenestackServerException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.utils import isatty, ask_confirmation
 
@@ -472,9 +472,16 @@ def remove_applications(application, version, app_id_list):
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
-            application.invoke('removeApplication', app_id, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
+            try:
+                application.invoke('removeApplication', app_id, version)
+                sys.stdout.write('ok\n')
+                sys.stdout.flush()
+            except GenestackServerException as e:
+                if e.debug:
+                    raise e
+                else:
+                    sys.stdout.write('%s cannot be removed due to error: %s\n' % (app_id, e.message))
+                    sys.stdout.flush()
     else:
         sys.stdout.write('ALL ... ')
         sys.stdout.flush()
