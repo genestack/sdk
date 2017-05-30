@@ -350,6 +350,38 @@ class DataImporter(object):
                 metainfo.add_value(BioMetaKeys.DATA_LINK, ExternalLink(url))
         return self.__invoke_loader(parent, 'microarrays', metainfo)
 
+    def create_microarray_data(self, parent, name=None, urls=None,
+                                method=None, organism=None, metainfo=None):
+        """
+        Create a Genestack Microarray Data inside an folder.
+        ``name`` and ``urls`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param urls: list of urls
+        :type urls: list
+        :param method: method
+        :type method: str
+        :param organism: organism
+        :type organism: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        method and metainfo.add_string(BioMetaKeys.METHOD, method)
+        if urls:
+            for url in urls:
+                metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, 'microarrayData', metainfo)
+
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         """
@@ -605,6 +637,33 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome, FileReference)
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
+
+    def create_gene_list(self, parent=None, name=None, url=None,
+                         organism=None, metainfo=None):
+        """
+        Create a Gene List file from a local or remote gene list file.
+        ``name``, ``url`` and ``organism`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :param organism: organism name
+        :type reference_genome: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = metainfo or Metainfo()
+        name and metainfo.add_string(Metainfo.NAME, name)
+        organism and metainfo.add_string(BioMetaKeys.ORGANISM, organism)
+        url and metainfo.add_external_link(BioMetaKeys.DATA_LINK, url)
+        return self.__invoke_loader(parent, 'geneList', metainfo)
 
     def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
         sys.stderr.write('DataImporter.create_owl_ontology method is deprecated, '

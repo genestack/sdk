@@ -9,7 +9,8 @@ import xml.dom.minidom as minidom
 import json
 import time
 import zipfile
-from collections import namedtuple
+from textwrap import TextWrapper
+from collections import namedtuple, OrderedDict
 from genestack_client import GenestackException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.utils import isatty, ask_confirmation
@@ -103,6 +104,10 @@ class Install(Command):
                  '`-i <group_accession>` for group visibility)'
         )
         p.add_argument(
+            '-n', '--no-wait', action='store_true', dest='no_wait',
+            help="Don't wait until all installed applications will be completely loaded"
+        )
+        p.add_argument(
             'version', metavar='<version>',
             help='version of applications to upload'
         )
@@ -113,10 +118,12 @@ class Install(Command):
 
     def run(self):
         jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
+        if not jar_files:
+            raise GenestackException('No JAR file was found')
         upload_file(
             self.connection.application(APPLICATION_ID),
             jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.visibility
+            self.args.stable, self.args.scope, self.args.force, self.args.visibility, self.args.no_wait
         )
 
 
@@ -132,6 +139,10 @@ class ListVersions(Command):
         p.add_argument(
             '-i', action="store_true", dest='show_visibilities',
             help='display visibility of each version'
+        )
+        p.add_argument(
+            '-l', action="store_true", dest='show_loading_state',
+            help='display loading state of application with specific version'
         )
         p.add_argument(
             '-r', action="store_true", dest='show_release_state',
@@ -150,38 +161,75 @@ class ListVersions(Command):
         app_id = self.args.app_id
         if not validate_application_id(app_id):
             return
-        stable_versions = None
-        if self.args.show_stable:
-            stable_versions = self.connection.application(APPLICATION_ID).invoke('getStableVersions', app_id)
-        result = self.connection.application(APPLICATION_ID).invoke('listVersions', app_id, self.args.show_owned)
-        if not result:
+        app_info = self.connection.application(APPLICATION_ID).invoke(
+            'getApplicationVersionsInfo',
+            app_id,
+            self.args.show_owned
+        )
+        if not app_info:
             sys.stderr.write('No suitable versions found for "%s"\n' % app_id)
             return
-        result.sort()
+        app_info = OrderedDict(sorted(app_info.items()))
 
-        visibility_map = None
-        if self.args.show_visibilities or self.args.show_release_state:
-            visibility_map = self.connection.application(APPLICATION_ID).invoke('getVisibilityMap', app_id)
-
-        max_len = max(len(x) for x in result)
-        for item in result:
+        max_len = max(len(x) for x in app_info.keys())
+        for item in app_info.items():
+            version_name = item[0]
+            version_details = item[1]
             output_string = ''
-            if stable_versions:
+            if self.args.show_stable:
                 output_string += '%s%s%s ' % (
-                    'S' if item == stable_versions.get('SYSTEM') else '-',
-                    'U' if item == stable_versions.get('USER') else '-',
-                    'E' if item == stable_versions.get('SESSION') else '-'
+                    'S' if 'SYSTEM' in version_details['stableScopes'] else '-',
+                    'U' if 'USER' in version_details['stableScopes'] else '-',
+                    'E' if 'SESSION' in version_details['stableScopes'] else '-'
                 )
-            output_string += '%-*s' % (max_len + 2, item)
+            output_string += '%-*s' % (max_len + 2, version_name)
+            if self.args.show_loading_state:
+                output_string += '%7s' % (version_details['loadingState'].lower())
             if self.args.show_release_state:
-                output_string += '%12s' % ('released' if visibility_map[item]['released'] else 'not released')
+                output_string += '%15s' % ('released' if version_details['released'] else 'not released')
             if self.args.show_visibilities:
-                levels = visibility_map[item]['visibilityLevels']
-                visibility_description = 'all: ' + ('+' if 'all' in levels else '-')
-                visibility_description += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
-                visibility_description += ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
-                output_string += '    %s' % visibility_description
+                levels = version_details['visibilityLevels']
+                visibility = 'all: ' + ('+' if 'all' in levels else '-')
+                visibility += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
+                visibility +=\
+                    ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
+                output_string += '    %s' % visibility
             print output_string
+
+
+class Status(Command):
+    COMMAND = 'status'
+    DESCRIPTION = 'Shows loading status of application and additional loading info'
+
+    def update_parser(self, p):
+        p.add_argument(
+            'version', metavar='<version>', help='application version'
+        )
+        p.add_argument(
+            'app_id_list', metavar='<appId>', nargs='+',
+            help='identifier of the application'
+        )
+        p.add_argument(
+            '-s', '--state-only', action='store_true', dest='state_only',
+            help='show only id and state, without error descriptions'
+        )
+
+    def run(self):
+        app_ids = self.args.app_id_list
+        if not all(map(validate_application_id, app_ids)):
+            return
+        version = self.args.version
+
+        lines = []
+        for app_id in app_ids:
+            app_info = self.connection.application(APPLICATION_ID).invoke(
+                'getApplicationDescriptor', app_id, version
+            )
+            lines.append('%s%9s' % (app_id, app_info['state'].lower()))
+            if not self.args.state_only:
+                lines.extend(format_loading_messages_by_lines(app_info.get('loadingErrors', []),
+                                                              app_info.get('loadingWarnings', [])))
+        print '\n'.join(lines)
 
 
 class Visibility(Command):
@@ -255,7 +303,7 @@ class MarkAsStable(Command):
     def update_parser(self, p):
         p.add_argument(
             'version', metavar='<version>',
-            help='applications version or \'-\' (minus sign) to remove'
+            help='applications version or \'-\' (hyphen) to remove'
                  ' stable version'
         )
         p.add_argument(
@@ -395,7 +443,8 @@ def resolve_jar_file(file_path):
         raise GenestackException('More than one JAR file was found inside %s:\n'
                                  ' %s' % (file_path, '\n '.join(jar_files)))
     elif not jar_files:
-        raise GenestackException('No JAR file was found inside %s' % file_path)
+        raise GenestackException('No JAR files were found within given files/directories: "%s"' %
+                                 file_path)
 
     return jar_files[0]
 
@@ -407,7 +456,7 @@ def mark_as_stable(application, version, app_id_list, scope):
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
         if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
-            if wait_application_loading(application, app_id, version):
+            if wait_application_loading(application, app_id, version).success:
                 application.invoke('markAsStable', app_id, scope, version)
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
@@ -446,16 +495,16 @@ def reload_applications(application, version, app_id_list):
         sys.stdout.flush()
 
 
-def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility):
+def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, no_wait):
     for file_path in files_list:
         upload_single_file(
             application, file_path, version, override,
-            stable, scope, force, initial_visibility
+            stable, scope, force, initial_visibility, no_wait
         )
 
 
 def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, initial_visibility=None):
+                       stable, scope, force=False, initial_visibility=None, no_wait=False):
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -481,6 +530,24 @@ def upload_single_file(application, file_path, version, override,
             print result
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
+
+    if not no_wait:
+        identifiers_number = len(app_info.identifiers)
+        for i, app_id in enumerate(app_info.identifiers):
+            success, descriptor = wait_application_loading(application, app_id, version)
+            if i == identifiers_number - 1:
+                errors = descriptor.get('loadingErrors', [])
+                warns = descriptor.get('loadingWarnings', [])
+                if errors or warns:
+                    lines = ['Module was loaded with following errors and warnings:']
+                    lines.extend(
+                        format_loading_messages_by_lines(errors, warns)
+                    )
+                    print '\n'.join(lines)
+    else:
+        sys.stdout.write("Uploading was done with 'no_wait' flag. Loading errors and warnings can be viewed"
+                         " with 'status' command.\n")
+        sys.stdout.flush()
 
     if initial_visibility:
         change_applications_visibility(
@@ -508,7 +575,7 @@ def release_applications(application, app_ids, version, new_version):
             continue
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if wait_application_loading(application, app_id, version):
+        if wait_application_loading(application, app_id, version).success:
             application.invoke('releaseApplication', app_id, version, new_version)
             sys.stdout.write('ok\n')
             sys.stdout.flush()
@@ -548,24 +615,36 @@ def get_application_descriptor(application, application_id, version):
 def wait_application_loading(application, app_id, version, seconds=1):
     descriptor = get_application_descriptor(application, app_id, version)
     if descriptor['state'] != 'LOADED':
-        sys.stdout.write('\nApplication is not loaded yet. Waiting for loading (interrupt to abort)... ')
+        sys.stdout.write('\nApplication %s is not loaded yet. Waiting for loading (interrupt to abort)... ' % app_id)
         sys.stdout.flush()
-    try:
-        while descriptor['state'] != 'LOADED':
-            time.sleep(seconds)
-            descriptor = get_application_descriptor(application, app_id, version)
-            if descriptor['state'] == 'FAILED':
-                sys.stdout.write('\nLoading of application failed\n')
-                return False
-    except KeyboardInterrupt:
-        sys.stdout.write('Action interrupted\n')
-        sys.stdout.flush()
-        return False
-    return True
+    while descriptor['state'] != 'LOADED':
+        time.sleep(seconds)
+        descriptor = get_application_descriptor(application, app_id, version)
+        if descriptor['state'] == 'FAILED':
+            sys.stdout.write('\nLoading of application %s failed\n' % app_id)
+            return LoadingResult(False, descriptor)
+    return LoadingResult(True, descriptor)
+
+
+def format_loading_messages_by_lines(errors, warnings):
+    wrapper = TextWrapper(initial_indent='\t\t', subsequent_indent='\t\t', width=80)
+    lines = []
+    if warnings:
+        lines.append('\t%s' % 'Warnings:')
+        lines.append('\n\n'.join([wrapper.fill(warning) for warning in warnings]))
+    if errors:
+        lines.append('\t%s' % 'Errors:')
+        lines.append('\n\n'.join([wrapper.fill(error) for error in errors]))
+    return lines
 
 
 AppInfo = namedtuple('AppInfo', [
     'vendor', 'identifiers'
+])
+
+
+LoadingResult = namedtuple('LoadingResult', [
+    'success', 'descriptor'
 ])
 
 
@@ -672,9 +751,9 @@ class ApplicationManager(GenestackShell):
     DESCRIPTION = ('The Genestack Application Manager is a command-line utility'
                    ' that allows you to upload and manage'
                    ' your applications on a specific Genestack instance ')
-    INTRO = "Application manager shell.\nType 'help' for list of available commands.\n\n"
+    INTRO = "Application manager shell.\nType 'help' for list of available commands.\n"
     COMMAND_LIST = [
-        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release
+        Info, Install, ListVersions, ListApplications, MarkAsStable, Remove, Reload, Invoke, Visibility, Release, Status
     ]
 
 

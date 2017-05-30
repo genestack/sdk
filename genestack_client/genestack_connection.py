@@ -32,23 +32,57 @@ class _NoRedirectError(urllib2.HTTPErrorProcessor):
     http_error_301 = http_error_302 = http_error_303 = http_error_307
 
 
+class Response(object):
+    """Represents response from Genestack server."""
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def error(self):
+        return self._data.get('error')
+
+    @property
+    def error_stack_trace(self):
+        return self._data.get('errorStackTrace')
+
+    @property
+    def log(self):
+        return self._data['log']
+
+    @property
+    def result(self):
+        return self._data['result']
+
+    @property
+    def trace(self):
+        return self._data.get('trace')
+
+    @property
+    def elapsed_microseconds(self):
+        return self._data.get('elapsedMicroseconds')
+
+
 class Connection:
     """
     A class to handle a connection to a specified Genestack server.
     Instantiating the class does mean you are logged in to the server.
     To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
-
-    Connection support retrieving debug information.
-      - ``debug`` will print additional traceback from application
-      - ``show_logs`` will print application logs (received from server)
     """
 
     def __init__(self, server_url, debug=False, show_logs=False):
+        """
+        :param server_url: server url
+        :type server_url: str
+        :param debug:  will print additional traceback from application
+        :type debug: bool
+        :param show_logs: will print application logs (received from server)
+        :type show_logs: bool
+        """
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
-        self.opener.addheaders.append(('gs-extendSession', 'true'))
         self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
         self.debug = debug
         self.show_logs = show_logs
@@ -110,8 +144,7 @@ class Connection:
         if compatible <= my_version:
             return
 
-        # use original version message in exception. str(StrictVersion('0.7.0')) == '0.7'
-        raise GenestackVersionException(my_version, compatible_version)
+        raise GenestackVersionException(my_version, compatible)
 
     def logout(self):
         """
@@ -121,13 +154,15 @@ class Connection:
         """
         self.application('genestack/signin').invoke('signOut')
 
-    def open(self, path, data=None, follow=True):
+    def open(self, path, data=None, follow=True, headers=None):
         """
         Sends data to a URL. The URL is the concatenation of the server URL and "path".
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
+        :param headers: additional headers as list of pairs
+        :type headers: list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
         """
@@ -135,6 +170,11 @@ class Connection:
             data = ''
         elif isinstance(data, dict):
             data = urllib.urlencode(data)
+
+        self.opener.addheaders = [('gs-extendSession', 'true')]
+        if headers:
+            self.opener.addheaders += headers
+
         try:
             if follow:
                 return self.opener.open(self.server_url + path, data)
@@ -191,24 +231,50 @@ class Application:
         if len(self.application_id.split('/')) != 2:
             raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
 
-    def __invoke(self, path, to_post):
-        f = self.connection.open(path, to_post)
-        response = json.load(f)
+    def __invoke(self, path, post_data, trace=None):
+        headers = []
+        if trace:
+            headers.append(('Genestack-Trace', 'true'))
+        f = self.connection.open(path, post_data, headers=headers)
+        response = Response(json.load(f))
 
-        error = response.get('error')
-        if error is not None:
+        if response.error is not None:
             raise GenestackServerException(
-                error, path, to_post,
+                response.error, path, post_data,
                 debug=self.connection.debug,
-                stack_trace=response.get('errorStackTrace')
+                stack_trace=response.error_stack_trace
             )
 
-        logs = response['log']
-        if logs and (self.connection.show_logs or self.connection.debug):
-            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in logs)
+        if response.log and (self.connection.show_logs or self.connection.debug):
+            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in response.log)
             print message
 
-        return response['result']
+        return response
+
+    def get_response(self, method, params=None, trace=True):
+        """
+        Invoke one of the application's public Java methods and return Response object.
+        Allow to access to logs and traces in code,
+        if you need only result use :py:meth:`~genestack_client.Application.invoke`
+
+        :param method: name of the public Java method
+        :type method: str
+        :param params: arguments that will be passed to the Java method.
+                       Arguments must be JSON-serializable.
+        :type params: tuple
+        :param trace: request trace from server
+        :type trace: bool
+        :return: Response object
+        :rtype: Response
+        """
+        if not params:
+            params = []
+
+        post_data = json.dumps(params)
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
+
+        # there might be present also self.__invoke(path, post_data)['log'] -- show it?
+        return self.__invoke(path, post_data, trace=trace)
 
     def invoke(self, method, *params):
         """
@@ -216,18 +282,11 @@ class Application:
 
         :param method: name of the public Java method
         :type method: str
-        :param params: arguments that will be passed to the Java method. Arguments must be JSON-serializable.
-        :return: JSON-deserialized response.
+        :param params: arguments that will be passed to the Java method.
+                       Arguments must be JSON-serializable.
+        :return: JSON-deserialized response
         """
-
-        to_post = {'method': method}
-        if params:
-            to_post['parameters'] = json.dumps(params)
-
-        path = '/application/invoke/%s' % self.application_id
-
-        # there might be present also self.__invoke(path, to_post)['log'] -- show it?
-        return self.__invoke(path, to_post)
+        return self.get_response(method, params).result
 
     def upload_chunked_file(self, file_path):
         return upload_by_chunks(self, file_path)
@@ -253,7 +312,7 @@ class Application:
         path = '/application/upload/%s/%s/%s' % (
             self.application_id, token, urllib.quote(filename)
         )
-        return self.__invoke(path, file_to_upload)
+        return self.__invoke(path, file_to_upload).result
 
 
 class FileWithCallback(file):

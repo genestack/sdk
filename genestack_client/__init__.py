@@ -21,6 +21,7 @@ from bio_metainfo import BioMetainfo
 from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
+from genome_query import GenomeQuery
 from sudo_utils import SudoUtils
 from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_filters import *

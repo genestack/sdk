@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
+from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant,
+                              GenomeQuery)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -39,6 +40,7 @@ class FilesUtil(Application):
     CONTAINER = 'com.genestack.api.files.IContainerFile'
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
+    DATASET = 'com.genestack.api.files.IDataset'
 
     FILE = 'com.genestack.api.files.IFile'
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
@@ -58,7 +60,9 @@ class FilesUtil(Application):
     REPORT_FILE = 'com.genestack.api.files.IReportFile'
     RAW_FILE = 'com.genestack.api.files.IRawFile'
     MICROARRAY_ASSAY = 'com.genestack.bio.files.IMicroarrayAssay'
+    MICROARRAY_DATA = 'com.genestack.bio.files.IMicroarrayData'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
+    FEATURE_LIST = 'com.genestack.bio.files.IFeatureList'
 
     MAX_FILE_SEARCH_LIMIT = 100
 
@@ -345,21 +349,25 @@ class FilesUtil(Application):
 
     def share_files(self, accessions, group, destination_folder=None, password=None):
         """
-        Share files.
+        Shares files and links them.
 
-        :param accessions: files accessions
-        :type accessions: list
+        :param accessions: accession or list/tuple/set of accessions to be shared
+        :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
         :type group: str
-        :param destination_folder: folder in which to link the shared files. No links are created if ``None``.
+        :param destination_folder: accession of folder to link shared files into.
+               No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing.
-            If not specified, will be asked in an interactive prompt (if supported)
+        :param password: password for sharing,
+               if not specified, will be asked for in an interactive prompt (if possible)
         :type: str
         :rtype: None
         """
         SudoUtils(self.connection).ensure_sudo_interactive(password)
         share_utils = self.connection.application('genestack/shareutils')
+
+        accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
+
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
