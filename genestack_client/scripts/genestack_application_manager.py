@@ -455,15 +455,22 @@ def mark_as_stable(application, version, app_id_list, scope):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
-            if wait_application_loading(application, app_id, version).success:
+        try:
+            if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
+                if wait_application_loading(application, app_id, version).success:
+                    application.invoke('markAsStable', app_id, scope, version)
+                    sys.stdout.write('ok\n')
+                    sys.stdout.flush()
+            else:
                 application.invoke('markAsStable', app_id, scope, version)
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
-        else:
-            application.invoke('markAsStable', app_id, scope, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
+        except GenestackServerException as e:
+            if e.debug:
+                raise e
+            else:
+                sys.stdout.write("Cannot mark application '%s' as stable: %s\n" % (app_id, e.message))
+                sys.stdout.flush()
 
 
 def remove_applications(application, version, app_id_list):
