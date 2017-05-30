@@ -504,9 +504,16 @@ def reload_applications(application, version, app_id_list):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('reloadApplication', app_id, version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        try:
+            application.invoke('reloadApplication', app_id, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackServerException as e:
+            if e.debug:
+                raise e
+            else:
+                sys.stdout.write("Application '%s' cannot be reload: %s\n" % (app_id, e.message))
+                sys.stdout.flush()
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, no_wait):
