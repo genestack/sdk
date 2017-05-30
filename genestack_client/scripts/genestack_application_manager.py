@@ -487,7 +487,7 @@ def remove_applications(application, version, app_id_list):
                 if e.debug:
                     raise e
                 else:
-                    sys.stdout.write('%s cannot be removed due to error: %s\n' % (app_id, e.message))
+                    sys.stdout.write("Application '%s' cannot be removed: %s\n" % (app_id, e.message))
                     sys.stdout.flush()
     else:
         sys.stdout.write('ALL ... ')
