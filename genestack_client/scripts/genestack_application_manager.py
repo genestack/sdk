@@ -466,11 +466,7 @@ def mark_as_stable(application, version, app_id_list, scope):
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
         except GenestackServerException as e:
-            if e.debug:
-                raise e
-            else:
-                sys.stdout.write("Cannot mark application '%s' as stable: %s\n" % (app_id, e.message))
-                sys.stdout.flush()
+            handle_server_error_gracefully(e)
 
 
 def remove_applications(application, version, app_id_list):
@@ -484,11 +480,7 @@ def remove_applications(application, version, app_id_list):
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
             except GenestackServerException as e:
-                if e.debug:
-                    raise e
-                else:
-                    sys.stdout.write("Application '%s' cannot be removed: %s\n" % (app_id, e.message))
-                    sys.stdout.flush()
+                handle_server_error_gracefully(e)
     else:
         sys.stdout.write('ALL ... ')
         sys.stdout.flush()
@@ -509,11 +501,7 @@ def reload_applications(application, version, app_id_list):
             sys.stdout.write('ok\n')
             sys.stdout.flush()
         except GenestackServerException as e:
-            if e.debug:
-                raise e
-            else:
-                sys.stdout.write("Application '%s' cannot be reload: %s\n" % (app_id, e.message))
-                sys.stdout.flush()
+            handle_server_error_gracefully(e)
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, no_wait):
@@ -766,6 +754,14 @@ def get_system_stable_apps_version(application, apps_ids, version):
 def check_tty():
     if not isatty():
         raise GenestackException("Prompt cannot be called")
+
+
+def handle_server_error_gracefully(e):
+    if e.debug:
+        sys.stderr.write(str(e))
+    else:
+        sys.stdout.write("Error: %s (Enable debug option to retrieve traceback)\n" % e.message)
+        sys.stdout.flush()
 
 
 class ApplicationManager(GenestackShell):
