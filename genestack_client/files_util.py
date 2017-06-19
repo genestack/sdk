@@ -64,6 +64,7 @@ class FilesUtil(Application):
     MICROARRAY_DATA = 'com.genestack.bio.files.IMicroarrayData'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
     FEATURE_LIST = 'com.genestack.bio.files.IFeatureList'
+    EXPRESSION_SIGNATURE = 'com.genestack.bio.files.IGeneExpressionSignature'
 
     MAX_FILE_SEARCH_LIMIT = 100
 
