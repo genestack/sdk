@@ -11,7 +11,7 @@ import time
 import zipfile
 from textwrap import TextWrapper
 from collections import namedtuple, OrderedDict
-from genestack_client import GenestackException
+from genestack_client import GenestackException, GenestackServerException
 from genestack_client.genestack_shell import GenestackShell, Command
 from genestack_client.utils import isatty, ask_confirmation
 
@@ -455,15 +455,18 @@ def mark_as_stable(application, version, app_id_list, scope):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
-            if wait_application_loading(application, app_id, version).success:
+        try:
+            if scope == 'SYSTEM':  # For SYSTEM scope we must wait when application will be loaded
+                if wait_application_loading(application, app_id, version).success:
+                    application.invoke('markAsStable', app_id, scope, version)
+                    sys.stdout.write('ok\n')
+                    sys.stdout.flush()
+            else:
                 application.invoke('markAsStable', app_id, scope, version)
                 sys.stdout.write('ok\n')
                 sys.stdout.flush()
-        else:
-            application.invoke('markAsStable', app_id, scope, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
+        except GenestackServerException as e:
+            handle_server_error_gracefully(e)
 
 
 def remove_applications(application, version, app_id_list):
@@ -472,9 +475,12 @@ def remove_applications(application, version, app_id_list):
         for app_id in app_id_list:
             sys.stdout.write('%-40s ... ' % app_id)
             sys.stdout.flush()
-            application.invoke('removeApplication', app_id, version)
-            sys.stdout.write('ok\n')
-            sys.stdout.flush()
+            try:
+                application.invoke('removeApplication', app_id, version)
+                sys.stdout.write('ok\n')
+                sys.stdout.flush()
+            except GenestackServerException as e:
+                handle_server_error_gracefully(e)
     else:
         sys.stdout.write('ALL ... ')
         sys.stdout.flush()
@@ -490,9 +496,12 @@ def reload_applications(application, version, app_id_list):
     for app_id in app_id_list:
         sys.stdout.write('%-40s ... ' % app_id)
         sys.stdout.flush()
-        application.invoke('reloadApplication', app_id, version)
-        sys.stdout.write('ok\n')
-        sys.stdout.flush()
+        try:
+            application.invoke('reloadApplication', app_id, version)
+            sys.stdout.write('ok\n')
+            sys.stdout.flush()
+        except GenestackServerException as e:
+            handle_server_error_gracefully(e)
 
 
 def upload_file(application, files_list, version, override, stable, scope, force, initial_visibility, no_wait):
@@ -745,6 +754,14 @@ def get_system_stable_apps_version(application, apps_ids, version):
 def check_tty():
     if not isatty():
         raise GenestackException("Prompt cannot be called")
+
+
+def handle_server_error_gracefully(e):
+    if e.debug:
+        sys.stderr.write(str(e))
+    else:
+        sys.stdout.write("Error: %s (Enable debug option to retrieve traceback)\n" % e.message)
+        sys.stdout.flush()
 
 
 class ApplicationManager(GenestackShell):

@@ -1,6 +1,8 @@
 * 0.16.0
     * Added support of warnings to `status` command
     * Added jar loading errors and warnings output to `install` command
+    * Added `DataImporter.create_gene_expression_signature` method
+    * Added `FilesUtil.EXPRESSION_SIGNATURE` constant
 
 * 0.15.0
     * Added `status` command for getting information about application loading state

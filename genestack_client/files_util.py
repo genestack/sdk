@@ -44,6 +44,7 @@ class FilesUtil(Application):
 
     FILE = 'com.genestack.api.files.IFile'
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
+    UNALIGNED_READS_DATA = 'com.genestack.bio.files.IUnalignedReadsData'
     ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
     VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
     APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
@@ -63,6 +64,7 @@ class FilesUtil(Application):
     MICROARRAY_DATA = 'com.genestack.bio.files.IMicroarrayData'
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
     FEATURE_LIST = 'com.genestack.bio.files.IFeatureList'
+    EXPRESSION_SIGNATURE = 'com.genestack.bio.files.IGeneExpressionSignature'
 
     MAX_FILE_SEARCH_LIMIT = 100
 
@@ -630,3 +632,27 @@ class FilesUtil(Application):
         :rtype: list[Metainfo]
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
+
+    def create_dataset(self, name, dataset_type, children, parent=None):
+        """
+        Create a dataset.
+
+
+        :param name: name of the dataset
+        :type name: str
+        :param dataset_type: type of the dataset
+        :type dataset_type: str
+        :param children: list fo children accessions
+        :type children: list[str]
+        :param parent: if not specified, create folder in the user's Created folder
+        :type parent: str
+
+        :return: dataset accession
+        :rtype: str
+        """
+        if parent is None:
+            parent = self.get_special_folder(SpecialFolders.CREATED)
+
+        return self.invoke(
+            'createDataset', parent, name, dataset_type, children
+        )

@@ -136,7 +136,7 @@ def recognize_files(connection, accession_file_map, new_folder):
                 recognized_accessions.add(info['accession'])
 
     created_files = application.invoke('createFiles', recognised_files, [], None)
-    groups = sorted(created_files['files'].values(), key=itemgetter('kind'))
+    groups = sorted(created_files['files'], key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
         print name
         # maybe sort by filename before printing a group?
