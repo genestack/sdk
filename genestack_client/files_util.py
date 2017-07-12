@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant,
-                              GenomeQuery)
+from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 FILE_BATCH_SIZE = 500
 
 
-class SpecialFolders:
+class SpecialFolders(object):
     """
-    - ``IMPORTED``: folder where new files are created by Data Importers
-    - ``CREATED``: default folder for files created by ``Preprocess`` and ``Analyse`` applications
-    - ``TEMPORARY``: folder for temporary files
-    - ``UPLOADED``:  folder where raw files are stored
+    - ``IMPORTED``: folder with files created by Data Importers
+    - ``CREATED``: folder with files created by ``Preprocess`` and ``Analyse`` applications
+    - ``TEMPORARY``: folder with temporary files
+    - ``UPLOADED``: folder with uploaded raw files
+    - ``MY_DATASETS``: folder with created datasets
     """
     IMPORTED = 'imported'
     CREATED = 'created'
     TEMPORARY = 'temporary'
     UPLOADED = 'uploaded'
+    MY_DATASETS = 'my datasets'
 
 
-class SortOrder:
+class SortOrder(object):
     """
     Sort orders for file search queries
     """
@@ -82,7 +83,8 @@ class FilesUtil(Application):
         :type release: str
         :return: accession
         :rtype: str
-        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException` if more than one genome, or no genome is found
+        :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException`
+        if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -592,13 +594,21 @@ class FilesUtil(Application):
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
 
-    def find_files(self, file_filter, sort_order=SortOrder.DEFAULT, ascending=False, offset=0, limit=MAX_FILE_SEARCH_LIMIT):
+    def find_files(
+            self,
+            file_filter,
+            sort_order=SortOrder.DEFAULT,
+            ascending=False,
+            offset=0,
+            limit=MAX_FILE_SEARCH_LIMIT
+    ):
         """
         Search for files using filters.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :param sort_order: sorting order for the results
+        (see :py:class:`~genestack_client.files_util.SortOrder`)
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
@@ -609,9 +619,10 @@ class FilesUtil(Application):
         :return: a dictionary with entries the following entries:
 
             - total (int): total number of files on the platform matching the search filter
-            - result (list): list of file info dictionaries for the matching files between ``offset`` and ``offset+limit``.
-              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the structure of these
-              objects.
+            - result (list): list of file info dictionaries for the matching files between
+            ``offset`` and ``offset+limit``.
+              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the
+              structure of these objects.
 
         :rtype: dict[str, int|list[dict[str, str|dict]]]
         """
@@ -637,21 +648,20 @@ class FilesUtil(Application):
         """
         Create a dataset.
 
-
         :param name: name of the dataset
         :type name: str
         :param dataset_type: type of the dataset
         :type dataset_type: str
         :param children: list fo children accessions
         :type children: list[str]
-        :param parent: if not specified, create folder in the user's Created folder
+        :param parent: if not specified, create folder in the user's 'My datasets' folder
         :type parent: str
 
         :return: dataset accession
         :rtype: str
         """
         if parent is None:
-            parent = self.get_special_folder(SpecialFolders.CREATED)
+            parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
 
         return self.invoke(
             'createDataset', parent, name, dataset_type, children
