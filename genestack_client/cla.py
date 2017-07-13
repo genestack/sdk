@@ -2,7 +2,7 @@
 
 import sys
 
-from genestack_client import Application, FilesUtil
+from genestack_client import Application, FilesUtil, GenestackException
 
 
 class CLApplication(Application):
@@ -118,6 +118,37 @@ class CLApplication(Application):
 
     def __to_list(self, string_or_list):
         return string_or_list if isinstance(string_or_list, list) else [string_or_list]
+
+
+class IntersectApplication(CLApplication):
+    """
+    Parent class for all intersect applications.
+    """
+    INTERSECT_OTHER_SOURCE_KEY = "genestack.bio:intersect.otherSourceData"
+
+    def create_file(self, source_files, name=None, params=None, calculate_checksums=False,
+                    expected_checksums=None, initialize=False):
+        """
+        Same as the parent method except that intersect applications also need a separate source
+        file to intersect with, so it treats the last element of the ``source_files`` array as that
+        file.
+        """
+        if len(source_files) < 2:
+            raise GenestackException('Intersect application requires at least two source files')
+
+        main_source_files = source_files[:-1]
+        other_source_file = source_files[-1]
+
+        created_file_accession = super(IntersectApplication, self).create_file(
+            main_source_files, name, params, calculate_checksums, expected_checksums, initialize
+        )
+        self.replace_file_reference(
+            accession=created_file_accession,
+            key=self.INTERSECT_OTHER_SOURCE_KEY,
+            accession_to_remove=None,
+            accession_to_add=other_source_file
+        )
+        return created_file_accession
 
 
 class TestCLApplication(CLApplication):
@@ -245,7 +276,7 @@ class NormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/normalization'
 
 
-class IntersectGenomicFeaturesMapped(CLApplication):
+class IntersectGenomicFeaturesMapped(IntersectApplication):
     APPLICATION_ID = 'genestack/intersect-bam'
 
 
@@ -272,7 +303,7 @@ class VariantsAssociationAnalysisApplication(CLApplication):
     APPLICATION_ID = 'genestack/variantsAssociationAnalysis'
 
 
-class IntersectGenomicFeaturesVariants(CLApplication):
+class IntersectGenomicFeaturesVariants(IntersectApplication):
     APPLICATION_ID = 'genestack/intersect-vcf'
 
 
