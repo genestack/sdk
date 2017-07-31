@@ -1,5 +1,6 @@
 * 0.17.0
-    * Added BelongsToDatasetFileFilter
+    * Added `BelongsToDatasetFileFilter` class
+    * Added `SpecialFolders.MY_DATASETS` constant
 
 * 0.16.0
     * Added support of warnings to `status` command
