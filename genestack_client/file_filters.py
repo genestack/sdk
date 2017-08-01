@@ -106,6 +106,16 @@ class ActualOwnerFileFilter(FileFilter):
         self._dict.update({'owned': None})
 
 
+class BelongsToDatasetFileFilter(FileFilter):
+    """
+    Same as :py:class:`~genestack_client.file_filters.ChildrenFileFilter`
+    but searches for files that belong to the specified dataset.
+    """
+    def __init__(self, file_accession):
+        super(BelongsToDatasetFileFilter, self).__init__()
+        self._dict.update({'datasetAccession': file_accession})
+
+
 class ActualPermissionFileFilter(FileFilter):
     """
     Filter to select files for which the current user has a specific permission.

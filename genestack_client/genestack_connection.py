@@ -63,7 +63,7 @@ class Response(object):
         return self._data.get('elapsedMicroseconds')
 
 
-class Connection:
+class Connection(object):
     """
     A class to handle a connection to a specified Genestack server.
     Instantiating the class does mean you are logged in to the server.
@@ -82,8 +82,15 @@ class Connection:
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler)
-        self._no_redirect_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), _NoRedirect, _NoRedirectError, AuthenticationErrorHandler)
+        self.opener = urllib2.build_opener(
+            urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler
+        )
+        self._no_redirect_opener = urllib2.build_opener(
+            urllib2.HTTPCookieProcessor(cj),
+            _NoRedirect,
+            _NoRedirectError,
+            AuthenticationErrorHandler
+        )
         self.debug = debug
         self.show_logs = show_logs
 
@@ -105,7 +112,8 @@ class Connection:
 
     def login(self, email, password):
         """
-        Attempt a login on the connection with the specified credentials. Raises an exception if the login fails.
+        Attempt a login on the connection with the specified credentials.
+        Raises an exception if the login fails.
 
         :param email: email
         :type email: str
@@ -132,8 +140,8 @@ class Connection:
         my_version = StrictVersion(__version__)
 
         try:
-            compatible_version = self.application('genestack/clientVersion'
-                                                 ).invoke('getCompatibleVersion')
+            client_version_app = self.application('genestack/clientVersion')
+            compatible_version = client_version_app.invoke('getCompatibleVersion')
         except GenestackServerException, e:
             # We don't know what happened, but it might be due to incompatible client/API versions.
             # Throw a version exception, making sure we tell the user to update.
@@ -181,9 +189,9 @@ class Connection:
             else:
                 return self._no_redirect_opener.open(self.server_url + path, data)
         except urllib2.URLError, e:
-            raise urllib2.URLError('Fail to connect %s%s %s' % (self.server_url,
-                                                                path,
-                                                                str(e).replace('urlopen error', '').strip('<\ >')))
+            raise urllib2.URLError('Fail to connect %s%s %s' % (
+                self.server_url, path, str(e).replace('urlopen error', '').strip('<\ >')
+            ))
 
     def application(self, application_id):
         """
@@ -200,15 +208,24 @@ class Connection:
         return 'Connection("%s")' % self.server_url
 
     def get_request(self, path, params=None, follow=True):
-        r = requests.get(self.server_url + path, params=params, allow_redirects=follow, cookies=self.__cookies_jar)
-        return r
+        return requests.get(
+            url=self.server_url + path,
+            params=params,
+            allow_redirects=follow,
+            cookies=self.__cookies_jar
+        )
 
     def post_multipart(self, path, data=None, files=None, follow=True):
-        r = requests.post(self.server_url + path, data=data, files=files, allow_redirects=follow, cookies=self.__cookies_jar)
-        return r
+        return requests.post(
+            url=self.server_url + path,
+            data=data,
+            files=files,
+            allow_redirects=follow,
+            cookies=self.__cookies_jar
+        )
 
 
-class Application:
+class Application(object):
     """
     Create a new application instance for the given connection.
     The connection must be logged in to call the application's methods.
@@ -220,7 +237,9 @@ class Application:
 
     def __init__(self, connection, application_id=None):
         if application_id and self.APPLICATION_ID:
-            raise GenestackException("Application ID specified both as argument and as class variable")
+            raise GenestackException(
+                "Application ID specified both as argument and as class variable"
+            )
         self.application_id = application_id or self.APPLICATION_ID
         if not self.application_id:
             raise GenestackException('Application ID was not specified')
@@ -229,7 +248,9 @@ class Application:
 
         # validation of application ID
         if len(self.application_id.split('/')) != 2:
-            raise GenestackException('Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id)
+            raise GenestackException(
+                'Invalid application ID, expect "{vendor}/{application}" got: %s' % self.application_id
+            )
 
     def __invoke(self, path, post_data, trace=None):
         headers = []
@@ -246,7 +267,9 @@ class Application:
             )
 
         if response.log and (self.connection.show_logs or self.connection.debug):
-            message = '\nLogs:\n' + '\n'.join(item['message'] + item.get('stackTrace', '') for item in response.log)
+            message = '\nLogs:\n' + '\n'.join(
+                item['message'] + item.get('stackTrace', '') for item in response.log
+            )
             print message
 
         return response
