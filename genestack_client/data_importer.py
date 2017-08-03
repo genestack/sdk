@@ -144,18 +144,20 @@ class DataImporter(object):
         :return: None
         """
         current_value = metainfo.get(key)
-        if required and value is None and current_value is None:
-                raise GenestackException('Missing required key "%s", '
-                                         'it should be passed as function argument '
-                                         'or in metainfo object' % key)
-
         if current_value is not None and value is not None:
             raise GenestackException('Key "%s" is passed both as function argument '
                                      'and inside metainfo object' % key)
+        if current_value:
+            return
 
-        value_list = value if isinstance(value, list) else [value]
-        for val in value_list:
-            metainfo.add_value(key, value_type(val))
+        if required and value is None:
+                raise GenestackException('Missing required key "%s", '
+                                         'it should be passed as function argument '
+                                         'or in metainfo object' % key)
+        if value is not None:
+            value_list = value if isinstance(value, list) else [value]
+            for val in value_list:
+                metainfo.add_value(key, value_type(val))
 
     def load_raw(self, file_path):
         """
