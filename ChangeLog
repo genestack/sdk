@@ -1,10 +1,12 @@
-*
     * Add additional check for argument passed as arguments and via metainfo in DataImporter methods
-    * Added support of warnings to `status` command
-    * Added jar loading errors and warnings output to `install` command
+
+* 0.17.0
+    * Added `BelongsToDatasetFileFilter` class
+    * Added `SpecialFolders.MY_DATASETS` constant
 
 * 0.16.0
-
+    * Added support of warnings to `status` command
+    * Added jar loading errors and warnings output to `install` command
     * Added `DataImporter.create_gene_expression_signature` method
     * Added `FilesUtil.EXPRESSION_SIGNATURE` constant
 
