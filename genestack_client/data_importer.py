@@ -151,9 +151,9 @@ class DataImporter(object):
             return
 
         if required and value is None:
-                raise GenestackException('Missing required key "%s", '
-                                         'it should be passed as function argument '
-                                         'or in metainfo object' % key)
+            raise GenestackException('Missing required key "%s", '
+                                     'it should be passed as function argument '
+                                     'or in metainfo object' % key)
         if value is not None:
             value_list = value if isinstance(value, list) else [value]
             for val in value_list:
