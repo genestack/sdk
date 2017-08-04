@@ -128,8 +128,12 @@ class DataImporter(object):
     @staticmethod
     def __add_to_metainfo(metainfo, key, value, value_type, required=False):
         """
-        Add value to metainfo, check if value is not already present,
-        checks required fields.
+        Add ``key``: ``value`` pair to ``metainfo``.
+
+        Fails if:
+        * ``metainfo`` already contains ``key``;
+        * ``key`` is ``required``, but no value is provided by user,
+          and neither ``metainfo`` has already existing ``key`` (with some value).
 
         :param metainfo: metainfo object to be updated
         :type metainfo: Metainfo
