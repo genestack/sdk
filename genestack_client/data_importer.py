@@ -66,12 +66,15 @@ class DataImporter(object):
     AGILENT_ANNOTATION = 'agilentMicroarrayAnnotation'
     #: TSV (GenePix etc) microarray annotation type
     TSV_ANNOTATION = 'TSVMicroarrayAnnotation'
+    #: Infinium microarray annotation type
+    INFINIUM_ANNOTATION = 'methylationArrayAnnotation'
 
     #: Supported microarray annotation types
     MICROARRAY_ANNOTATION_TYPES = (
         AGILENT_ANNOTATION,
         AFFYMETRIX_ANNOTATION,
         TSV_ANNOTATION,
+        INFINIUM_ANNOTATION
     )
 
     def __init__(self, connection):
