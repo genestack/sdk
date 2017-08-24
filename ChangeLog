@@ -3,6 +3,8 @@
 * 0.17.0
     * Added `BelongsToDatasetFileFilter` class
     * Added `SpecialFolders.MY_DATASETS` constant
+    * Added `DataImporter.INFINIUM_ANNOTATION` constant
+    * Added new method `DataImporter.create_infinium_microarray_data`
 
 * 0.16.0
     * Added support of warnings to `status` command
