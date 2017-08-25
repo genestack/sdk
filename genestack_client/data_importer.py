@@ -343,6 +343,34 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, urls, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'microarrayData', metainfo)
 
+    def create_infinium_microarray_data(self, parent, name=None, urls=None,
+                                        method=None, metainfo=None):
+        """
+        Create a Genestack Infinium Microarrays Data inside a folder. We can't use create_microarray_data method
+        because 'microarrayData' importer can have only one source file, while infinium assay has two. So we invoke
+        'infinium MicroarrayData' importer with two links for BioMetaKeys.DATA_LINK key in metainfo.
+
+        Infinum microarrays available only for humans so we have no 'organism' key in arguments.
+
+        :param parent: accession of parent folder
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param urls: list of urls
+        :type urls: list
+        :param method: method
+        :type method: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = DataImporter._copy_metainfo(metainfo)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.METHOD, method, StringValue)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, urls, ExternalLink, required=True)
+        return self.__invoke_loader(parent, 'infiniumMicroarrayData', metainfo)
+
     def create_sequencing_assay(self, parent, name=None, urls=None,
                                 method=None, organism=None, metainfo=None):
         raise GenestackException('"create_sequencing_assay" is not available anymore, '
