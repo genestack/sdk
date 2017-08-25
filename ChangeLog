@@ -1,9 +1,11 @@
     * Add additional check for argument passed as arguments and via metainfo in DataImporter methods
 
+* 0.18.0
+    * Added `DataImporter.INFINIUM_ANNOTATION` constant
+
 * 0.17.0
     * Added `BelongsToDatasetFileFilter` class
     * Added `SpecialFolders.MY_DATASETS` constant
-    * Added `DataImporter.INFINIUM_ANNOTATION` constant
     * Added new method `DataImporter.create_infinium_microarray_data`
 
 * 0.16.0
