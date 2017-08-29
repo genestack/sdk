@@ -294,7 +294,7 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue, required=True)
         self.__add_to_metainfo(metainfo, BioMetaKeys.STRAIN, strain, StringValue)
         self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME, reference_genome, FileReference)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.BAM_FILE_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'alignedReads', metainfo)
 
     @staticmethod
