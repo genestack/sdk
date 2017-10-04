@@ -1,7 +1,7 @@
-    * Add additional check for argument passed as arguments and via metainfo in DataImporter methods
-
 * 0.18.0
     * Added `DataImporter.INFINIUM_ANNOTATION` constant
+    * Added additional check for argument passed as arguments and via metainfo in DataImporter methods
+    * Added `FileUtils.share_folder` method
 
 * 0.17.0
     * Added `BelongsToDatasetFileFilter` class

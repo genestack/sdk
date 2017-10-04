@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from time import sleep
 
 from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant)
 
@@ -375,6 +376,36 @@ class FilesUtil(Application):
         share_utils.invoke('shareFilesForViewing', accessions, [group])
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
+
+    def share_folder(self, folder_accession, group, destination_folder=None, password=None):
+        """
+        Recursively share folder.
+
+        :param folder_accession: accession of the folder
+        :type folder_accession: basestring
+        :param group: accession of the group to share the files with
+        :param destination_folder: accession of folder to link shared folder into.
+               No links are created if ``None``.
+        :type destination_folder: str
+        :param password: password for sharing,
+               if not specified, will be asked for in an interactive prompt (if possible)
+        :type: str
+        :rtype: None
+        """
+        self.share_files([folder_accession], group, destination_folder=destination_folder, password=password)
+        SudoUtils(self.connection).ensure_sudo_interactive(password)
+        share_utils = self.connection.application('genestack/shareutils')
+        limit = 100
+        delay = 1  # delay between attempts
+        while True:
+            offset = 0
+            count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
+            if count == 0 and offset == 0:
+                return
+            if count < limit:
+                sleep(delay)
+                offset = 0
+            offset += limit
 
     def get_groups_to_share(self):
         """
