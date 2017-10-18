@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import (Application)
+from genestack_client import (Application, FilesUtil, SpecialFolders)
 
 
 class DatasetsUtil(Application):
@@ -23,18 +23,9 @@ class DatasetsUtil(Application):
         :rtype: str
         """
         if parent is None:
-            parent = self.get_mydatasets_folder()
+            parent = self.__get_mydatasets_folder()
 
         return self.invoke('createDataset', parent, name, dataset_type, children)
-
-    def get_mydatasets_folder(self):
-        """
-        Get default folder for datasets.
-
-        :return: default dataset folder accession
-        :rtype: str
-        """
-        return self.invoke('getMyDatasetsFolder')
 
     def get_dataset_size(self, accession):
         """
@@ -98,6 +89,15 @@ class DatasetsUtil(Application):
         :rtype: str
         """
         if parent is None:
-            parent = self.get_mydatasets_folder()
+            parent = self.__get_mydatasets_folder()
 
         return self.invoke('mergeDatasets', parent, datasets)
+
+    def __get_mydatasets_folder(self):
+        """
+        Get default folder for datasets.
+
+        :return: default dataset folder accession
+        :rtype: str
+        """
+        return FilesUtil(self.connection).get_special_folder(SpecialFolders.MY_DATASETS)

@@ -13,11 +13,13 @@ class SpecialFolders(object):
     - ``CREATED``: folder with files created by ``Preprocess`` and ``Analyse`` applications
     - ``TEMPORARY``: folder with temporary files
     - ``UPLOADED``: folder with uploaded raw files
+    - ``MY_DATASETS``: folder with created datasets
     """
     IMPORTED = 'imported'
     CREATED = 'created'
     TEMPORARY = 'temporary'
     UPLOADED = 'uploaded'
+    MY_DATASETS = 'my datasets'
 
 
 class SortOrder(object):
@@ -344,7 +346,7 @@ class FilesUtil(Application):
         :raises: GenestackException: if folder name is unknown
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
-                           SpecialFolders.UPLOADED)
+                           SpecialFolders.UPLOADED, SpecialFolders.MY_DATASETS)
         if name not in special_folders:
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
