@@ -13,13 +13,11 @@ class SpecialFolders(object):
     - ``CREATED``: folder with files created by ``Preprocess`` and ``Analyse`` applications
     - ``TEMPORARY``: folder with temporary files
     - ``UPLOADED``: folder with uploaded raw files
-    - ``MY_DATASETS``: folder with created datasets
     """
     IMPORTED = 'imported'
     CREATED = 'created'
     TEMPORARY = 'temporary'
     UPLOADED = 'uploaded'
-    MY_DATASETS = 'my datasets'
 
 
 class SortOrder(object):
@@ -346,7 +344,7 @@ class FilesUtil(Application):
         :raises: GenestackException: if folder name is unknown
         """
         special_folders = (SpecialFolders.IMPORTED, SpecialFolders.CREATED, SpecialFolders.TEMPORARY,
-                           SpecialFolders.UPLOADED, SpecialFolders.MY_DATASETS)
+                           SpecialFolders.UPLOADED)
         if name not in special_folders:
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
@@ -643,26 +641,3 @@ class FilesUtil(Application):
         :rtype: list[Metainfo]
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
-
-    def create_dataset(self, name, dataset_type, children, parent=None):
-        """
-        Create a dataset.
-
-        :param name: name of the dataset
-        :type name: str
-        :param dataset_type: type of the dataset
-        :type dataset_type: str
-        :param children: list fo children accessions
-        :type children: list[str]
-        :param parent: if not specified, create folder in the user's 'My datasets' folder
-        :type parent: str
-
-        :return: dataset accession
-        :rtype: str
-        """
-        if parent is None:
-            parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
-
-        return self.invoke(
-            'createDataset', parent, name, dataset_type, children
-        )
