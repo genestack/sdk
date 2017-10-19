@@ -16,7 +16,7 @@ class DatasetsUtil(Application):
         :type dataset_type: str
         :param children: list of children accessions
         :type children: list[str]
-        :param parent: if not specified, create folder in the user's 'My datasets' folder
+        :param parent: folder for the new dataset, 'My datasets' if not specified
         :type parent: str
 
         :return: dataset accession
@@ -39,19 +39,7 @@ class DatasetsUtil(Application):
         """
         return self.invoke('getDatasetSize', accession)
 
-    def get_dataset_children(self, accession):
-        """
-        Get list of dataset's children.
-
-        :param accession: dataset accession
-        :type accession: str
-
-        :return: list of children accessions
-        :rtype: list[str]
-        """
-        return self.invoke('getDatasetChildren', accession)
-
-    def create_subset(self, accession, children):
+    def create_subset(self, accession, children, parent=None):
         """
         Create a subset from dataset's children.
 
@@ -59,11 +47,16 @@ class DatasetsUtil(Application):
         :type accession: str
         :param children: list of children accessions to create a subset
         :type children: list[str]
+        :param parent: folder for the new dataset, 'My datasets' if not specified
+        :type parent: str
 
         :return: accession of the created subset
         :rtype: str
         """
-        return self.invoke('createSubset', accession, children)
+        if parent is None:
+            parent = self.__get_mydatasets_folder()
+
+        return self.invoke('createSubset', parent, accession, children)
 
     def remove_dataset_children(self, accession, children):
         """
@@ -80,10 +73,10 @@ class DatasetsUtil(Application):
         """
         Create a new dataset from the given datasets.
 
-        :param parent: folder for the new dataset, 'My datasets' if not specified
-        :type parent: str
         :param datasets: list of source datasets accessions
         :type datasets: list[str]
+        :param parent: folder for the new dataset, 'My datasets' if not specified
+        :type parent: str
 
         :return: accession of the created dataset
         :rtype: str
