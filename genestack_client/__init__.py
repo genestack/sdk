@@ -26,6 +26,7 @@ from sudo_utils import SudoUtils
 from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_filters import *
 from files_util import FilesUtil, SortOrder, SpecialFolders
+from datasets_util import DatasetsUtil
 from task_log_viewer import TaskLogViewer
 from cla import *
 from expression_navigator import *

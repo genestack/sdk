@@ -1,3 +1,4 @@
+    * Add utility class for datasets operations
     * Add additional check for argument passed as arguments and via metainfo in DataImporter methods
 
 * 0.18.0
