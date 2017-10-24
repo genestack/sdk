@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import (Application, FilesUtil, SpecialFolders)
+from genestack_client import Application, FilesUtil, SpecialFolders
 
 
 class DatasetsUtil(Application):
