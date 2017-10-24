@@ -1,5 +1,5 @@
-    * Add utility class for datasets operations
-    * Add additional check for argument passed as arguments and via metainfo in DataImporter methods
+    * Added utility class for datasets operations
+    * Added additional check for argument passed as arguments and via metainfo in DataImporter methods
 
 * 0.18.0
     * Added `DataImporter.INFINIUM_ANNOTATION` constant
