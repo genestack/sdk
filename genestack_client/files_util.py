@@ -646,7 +646,7 @@ class FilesUtil(Application):
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
 
-    # todo: remove when dotorg is migrated to new python client
+    # TODO: remove after release 0.53
     def create_dataset(self, name, dataset_type, children, parent=None):
         """
         Create a dataset.
