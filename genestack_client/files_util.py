@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant, DatasetsUtil
+import genestack_client
+from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -665,7 +665,7 @@ class FilesUtil(Application):
         """
         sys.stderr.write('Deprecated: use DatasetsUtil.create_dataset instead\n')
         try:
-            return DatasetsUtil(self.connection).create_dataset(name, dataset_type, children, parent)
+            return genestack_client.DatasetsUtil(self.connection).create_dataset(name, dataset_type, children, parent)
         except GenestackException:
             if parent is None:
                 parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
