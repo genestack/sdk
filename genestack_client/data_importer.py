@@ -598,7 +598,7 @@ class DataImporter(object):
         :type name: str
         :param url: URL of a file
         :param organism: organism name
-        :type reference_genome: str
+        :type organism: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
         :return: file accession
@@ -611,7 +611,7 @@ class DataImporter(object):
         return self.__invoke_loader(parent, 'geneList', metainfo)
 
     def create_gene_expression_signature(self, parent=None, name=None, url=None,
-                         organism=None, metainfo=None):
+                                         organism=None, metainfo=None):
         """
         Create a Gene Expression Signature file from a local or remote gene expression signature file.
         ``name``, ``url`` and ``organism`` are required fields.
@@ -625,7 +625,7 @@ class DataImporter(object):
         :type name: str
         :param url: URL of a file
         :param organism: organism name
-        :type reference_genome: str
+        :type organism: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
         :return: file accession

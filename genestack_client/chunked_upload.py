@@ -41,7 +41,8 @@ class Chunk(object):
         self.size = size
 
     def __str__(self):
-        return "Chunk %s %s bytes for %s" % (self.data['resumableChunkNumber'], self.size, self.data['resumableRelativePath'])
+        return "Chunk %s %s bytes for %s" % (self.data['resumableChunkNumber'], self.size,
+                                             self.data['resumableRelativePath'])
 
     def get_file(self):
         container = BytesIO()
@@ -132,11 +133,11 @@ class ChunkedUpload(object):
             info = [chunk_size, total_size, token, self.filename, path, chunk_count, launch_time]
             for x in xrange(1, chunk_count + 1):
                 if x == chunk_count:
-                    curren_chunk_size = self.total_size - start
+                    current_chunk_size = self.total_size - start
                 else:
-                    curren_chunk_size = chunk_size
-                yield Chunk(x, start, curren_chunk_size, *info)
-                start += curren_chunk_size
+                    current_chunk_size = chunk_size
+                yield Chunk(x, start, current_chunk_size, *info)
+                start += current_chunk_size
 
         self.iterator = _iterator()
 
@@ -224,7 +225,8 @@ class ChunkedUpload(object):
                 time.sleep(RETRY_INTERVAL)
                 error = str(e)
                 if self.connection.debug:
-                    sys.stderr.write('%s/%s attempt to upload %s failed. Connection error: %s\n' % (attempt + 1, RETRY_ATTEMPTS, chunk, error))
+                    sys.stderr.write('%s/%s attempt to upload %s failed. Connection error: %s\n' % (
+                        attempt + 1, RETRY_ATTEMPTS, chunk, error))
                 continue
             # done without errors
             if response.status_code == 200:

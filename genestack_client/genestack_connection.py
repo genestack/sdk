@@ -134,7 +134,6 @@ class Connection(object):
         The server will return a message specifying the compatible version.
         If the current version is not supported, an exception is raised.
 
-        :param version: version in format suitable for distutils.version.StrictVersion
         :return: None
         """
         my_version = StrictVersion(__version__)
@@ -142,7 +141,7 @@ class Connection(object):
         try:
             client_version_app = self.application('genestack/clientVersion')
             compatible_version = client_version_app.invoke('getCompatibleVersion')
-        except GenestackServerException, e:
+        except GenestackServerException:
             # We don't know what happened, but it might be due to incompatible client/API versions.
             # Throw a version exception, making sure we tell the user to update.
             raise GenestackVersionException(my_version)

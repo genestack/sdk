@@ -6,7 +6,7 @@ from genestack_client.genestack_metainfo import Metainfo
 from genestack_client.bio_meta_keys import BioMetaKeys
 
 
-# FIXME: add deprecation warnign to access for all attributes of class via __getattribute__()
+# FIXME: add deprecation warning to access for all attributes of class via __getattribute__()
 class BioMetainfo(Metainfo, BioMetaKeys):
     """
     A metainfo representation with additional methods for biological metadata.

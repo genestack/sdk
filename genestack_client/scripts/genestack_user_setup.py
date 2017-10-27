@@ -301,7 +301,7 @@ class UserManagement(GenestackShell):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print "No config file was found; starting init."
-            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], None)
+            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], False)
             args.host = None  # do not provide host for future use of arguments
 
 

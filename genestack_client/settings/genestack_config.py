@@ -157,7 +157,7 @@ class Config(object):
             if user.password:
                 try:
                     import keyring
-                    keyring.set_password("%s" % GENESTACK_SDK, user.alias, user.password)
+                    keyring.set_password(GENESTACK_SDK, user.alias, user.password)
                 except (ImportError, Exception) as e:
 
                     if self.store_raw is not None:
