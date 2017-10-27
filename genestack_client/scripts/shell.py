@@ -4,6 +4,7 @@
 import argparse
 import json
 import shlex
+from getpass import getpass
 from datetime import datetime
 
 import sys
@@ -23,7 +24,6 @@ def serialize_params(params):
         except ValueError:
             args.append(arg)
     return args
-
 
 class Call(Command):
     COMMAND = 'call'
@@ -52,6 +52,27 @@ class Call(Command):
         res = self.do_request()
         print json.dumps(res, indent=2)
 
+class Sudo(Call):
+    COMMAND = 'sudo'
+    DESCRIPTION = 'call a command as another user'
+    OFFLINE = False
+
+    def update_parser(self, p):
+        p.add_argument('email', help='user email to act as')
+        p.add_argument('method', help='application method')
+        p.add_argument('params', nargs=argparse.REMAINDER, help='params')
+
+    def do_request(self, password):
+        params = [self.args.email, password, self.args.method] + self.args.params
+        params = serialize_params(params)
+        return self.connection.application('genestack/shell').invoke('sudo', *params)
+
+    def run(self):
+        res = self.do_request('')
+        if isinstance(res, basestring) and res.startswith('Incorrect password!'):
+            password = getpass('Enter your password: ')
+            res = self.do_request(password)
+        print json.dumps(res, indent=2)
 
 class Time(Call):
     DESCRIPTION = 'invoke with timer'
@@ -61,7 +82,6 @@ class Time(Call):
         start = datetime.now()
         Call.run(self)
         print 'Execution time: %s' % (datetime.now() - start)
-
 
 class Groups(Command):
     DESCRIPTION = 'print information about user groups'
@@ -75,7 +95,7 @@ class Groups(Command):
 
 
 class Shell(GenestackShell):
-    COMMAND_LIST = [Time, Call, Groups]
+    COMMAND_LIST = [Time, Call, Groups, Sudo]
 
     def get_commands_for_help(self):
         commands = GenestackShell.get_commands_for_help(self)
