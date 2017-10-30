@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import os
-import time
 import json
+import os
 import re
+import sys
+import time
 from datetime import datetime
 from io import BytesIO
-from threading import Thread, Lock, Condition
-
-import sys
+from threading import Condition, Lock, Thread
 
 from OpenSSL.SSL import SysCallError
 from requests.exceptions import RequestException
 
-from genestack_client.utils import isatty
 from genestack_client import GenestackException
+from genestack_client.utils import isatty
 
 RETRY_ATTEMPTS = 5
 RETRY_INTERVAL = 2  # seconds

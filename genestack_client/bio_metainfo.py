@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+
 import sys
 
-
-from genestack_client.genestack_metainfo import Metainfo
-from genestack_client.bio_meta_keys import BioMetaKeys
+from genestack_client import BioMetaKeys, Metainfo
 
 
 # FIXME: add deprecation warning to access for all attributes of class via __getattribute__()

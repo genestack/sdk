@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from argparse import ArgumentParser
-import sys
-import os
 import cmd
+import os
 import shlex
+import sys
+from argparse import ArgumentParser
 from traceback import print_exc
 
-from genestack_client import (GenestackVersionException, GenestackAuthenticationException, GenestackException)
+from genestack_client import (GenestackAuthenticationException, GenestackException,
+                              GenestackVersionException)
+from utils import get_connection, isatty, make_connection_parser
 from version import __version__
-
-from utils import isatty, make_connection_parser, get_connection
-
 
 if isatty():
     # To have autocomplete and console navigation on windows you need to have pyreadline installed.

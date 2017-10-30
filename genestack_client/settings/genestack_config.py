@@ -2,11 +2,11 @@
 
 import os
 import platform
-from genestack_client import GenestackException
-from xml.dom.minidom import getDOMImplementation, parse
-from genestack_client.settings import User
 from copy import deepcopy
+from xml.dom.minidom import getDOMImplementation, parse
 
+from genestack_client import GenestackException
+from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
 GENESTACK_SDK = "Genestack SDK"

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
+
 import genestack_client
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
+from genestack_client import (Application, FileFilter, GenestackException, Metainfo, SudoUtils,
+                              validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'

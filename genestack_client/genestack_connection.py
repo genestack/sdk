@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
+import cookielib
+import json
 import os
 import sys
 import urllib
 import urllib2
-import cookielib
-import json
-import requests
 from distutils.version import StrictVersion
 
-from genestack_client import (GenestackServerException, GenestackAuthenticationException,
-                              GenestackException, GenestackVersionException, __version__)
-from genestack_client.utils import isatty
+import requests
+
+from genestack_client import (GenestackAuthenticationException, GenestackException,
+                              GenestackServerException, GenestackVersionException, __version__)
 from genestack_client.chunked_upload import upload_by_chunks
+from genestack_client.utils import isatty
 
 
 class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):

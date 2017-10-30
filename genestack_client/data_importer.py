@@ -5,10 +5,8 @@ import sys
 from urllib import quote
 from urlparse import urlparse
 
-from genestack_client import BioMetaKeys
-from genestack_client import GenestackException
-from genestack_client import Metainfo
-from genestack_client.metainfo_scalar_values import FileReference, ExternalLink, StringValue
+from genestack_client import BioMetaKeys, GenestackException, Metainfo
+from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'

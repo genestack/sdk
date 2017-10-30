@@ -4,8 +4,8 @@
 import os
 import sys
 from uuid import uuid4
-import pytest
 
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (FilesUtil, GenestackException, GenestackServerException, get_connection,

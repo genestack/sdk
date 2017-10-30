@@ -1,8 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-from genestack_client import (FilesUtil, BowtieApplication, AlignedReadsQC, VariationCaller2Application,
-                              BioMetaKeys, SpecialFolders, make_connection_parser, get_connection)
+from genestack_client import (AlignedReadsQC, BioMetaKeys, BowtieApplication, FilesUtil,
+                              SpecialFolders, VariationCaller2Application, get_connection,
+                              make_connection_parser)
 
 
 # base class to create multiple files with a CLA

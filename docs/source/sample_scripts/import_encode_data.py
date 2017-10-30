@@ -6,9 +6,8 @@
 
 import csv
 
-from genestack_client import (DataImporter, BioMetaKeys,
-                              make_connection_parser, get_connection,
-                              Metainfo)
+from genestack_client import (BioMetaKeys, DataImporter, Metainfo, get_connection,
+                              make_connection_parser)
 
 # ENCODE data
 FILE_ACCESSION = "File accession"

@@ -3,8 +3,8 @@
 
 import csv
 
-from genestack_client import (unaligned_reads, DataImporter, BioMetaKeys, Metainfo,
-                              make_connection_parser, get_connection, GenestackException)
+from genestack_client import (BioMetaKeys, DataImporter, GenestackException, Metainfo,
+                              get_connection, make_connection_parser, unaligned_reads)
 
 # keys that must be supplied in the CSV file
 MANDATORY_KEYS = ['name', 'link']
