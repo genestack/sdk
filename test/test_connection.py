@@ -28,20 +28,14 @@ def test_connection_to_wrong_url():
         connection.login(user_login, user_pwd)
 
 
-def test_login_positive_by_password():
+def test_login_by_password_positive():
     connection = Connection(server_url)
     connection.login(user_login, user_pwd)
     name = connection.application('genestack/signin').invoke('whoami')
     assert name == user_login, 'Name does not match %s and  %s' % (name, user_login)
 
 
-def test_open_by_password():
-    connection = Connection(server_url)
-    connection.login(user_login, user_pwd)
-    connection.application('genestack/signin').invoke('whoami')
-
-
-def test_wrong_login():
+def test_login_negative():
     connection = Connection(server_url)
     with pytest.raises(GenestackException):
         connection.login('test', 'test')
@@ -53,19 +47,12 @@ def test_wrong_login():
         connection.login(user_pwd, user_pwd)
 
 
-def test_open_by_guest_negative():
-    connection = Connection(server_url)
-    connection.login(user_login, user_pwd)
-    name = connection.application('genestack/signin').invoke('whoami')
-    assert name == user_login
-
-
-def test_open_by_guest_positive():
+def test_access_by_anonymous():
     connection = Connection(server_url)
     connection.open('/')
 
 
-def test_guest_cannot_access_method_that_requre_login():
+def test_method_forbidden_for_anonymous():
     connection = Connection(server_url)
     with pytest.raises(GenestackException) as e:
         connection.application('genestack/signin').invoke('whoami')
