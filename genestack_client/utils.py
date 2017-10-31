@@ -9,7 +9,7 @@ from genestack_client import GenestackException
 
 def get_terminal_width():
     """
-    Return terminal width.
+    Return terminal width in characters (defaults to 80).
 
     :return: terminal width
     :rtype: int
