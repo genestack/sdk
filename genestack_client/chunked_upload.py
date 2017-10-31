@@ -224,8 +224,8 @@ class ChunkedUpload(object):
                 time.sleep(RETRY_INTERVAL)
                 error = str(e)
                 if self.connection.debug:
-                    sys.stderr.write('%s/%s attempt to upload %s failed. Connection error: %s\n' % (
-                        attempt + 1, RETRY_ATTEMPTS, chunk, error))
+                    sys.stderr.write('%s/%s attempt to upload %s failed. Connection error: %s\n' %
+                                     (attempt + 1, RETRY_ATTEMPTS, chunk, error))
                 continue
             # done without errors
             if response.status_code == 200:
