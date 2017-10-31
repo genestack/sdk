@@ -32,7 +32,7 @@ def test_login_by_password_positive():
     connection = Connection(server_url)
     connection.login(user_login, user_pwd)
     name = connection.application('genestack/signin').invoke('whoami')
-    assert name == user_login, 'Name does not match %s and  %s' % (name, user_login)
+    assert name == user_login, 'Name ("%s") does not match login ("%s")' % (name, user_login)
 
 
 def test_login_negative():
