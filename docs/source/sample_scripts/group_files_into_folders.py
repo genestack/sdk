@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-from genestack_client import FilesUtil, make_connection_parser, get_connection
+from genestack_client import FilesUtil, get_connection, make_connection_parser
 
 # parse script arguments
 parser = make_connection_parser()

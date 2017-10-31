@@ -2,9 +2,10 @@
 
 import sys
 
-from genestack_client import (GenestackException, MetainfoScalarValue, StringValue, BooleanValue, IntegerValue,
-                              MemorySizeValue, DecimalValue, ExternalLink, Person, Publication, Organization,
-                              DateTimeValue, FileReference)
+from genestack_client import (BooleanValue, DateTimeValue, DecimalValue, ExternalLink,
+                              FileReference, GenestackException, IntegerValue, MemorySizeValue,
+                              MetainfoScalarValue, Organization, Person,
+                              Publication, StringValue)
 
 
 class Metainfo(dict):

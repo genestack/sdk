@@ -5,10 +5,8 @@ import sys
 from urllib import quote
 from urlparse import urlparse
 
-from genestack_client import BioMetaKeys
-from genestack_client import GenestackException
-from genestack_client import Metainfo
-from genestack_client.metainfo_scalar_values import FileReference, ExternalLink, StringValue
+from genestack_client import BioMetaKeys, GenestackException, Metainfo
+from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
 
 ANNOTATION_KEY = 'genestack.url:annotations'
 SEQUENCE_KEY = 'genestack.url:sequence'
@@ -598,7 +596,7 @@ class DataImporter(object):
         :type name: str
         :param url: URL of a file
         :param organism: organism name
-        :type reference_genome: str
+        :type organism: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
         :return: file accession
@@ -611,7 +609,7 @@ class DataImporter(object):
         return self.__invoke_loader(parent, 'geneList', metainfo)
 
     def create_gene_expression_signature(self, parent=None, name=None, url=None,
-                         organism=None, metainfo=None):
+                                         organism=None, metainfo=None):
         """
         Create a Gene Expression Signature file from a local or remote gene expression signature file.
         ``name``, ``url`` and ``organism`` are required fields.
@@ -625,7 +623,7 @@ class DataImporter(object):
         :type name: str
         :param url: URL of a file
         :param organism: organism name
-        :type reference_genome: str
+        :type organism: str
         :param metainfo: metainfo object
         :type metainfo: Metainfo
         :return: file accession

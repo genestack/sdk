@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-from genestack_client import TaskLogViewer, make_connection_parser, get_connection
+from genestack_client import TaskLogViewer, get_connection, make_connection_parser
 
 # add extra arguments to the Genestack arguments parser for this script
 parser = make_connection_parser()

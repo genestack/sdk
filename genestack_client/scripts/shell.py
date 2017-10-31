@@ -4,13 +4,11 @@
 import argparse
 import json
 import shlex
+import sys
 from datetime import datetime
 
-import sys
-
 from genestack_client import FilesUtil
-
-from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.genestack_shell import Command, GenestackShell
 
 APPLICATION_SHELL = 'genestack/shell'
 

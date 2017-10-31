@@ -1,9 +1,10 @@
-import os
 import imp
-from genestack_client.genestack_shell import get_help
-from genestack_client import make_connection_parser
-
+import os
 import sys
+
+from genestack_client import make_connection_parser
+from genestack_client.genestack_shell import get_help
+
 sys.path.append('..')
 
 

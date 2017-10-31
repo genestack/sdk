@@ -43,8 +43,8 @@ class CLApplication(Application):
         """
         app_file = self.__create_file(source_files, params)
 
+        fu = FilesUtil(self.connection)
         if name:
-            fu = FilesUtil(self.connection)
             fu.rename_file(app_file, name)
 
         if calculate_checksums:
