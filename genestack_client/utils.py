@@ -19,6 +19,14 @@ def isatty():
         return False
 
 
+class GenestackArgumentParser(argparse.ArgumentParser):
+    def parse_known_args(self, args=None, namespace=None):
+        args, argv = super(GenestackArgumentParser, self).parse_known_args(args, namespace)
+        if not args.user and args.pwd:
+            self.error('Password should not be specified without user')
+        return args, argv
+
+
 def make_connection_parser(user=None, password=None, host=None):
     """
     Creates an argument parser with the provided connection parameters.
@@ -34,7 +42,7 @@ def make_connection_parser(user=None, password=None, host=None):
     :return: parser
     :rtype: argparse.ArgumentParser
     """
-    parser = argparse.ArgumentParser()
+    parser = GenestackArgumentParser()
     group = parser.add_argument_group('connection')
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
