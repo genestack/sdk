@@ -1,7 +1,6 @@
-from argparse import ArgumentParser
 import imp
 import os
-
+from argparse import ArgumentParser
 
 template = """
 {name}

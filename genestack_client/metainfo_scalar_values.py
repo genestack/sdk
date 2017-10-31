@@ -1,6 +1,7 @@
-import os
 import datetime
-from urlparse import urlparse, unquote
+import os
+from urlparse import unquote, urlparse
+
 from genestack_client import GenestackException
 
 

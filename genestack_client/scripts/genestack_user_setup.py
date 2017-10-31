@@ -1,14 +1,14 @@
 #!python
 # -*- coding: utf-8 -*-
 
-from argparse import ArgumentParser
-
 import os
 import re
 import sys
+from argparse import ArgumentParser
 from getpass import getpass
+
 from genestack_client import GenestackAuthenticationException
-from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.genestack_shell import Command, GenestackShell
 from genestack_client.settings import DEFAULT_HOST, User, config
 
 
@@ -301,7 +301,7 @@ class UserManagement(GenestackShell):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print "No config file was found; starting init."
-            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], None)
+            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], False)
             args.host = None  # do not provide host for future use of arguments
 
 

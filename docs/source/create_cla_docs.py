@@ -1,6 +1,6 @@
 from inspect import getmembers, isclass
-from genestack_client import cla
 
+from genestack_client import cla
 
 template = '''
 {name}

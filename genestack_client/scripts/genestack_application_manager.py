@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import glob
+import json
 import os
 import sys
+import time
 import urllib2
 import xml.dom.minidom as minidom
-import json
-import time
 import zipfile
+from collections import OrderedDict, namedtuple
 from textwrap import TextWrapper
-from collections import namedtuple, OrderedDict
+
 from genestack_client import GenestackException, GenestackServerException
-from genestack_client.genestack_shell import GenestackShell, Command
-from genestack_client.utils import isatty, ask_confirmation
+from genestack_client.genestack_shell import Command, GenestackShell
+from genestack_client.utils import ask_confirmation, isatty
 
 if sys.stdout.encoding is None:
     # wrap sys.stdout into a StreamWriter to allow writing unicode to pipe

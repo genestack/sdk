@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import time
 import sys
+import time
+
 from genestack_client import Application, GenestackException
 
 

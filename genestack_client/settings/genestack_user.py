@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from getpass import getpass
-from genestack_client import GenestackException, Connection, GenestackAuthenticationException
-from genestack_client.utils import isatty, ask_confirmation
+
+from genestack_client import Connection, GenestackAuthenticationException, GenestackException
+from genestack_client.utils import ask_confirmation, isatty
 
 DEFAULT_HOST = 'platform.genestack.org'
 
