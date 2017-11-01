@@ -38,16 +38,26 @@ def test_password_without_user(capsys):
     parser = make_connection_parser()
 
     with pytest.raises(SystemExit):
-        parser.parse_args(['-p', 'dumy_token'])
+        parser.parse_args(['-p', 'some_password'])
 
-    # Emulate output of parser.error(message)
+    # Test stderr output that was written by parser before raising error:
+
+    # Expected output consist of usage section and line with filename and tested error
+    expected_error_message = 'Password should not be specified without user'
+
+    # Save parser.print_usage output to the variable
     f = StringIO()
     parser.print_usage(file=f)
-    f.write('test_arguments.py: error: Password should not be specified without user\n')
-    expected = f.getvalue()
 
+    expected_output = f.getvalue()
+    expected_output += '%s: error: %s\n' % (
+        os.path.basename(__file__), expected_error_message)
+
+    # capture stdout and stderr that was produced during test
+    # https://docs.pytest.org/en/latest/capture.html#accessing-captured-output-from-a-test-function
     out, err = capsys.readouterr()
-    assert err == expected
+
+    assert err == expected_output
 
 
 if __name__ == '__main__':
