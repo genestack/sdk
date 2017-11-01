@@ -60,5 +60,31 @@ def test_password_without_user(capsys):
     assert err == expected_output
 
 
+def test_token_and_user(capsys):
+    parser = make_connection_parser()
+
+    with pytest.raises(SystemExit):
+        parser.parse_args(['-u', 'some_password', '--api-token', 'some_token'])
+
+    # Test stderr output that was written by parser before raising error:
+
+    # Expected output consist of usage section and line with filename and tested error
+    expected_error_message = 'Token and user should not be specified together'
+
+    # Save parser.print_usage output to the variable
+    f = StringIO()
+    parser.print_usage(file=f)
+
+    expected_output = f.getvalue()
+    expected_output += '%s: error: %s\n' % (
+        os.path.basename(__file__), expected_error_message)
+
+    # capture stdout and stderr that was produced during test
+    # https://docs.pytest.org/en/latest/capture.html#accessing-captured-output-from-a-test-function
+    out, err = capsys.readouterr()
+
+    assert err == expected_output
+
+
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'short', __file__])
