@@ -4,12 +4,12 @@ import cmd
 import os
 import shlex
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, HelpFormatter
 from traceback import print_exc
 
 from genestack_client import (GenestackAuthenticationException, GenestackException,
                               GenestackVersionException)
-from utils import get_connection, isatty, make_connection_parser
+from utils import get_connection, isatty, make_connection_parser, get_terminal_width
 from version import __version__
 
 if isatty():
@@ -35,7 +35,8 @@ def get_help(parser):
     # Code almost identical with parser.print_help() with next changes:
     # it return text instead print
     # it place group 'command arguments' to the first place
-    formatter = parser._get_formatter()
+    width = min(get_terminal_width(), 100)
+    formatter = HelpFormatter(prog=parser.prog, max_help_position=30, width=width)
     # usage
     formatter.add_usage(parser.usage, parser._actions,
                         parser._mutually_exclusive_groups)

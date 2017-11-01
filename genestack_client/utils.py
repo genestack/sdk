@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import subprocess
 import sys
 
 from genestack_client import GenestackException
+
+
+def get_terminal_width():
+    """
+    Return terminal width in characters (defaults to 80).
+
+    :return: terminal width
+    :rtype: int
+    """
+    try:
+        rows, columns = subprocess.check_output(['stty', 'size']).decode().split()
+        return int(columns)
+    except Exception as e:
+        sys.stderr.write('Fail to get terminal size, use 80 as default: %s' % e)
+        return 80
 
 
 def isatty():
