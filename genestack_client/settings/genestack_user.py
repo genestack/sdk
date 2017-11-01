@@ -98,3 +98,14 @@ class User(object):
             except GenestackAuthenticationException:
                 message = 'Your username or password was incorrect for %s. Please try again.' % self.host
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, User) and
+            self.alias == other.alias and
+            self.password == other.password and
+            self.host == other.host and
+            self.email == other.email
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
