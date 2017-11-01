@@ -3,14 +3,14 @@
 
 import os
 import sys
+from argparse import RawTextHelpFormatter
 from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
-from argparse import RawTextHelpFormatter
-from genestack_client import (make_connection_parser, get_connection,
-                              DataImporter, FilesUtil, SpecialFolders)
-from genestack_client.genestack_exceptions import (GenestackServerException,
-                                                   GenestackVersionException)
+
+from genestack_client import (DataImporter, FilesUtil, GenestackServerException,
+                              GenestackVersionException, SpecialFolders, get_connection,
+                              make_connection_parser)
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
 

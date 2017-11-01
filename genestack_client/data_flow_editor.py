@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import Application, FilesUtil, Metainfo, GenestackException
+from genestack_client import Application, FilesUtil, GenestackException, Metainfo
 
 
 class DataFlowEditor(Application):

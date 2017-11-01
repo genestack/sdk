@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from genestack_client import GenestackException, FileTypes, Permissions, validate_constant
+
 from copy import deepcopy
+
+from genestack_client import FileTypes, GenestackException, Permissions, validate_constant
 
 
 class FileFilter(object):

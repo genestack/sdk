@@ -3,9 +3,8 @@
 
 import csv
 
-from genestack_client import (FilesUtil, make_connection_parser,
-                              get_connection, GenestackException, BioMetaKeys, Metainfo)
-
+from genestack_client import (BioMetaKeys, FilesUtil, GenestackException, Metainfo, get_connection,
+                              make_connection_parser)
 
 # keys that have existing dedicated "Genestack" metainfo key names
 SPECIAL_KEYS = {'name': Metainfo.NAME, 'organism': BioMetaKeys.ORGANISM,

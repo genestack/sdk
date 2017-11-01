@@ -16,9 +16,9 @@ from genestack_connection import Connection, Application
 from file_types import FileTypes
 from file_permissions import Permissions
 from metainfo_scalar_values import *
+from bio_meta_keys import BioMetaKeys
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo
-from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
 from genome_query import GenomeQuery
