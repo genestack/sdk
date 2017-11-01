@@ -17,9 +17,9 @@ def _get_server_url(host):
 
 class User(object):
     """
-    A class storing information about the server's URL, the user login, password and alias.
+    A class storing information about the server's URL, the user login, password, token and alias.
     """
-    def __init__(self, email, alias=None, host=None, password=None):
+    def __init__(self, email, alias=None, host=None, password=None, token=None):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
@@ -41,6 +41,7 @@ class User(object):
         self.email = email
         self.password = password  # TODO make property
         self.alias = alias or email
+        self.token = token
 
     def get_connection(self, interactive=True, debug=False, show_logs=False):
         """
@@ -59,7 +60,9 @@ class User(object):
         :rtype: genestack_client.Connection
         """
         connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
-        if self.email and self.password:
+        if self.token:
+            connection.login_by_token(self.token)
+        elif self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:
             self.__interactive_login(connection)

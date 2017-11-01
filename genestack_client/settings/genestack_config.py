@@ -10,6 +10,7 @@ from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
 GENESTACK_SDK = "Genestack SDK"
+GENESTACK_API_TOKEN = "GENESTACK API TOKEN"
 SETTING_FILE_NAME = 'genestack.xml'
 SETTINGS_FOLDER = '.genestack'
 
@@ -97,13 +98,20 @@ class Config(object):
                 host = get_text(user, 'host')
                 email = get_text(user, 'email')
                 password = get_text(user, 'password')
+                token = get_text(user, 'token')
                 if not password:
                     try:
                         import keyring
                         password = keyring.get_password(GENESTACK_SDK, alias)
                     except (ImportError, Exception) as e:
                         print e
-                self.add_user(User(email, alias=alias, host=host, password=password), save=False)
+                if not token:
+                    try:
+                        import keyring
+                        token = keyring.get_password(GENESTACK_API_TOKEN, alias)
+                    except (ImportError, Exception) as e:
+                        print e
+                self.add_user(User(email, alias=alias, host=host, password=password, token=token), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
         store_raw_text = get_text(dom, 'store_raw')
@@ -120,6 +128,11 @@ class Config(object):
     def change_password(self, alias, password):
         user = self.__users[alias]
         user.password = password
+        self.save()
+
+    def change_token(self, alias, token):
+        user = self.__users[alias]
+        user.token = token
         self.save()
 
     def save(self):
@@ -182,6 +195,32 @@ class Config(object):
                         password_element = document.createElement('password')
                         password_element.appendChild(document.createTextNode(user.password))
                         user_element.appendChild(password_element)
+
+            elif user.token:
+                try:
+                    import keyring
+                    keyring.set_password(GENESTACK_API_TOKEN, user.alias, user.token)
+                except (ImportError, Exception) as e:
+                    if self.store_raw is not None:
+                        save_to_file = self.store_raw
+                    elif self.store_raw_session is not None:
+                        save_to_file = self.store_raw_session
+                    else:
+                        print 'Exception at storing token at secure storage: %s' % e
+                        try:
+                            save_to_file = ask_confirmation(
+                                'Do you want to store token in config file as plain text',
+                                default='n')
+                        except KeyboardInterrupt:
+                            save_to_file = False
+                        try:
+                            self.store_raw = ask_confirmation('Set this as default behaviour', default='y')
+                        except KeyboardInterrupt:
+                            self.store_raw_session = save_to_file
+                    if save_to_file:
+                        token_element = document.createElement('token')
+                        token_element.appendChild(document.createTextNode(user.token))
+                        user_element.appendChild(token_element)
 
         if self.default_user:
             default_user_element = document.createElement('default_user')
