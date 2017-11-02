@@ -6,6 +6,9 @@ import re
 import sys
 from argparse import ArgumentParser
 from getpass import getpass
+from operator import attrgetter
+
+from genestack_client import GenestackException
 
 from genestack_client import GenestackAuthenticationException
 from genestack_client.genestack_shell import Command, GenestackShell
@@ -22,7 +25,7 @@ def validate_alias(alias):
     return bool(alias and expression.match(alias))
 
 
-def ask_alias(existed):
+def input_alias(existed):
     print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), hyphen (-))'
     while True:
         alias = raw_input('alias: ').strip()
@@ -38,19 +41,45 @@ def ask_alias(existed):
         return alias
 
 
-def ask_use_token():
-    items = ['by token', 'by email and password']
+def _select(items, message, to_string=None, selected=None):
+    """
+    Interactively asks user a message to choose one of the items.
+
+    :param items: list of strings
+    :param message: message
+    :type to_string: function to convert item to string
+    :return:
+    """
+    if not to_string:
+        to_string = str
+
+    if selected and selected not in items:
+        raise GenestackException('Selected item "%s" is not in list:%s' % (selected, items))
+
+    default_message = ''
 
     while True:
         for i, option in enumerate(items, start=1):
-            print '%s) %s' % (i, option)
+            if option == selected:
+                print '* ',
+                default_message = ' [%s]' % i
+            else:
+                print '  ',
+            print '%-2s %s' % ('%s)' % i, to_string(option))
 
-        raw_index = raw_input("Select authentication: ").strip()
+        raw_index = raw_input('%s%s: ' % (message, default_message)).strip()
 
-        try:
-            user_index = int(raw_index) - 1
-        except ValueError:
+        if not raw_index and selected:
+            return selected
+
+        if not raw_index.isdigit():
             print 'Wrong number: "%s".' % raw_index
+            continue
+
+        user_index = int(raw_index) - 1
+
+        if user_index < 0:
+            print "Number is not in list."
             continue
 
         try:
@@ -60,17 +89,26 @@ def ask_use_token():
             continue
 
 
-def ask_auth(host, alias=None):
-    if ask_use_token():
-        return ask_token(host, alias=alias)
+def input_authentication_data(host, alias=None):
+    by_token = 'by token'
+    items = [by_token, 'by email and password']
+    use_token = _select(items, 'Select authentication') == by_token
+
+    if use_token:
+        return input_token(host, alias=alias)
     else:
-        return ask_email_and_password(host, alias=alias)
+        return input_email_and_password(host, alias=alias)
 
 
-def ask_token(host, alias=None):
-    print 'Please input your token %s' % host
+def input_token(host, alias=None):
+    print 'Host: %s' % host
+
+    if alias:
+        msg = 'Please specify Genestack API token for "%s": ' % alias
+    else:
+        msg = 'Please specify Genestack API token: '
     while True:
-        token = getpass('Please specify genestack API token')
+        token = getpass(msg)
         if not token:
             print 'Token cannot be empty'
             continue
@@ -80,11 +118,11 @@ def ask_token(host, alias=None):
             connection = user.get_connection()
             break
         except GenestackAuthenticationException:
-            print 'Your username or password was incorrect. Please try again.'
+            print 'Your token was incorrect. Please try again.'
     return connection, user
 
 
-def ask_email_and_password(host, alias=None):
+def input_email_and_password(host, alias=None):
     print 'Please input your email and password for %s' % host
     user_login = None
     while True:
@@ -127,45 +165,25 @@ class AddUser(Command):
     OFFLINE = True
 
     def run(self):
-        alias = ask_alias(config.users.keys())
+        alias = input_alias(config.users.keys())
         host = ask_host()
-        _, user = ask_auth(host, alias=alias)
+        _, user = input_authentication_data(host, alias=alias)
         config.add_user(user)
         print "User %s created" % user.alias
 
 
 def select_user(users, selected=None):
+    """
+    Choose user from users stored in config.
+
+    :param users:
+    :param selected:
+    :return:
+    :rtype: User
+    """
     user_list = users.values()
     user_list.sort(key=lambda x: x.alias)
-    default_message = ''
-    selected_alias = selected and selected.alias
-    while True:
-        for i, user in enumerate(user_list, start=1):
-            if user.alias and user.alias == selected_alias:
-                print '*',
-                default_message = ' [%s]' % i
-            else:
-                print ' ',
-            print '%s) %s' % (i, user.alias)
-
-        raw_user_index = raw_input("Select user name or number%s: " % default_message).strip()
-        if not raw_user_index and selected:
-            return selected
-
-        if raw_user_index in users:
-            return users[raw_user_index]
-
-        try:
-            user_index = int(raw_user_index) - 1
-        except ValueError:
-            print 'Wrong number or alias: "%s".' % raw_user_index
-            continue
-
-        try:
-            return user_list[user_index]
-        except IndexError:
-            print "Number is not in list."
-            continue
+    return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
 class SetPassword(Command):
@@ -191,7 +209,7 @@ class SetPassword(Command):
             except GenestackAuthenticationException:
                 continue
         config.change_password(user.alias, user.password)
-        print 'Password was changed.'
+        print 'Password has been changed successfully.'
 
 
 class SetToken(Command):
@@ -200,7 +218,8 @@ class SetToken(Command):
     OFFLINE = True
 
     def update_parser(self, parent):
-        parent.add_argument('alias', metavar='<alias>', help='Alias for user to change token', nargs='?')
+        parent.add_argument('alias', metavar='<alias>',
+                            help='Alias for user to change token for', nargs='?')
 
     def run(self):
         check_config()
@@ -208,16 +227,10 @@ class SetToken(Command):
         user = users.get(self.args.alias)
         if not user:
             user = select_user(users, None)  # TODO get current user for shell and command line
-
-        while True:
-            user.token = getpass('Input token for %s: ' % user.alias.encode('utf-8'))
-            try:
-                user.get_connection()
-                break
-            except GenestackAuthenticationException:
-                continue
-        config.change_token(user.alias, user.tokne)
-        print 'Token was changed.'
+        _, new_user = input_token(user.host, alias=user.alias)
+        user.token = new_user.token
+        config.change_token(user.alias, user.token)
+        print 'Token has been changed successfully'
 
 
 class SetDefault(Command):
@@ -255,7 +268,7 @@ class Remove(Command):
 
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users)
         if user.alias == config.default_user.alias:
             print 'Cannot delete default user'
             return
@@ -283,7 +296,7 @@ class RenameUser(Command):
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
             print "Select new alias."
-            new_alias = ask_alias(users.keys())
+            new_alias = input_alias(users.keys())
         else:
             new_alias = self.args.new_alias
 
@@ -354,7 +367,7 @@ class Init(Command):
                 return
             print "If you do not have a Genestack account, you need to create one first."
 
-            connection, user = ask_email_and_password(self.args.host)
+            connection, user = input_email_and_password(self.args.host)
             config.add_user(user)  # adding first user make him default.
             print "Initialization finished. Config file created at %s" % config_path
         except (KeyboardInterrupt, EOFError):
@@ -365,7 +378,17 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetToken, Path, Remove, RenameUser]
+    COMMAND_LIST = [
+        Init,
+        List,
+        AddUser,
+        SetDefault,
+        SetPassword,
+        SetToken,
+        Path,
+        Remove,
+        RenameUser
+    ]
     intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
     prompt = 'user_setup> '
 

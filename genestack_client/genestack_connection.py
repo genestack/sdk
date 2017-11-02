@@ -134,7 +134,7 @@ class Connection(object):
         Attempt a login on the connection with the specified token.
         Raises an exception if the login fails.
 
-        :param token: email
+        :param token: token
         :rtype: None
         :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
                  :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
@@ -142,7 +142,7 @@ class Connection(object):
         self.check_version()
         logged = self.application('genestack/signin').invoke('authenticateByToken', token)
         if not logged['authenticated']:
-            raise GenestackAuthenticationException('Fail to login with token')
+            raise GenestackAuthenticationException('Fail to login by token')
 
     def check_version(self):
         """
