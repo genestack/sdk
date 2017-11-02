@@ -68,7 +68,7 @@ class Config(object):
             self.save()
 
     def set_default_user(self, user, save=True):
-        if not user.alias in self.__users:
+        if user.alias not in self.__users:
             raise GenestackException('User %s is not present in config users' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
@@ -101,7 +101,7 @@ class Config(object):
                     try:
                         import keyring
                         password = keyring.get_password(GENESTACK_SDK, alias)
-                    except (ImportError, Exception) as e:
+                    except Exception as e:
                         print e
                 self.add_user(User(email, alias=alias, host=host, password=password), save=False)
 
@@ -155,34 +155,8 @@ class Config(object):
                 user_element.appendChild(host_element)
 
             if user.password:
-                try:
-                    import keyring
-                    keyring.set_password(GENESTACK_SDK, user.alias, user.password)
-                except (ImportError, Exception) as e:
-
-                    if self.store_raw is not None:
-                        save_to_file = self.store_raw
-                    elif self.store_raw_session is not None:
-                        save_to_file = self.store_raw_session
-                    else:
-                        print 'Exception at storing password at secure storage: %s' % e
-                        try:
-                            save_to_file = ask_confirmation(
-                                'Do you want to store password in config file as plain text',
-                                default='n')
-                        except KeyboardInterrupt:
-                            save_to_file = False
-
-                        try:
-                            self.store_raw = ask_confirmation('Set this as default behaviour', default='y')
-                        except KeyboardInterrupt:
-                            self.store_raw_session = save_to_file
-
-                    if save_to_file:
-                        password_element = document.createElement('password')
-                        password_element.appendChild(document.createTextNode(user.password))
-                        user_element.appendChild(password_element)
-
+                self.store_secure_value(user.alias, user.password, GENESTACK_SDK,
+                                        document, user_element, 'password')
         if self.default_user:
             default_user_element = document.createElement('default_user')
             top.appendChild(default_user_element)
@@ -193,6 +167,32 @@ class Config(object):
             store_raw_element.appendChild(document.createTextNode(str(self.store_raw)))
         with open(config_path, 'w') as f:
             document.writexml(f, indent='', addindent='    ', newl='\n')
+
+    def store_secure_value(self, alias, secret_item, key, document, user_element, element_name):
+        try:
+            import keyring
+            keyring.set_password(key, alias, secret_item)
+        except Exception as e:
+            if self.store_raw is not None:
+                save_to_file = self.store_raw
+            elif self.store_raw_session is not None:
+                save_to_file = self.store_raw_session
+            else:
+                print 'Exception at storing at secure storage: %s' % e
+                try:
+                    save_to_file = ask_confirmation(
+                        'Do you want to store secure value in config file as plain text?',
+                        default='n')
+                except KeyboardInterrupt:
+                    save_to_file = False
+                try:
+                    self.store_raw = ask_confirmation('Set this as default behaviour?', default='y')
+                except KeyboardInterrupt:
+                    self.store_raw_session = save_to_file
+            if save_to_file:
+                value_element = document.createElement(element_name)
+                value_element.appendChild(document.createTextNode(secret_item))
+                user_element.appendChild(value_element)
 
 config = Config()
 config.load()

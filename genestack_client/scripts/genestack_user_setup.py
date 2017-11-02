@@ -6,13 +6,16 @@ import re
 import sys
 from argparse import ArgumentParser
 from getpass import getpass
+from operator import attrgetter
+
+from genestack_client import GenestackException
 
 from genestack_client import GenestackAuthenticationException
 from genestack_client.genestack_shell import Command, GenestackShell
 from genestack_client.settings import DEFAULT_HOST, User, config
 
 
-def ask_host():
+def input_host():
     host = raw_input('host [%s]: ' % DEFAULT_HOST).strip()
     return host or DEFAULT_HOST
 
@@ -22,7 +25,7 @@ def validate_alias(alias):
     return bool(alias and expression.match(alias))
 
 
-def ask_alias(existed):
+def input_alias(existed):
     print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), hyphen (-))'
     while True:
         alias = raw_input('alias: ').strip()
@@ -38,8 +41,64 @@ def ask_alias(existed):
         return alias
 
 
-def ask_email_and_password(host, alias=None):
-    print 'Please input your email and password for %s' % host
+def _select(items, message, to_string=None, selected=None):
+    """
+    Interactively asks user a message to choose one of the items.
+
+    :param items: list of strings
+    :param message: message
+    :type to_string: function to convert item to string
+    :return:
+    """
+    if not to_string:
+        to_string = str
+
+    if selected and selected not in items:
+        raise GenestackException('Selected item "%s" is not in list:%s' % (selected, items))
+
+    default_message = ''
+
+    while True:
+        for i, option in enumerate(items, start=1):
+            if option == selected:
+                print '* ',
+                default_message = ' [%s]' % i
+            else:
+                print '  ',
+            print '%-2s %s' % ('%s)' % i, to_string(option))
+
+        raw_index = raw_input('%s%s: ' % (message, default_message)).strip()
+
+        if not raw_index and selected:
+            return selected
+
+        if not raw_index.isdigit():
+            print 'Wrong number: "%s".' % raw_index
+            continue
+
+        user_index = int(raw_index) - 1
+
+        if user_index < 0:
+            print 'Number is not in list.'
+            continue
+
+        try:
+            return items[user_index]
+        except IndexError:
+            print 'Number is not in list.'
+            continue
+
+
+def input_authentication_data(host, alias=None):
+    return input_email_and_password(host, alias=alias)
+
+
+def input_email_and_password(host, alias=None):
+    print 'Specify email and password for host: "%s"' % host,
+    if alias:
+        print ' and alias: "%s"' % alias
+    else:
+        print
     user_login = None
     while True:
         if user_login:
@@ -64,14 +123,15 @@ def ask_email_and_password(host, alias=None):
             connection = user.get_connection()
             break
         except GenestackAuthenticationException:
-            print 'Your username or password was incorrect. Please try again.'
+            print 'Your username or password was incorrect, please try again'
     return connection, user
 
 
 def check_config():
     config_path = config.get_settings_file()
     if not os.path.exists(config_path):
-        print "You do not seem to have a config file yet. Please run genestack-user-setup init. Exiting."
+        print ('You do not seem to have a config file yet. '
+               'Please run genestack-user-setup init. Exiting')
         exit(1)
 
 
@@ -81,45 +141,25 @@ class AddUser(Command):
     OFFLINE = True
 
     def run(self):
-        alias = ask_alias(config.users.keys())
-        host = ask_host()
-        _, user = ask_email_and_password(host, alias=alias)
+        alias = input_alias(config.users.keys())
+        host = input_host()
+        _, user = input_authentication_data(host, alias=alias)
         config.add_user(user)
-        print "User %s created" % user.alias
+        print 'User "%s" created' % user.alias
 
 
 def select_user(users, selected=None):
+    """
+    Choose user from users stored in config.
+
+    :param users:
+    :param selected:
+    :return:
+    :rtype: User
+    """
     user_list = users.values()
     user_list.sort(key=lambda x: x.alias)
-    default_message = ''
-    selected_alias = selected and selected.alias
-    while True:
-        for i, user in enumerate(user_list, start=1):
-            if user.alias and user.alias == selected_alias:
-                print '*',
-                default_message = ' [%s]' % i
-            else:
-                print ' ',
-            print '%s) %s' % (i, user.alias)
-
-        raw_user_index = raw_input("Select user name or number%s: " % default_message).strip()
-        if not raw_user_index and selected:
-            return selected
-
-        if raw_user_index in users:
-            return users[raw_user_index]
-
-        try:
-            user_index = int(raw_user_index) - 1
-        except ValueError:
-            print 'Wrong number or alias: "%s".' % raw_user_index
-            continue
-
-        try:
-            return user_list[user_index]
-        except IndexError:
-            print "Number is not in list."
-            continue
+    return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
 class SetPassword(Command):
@@ -145,7 +185,7 @@ class SetPassword(Command):
             except GenestackAuthenticationException:
                 continue
         config.change_password(user.alias, user.password)
-        print 'Password was changed.'
+        print 'Password has been changed successfully'
 
 
 class SetDefault(Command):
@@ -166,7 +206,7 @@ class SetDefault(Command):
             print 'Set "%s" as default user.' % user.alias
             config.set_default_user(user)
         else:
-            print "Default user was not changed."
+            print 'Default user was not changed'
 
 
 class Remove(Command):
@@ -183,12 +223,12 @@ class Remove(Command):
 
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users)
         if user.alias == config.default_user.alias:
             print 'Cannot delete default user'
             return
         config.remove_user(user)
-        print "%s was removed from config" % user.alias
+        print '"%s" was removed from config' % user.alias
 
 
 class RenameUser(Command):
@@ -207,11 +247,11 @@ class RenameUser(Command):
         user = users.get(self.args.alias)
 
         if not user:
-            print "Select user to rename."
+            print 'Select user to rename'
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
-            print "Select new alias."
-            new_alias = ask_alias(users.keys())
+            print 'Select new alias'
+            new_alias = input_alias(users.keys())
         else:
             new_alias = self.args.new_alias
 
@@ -260,10 +300,11 @@ class Init(Command):
     def get_command_parser(self, parser=None):
         parser = parser or ArgumentParser(description=self.DESCRIPTION)
         parser.description = self.DESCRIPTION
-        group = parser.add_argument_group("command arguments")
+        group = parser.add_argument_group('command arguments')
         self.update_parser(group)
         group.add_argument('-H', '--host', default=DEFAULT_HOST,
-                           help="server host, use it to make init with different host, default: %s" % DEFAULT_HOST,
+                           help='server host, use it to make init with different host,'
+                                ' default: %s' % DEFAULT_HOST,
                            metavar='<host>')
         return parser
 
@@ -278,13 +319,13 @@ class Init(Command):
         try:
             config_path = config.get_settings_file()
             if os.path.exists(config_path):
-                print "A config file was already found at %s" % config_path
+                print 'A config file was already found at %s' % config_path
                 return
-            print "If you do not have a Genestack account, you need to create one first."
+            print 'If you do not have a Genestack account, you need to create one first'
 
-            connection, user = ask_email_and_password(self.args.host)
+            connection, user = input_authentication_data(self.args.host)
             config.add_user(user)  # adding first user make him default.
-            print "Initialization finished. Config file created at %s" % config_path
+            print 'Initialization finished. Config file created at %s' % config_path
         except (KeyboardInterrupt, EOFError):
             sys.stdout.flush()
             sys.stderr.write('\nError: Init is not finished\n')
@@ -292,15 +333,24 @@ class Init(Command):
 
 
 class UserManagement(GenestackShell):
-    DESCRIPTION = "Genestack user management application."
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword, Path, Remove, RenameUser]
+    DESCRIPTION = 'Genestack user management application.'
+    COMMAND_LIST = [
+        Init,
+        List,
+        AddUser,
+        SetDefault,
+        SetPassword,
+        Path,
+        Remove,
+        RenameUser
+    ]
     intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
     prompt = 'user_setup> '
 
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
-            print "No config file was found; starting init."
+            print 'No config file was found, starting init'
             self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], False)
             args.host = None  # do not provide host for future use of arguments
 
