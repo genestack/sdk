@@ -5,6 +5,8 @@ import platform
 from copy import deepcopy
 from xml.dom.minidom import getDOMImplementation, parse
 
+import sys
+
 from genestack_client import GenestackException
 from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
@@ -170,11 +172,11 @@ class Config(object):
                 user_element.appendChild(host_element)
 
             if user.password:
-                self.store_secure_value(user.alias, user.password, GENESTACK_SDK,
-                                        document, user_element, 'password')
-            elif user.token:
-                self.store_secure_value(user.alias, user.token, GENESTACK_API_TOKEN,
-                                        document, user_element, 'token')
+                if not self._store_value_securely(user.alias, user.password, GENESTACK_SDK):
+                    self._store_value_insecurely(user.password, document, user_element, 'password')
+            if user.token:
+                if not self._store_value_securely(user.alias, user.token, GENESTACK_API_TOKEN):
+                    self._store_value_insecurely(user.password, document, user_element, 'token')
         if self.default_user:
             default_user_element = document.createElement('default_user')
             top.appendChild(default_user_element)
@@ -186,35 +188,63 @@ class Config(object):
         with open(config_path, 'w') as f:
             document.writexml(f, indent='', addindent='    ', newl='\n')
 
-    def store_secure_value(self, alias, secret_item, key, document, user_element, element_name):
+    def _store_value_insecurely(self, value, document, user_element, element_name):
+        """
+        Store value in xml config.
+
+        :param value: value to be stored
+        :type value: basestring
+        :param document: document
+        :type document: xml.dom.minidom.Document
+        :param user_element: parent element
+        :type user_element: xml.dom.minidom.Element
+        :param element_name: name of the element
+        :type element_name: basestring
+        :return: None
+        """
+        if self.store_raw is not None:
+            save_to_file = self.store_raw
+        elif self.store_raw_session is not None:
+            save_to_file = self.store_raw_session
+        else:
+            try:
+                save_to_file = ask_confirmation(
+                    'Do you want to store secure value in config file as plain text?',
+                    default='n')
+            except KeyboardInterrupt:
+                save_to_file = False
+            try:
+                self.store_raw = ask_confirmation('Set this as default behaviour?', default='y')
+            except KeyboardInterrupt:
+                self.store_raw_session = save_to_file
+        if save_to_file:
+            value_element = document.createElement(element_name)
+            value_element.appendChild(document.createTextNode(value))
+            user_element.appendChild(value_element)
+        else:
+            sys.stderr.write('"%s" was not saved to file\n' % element_name)
+
+    def _store_value_securely(self, alias, secret_value, key):
+        """
+        Try to store value in security vault.
+
+        :param alias: user alias
+        :type alias: basestring
+        :param secret_value: value to be stored
+        :type secret_value: basestring
+        :param key: key for storage
+        :type key: basestring
+        :return: ``True`` if stored successfully
+        :rtype: bool
+        """
         try:
             import keyring
-            keyring.set_password(key, alias, secret_item)
+            keyring.set_password(key, alias, secret_value)
+            return True
         except Exception as e:
-            print ">>>"
-            if self.store_raw is not None:
-                save_to_file = self.store_raw
-            elif self.store_raw_session is not None:
-                save_to_file = self.store_raw_session
-            else:
-                print 'Exception at storing at secure storage: %s' % e
-                try:
-                    save_to_file = ask_confirmation(
-                        'Do you want to store secure value in config file as plain text?',
-                        default='n')
-                except KeyboardInterrupt:
-                    save_to_file = False
-                try:
-                    self.store_raw = ask_confirmation('Set this as default behaviour?', default='y')
-                except KeyboardInterrupt:
-                    self.store_raw_session = save_to_file
-            if save_to_file:
-                print ">>>>2"
-                token_element = document.createElement(element_name)
-                token_element.appendChild(document.createTextNode(secret_item))
-                user_element.appendChild(token_element)
-
-
+            if not self.store_raw:
+                sys.stderr.write('Cannot store in secure storage: %s\n' % e)
+            return False
 
 config = Config()
 config.load()
