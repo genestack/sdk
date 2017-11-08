@@ -30,13 +30,13 @@ def input_alias(existing):
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
-            print 'Alias cannot be empty.'
+            print 'Alias cannot be empty'
             continue
         if not validate_alias(alias):
             print 'Restricted symbols message'
             continue
         if alias in existing:
-            print 'Alias must be unique.'
+            print 'Alias must be unique'
             continue
         return alias
 
@@ -53,39 +53,34 @@ def _select(items, message, to_string=None, selected=None):
     to_string = to_string or str
 
     if selected and selected not in items:
-        raise GenestackException('Selected item "%s" is not in list:%s' % (selected, items))
+        raise GenestackException('Selected item "%s" is not in list: %s' % (selected, items))
 
-    default_message = ''
+    about_default = ''
 
     while True:
         for i, option in enumerate(items, start=1):
             if option == selected:
                 print '* ',
-                default_message = ' [%s]' % i
+                about_default = ' [%s]' % i
             else:
                 print '  ',
             print '%-2s %s' % ('%s)' % i, to_string(option))
 
-        raw_index = raw_input('%s%s: ' % (message, default_message)).strip()
+        raw_index = raw_input('%s%s: ' % (message, about_default)).strip()
 
         if not raw_index and selected:
             return selected
 
         if not raw_index.isdigit():
-            print 'Wrong number: "%s".' % raw_index
+            print 'Wrong number: "%s"' % raw_index
             continue
 
         item_index = int(raw_index) - 1
 
-        if item_index < 0:
-            print 'Number is not in list.'
+        if not 0 <= item_index < len(items):
+            print 'Number is not in list'
             continue
-
-        try:
-            return items[item_index]
-        except IndexError:
-            print 'Number is not in list.'
-            continue
+        return items[item_index]
 
 
 def input_authentication_data(host, alias=None):
@@ -107,7 +102,7 @@ def input_email_and_password(host, alias=None):
         else:
             user_login = raw_input('Please specify your user login (email): ').strip()
             if not user_login:
-                print 'Login cannot be empty.'
+                print 'Login cannot be empty'
                 continue
         user_password = getpass('Please specify your password for %s: ' % user_login)
         if not user_password:
@@ -223,7 +218,7 @@ class SetDefault(Command):
         if not user:
             user = select_user(users, config.default_user)
         if user.alias != config.default_user.alias:
-            print 'Set "%s" as default user.' % user.alias
+            print 'Set "%s" as default user' % user.alias
             config.set_default_user(user)
         else:
             print 'Default user has not been changed'

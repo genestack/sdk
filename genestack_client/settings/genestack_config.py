@@ -172,11 +172,15 @@ class Config(object):
                 user_element.appendChild(host_element)
 
             if user.password:
-                if not self._store_value_securely(user.alias, user.password, GENESTACK_SDK):
+                try:
+                    self._store_value_securely(user.alias, user.password, GENESTACK_SDK)
+                except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
             if user.token:
-                if not self._store_value_securely(user.alias, user.token, GENESTACK_API_TOKEN):
-                    self._store_value_insecurely(user.password, document, user_element, 'token')
+                try:
+                    self._store_value_securely(user.alias, user.token, GENESTACK_API_TOKEN)
+                except Exception:
+                    self._store_value_insecurely(user.token, document, user_element, 'token')
         if self.default_user:
             default_user_element = document.createElement('default_user')
             top.appendChild(default_user_element)
@@ -228,23 +232,23 @@ class Config(object):
         """
         Try to store value in security vault.
 
+
         :param alias: user alias
         :type alias: basestring
         :param secret_value: value to be stored
         :type secret_value: basestring
         :param key: key for storage
         :type key: basestring
-        :return: ``True`` if stored successfully
-        :rtype: bool
+        :return: None
+        :raises Exception if not able to store value
         """
         try:
             import keyring
             keyring.set_password(key, alias, secret_value)
-            return True
         except Exception as e:
             if not self.store_raw:
                 sys.stderr.write('Cannot store in secure storage: %s\n' % e)
-            return False
+            raise e
 
 config = Config()
 config.load()
