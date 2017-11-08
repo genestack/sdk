@@ -8,9 +8,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 from operator import attrgetter
 
-from genestack_client import GenestackException
-
-from genestack_client import GenestackAuthenticationException
+from genestack_client import GenestackAuthenticationException, GenestackException
 from genestack_client.genestack_shell import Command, GenestackShell
 from genestack_client.settings import DEFAULT_HOST, User, config
 
@@ -84,7 +82,14 @@ def _select(items, message, to_string=None, selected=None):
 
 
 def input_authentication_data(host, alias=None):
-    return input_email_and_password(host, alias=alias)
+    by_token = 'by token'
+    items = [by_token, 'by email and password']
+    use_token = _select(items, 'Select authentication') == by_token
+
+    if use_token:
+        return input_token(host, alias=alias)
+    else:
+        return input_email_and_password(host, alias=alias)
 
 
 def input_email_and_password(host, alias=None):
@@ -118,6 +123,26 @@ def input_email_and_password(host, alias=None):
             break
         except GenestackAuthenticationException:
             print 'Your username or password was incorrect, please try again'
+    return connection, user
+
+
+def input_token(host, alias=None):
+    print 'Host: %s' % host
+    if alias:
+        msg = 'Please specify Genestack API token for "%s": ' % alias
+    else:
+        msg = 'Please specify Genestack API token: '
+    while True:
+        token = getpass(msg)
+        if not token:
+            print 'Token cannot be empty'
+            continue
+        user = User(email=None, host=host, password=None, alias=alias, token=token)
+        try:
+            connection = user.get_connection()
+            break
+        except GenestackAuthenticationException:
+            print 'Your token was incorrect, please try again'
     return connection, user
 
 
@@ -349,7 +374,17 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = 'Genestack user management application.'
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword,SetToken, Path, Remove, RenameUser]
+    COMMAND_LIST = [
+        Init,
+        List,
+        AddUser,
+        SetDefault,
+        SetPassword,
+        SetToken,
+        Path,
+        Remove,
+        RenameUser
+    ]
     intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
     prompt = 'user_setup> '
 
