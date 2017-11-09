@@ -174,7 +174,7 @@ class Config(object):
 
     def _store_value_insecurely(self, value, document, user_element, element_name):
         """
-        Store value in xml config.
+        Store value in XML config file.
 
         :param value: value to be stored
         :type value: basestring
@@ -193,7 +193,7 @@ class Config(object):
         else:
             try:
                 save_to_file = ask_confirmation(
-                    'Do you want to store secure value in config file as plain text?',
+                    'Do you want to store sensitive data in config file in plain text?',
                     default='n')
             except KeyboardInterrupt:
                 save_to_file = False
@@ -206,12 +206,11 @@ class Config(object):
             value_element.appendChild(document.createTextNode(value))
             user_element.appendChild(value_element)
         else:
-            sys.stderr.write('"%s" was not saved to file\n' % element_name)
+            sys.stderr.write('"%s" has not been saved to config file\n' % element_name)
 
     def _store_value_securely(self, alias, secret_value, key):
         """
-        Try to store value in security vault.
-
+        Save value in security vault.
 
         :param alias: user alias
         :type alias: basestring
