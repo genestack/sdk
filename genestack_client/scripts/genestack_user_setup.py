@@ -6,6 +6,7 @@ import re
 import sys
 from argparse import ArgumentParser
 from getpass import getpass
+from operator import attrgetter
 
 from genestack_client import GenestackAuthenticationException, GenestackException
 from genestack_client.genestack_shell import Command, GenestackShell
