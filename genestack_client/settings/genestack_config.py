@@ -11,10 +11,11 @@ from genestack_client import GenestackException
 from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
-GENESTACK_SDK = "Genestack SDK"
-GENESTACK_API_TOKEN = "GENESTACK API TOKEN"
-SETTING_FILE_NAME = 'genestack.xml'
-SETTINGS_FOLDER = '.genestack'
+_PASSWORD_KEYRING = 'Genestack SDK'
+GENESTACK_API_TOKEN = 'GENESTACK API TOKEN'
+
+_SETTING_FILE_NAME = 'genestack.xml'
+_SETTINGS_DIR = '.genestack'
 
 
 class Config(object):
@@ -31,13 +32,13 @@ class Config(object):
             # http://stackoverflow.com/a/3859336/1310066 26 is Roaming folder
             buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
             ctypes.windll.shell32.SHGetFolderPathW(0, 26, 0, 0, buf)
-            path = os.path.join(str(buf.value), SETTINGS_FOLDER)
+            path = os.path.join(str(buf.value), _SETTINGS_DIR)
         else:
-            path = os.path.join(os.path.expanduser('~/'), SETTINGS_FOLDER)
+            path = os.path.join(os.path.expanduser('~/'), _SETTINGS_DIR)
         return path
 
     def get_settings_file(self):
-        return os.path.join(self.get_settings_folder(), SETTING_FILE_NAME)
+        return os.path.join(self.get_settings_folder(), _SETTING_FILE_NAME)
 
     @property
     def default_user(self):
@@ -52,8 +53,8 @@ class Config(object):
         self.save()
         try:
             import keyring
-            if keyring.get_password(GENESTACK_SDK, user.alias):
-                keyring.delete_password(GENESTACK_SDK, user.alias)
+            if keyring.get_password(_PASSWORD_KEYRING, user.alias):
+                keyring.delete_password(_PASSWORD_KEYRING, user.alias)
             if keyring.get_password(GENESTACK_API_TOKEN, user.alias):
                 keyring.delete_password(GENESTACK_API_TOKEN, user.alias)
         except ImportError:
@@ -106,7 +107,7 @@ class Config(object):
                 if not password:
                     try:
                         import keyring
-                        password = keyring.get_password(GENESTACK_SDK, alias)
+                        password = keyring.get_password(_PASSWORD_KEYRING, alias)
                     except Exception as e:
                         print e
                 if not token:
@@ -173,14 +174,15 @@ class Config(object):
 
             if user.password:
                 try:
-                    self._store_value_securely(user.alias, user.password, GENESTACK_SDK)
+                    self._store_value_securely(_PASSWORD_KEYRING, user.alias, user.password)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
-            if user.token:
-                try:
-                    self._store_value_securely(user.alias, user.token, GENESTACK_API_TOKEN)
-                except Exception:
-                    self._store_value_insecurely(user.token, document, user_element, 'token')
+                if user.token:
+                    try:
+                        self._store_value_securely(GENESTACK_API_TOKEN, user.alias, user.token, )
+                    except Exception:
+                        self._store_value_insecurely(user.token, document, user_element, 'token')
+
         if self.default_user:
             default_user_element = document.createElement('default_user')
             top.appendChild(default_user_element)
@@ -192,16 +194,16 @@ class Config(object):
         with open(config_path, 'w') as f:
             document.writexml(f, indent='', addindent='    ', newl='\n')
 
-    def _store_value_insecurely(self, value, document, user_element, element_name):
+    def _store_value_insecurely(self, value, document, parent, element_name):
         """
-        Store value in xml config.
+        Store value in XML config file.
 
         :param value: value to be stored
         :type value: basestring
         :param document: document
         :type document: xml.dom.minidom.Document
-        :param user_element: parent element
-        :type user_element: xml.dom.minidom.Element
+        :param parent: parent element
+        :type parent: xml.dom.minidom.Element
         :param element_name: name of the element
         :type element_name: basestring
         :return: None
@@ -213,7 +215,7 @@ class Config(object):
         else:
             try:
                 save_to_file = ask_confirmation(
-                    'Do you want to store secure value in config file as plain text?',
+                    'Do you want to store sensitive data in config file in plain text?',
                     default='n')
             except KeyboardInterrupt:
                 save_to_file = False
@@ -224,27 +226,26 @@ class Config(object):
         if save_to_file:
             value_element = document.createElement(element_name)
             value_element.appendChild(document.createTextNode(value))
-            user_element.appendChild(value_element)
+            parent.appendChild(value_element)
         else:
-            sys.stderr.write('"%s" was not saved to file\n' % element_name)
+            sys.stderr.write('"%s" has not been saved to config file\n' % element_name)
 
-    def _store_value_securely(self, alias, secret_value, key):
+    def _store_value_securely(self, service_name, username, secret_value):
         """
-        Try to store value in security vault.
+        Save value in security vault.
 
-
-        :param alias: user alias
-        :type alias: basestring
+        :param service_name: key for storage
+        :type service_name: basestring
+        :param username: user alias
+        :type username: basestring
         :param secret_value: value to be stored
         :type secret_value: basestring
-        :param key: key for storage
-        :type key: basestring
         :return: None
         :raises Exception if not able to store value
         """
         try:
             import keyring
-            keyring.set_password(key, alias, secret_value)
+            keyring.set_password(service_name, username, secret_value)
         except Exception as e:
             if not self.store_raw:
                 sys.stderr.write('Cannot store in secure storage: %s\n' % e)
