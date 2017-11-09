@@ -11,7 +11,8 @@ from genestack_client import GenestackException
 from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
-KEYRING_ENTRY = "Genestack SDK"
+KEYRING_API_BY_PASSWORD = 'Genestack SDK'
+
 SETTING_FILE_NAME = 'genestack.xml'
 SETTINGS_FOLDER = '.genestack'
 
@@ -51,8 +52,8 @@ class Config(object):
         self.save()
         try:
             import keyring
-            if keyring.get_password(KEYRING_ENTRY, user.alias):
-                keyring.delete_password(KEYRING_ENTRY, user.alias)
+            if keyring.get_password(KEYRING_API_BY_PASSWORD, user.alias):
+                keyring.delete_password(KEYRING_API_BY_PASSWORD, user.alias)
         except ImportError:
             pass
         except Exception as e:
@@ -102,7 +103,7 @@ class Config(object):
                 if not password:
                     try:
                         import keyring
-                        password = keyring.get_password(KEYRING_ENTRY, alias)
+                        password = keyring.get_password(KEYRING_API_BY_PASSWORD, alias)
                     except Exception as e:
                         print e
                 self.add_user(User(email, alias=alias, host=host, password=password), save=False)
@@ -158,7 +159,7 @@ class Config(object):
 
             if user.password:
                 try:
-                    self._store_value_securely(user.alias, user.password, KEYRING_ENTRY)
+                    self._store_value_securely(KEYRING_API_BY_PASSWORD, user.alias, user.password)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
         if self.default_user:
@@ -208,14 +209,14 @@ class Config(object):
         else:
             sys.stderr.write('"%s" has not been saved to config file\n' % element_name)
 
-    def _store_value_securely(self, alias, secret_value, key):
+    def _store_value_securely(self, service_name, username, secret_value):
         """
         Save value in security vault.
 
-        :param alias: user alias
-        :type alias: basestring
-        :param key: key for storage
-        :type key: basestring
+        :param service_name: key for storage
+        :type service_name: basestring
+        :param username: user alias
+        :type username: basestring
         :param secret_value: value to be stored
         :type secret_value: basestring
         :return: None
@@ -223,7 +224,7 @@ class Config(object):
         """
         try:
             import keyring
-            keyring.set_password(key, alias, secret_value)
+            keyring.set_password(service_name, username, secret_value)
         except Exception as e:
             if not self.store_raw:
                 sys.stderr.write('Cannot store in secure storage: %s\n' % e)
