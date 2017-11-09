@@ -177,11 +177,11 @@ class Config(object):
                     self._store_value_securely(_PASSWORD_KEYRING, user.alias, user.password)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
-                if user.token:
-                    try:
-                        self._store_value_securely(_TOKEN_KEYRING, user.alias, user.token, )
-                    except Exception:
-                        self._store_value_insecurely(user.token, document, user_element, 'token')
+            if user.token:
+                try:
+                    self._store_value_securely(_TOKEN_KEYRING, user.alias, user.token, )
+                except Exception:
+                    self._store_value_insecurely(user.token, document, user_element, 'token')
 
         if self.default_user:
             default_user_element = document.createElement('default_user')
