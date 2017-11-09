@@ -125,7 +125,7 @@ def check_config():
     config_path = config.get_settings_file()
     if not os.path.exists(config_path):
         print ('You do not seem to have a config file yet. '
-               'Please run genestack-user-setup init. Exiting')
+               'Please run `genestack-user-setup init`. Exiting')
         exit(1)
 
 
@@ -197,8 +197,8 @@ class SetDefault(Command):
         if not user:
             user = select_user(users, config.default_user)
         if user.alias != config.default_user.alias:
-            print 'Set "%s" as default user' % user.alias
             config.set_default_user(user)
+            print 'Default user has been set to "%s"' % user.alias
         else:
             print 'Default user has not been changed'
 
@@ -244,7 +244,7 @@ class RenameUser(Command):
             print 'Select user to rename'
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
-            print 'Select new alias'
+            print 'Enter new alias'
             new_alias = input_alias(users.keys())
         else:
             new_alias = self.args.new_alias
@@ -313,13 +313,13 @@ class Init(Command):
         try:
             config_path = config.get_settings_file()
             if os.path.exists(config_path):
-                print 'A config file was already found at %s' % config_path
+                print 'A config file already exists at %s' % config_path
                 return
             print 'If you do not have a Genestack account, you need to create one first'
 
             connection, user = input_authentication_data(self.args.host)
             config.add_user(user)  # adding first user make him default.
-            print 'Initialization finished. Config file created at %s' % config_path
+            print 'Config file at "%s" has been created successfully' % config_path
         except (KeyboardInterrupt, EOFError):
             sys.stdout.flush()
             sys.stderr.write('\nError: Init is not finished\n')
