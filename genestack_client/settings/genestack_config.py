@@ -11,10 +11,10 @@ from genestack_client import GenestackException
 from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
-_KEYRING_API_BY_PASSWORD = 'Genestack SDK'
+_PASSWORD_KEYRING = 'Genestack SDK'
 
 _SETTING_FILE_NAME = 'genestack.xml'
-_SETTINGS_FOLDER = '.genestack'
+_SETTINGS_DIR = '.genestack'
 
 
 class Config(object):
@@ -31,9 +31,9 @@ class Config(object):
             # http://stackoverflow.com/a/3859336/1310066 26 is Roaming folder
             buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
             ctypes.windll.shell32.SHGetFolderPathW(0, 26, 0, 0, buf)
-            path = os.path.join(str(buf.value), _SETTINGS_FOLDER)
+            path = os.path.join(str(buf.value), _SETTINGS_DIR)
         else:
-            path = os.path.join(os.path.expanduser('~/'), _SETTINGS_FOLDER)
+            path = os.path.join(os.path.expanduser('~/'), _SETTINGS_DIR)
         return path
 
     def get_settings_file(self):
@@ -52,8 +52,8 @@ class Config(object):
         self.save()
         try:
             import keyring
-            if keyring.get_password(_KEYRING_API_BY_PASSWORD, user.alias):
-                keyring.delete_password(_KEYRING_API_BY_PASSWORD, user.alias)
+            if keyring.get_password(_PASSWORD_KEYRING, user.alias):
+                keyring.delete_password(_PASSWORD_KEYRING, user.alias)
         except ImportError:
             pass
         except Exception as e:
@@ -103,7 +103,7 @@ class Config(object):
                 if not password:
                     try:
                         import keyring
-                        password = keyring.get_password(_KEYRING_API_BY_PASSWORD, alias)
+                        password = keyring.get_password(_PASSWORD_KEYRING, alias)
                     except Exception as e:
                         print e
                 self.add_user(User(email, alias=alias, host=host, password=password), save=False)
@@ -159,7 +159,7 @@ class Config(object):
 
             if user.password:
                 try:
-                    self._store_value_securely(_KEYRING_API_BY_PASSWORD, user.alias, user.password)
+                    self._store_value_securely(_PASSWORD_KEYRING, user.alias, user.password)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
         if self.default_user:
