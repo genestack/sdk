@@ -373,7 +373,17 @@ class Init(Command):
 
 class UserManagement(GenestackShell):
     DESCRIPTION = 'Genestack user management application.'
-    COMMAND_LIST = [Init, List, AddUser, SetDefault, SetPassword,SetToken, Path, Remove, RenameUser]
+    COMMAND_LIST = [
+        Init,
+        List,
+        AddUser,
+        SetDefault,
+        SetPassword,
+        SetToken,
+        Path,
+        Remove,
+        RenameUser
+    ]
     intro = "User setup shell.\nType 'help' for list of available commands.\n\n"
     prompt = 'user_setup> '
 

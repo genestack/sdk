@@ -12,7 +12,7 @@ from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
 _PASSWORD_KEYRING = 'Genestack SDK'
-GENESTACK_API_TOKEN = 'GENESTACK API TOKEN'
+_TOKEN_KEYRING = 'Genestack API Token'
 
 _SETTING_FILE_NAME = 'genestack.xml'
 _SETTINGS_DIR = '.genestack'
@@ -55,8 +55,8 @@ class Config(object):
             import keyring
             if keyring.get_password(_PASSWORD_KEYRING, user.alias):
                 keyring.delete_password(_PASSWORD_KEYRING, user.alias)
-            if keyring.get_password(GENESTACK_API_TOKEN, user.alias):
-                keyring.delete_password(GENESTACK_API_TOKEN, user.alias)
+            if keyring.get_password(_TOKEN_KEYRING, user.alias):
+                keyring.delete_password(_TOKEN_KEYRING, user.alias)
         except ImportError:
             pass
         except Exception as e:
@@ -113,7 +113,7 @@ class Config(object):
                 if not token:
                     try:
                         import keyring
-                        token = keyring.get_password(GENESTACK_API_TOKEN, alias)
+                        token = keyring.get_password(_TOKEN_KEYRING, alias)
                     except Exception as e:
                         print e
                 self.add_user(User(email, alias=alias, host=host, password=password, token=token), save=False)
@@ -179,7 +179,7 @@ class Config(object):
                     self._store_value_insecurely(user.password, document, user_element, 'password')
                 if user.token:
                     try:
-                        self._store_value_securely(GENESTACK_API_TOKEN, user.alias, user.token, )
+                        self._store_value_securely(_TOKEN_KEYRING, user.alias, user.token, )
                     except Exception:
                         self._store_value_insecurely(user.token, document, user_element, 'token')
 
