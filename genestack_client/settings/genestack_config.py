@@ -11,7 +11,7 @@ from genestack_client import GenestackException
 from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
-GENESTACK_SDK = "Genestack SDK"
+KEYRING_ENTRY = "Genestack SDK"
 SETTING_FILE_NAME = 'genestack.xml'
 SETTINGS_FOLDER = '.genestack'
 
@@ -51,8 +51,8 @@ class Config(object):
         self.save()
         try:
             import keyring
-            if keyring.get_password(GENESTACK_SDK, user.alias):
-                keyring.delete_password(GENESTACK_SDK, user.alias)
+            if keyring.get_password(KEYRING_ENTRY, user.alias):
+                keyring.delete_password(KEYRING_ENTRY, user.alias)
         except ImportError:
             pass
         except Exception as e:
@@ -102,7 +102,7 @@ class Config(object):
                 if not password:
                     try:
                         import keyring
-                        password = keyring.get_password(GENESTACK_SDK, alias)
+                        password = keyring.get_password(KEYRING_ENTRY, alias)
                     except Exception as e:
                         print e
                 self.add_user(User(email, alias=alias, host=host, password=password), save=False)
@@ -158,7 +158,7 @@ class Config(object):
 
             if user.password:
                 try:
-                    self._store_value_securely(user.alias, user.password, GENESTACK_SDK)
+                    self._store_value_securely(user.alias, user.password, KEYRING_ENTRY)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
         if self.default_user:
@@ -172,7 +172,7 @@ class Config(object):
         with open(config_path, 'w') as f:
             document.writexml(f, indent='', addindent='    ', newl='\n')
 
-    def _store_value_insecurely(self, value, document, user_element, element_name):
+    def _store_value_insecurely(self, value, document, parent, element_name):
         """
         Store value in XML config file.
 
@@ -180,8 +180,8 @@ class Config(object):
         :type value: basestring
         :param document: document
         :type document: xml.dom.minidom.Document
-        :param user_element: parent element
-        :type user_element: xml.dom.minidom.Element
+        :param parent: parent element
+        :type parent: xml.dom.minidom.Element
         :param element_name: name of the element
         :type element_name: basestring
         :return: None
@@ -204,7 +204,7 @@ class Config(object):
         if save_to_file:
             value_element = document.createElement(element_name)
             value_element.appendChild(document.createTextNode(value))
-            user_element.appendChild(value_element)
+            parent.appendChild(value_element)
         else:
             sys.stderr.write('"%s" has not been saved to config file\n' % element_name)
 
@@ -214,10 +214,10 @@ class Config(object):
 
         :param alias: user alias
         :type alias: basestring
-        :param secret_value: value to be stored
-        :type secret_value: basestring
         :param key: key for storage
         :type key: basestring
+        :param secret_value: value to be stored
+        :type secret_value: basestring
         :return: None
         :raises Exception if not able to store value
         """
