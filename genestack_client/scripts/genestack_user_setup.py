@@ -114,11 +114,11 @@ def input_email_and_password(host, alias=None):
             continue
         user = User(user_login, host=host, password=user_password, alias=alias)
         try:
-            connection = user.get_connection()
+            user.get_connection()
             break
         except GenestackAuthenticationException:
             print 'Your username or password was incorrect, please try again'
-    return connection, user
+    return user
 
 
 def check_config():
@@ -137,7 +137,7 @@ class AddUser(Command):
     def run(self):
         alias = input_alias(config.users.keys())
         host = input_host()
-        _, user = input_authentication_data(host, alias=alias)
+        user = input_authentication_data(host, alias=alias)
         config.add_user(user)
         print 'User "%s" has been created' % user.alias
 
@@ -317,7 +317,7 @@ class Init(Command):
                 return
             print 'If you do not have a Genestack account, you need to create one first'
 
-            connection, user = input_authentication_data(self.args.host)
+            user = input_authentication_data(self.args.host)
             config.add_user(user)  # adding first user make him default.
             print 'Config file at "%s" has been created successfully' % config_path
         except (KeyboardInterrupt, EOFError):
