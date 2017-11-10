@@ -12,7 +12,7 @@ from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
 _PASSWORD_KEYRING = 'Genestack SDK'
-_TOKEN_KEYRING = 'Genestack API Token'
+_TOKEN_KEYRING = 'Genestack SDK (token)'
 
 _SETTING_FILE_NAME = 'genestack.xml'
 _SETTINGS_DIR = '.genestack'

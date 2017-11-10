@@ -24,7 +24,8 @@ def validate_alias(alias):
 
 
 def input_alias(existing):
-    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), hyphen (-))'
+    print('Please input alias. (Alias can contain: letters (a-Z), '
+          'digit (0-9), at (@), underscore (_), hyphen (-))')
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
@@ -119,19 +120,19 @@ def input_email_and_password(host, alias=None):
             continue
         user = User(user_login, host=host, password=user_password, alias=alias)
         try:
-            connection = user.get_connection()
+            user.get_connection()
             break
         except GenestackAuthenticationException:
             print 'Your username or password was incorrect, please try again'
-    return connection, user
+    return user
 
 
 def input_token(host, alias=None):
     print 'Host: %s' % host
+    msg = 'Please specify Genestack API token'
     if alias:
-        msg = 'Please specify Genestack API token for "%s": ' % alias
-    else:
-        msg = 'Please specify Genestack API token: '
+        msg += 'for "%s"' % alias
+    msg += ': '
     while True:
         token = getpass(msg)
         if not token:
@@ -139,11 +140,11 @@ def input_token(host, alias=None):
             continue
         user = User(email=None, host=host, password=None, alias=alias, token=token)
         try:
-            connection = user.get_connection()
+            user.get_connection()
             break
         except GenestackAuthenticationException:
-            print 'Your token was incorrect, please try again'
-    return connection, user
+            print 'Could not login with given token, please try again'
+    return user
 
 
 def check_config():
@@ -162,7 +163,7 @@ class AddUser(Command):
     def run(self):
         alias = input_alias(config.users.keys())
         host = input_host()
-        _, user = input_authentication_data(host, alias=alias)
+        user = input_authentication_data(host, alias=alias)
         config.add_user(user)
         print 'User "%s" has been created' % user.alias
 
@@ -222,7 +223,7 @@ class SetToken(Command):
         user = users.get(self.args.alias)
         if not user:
             user = select_user(users, None)  # TODO get current user for shell and command line
-        _, new_user = input_token(user.host, alias=user.alias)
+        new_user = input_token(user.host, alias=user.alias)
         user.token = new_user.token
         config.change_token(user.alias, user.token)
         print 'Token has been changed successfully'
@@ -363,7 +364,7 @@ class Init(Command):
                 return
             print 'If you do not have a Genestack account, you need to create one first'
 
-            connection, user = input_authentication_data(self.args.host)
+            user = input_authentication_data(self.args.host)
             config.add_user(user)  # adding first user make him default.
             print 'Config file at "%s" has been created successfully' % config_path
         except (KeyboardInterrupt, EOFError):
