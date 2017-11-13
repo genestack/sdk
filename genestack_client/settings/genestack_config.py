@@ -58,7 +58,7 @@ class Config(object):
             if keyring.get_password(_PASSWORD_KEYRING, user.alias):
                 keyring.delete_password(_PASSWORD_KEYRING, user.alias)
         except Exception as e:
-            print "Error while deleting user password for %s: %s" % (user.alias, e)
+            sys.stderr.write('Error while deleting user password for %s: %s\n' % (user.alias, e))
 
     def add_user(self, user, save=True):
         if not user.alias:
@@ -83,7 +83,8 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            print 'Warning: config is not present. You can setup it via: genestack-user-setup init'
+            sys.stderr.write('Warning: config is not present. '
+                             'You can setup it via: genestack-user-setup init\n')
             return  # check that this return handled everywhere
 
         def get_text(parent, tag):
@@ -106,7 +107,7 @@ class Config(object):
                         import keyring
                         password = keyring.get_password(_PASSWORD_KEYRING, alias)
                     except Exception as e:
-                        print e
+                        sys.stderr.write('Fail to load password for alias "%s": %s\n' % (alias, e))
                 self.add_user(User(email, alias=alias, host=host, password=password), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
