@@ -8,9 +8,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 from operator import attrgetter
 
-from genestack_client import GenestackException
-
-from genestack_client import GenestackAuthenticationException
+from genestack_client import GenestackAuthenticationException, GenestackException
 from genestack_client.genestack_shell import Command, GenestackShell
 from genestack_client.settings import DEFAULT_HOST, User, config
 
@@ -26,7 +24,8 @@ def validate_alias(alias):
 
 
 def input_alias(existing):
-    print 'Please input alias. (Alias can contain: letters (a-Z), digit (0-9), at (@), underscore (_), hyphen (-))'
+    print ('Please input alias. (Alias can contain: letters (a-Z), '
+           'digit (0-9), at (@), underscore (_), hyphen (-))')
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
@@ -99,15 +98,15 @@ def create_user_from_input(host, alias):
 
 def create_user_from_input_email_and_password(host, alias=None):
     """
-        Ask email and password, check that it is possible to login with this credentials
-        and return user.
+    Ask email and password, check that it is possible to login with this credentials
+    and return user.
 
-        :param host:  server host
-        :type host:  basestring
-        :param alias: user alias
-        :type alias: basestring
-        :return: user
-        :rtype: User
+    :param host:  server host
+    :type host:  basestring
+    :param alias: user alias
+    :type alias: basestring
+    :return: user
+    :rtype: User
     """
     print 'Specify email and password for host: "%s"' % host,
     if alias:
