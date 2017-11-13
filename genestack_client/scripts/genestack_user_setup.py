@@ -83,14 +83,35 @@ def _select(items, message, to_string=None, selected=None):
         return items[item_index]
 
 
-def input_authentication_data(host, alias=None):
-    return input_email_and_password(host, alias=alias)
+def create_user_from_input(host, alias):
+    """
+    Ask credentials interactively and return user that can login to platform.
+
+    :param host:  server host
+    :type host:  basestring
+    :param alias: user alias
+    :type alias: basestring
+    :return: user
+    :rtype: User
+    """
+    return create_user_from_input_email_and_password(host, alias=alias)
 
 
-def input_email_and_password(host, alias=None):
+def create_user_from_input_email_and_password(host, alias=None):
+    """
+        Ask email and password, check that it is possible to login with this credentials
+        and return user.
+
+        :param host:  server host
+        :type host:  basestring
+        :param alias: user alias
+        :type alias: basestring
+        :return: user
+        :rtype: User
+    """
     print 'Specify email and password for host: "%s"' % host,
     if alias:
-        print ' and alias: "%s"' % alias
+        print 'and alias: "%s"' % alias
     else:
         print
     user_login = None
@@ -114,11 +135,11 @@ def input_email_and_password(host, alias=None):
             continue
         user = User(user_login, host=host, password=user_password, alias=alias)
         try:
-            connection = user.get_connection()
+            user.get_connection()
             break
         except GenestackAuthenticationException:
             print 'Your username or password was incorrect, please try again'
-    return connection, user
+    return user
 
 
 def check_config():
@@ -137,7 +158,7 @@ class AddUser(Command):
     def run(self):
         alias = input_alias(config.users.keys())
         host = input_host()
-        _, user = input_authentication_data(host, alias=alias)
+        user = create_user_from_input(host, alias)
         config.add_user(user)
         print 'User "%s" has been created' % user.alias
 
@@ -310,6 +331,12 @@ class Init(Command):
         when this command is run for first time and in shell mode.
         If we don't quit here, shell will continue execution and ask credentials once more.
         """
+
+        # Hardcoded alias that created for the first user only.
+        # Normal usecase is when user have single account and don't care about alias name.
+        # Advanced users can rename alias.
+        default_alias = 'Default'
+
         try:
             config_path = config.get_settings_file()
             if os.path.exists(config_path):
@@ -317,7 +344,7 @@ class Init(Command):
                 return
             print 'If you do not have a Genestack account, you need to create one first'
 
-            connection, user = input_authentication_data(self.args.host)
+            user = create_user_from_input(self.args.host, default_alias)
             config.add_user(user)  # adding first user make him default.
             print 'Config file at "%s" has been created successfully' % config_path
         except (KeyboardInterrupt, EOFError):
