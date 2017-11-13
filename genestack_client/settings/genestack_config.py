@@ -61,13 +61,13 @@ class Config(object):
             if keyring.get_password(_TOKEN_KEYRING, user.alias):
                 keyring.delete_password(_TOKEN_KEYRING, user.alias)
         except Exception as e:
-            print "Error while deleting user password for %s: %s" % (user.alias, e)
+            sys.stderr.write('Error while deleting user password for %s: %s\n' % (user.alias, e))
 
     def add_user(self, user, save=True):
         if not user.alias:
-            raise GenestackException("Cant add user without alias to config")
+            raise GenestackException('Cant add user without alias to config')
         if user.alias in self.__users:
-            raise GenestackException("User alias %s is already present" % user.alias)
+            raise GenestackException('User alias %s is already present' % user.alias)
         self.__users[user.alias] = user
         if len(self.__users) == 1:
             self.set_default_user(user, save=False)
@@ -76,7 +76,7 @@ class Config(object):
 
     def set_default_user(self, user, save=True):
         if user.alias not in self.__users:
-            raise GenestackException('User %s is not present in config users' % user.alias)
+            raise GenestackException('User "%s" is not present in config users' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
         if save:
@@ -86,7 +86,8 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            print 'Warning: config is not present. You can setup it via: genestack-user-setup init'
+            sys.stderr.write('Warning: config is not present. '
+                             'You can setup it via: genestack-user-setup init\n')
             return  # check that this return handled everywhere
 
         def get_text(parent, tag):
@@ -110,13 +111,13 @@ class Config(object):
                         import keyring
                         password = keyring.get_password(_PASSWORD_KEYRING, alias)
                     except Exception as e:
-                        print e
+                        sys.stderr.write('Fail to load password for alias "%s": %s\n' % (alias, e))
                 if not token:
                     try:
                         import keyring
                         token = keyring.get_password(_TOKEN_KEYRING, alias)
                     except Exception as e:
-                        print e
+                        sys.stderr.write('Fail to load token for alias "%s": %s\n' % (alias, e))
                 self.add_user(User(email, alias=alias, host=host, password=password, token=token), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
