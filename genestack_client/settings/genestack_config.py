@@ -53,6 +53,9 @@ class Config(object):
         self.save()
         try:
             import keyring
+        except ImportError:
+            return
+        try:
             if keyring.get_password(_PASSWORD_KEYRING, user.alias):
                 keyring.delete_password(_PASSWORD_KEYRING, user.alias)
             if keyring.get_password(_TOKEN_KEYRING, user.alias):
