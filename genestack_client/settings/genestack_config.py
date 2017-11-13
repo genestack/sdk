@@ -73,7 +73,7 @@ class Config(object):
 
     def set_default_user(self, user, save=True):
         if user.alias not in self.__users:
-            raise GenestackException('User "%s" does not exists' % user.alias)
+            raise GenestackException('User "%s" does not exist' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
         if save:
