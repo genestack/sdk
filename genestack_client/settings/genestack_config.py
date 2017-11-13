@@ -83,7 +83,7 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            sys.stderr.write('Warning: no configuration file found.'
+            sys.stderr.write('Warning: no configuration file found. '
                              'Set it up with `genestack-user-setup init`\n')
             return  # check that this return handled everywhere
 
