@@ -98,7 +98,7 @@ def create_user_from_input(host, alias):
     use_token = _select(items, 'Select authentication') == by_token
 
     if use_token:
-        return input_token(host, alias=alias)
+        return create_user_from_token(host, alias=alias)
     else:
         return create_user_from_input_email_and_password(host, alias=alias)
 
@@ -148,7 +148,7 @@ def create_user_from_input_email_and_password(host, alias=None):
     return user
 
 
-def input_token(host, alias=None):
+def create_user_from_token(host, alias=None):
     print 'Host: %s' % host
     msg = 'Please specify Genestack API token'
     if alias:
