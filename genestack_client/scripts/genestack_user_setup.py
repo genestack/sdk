@@ -105,15 +105,15 @@ def create_user_from_input(host, alias):
 
 def create_user_from_input_email_and_password(host, alias=None):
     """
-        Ask email and password, check that it is possible to login with this credentials
-        and return user.
+    Ask email and password, check that it is possible to login with this credentials
+    and return user.
 
-        :param host:  server host
-        :type host:  basestring
-        :param alias: user alias
-        :type alias: basestring
-        :return: user
-        :rtype: User
+    :param host:  server host
+    :type host:  basestring
+    :param alias: user alias
+    :type alias: basestring
+    :return: user
+    :rtype: User
     """
     print 'Specify email and password for host: "%s"' % host,
     if alias:
