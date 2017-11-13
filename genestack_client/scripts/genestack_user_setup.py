@@ -25,7 +25,7 @@ def validate_alias(alias):
 
 def input_alias(existing):
     print ('Please input alias. (Alias can contain: letters (a-Z), '
-          'digit (0-9), at (@), underscore (_), hyphen (-))')
+           'digit (0-9), at (@), underscore (_), hyphen (-))')
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
