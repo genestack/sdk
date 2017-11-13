@@ -16,7 +16,7 @@ from genestack_client.settings.genestack_user import User
 def test_parse_default_user():
     user = get_user(make_connection_parser().parse_args())
     expected = User('tester@genestack.com', alias='tester',
-                    host='localhost:8080', password='pwdTester123')
+                    host='localhost:8080', password='pwdTester123', token=None)
     assert user == expected
 
 
@@ -30,7 +30,7 @@ def test_parse_user_by_email():
 def test_parse_default():
     parser = make_connection_parser()
     args = parser.parse_args()
-    expected = Namespace(debug=False, host=None, pwd=None, show_logs=False, user=None)
+    expected = Namespace(debug=False, host=None, pwd=None, show_logs=False, user=None, token=None)
     assert args == expected
 
 
@@ -64,7 +64,7 @@ def test_token_and_user(capsys):
     parser = make_connection_parser()
 
     with pytest.raises(SystemExit):
-        parser.parse_args(['-u', 'some_password', '--api-token', 'some_token'])
+        parser.parse_args(['-u', 'some_password', '--token', 'some_token'])
 
     # Test stderr output that was written by parser before raising error:
 
