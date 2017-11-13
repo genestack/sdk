@@ -76,7 +76,7 @@ class Config(object):
 
     def set_default_user(self, user, save=True):
         if user.alias not in self.__users:
-            raise GenestackException('User "%s" does not exists' % user.alias)
+            raise GenestackException('User "%s" does not exist' % user.alias)
         if not self.default_user or user.alias != self.default_user.alias:
             self.__default_user = user
         if save:
@@ -86,7 +86,7 @@ class Config(object):
         config_path = self.get_settings_file()
 
         if not os.path.exists(config_path):
-            sys.stderr.write('Warning: no configuration file found.'
+            sys.stderr.write('Warning: no configuration file found. '
                              'Set it up with `genestack-user-setup init`\n')
             return  # check that this return handled everywhere
 
