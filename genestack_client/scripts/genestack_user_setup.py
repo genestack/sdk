@@ -218,6 +218,10 @@ class SetPassword(Command):
         if not user:
             user = select_user(users)
 
+        if not user.email:
+            print('User without email cannot have password')
+            return
+
         while True:
             user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
             try:
