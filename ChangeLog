@@ -1,3 +1,4 @@
+* 0.19.0
     * Added utility class for datasets operations
     * Added additional check for argument passed as arguments and via metainfo in DataImporter methods
 
