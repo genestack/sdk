@@ -244,7 +244,7 @@ class SetToken(Command):
         user = users.get(self.args.alias)
         if not user:
             user = select_user(users, None)  # TODO get current user for shell and command line
-        new_user = input_token(user.host, alias=user.alias)
+        new_user = create_user_from_token(user.host, alias=user.alias)
         user.token = new_user.token
         config.change_token(user.alias, user.token)
         print 'Token has been changed successfully'
