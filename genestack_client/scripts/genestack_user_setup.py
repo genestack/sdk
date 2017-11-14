@@ -216,7 +216,7 @@ class SetPassword(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, None)
+            user = select_user(users)
 
         while True:
             user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
@@ -243,7 +243,7 @@ class SetToken(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, None)
+            user = select_user(users)
         new_user = create_user_from_token(user.host, alias=user.alias)
         user.token = new_user.token
         config.change_token(user.alias, user.token)
@@ -263,7 +263,7 @@ class SetDefault(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users, selected=config.default_user)
         if user.alias != config.default_user.alias:
             config.set_default_user(user)
             print 'Default user has been set to "%s"' % user.alias
