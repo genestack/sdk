@@ -118,7 +118,8 @@ class Config(object):
                         token = keyring.get_password(_TOKEN_KEYRING, alias)
                     except Exception as e:
                         sys.stderr.write('Fail to load token for alias "%s": %s\n' % (alias, e))
-                self.add_user(User(email, alias=alias, host=host, password=password, token=token), save=False)
+                self.add_user(User(email, alias=alias, host=host, password=password,
+                                   token=token), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
         store_raw_text = get_text(dom, 'store_raw')

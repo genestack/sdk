@@ -150,10 +150,9 @@ def create_user_from_input_email_and_password(host, alias=None):
 
 def create_user_from_token(host, alias=None):
     print 'Host: %s' % host
-    msg = 'Please specify Genestack API token'
-    if alias:
-        msg += 'for "%s"' % alias
-    msg += ': '
+    msg = 'Please specify Genestack API token%s: '
+    with_alias = '' if not alias else ' for "%s"' % alias
+    msg = msg % with_alias
     while True:
         token = getpass(msg)
         if not token:
@@ -203,9 +202,9 @@ def select_user(users, selected=None):
     return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
-class SetPassword(Command):
+class ChangePassword(Command):
     COMMAND = 'password'
-    DESCRIPTION = 'Set password for user.'
+    DESCRIPTION = 'Change password for user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -219,7 +218,7 @@ class SetPassword(Command):
             user = select_user(users)
 
         if not user.email:
-            print('User without email cannot have password')
+            print('User without email could be authorized only by token')
             return
 
         while True:
@@ -233,9 +232,9 @@ class SetPassword(Command):
         print 'Password has been changed successfully'
 
 
-class SetToken(Command):
+class ChangeToken(Command):
     COMMAND = 'token'
-    DESCRIPTION = 'Set token for user.'
+    DESCRIPTION = 'Change token for user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -321,7 +320,8 @@ class RenameUser(Command):
         else:
             new_alias = self.args.new_alias
 
-        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password, token=user.token)
+        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password,
+                        token=user.token)
 
         config.add_user(new_user, save=False)
         if user.alias == config.default_user.alias:
@@ -411,8 +411,8 @@ class UserManagement(GenestackShell):
         List,
         AddUser,
         SetDefault,
-        SetPassword,
-        SetToken,
+        ChangePassword,
+        ChangeToken,
         Path,
         Remove,
         RenameUser

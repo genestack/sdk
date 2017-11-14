@@ -64,7 +64,7 @@ def test_token_and_user(capsys):
     parser = make_connection_parser()
 
     with pytest.raises(SystemExit):
-        parser.parse_args(['-u', 'some_password', '--token', 'some_token'])
+        parser.parse_args(['-u', 'some_user', '--token', 'some_token'])
 
     # Test stderr output that was written by parser before raising error:
 
