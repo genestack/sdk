@@ -17,7 +17,7 @@ def _get_server_url(host):
 
 class User(object):
     """
-    A class storing information about the server's URL, the user login, password, token and alias.
+    A class storing information about the server's URL, alias, and user/password pair or API token.
     """
     def __init__(self, email, alias=None, host=None, password=None, token=None):
         """
