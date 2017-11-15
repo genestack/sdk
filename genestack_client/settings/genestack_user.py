@@ -17,7 +17,7 @@ def _get_server_url(host):
 
 class User(object):
     """
-    Class encapsulation all user info required for authentication.
+    Class encapsulating all user info required for authentication.
 
     That includes:
      - user alias
