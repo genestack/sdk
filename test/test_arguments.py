@@ -30,7 +30,8 @@ def test_parse_user_by_email():
 def test_parse_default():
     parser = make_connection_parser()
     args = parser.parse_args()
-    expected = Namespace(debug=False, host=None, pwd=None, show_logs=False, user=None, token=None)
+    expected = Namespace(debug=False, host=None, pwd=None, show_logs=False,
+                         user=None, token=None)
     assert args == expected
 
 
