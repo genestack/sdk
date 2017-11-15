@@ -203,7 +203,7 @@ def select_user(users, selected=None):
 
 
 class ChangePassword(Command):
-    COMMAND = 'password'
+    COMMAND = 'change-password'
     DESCRIPTION = 'Change password for user.'
     OFFLINE = True
 
@@ -233,7 +233,7 @@ class ChangePassword(Command):
 
 
 class ChangeToken(Command):
-    COMMAND = 'token'
+    COMMAND = 'change-token'
     DESCRIPTION = 'Change token for user.'
     OFFLINE = True
 
