@@ -189,7 +189,7 @@ class ChangePassword(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, None)  # TODO get current user for shell and command line
+            user = select_user(users)
 
         while True:
             user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
@@ -215,7 +215,7 @@ class SetDefault(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users, selected=config.default_user)
         if user.alias != config.default_user.alias:
             config.set_default_user(user)
             print 'Default user has been set to "%s"' % user.alias
