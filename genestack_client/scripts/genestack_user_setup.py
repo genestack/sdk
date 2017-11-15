@@ -176,9 +176,9 @@ def select_user(users, selected=None):
     return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
-class SetPassword(Command):
-    COMMAND = 'password'
-    DESCRIPTION = 'Set password for user.'
+class ChangePassword(Command):
+    COMMAND = 'change-password'
+    DESCRIPTION = 'Change password for user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -359,7 +359,7 @@ class UserManagement(GenestackShell):
         List,
         AddUser,
         SetDefault,
-        SetPassword,
+        ChangePassword,
         Path,
         Remove,
         RenameUser
