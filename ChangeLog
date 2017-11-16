@@ -1,4 +1,6 @@
 * 0.20.0
+    * Added `Connection.login_by_token` method
+    * Added token support to `genestack-user-setup` script
     * Renamed `password` command  to `change-password` (in `genestack-user-setup`)
 
 * 0.19.0
