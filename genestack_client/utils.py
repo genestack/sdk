@@ -116,7 +116,8 @@ def get_connection(args=None):
 def ask_confirmation(question, default=None):
     """
     Ask confirmation and return response as boolean value.
-    This method will not end until user input correct answer.
+    This function will not end until user input correct answer.
+    This function does not check if the file is connected to a tty device.
 
     :param question: question to ask, without [y/n] suffix and question mark.
     :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
@@ -139,6 +140,52 @@ def ask_confirmation(question, default=None):
         if text in ('n', 'no'):
             return False
         print 'Unexpected response please input "y[es]" or "n[o]"'
+
+
+def interactive_select(items, message, to_string=None, selected=None):
+    """
+    Asks user to choose one of the items.
+    This function will not end until user input correct answer.
+    This function does not check if the file is connected to a tty device.
+
+    :param items: list of possible choices
+    :param message: clarifying message
+    :type to_string: function to convert choice to string
+    :param selected: selected item by default
+    :type selected: str
+    :return:
+    """
+    to_string = to_string or str
+
+    if selected and selected not in items:
+        raise GenestackException('Selected item "%s" is not in list: %s' % (selected, items))
+
+    about_default = ''
+
+    while True:
+        for i, option in enumerate(items, start=1):
+            if option == selected:
+                print '* ',
+                about_default = ' [%s]' % i
+            else:
+                print '  ',
+            print '%-2s %s' % ('%s)' % i, to_string(option))
+
+        raw_index = raw_input('%s%s: ' % (message, about_default)).strip()
+
+        if not raw_index and selected:
+            return selected
+
+        if not raw_index.isdigit():
+            print 'Wrong number: "%s"' % raw_index
+            continue
+
+        item_index = int(raw_index) - 1
+
+        if not 0 <= item_index < len(items):
+            print 'Number is not in list'
+            continue
+        return items[item_index]
 
 
 def validate_constant(cls, key):
