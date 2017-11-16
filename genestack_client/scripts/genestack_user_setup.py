@@ -93,7 +93,14 @@ def create_user_from_input(host, alias):
     :return: user
     :rtype: User
     """
-    return create_user_from_input_email_and_password(host, alias=alias)
+    by_token = 'by token'
+    items = [by_token, 'by email and password']
+    use_token = _select(items, 'Select authentication') == by_token
+
+    if use_token:
+        return create_user_from_token(host, alias=alias)
+    else:
+        return create_user_from_input_email_and_password(host, alias=alias)
 
 
 def create_user_from_input_email_and_password(host, alias=None):
@@ -138,6 +145,25 @@ def create_user_from_input_email_and_password(host, alias=None):
             break
         except GenestackAuthenticationException:
             print 'Your username or password was incorrect, please try again'
+    return user
+
+
+def create_user_from_token(host, alias=None):
+    print 'Host: %s' % host
+    msg = 'Please specify Genestack API token%s: '
+    with_alias = '' if not alias else ' for "%s"' % alias
+    msg = msg % with_alias
+    while True:
+        token = getpass(msg)
+        if not token:
+            print 'Token cannot be empty'
+            continue
+        user = User(email=None, host=host, password=None, alias=alias, token=token)
+        try:
+            user.get_connection()
+            break
+        except GenestackAuthenticationException:
+            print 'Could not login with given token, please try again'
     return user
 
 
@@ -191,6 +217,10 @@ class ChangePassword(Command):
         if not user:
             user = select_user(users)
 
+        if not user.email:
+            print('User without email could be authorized only by token')
+            return
+
         while True:
             user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
             try:
@@ -200,6 +230,27 @@ class ChangePassword(Command):
                 continue
         config.change_password(user.alias, user.password)
         print 'Password has been changed successfully'
+
+
+class ChangeToken(Command):
+    COMMAND = 'change-token'
+    DESCRIPTION = 'Change token for user.'
+    OFFLINE = True
+
+    def update_parser(self, parent):
+        parent.add_argument('alias', metavar='<alias>',
+                            help='Alias for user to change token for', nargs='?')
+
+    def run(self):
+        check_config()
+        users = config.users
+        user = users.get(self.args.alias)
+        if not user:
+            user = select_user(users)
+        new_user = create_user_from_token(user.host, alias=user.alias)
+        user.token = new_user.token
+        config.change_token(user.alias, user.token)
+        print 'Token has been changed successfully'
 
 
 class SetDefault(Command):
@@ -269,7 +320,8 @@ class RenameUser(Command):
         else:
             new_alias = self.args.new_alias
 
-        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password)
+        new_user = User(email=user.email, alias=new_alias, host=user.host, password=user.password,
+                        token=user.token)
 
         config.add_user(new_user, save=False)
         if user.alias == config.default_user.alias:
@@ -360,6 +412,7 @@ class UserManagement(GenestackShell):
         AddUser,
         SetDefault,
         ChangePassword,
+        ChangeToken,
         Path,
         Remove,
         RenameUser
