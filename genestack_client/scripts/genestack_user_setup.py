@@ -176,9 +176,9 @@ def select_user(users, selected=None):
     return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
-class SetPassword(Command):
-    COMMAND = 'password'
-    DESCRIPTION = 'Set password for user.'
+class ChangePassword(Command):
+    COMMAND = 'change-password'
+    DESCRIPTION = 'Change password for user.'
     OFFLINE = True
 
     def update_parser(self, parent):
@@ -189,7 +189,7 @@ class SetPassword(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, None)  # TODO get current user for shell and command line
+            user = select_user(users)
 
         while True:
             user.password = getpass('Input password for %s: ' % user.alias.encode('utf-8'))
@@ -215,7 +215,7 @@ class SetDefault(Command):
         users = config.users
         user = users.get(self.args.alias)
         if not user:
-            user = select_user(users, config.default_user)
+            user = select_user(users, selected=config.default_user)
         if user.alias != config.default_user.alias:
             config.set_default_user(user)
             print 'Default user has been set to "%s"' % user.alias
@@ -359,7 +359,7 @@ class UserManagement(GenestackShell):
         List,
         AddUser,
         SetDefault,
-        SetPassword,
+        ChangePassword,
         Path,
         Remove,
         RenameUser
