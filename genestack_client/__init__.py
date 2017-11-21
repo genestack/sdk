@@ -16,9 +16,9 @@ from genestack_connection import Connection, Application
 from file_types import FileTypes
 from file_permissions import Permissions
 from metainfo_scalar_values import *
+from bio_meta_keys import BioMetaKeys
 from genestack_metainfo import Metainfo
 from bio_metainfo import BioMetainfo
-from bio_meta_keys import BioMetaKeys
 from data_importer import DataImporter
 from file_initializer import FileInitializer
 from genome_query import GenomeQuery
@@ -26,6 +26,7 @@ from sudo_utils import SudoUtils
 from utils import get_connection, get_user, make_connection_parser, validate_constant
 from file_filters import *
 from files_util import FilesUtil, SortOrder, SpecialFolders
+from datasets_util import DatasetsUtil
 from task_log_viewer import TaskLogViewer
 from cla import *
 from expression_navigator import *

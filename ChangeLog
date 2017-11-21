@@ -1,7 +1,13 @@
+* 0.20.0
+    * Renamed `password` command  to `change-password` (in `genestack-user-setup`)
+    * Added `FileUtils.share_folder` method
+
+* 0.19.0
+    * Added utility class for datasets operations
+    * Added additional check for argument passed as arguments and via metainfo in DataImporter methods
+
 * 0.18.0
     * Added `DataImporter.INFINIUM_ANNOTATION` constant
-    * Added additional check for argument passed as arguments and via metainfo in DataImporter methods
-    * Added `FileUtils.share_folder` method
 
 * 0.17.0
     * Added `BelongsToDatasetFileFilter` class

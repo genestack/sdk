@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 
-from genestack_client import (GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant)
+import sys
+
+import genestack_client
+from genestack_client import (Application, FileFilter, GenestackException, Metainfo, SudoUtils,
+                              validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -675,6 +679,7 @@ class FilesUtil(Application):
         """
         return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
 
+    # TODO: remove after release 0.53
     def create_dataset(self, name, dataset_type, children, parent=None):
         """
         Create a dataset.
@@ -691,9 +696,10 @@ class FilesUtil(Application):
         :return: dataset accession
         :rtype: str
         """
-        if parent is None:
-            parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
-
-        return self.invoke(
-            'createDataset', parent, name, dataset_type, children
-        )
+        sys.stderr.write('Deprecated: use DatasetsUtil.create_dataset instead\n')
+        try:
+            return genestack_client.DatasetsUtil(self.connection).create_dataset(name, dataset_type, children, parent)
+        except GenestackException:
+            if parent is None:
+                parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
+            return self.invoke('createDataset', parent, name, dataset_type, children)

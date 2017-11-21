@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import subprocess
 import sys
 
 from genestack_client import GenestackException
+
+
+def get_terminal_width():
+    """
+    Return terminal width in characters (defaults to 80).
+
+    :return: terminal width
+    :rtype: int
+    """
+    try:
+        rows, columns = subprocess.check_output(['stty', 'size']).decode().split()
+        return int(columns)
+    except Exception as e:
+        sys.stderr.write('Fail to get terminal size, use 80 as default: %s' % e)
+        return 80
 
 
 def isatty():
@@ -17,6 +33,14 @@ def isatty():
         return sys.stdout.isatty()
     except AttributeError:
         return False
+
+
+class GenestackArgumentParser(argparse.ArgumentParser):
+    def parse_known_args(self, args=None, namespace=None):
+        args, argv = super(GenestackArgumentParser, self).parse_known_args(args, namespace)
+        if args.pwd and not args.user:
+            self.error('Password should not be specified without user')
+        return args, argv
 
 
 def make_connection_parser(user=None, password=None, host=None):
@@ -34,7 +58,7 @@ def make_connection_parser(user=None, password=None, host=None):
     :return: parser
     :rtype: argparse.ArgumentParser
     """
-    parser = argparse.ArgumentParser()
+    parser = GenestackArgumentParser()
     group = parser.add_argument_group('connection')
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
     group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')

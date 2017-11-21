@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from getpass import getpass
-from genestack_client import GenestackException, Connection, GenestackAuthenticationException
-from genestack_client.utils import isatty, ask_confirmation
+
+from genestack_client import Connection, GenestackAuthenticationException, GenestackException
+from genestack_client.utils import ask_confirmation, isatty
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -16,7 +17,12 @@ def _get_server_url(host):
 
 class User(object):
     """
-    A class storing information about the server's URL, the user login, password and alias.
+    Class encapsulating all user info required for authentication.
+
+    That includes:
+     - user alias
+     - server URL (or is it hostname?)
+     - email/password pair
     """
     def __init__(self, email, alias=None, host=None, password=None):
         """
@@ -97,3 +103,14 @@ class User(object):
             except GenestackAuthenticationException:
                 message = 'Your username or password was incorrect for %s. Please try again.' % self.host
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, User) and
+            self.alias == other.alias and
+            self.password == other.password and
+            self.host == other.host and
+            self.email == other.email
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
