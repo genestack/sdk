@@ -88,7 +88,7 @@ class FilesUtil(Application):
         :return: accession
         :rtype: str
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException`
-         if more than one genome, or no genome is found
+                 if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -606,19 +606,19 @@ class FilesUtil(Application):
             offset=0,
             limit=MAX_FILE_SEARCH_LIMIT
     ):
-
         """
-        Search for files using filters and return dictionary with next keys:
+        Search for files using filters and return dictionary with two keys:
 
-         - total (int): total number of files on the platform matching the search filter
-         - result (list): list of file info dictionaries for the matching files between
+         - ``total`` contains total number (``int``) of files on the platform
+                      matching the search filter
+         - ``result`` contains list of file info dictionaries for the matching files between
            ``offset`` and ``offset+limit``. See the documentation of
            :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure of these objects.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results
-         (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :param sort_order: sorting order for the results,
+                           see :py:class:`~genestack_client.files_util.SortOrder`
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
