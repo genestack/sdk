@@ -68,6 +68,12 @@ Expression Navigator
         :members:
         :undoc-members:
 
+DatasetsUtil
+------------
+.. automodule:: genestack_client.datasets_util
+        :members:
+        :undoc-members:
+
 Command-Line Applications
 *************************
 
