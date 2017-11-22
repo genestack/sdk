@@ -70,7 +70,7 @@ Expression Navigator
 
 DatasetsUtil
 ------------
-.. automodule:: genestack_client.datasets_util
+.. autoclass:: genestack_client.DatasetsUtil
         :members:
         :undoc-members:
 
