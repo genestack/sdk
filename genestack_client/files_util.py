@@ -607,13 +607,13 @@ class FilesUtil(Application):
             limit=MAX_FILE_SEARCH_LIMIT
     ):
         """
-        Search for files using filters and return dictionary with two keys:
+        Search for files with ``file_filter`` and return dictionary with two key/value pairs:
 
-         - ``total`` contains total number (``int``) of files on the platform
-                      matching the search filter
-         - ``result`` contains list of file info dictionaries for the matching files between
-           ``offset`` and ``offset+limit``. See the documentation of
-           :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure of these objects.
+         - ``'total'``: total number (``int``) of files matching the query
+         - ``'result'``: list of file info dictionaries for subset of matching files 
+                         (from ``offset`` to ``offset+limit``). See the documentation of
+                         :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure
+                         of these objects.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
