@@ -397,19 +397,22 @@ class FilesUtil(Application):
         :rtype: None
         """
         self.share_files([folder_accession], group, destination_folder=destination_folder, password=password)
-        SudoUtils(self.connection).ensure_sudo_interactive(password)
         share_utils = self.connection.application('genestack/shareutils')
         limit = 100
-        delay = 1  # delay between attempts
+        delay_seconds = 1  # delay between attempts
+
+        offset = 0
         while True:
-            offset = 0
+            # ensure sudo before each call
+            SudoUtils(self.connection).ensure_sudo_interactive(password)
             count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
             if count == 0 and offset == 0:
                 return
             if count < limit:
-                sleep(delay)
+                sleep(delay_seconds)
                 offset = 0
-            offset += limit
+            else:
+                offset += limit
 
     def get_groups_to_share(self):
         """
