@@ -88,7 +88,7 @@ class FilesUtil(Application):
         :return: accession
         :rtype: str
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException`
-        if more than one genome, or no genome is found
+                 if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -607,12 +607,18 @@ class FilesUtil(Application):
             limit=MAX_FILE_SEARCH_LIMIT
     ):
         """
-        Search for files using filters.
+        Search for files with ``file_filter`` and return dictionary with two key/value pairs:
+
+         - ``'total'``: total number (``int``) of files matching the query
+         - ``'result'``: list of file info dictionaries for subset of matching files 
+                         (from ``offset`` to ``offset+limit``). See the documentation of
+                         :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure
+                         of these objects.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results
-        (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :param sort_order: sorting order for the results,
+                           see :py:class:`~genestack_client.files_util.SortOrder`
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
@@ -620,14 +626,7 @@ class FilesUtil(Application):
         :type offset: int
         :param limit: maximum number of results to return (max and default: 100)
         :type limit: int
-        :return: a dictionary with entries the following entries:
-
-            - total (int): total number of files on the platform matching the search filter
-            - result (list): list of file info dictionaries for the matching files between
-            ``offset`` and ``offset+limit``.
-              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the
-              structure of these objects.
-
+        :return: a dictionary with search response
         :rtype: dict[str, int|list[dict[str, str|dict]]]
         """
         limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)
