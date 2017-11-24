@@ -385,6 +385,15 @@ class FilesUtil(Application):
         """
         Recursively share folder.
 
+        This method make repeated calls to server, each method call
+        shares chunk of the files in the folder that aren't shared yet with ``group` or ``WORLD``.
+
+        Due to the indexing lag, same files can be included in different calls.
+        Method implementation is written to overcome this limitation.
+        Sum of the counts returned by all call is greater of equal than the count of files shared.
+
+        Method can work for a long time if ``folder`` contains a lot of files.
+
         :param folder_accession: accession of the folder
         :type folder_accession: basestring
         :param group: accession of the group to share the files with
