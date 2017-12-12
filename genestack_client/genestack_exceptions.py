@@ -78,7 +78,7 @@ class GenestackVersionException(GenestackException):
         :type required_version: distutils.version.StrictVersion
         """
         if required_version:
-            branch = 'inception' if required_version.prerelease else 'stable'
+            branch = 'master' if required_version.prerelease else 'stable'
             message = (
                 'Your Genestack Client version "{current_version}" is too old, '
                 'at least "{required_version}" is required.\n'
