@@ -140,7 +140,7 @@ class Connection(object):
                  :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
         self.check_version()
-        logged = self.application('genestack/signin').invoke('authenticateByToken', token)
+        logged = self.application('genestack/signin').invoke('authenticateByApiToken', token)
         if not logged['authenticated']:
             raise GenestackAuthenticationException('Fail to login by token')
 
