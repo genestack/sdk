@@ -2,7 +2,7 @@ from genestack_client import Application, GenestackException
 
 
 class _BaseExpressionNavigator(Application):
-    def _create_file(self, groups, organism=None, normalised_input=None, options=None):
+    def _create_file(self, groups, organism=None, normalized_input=None, options=None):
 
         assignments = [(group_id, accession) for group_id, group in enumerate(groups, 1)
                        for accession in group['accessions']]
@@ -15,7 +15,6 @@ class _BaseExpressionNavigator(Application):
 
         options = options or {}
         params = {
-            'normalisedInputMode': bool(normalised_input),
             'accessionList': [acc for group_id, acc in assignments],
             'groupIdList': map(str, [group_id for group_id, acc in assignments]),
             'organism': organism,
@@ -23,8 +22,8 @@ class _BaseExpressionNavigator(Application):
             'groupsDescriptionList': group_descriptions,
             'programOptions': options,
         }
-        if normalised_input:
-            params['sourcesAccessions'] = normalised_input
+        if normalized_input:
+            params['sourcesAccessions'] = normalized_input
         return self.invoke('createFile', params)
 
     def get_differential_expression_stats(self, accessions_to_queries):
@@ -94,7 +93,7 @@ class ExpressionNavigatorforMicroarrays(_BaseExpressionNavigator):
             'controlGroupOption': {'value': control_group or "None"},
             'microarrayAnnotationSource': {'type': 'source', 'value': microarray_annotation}
         }
-        return self._create_file(groups, organism=organism, normalised_input=[normalized_microarray_file],
+        return self._create_file(groups, organism=organism, normalized_input=[normalized_microarray_file],
                                  options=options)
 
 

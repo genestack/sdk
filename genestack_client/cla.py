@@ -191,12 +191,24 @@ class MergeRawReadsApplication(Application):
 
 # preprocess microarrays
 
-class AffymetrixMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/affymetrix-normalisation'
+class AffymetrixMicroarraysNormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/affymetrix-normalization'
 
 
-class AgilentMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/agilent-normalisation'
+class AgilentMicroarraysNormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/agilent-normalization'
+
+
+class L1000MicroarraysNormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/l1000-normalization'
+
+
+class GenePixMicroarraysNormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/genepix-normalization'
+
+
+class InfiniumMicroarraysNormalizationApplication(CLApplication):
+    APPLICATION_ID = 'genestack/infinium-methylation-normalization'
 
 
 # preprocess mapped reads
