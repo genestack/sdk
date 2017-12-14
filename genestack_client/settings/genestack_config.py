@@ -12,6 +12,7 @@ from genestack_client.settings.genestack_user import User
 from genestack_client.utils import ask_confirmation
 
 _PASSWORD_KEYRING = 'Genestack SDK'
+_TOKEN_KEYRING = 'Genestack SDK (token)'
 
 _SETTING_FILE_NAME = 'genestack.xml'
 _SETTINGS_DIR = '.genestack'
@@ -57,6 +58,8 @@ class Config(object):
         try:
             if keyring.get_password(_PASSWORD_KEYRING, user.alias):
                 keyring.delete_password(_PASSWORD_KEYRING, user.alias)
+            if keyring.get_password(_TOKEN_KEYRING, user.alias):
+                keyring.delete_password(_TOKEN_KEYRING, user.alias)
         except Exception as e:
             sys.stderr.write('Error while deleting user password for %s: %s\n' % (user.alias, e))
 
@@ -102,13 +105,21 @@ class Config(object):
                 host = get_text(user, 'host')
                 email = get_text(user, 'email')
                 password = get_text(user, 'password')
+                token = get_text(user, 'token')
                 if not password:
                     try:
                         import keyring
                         password = keyring.get_password(_PASSWORD_KEYRING, alias)
                     except Exception as e:
                         sys.stderr.write('Fail to load password for alias "%s": %s\n' % (alias, e))
-                self.add_user(User(email, alias=alias, host=host, password=password), save=False)
+                if not token:
+                    try:
+                        import keyring
+                        token = keyring.get_password(_TOKEN_KEYRING, alias)
+                    except Exception as e:
+                        sys.stderr.write('Fail to load token for alias "%s": %s\n' % (alias, e))
+                self.add_user(User(email, alias=alias, host=host, password=password,
+                                   token=token), save=False)
 
         default_user_alias = get_text(dom, 'default_user')
         store_raw_text = get_text(dom, 'store_raw')
@@ -125,6 +136,11 @@ class Config(object):
     def change_password(self, alias, password):
         user = self.__users[alias]
         user.password = password
+        self.save()
+
+    def change_token(self, alias, token):
+        user = self.__users[alias]
+        user.token = token
         self.save()
 
     def save(self):
@@ -164,6 +180,12 @@ class Config(object):
                     self._store_value_securely(_PASSWORD_KEYRING, user.alias, user.password)
                 except Exception:
                     self._store_value_insecurely(user.password, document, user_element, 'password')
+            if user.token:
+                try:
+                    self._store_value_securely(_TOKEN_KEYRING, user.alias, user.token, )
+                except Exception:
+                    self._store_value_insecurely(user.token, document, user_element, 'token')
+
         if self.default_user:
             default_user_element = document.createElement('default_user')
             top.appendChild(default_user_element)
