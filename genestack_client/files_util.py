@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from time import sleep
 
 import sys
 
@@ -88,7 +89,7 @@ class FilesUtil(Application):
         :return: accession
         :rtype: str
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException`
-        if more than one genome, or no genome is found
+                 if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -380,6 +381,45 @@ class FilesUtil(Application):
         if destination_folder is not None:
             share_utils.invoke('linkFiles', accessions, destination_folder, group)
 
+    def share_folder(self, folder_accession, group, destination_folder=None, password=None):
+        """
+        Recursively share folder.
+
+        This method makes repeated calls to server, each method call
+        shares chunk of files in the given folder that aren't shared yet with ``group` or ``WORLD``.
+
+        Due to the indexing lag, same files can be included in different calls.
+        Method implementation is written to overcome this limitation.
+
+        :param folder_accession: accession of the folder
+        :type folder_accession: basestring
+        :param group: accession of the group to share the files with
+        :param destination_folder: accession of folder to link shared folder into.
+               No links are created if ``None``.
+        :type destination_folder: str
+        :param password: password for sharing,
+               if not specified, will be asked for in an interactive prompt (if possible)
+        :type: str
+        :rtype: None
+        """
+        self.share_files([folder_accession], group, destination_folder=destination_folder, password=password)
+        share_utils = self.connection.application('genestack/shareutils')
+        limit = 100
+        delay_seconds = 1  # delay between attempts
+
+        offset = 0
+        while True:
+            # ensure sudo before each call
+            SudoUtils(self.connection).ensure_sudo_interactive(password)
+            count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
+            if count == 0 and offset == 0:
+                return
+            if count < limit:
+                sleep(delay_seconds)
+                offset = 0
+            else:
+                offset += limit
+
     def get_groups_to_share(self):
         """
         Returns a dictionary of the form ``group_accession: group_name``.
@@ -607,12 +647,18 @@ class FilesUtil(Application):
             limit=MAX_FILE_SEARCH_LIMIT
     ):
         """
-        Search for files using filters.
+        Search for files with ``file_filter`` and return dictionary with two key/value pairs:
+
+         - ``'total'``: total number (``int``) of files matching the query
+         - ``'result'``: list of file info dictionaries for subset of matching files 
+                         (from ``offset`` to ``offset+limit``). See the documentation of
+                         :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure
+                         of these objects.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results
-        (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :param sort_order: sorting order for the results,
+                           see :py:class:`~genestack_client.files_util.SortOrder`
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
@@ -620,14 +666,7 @@ class FilesUtil(Application):
         :type offset: int
         :param limit: maximum number of results to return (max and default: 100)
         :type limit: int
-        :return: a dictionary with entries the following entries:
-
-            - total (int): total number of files on the platform matching the search filter
-            - result (list): list of file info dictionaries for the matching files between
-            ``offset`` and ``offset+limit``.
-              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the
-              structure of these objects.
-
+        :return: a dictionary with search response
         :rtype: dict[str, int|list[dict[str, str|dict]]]
         """
         limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)

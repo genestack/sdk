@@ -41,9 +41,6 @@ def input_alias(existing):
         return alias
 
 
-
-
-
 def create_user_from_input(host, alias):
     """
     Ask credentials interactively and return user that can login to platform.
