@@ -1,8 +1,14 @@
+import sys
+
 from genestack_client import Application, GenestackException
 
 
 class _BaseExpressionNavigator(Application):
-    def _create_file(self, groups, organism=None, normalized_input=None, options=None):
+    def _create_file(self, groups, organism=None, normalized_input=None, options=None,
+                     # TODO: remove normalised_input argument.
+                     # This argument is deprecated, use normalized_input instead.
+                     # We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
+                     normalised_input=None):
 
         assignments = [(group_id, accession) for group_id, group in enumerate(groups, 1)
                        for accession in group['accessions']]
@@ -22,6 +28,12 @@ class _BaseExpressionNavigator(Application):
             'groupsDescriptionList': group_descriptions,
             'programOptions': options,
         }
+
+        # TODO: reomve this 'if' section after removing the normalised_input argument
+        if normalised_input:
+            sys.stderr.write('normalised_input argument is deprecated, use normalized_input instead')
+            params['sourcesAccessions'] = normalised_input
+
         if normalized_input:
             params['sourcesAccessions'] = normalized_input
         return self.invoke('createFile', params)
