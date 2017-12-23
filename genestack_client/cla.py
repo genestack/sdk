@@ -211,13 +211,15 @@ class InfiniumMicroarraysNormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/infinium-methylation-normalization'
 
 
-# TODO: remove, deprecated. We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
+# TODO: Deprecated at 0.20.0, will be removed at 0.23.0.
+# TODO: We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
 class AffymetrixMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/affymetrix-normalisation'
+    APPLICATION_ID = 'genestack/affymetrix-normalization'
 
-# TODO: remove, deprecated. We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
+# TODO: Deprecated at 0.20.0, will be removed at 0.23.0.
+# TODO: We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
 class AgilentMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/agilent-normalisation'
+    APPLICATION_ID = 'genestack/agilent-normalization'
 
 
 # preprocess mapped reads

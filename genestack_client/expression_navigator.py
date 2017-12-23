@@ -10,6 +10,11 @@ class _BaseExpressionNavigator(Application):
                      # We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
                      normalised_input=None):
 
+        # TODO: reomve this after removing the normalised_input argument
+        if normalized_input and normalised_input:
+            raise GenestackException('Both normalized_input and normalised_input are not allowed')
+        normalized_input = normalized_input or normalised_input
+
         assignments = [(group_id, accession) for group_id, group in enumerate(groups, 1)
                        for accession in group['accessions']]
         organism = organism or "unknown organism"
@@ -28,11 +33,6 @@ class _BaseExpressionNavigator(Application):
             'groupsDescriptionList': group_descriptions,
             'programOptions': options,
         }
-
-        # TODO: reomve this 'if' section after removing the normalised_input argument
-        if normalised_input:
-            sys.stderr.write('normalised_input argument is deprecated, use normalized_input instead')
-            params['sourcesAccessions'] = normalised_input
 
         if normalized_input:
             params['sourcesAccessions'] = normalized_input
