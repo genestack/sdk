@@ -58,7 +58,7 @@ To avoid typing in your credentials every time you connect to a Genestack instan
 
     $ genestack-user-setup init
 
-You will be prompted for your email and password/token to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
+You will be prompted for your token or email and password to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
 
 To check the result, you can run:
 
@@ -71,13 +71,13 @@ To check the result, you can run:
 
 .. warning::
 
-   By default, your password/token will be stored using a secure storage system provided by your OS (See https://pypi.python.org/pypi/keyring for more information)
+   By default, your passwords and/or tokens will be stored using a secure storage system provided by your OS (see https://pypi.python.org/pypi/keyring for more information)
    If the secure storage system is not accessible, you will be asked for permission to store your password in plain text in a configuration file. However, this option is **strongly discouraged**. You have been warned!
 
 
 .. note::
 
-   The information you supply to ``genestack-user-setup`` is only stored locally on your computer. Therefore, if you change your password/token online, you will need to update your local configuration as well.
+   The information you supply to ``genestack-user-setup`` is only stored locally on your computer. Therefore, if you change your password or token in Platform UI, you will need to update your local configuration as well.
 
 
 Setting up additional users
@@ -132,7 +132,7 @@ Using the connection parameters, you can run this script from a terminal using d
 .. TODO talk more about the parser and how you shouldn't use get_connection()
 
 If your script accepts custom command-line arguments, you can add them to the arguments parser returned by :py:func:`~genestack.make_connection_parser`.
-The arguments ``-u``, ``-p``, ``-H``, ``--host``, ``--api-token``, ``--show-logs`` and ``--debug`` are reserved for the connection parameters.
+The arguments ``-u``, ``-p``, ``--host`` (``-H``), ``--token``, ``--show-logs`` and ``--debug`` are reserved for the connection parameters.
 Have a look at the following example:
 
 .. code-block:: python
