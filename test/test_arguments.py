@@ -87,7 +87,7 @@ def test_token_and_user(capsys):
     assert err == expected_output
 
 
-def test_token_with_out_user():
+def test_token_without_username():
     parser = make_connection_parser()
     some_token = 'some_token'
     args = parser.parse_args(['--token', some_token])
