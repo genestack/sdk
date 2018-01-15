@@ -370,7 +370,7 @@ class FilesUtil(Application):
         :type: str
         :rtype: None
         """
-        sys.stderr.write("Parameter `password` is deprecated. Use `share_files` without password.\n")
+        sys.stderr.write('Parameter `password` is deprecated. Use `share_files` without password.\n')
         share_utils = self.connection.application('genestack/shareutils')
 
         accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
@@ -398,7 +398,7 @@ class FilesUtil(Application):
         :type: str
         :rtype: None
         """
-        sys.stderr.write("Parameter `password` is deprecated. Use `share_folder` without password.\n")
+        sys.stderr.write('Parameter `password` is deprecated. Use `share_folder` without password.\n')
         self.share_files([folder_accession], group, destination_folder=destination_folder)
         share_utils = self.connection.application('genestack/shareutils')
         limit = 100
