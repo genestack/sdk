@@ -33,12 +33,12 @@ class SampleLinker(Application):
         Create data files inside the upload dataset and links them to the specified samples.
 
         :param samples: mapping from sample id to a list of URLs that point to data.
-        :type samples: dict
+        :type samples: dict[str, list[str]]
         :param upload_dataset_accession: accession of the upload dataset that will hold the created
                                          data files.
         :type upload_dataset_accession: str
         :return: mapping from sample id to a list of accessions of the created data files.
-        :rtype: dict
+        :rtype: dict[str, list[str]]
         """
         return self.invoke('linkData', samples, upload_dataset_accession)
 
