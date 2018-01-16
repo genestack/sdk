@@ -4,7 +4,7 @@ from time import sleep
 import sys
 
 import genestack_client
-from genestack_client import (Application, FileFilter, GenestackException, Metainfo, SudoUtils,
+from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
                               validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
@@ -367,12 +367,10 @@ class FilesUtil(Application):
         :param destination_folder: accession of folder to link shared files into.
                No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing,
-               if not specified, will be asked for in an interactive prompt (if possible)
         :type: str
         :rtype: None
         """
-        SudoUtils(self.connection).ensure_sudo_interactive(password)
+        sys.stderr.write('Parameter `password` is deprecated. Use `share_files` without password.\n')
         share_utils = self.connection.application('genestack/shareutils')
 
         accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
@@ -397,20 +395,17 @@ class FilesUtil(Application):
         :param destination_folder: accession of folder to link shared folder into.
                No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing,
-               if not specified, will be asked for in an interactive prompt (if possible)
         :type: str
         :rtype: None
         """
-        self.share_files([folder_accession], group, destination_folder=destination_folder, password=password)
+        sys.stderr.write('Parameter `password` is deprecated. Use `share_folder` without password.\n')
+        self.share_files([folder_accession], group, destination_folder=destination_folder)
         share_utils = self.connection.application('genestack/shareutils')
         limit = 100
         delay_seconds = 1  # delay between attempts
 
         offset = 0
         while True:
-            # ensure sudo before each call
-            SudoUtils(self.connection).ensure_sudo_interactive(password)
             count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
             if count == 0 and offset == 0:
                 return

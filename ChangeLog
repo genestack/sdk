@@ -1,3 +1,6 @@
+* 0.21.0
+    * Changed methods `FilesUtil.share_folder` and `FilesUtil.share_files` does not require password
+
 * 0.20.0
     * Added `Connection.login_by_token` method
     * Added token support to `genestack-user-setup` script
