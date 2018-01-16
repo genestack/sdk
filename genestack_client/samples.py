@@ -11,10 +11,10 @@ class SampleLinker(Application):
     1. A study is a dataset (collection) of samples.
     2. A sample is a file that contains common metainfo that can be attached to files with data.
     3. When linking data files and samples, data files must be uploaded and put into an upload
-    dataset. This dataset simplifies operations on these files in Genestack and provides data
-    versioning. Upload dataset is linked to the study.
+       dataset. This dataset simplifies operations on these files in Genestack and provides data
+       versioning. Upload dataset is linked to the study.
     4. When uploading files to the upload dataset, they are put inside this dataset and
-    initialized. Each file's metainfo will contain a link to the according sample.
+       initialized. Each file's metainfo will contain a link to the according sample.
 
     A typical workflow might look like this:
 
@@ -23,9 +23,9 @@ class SampleLinker(Application):
     3. An upload dataset is created and linked to the provided study.
     4. Files with data are uploaded, linked to samples and initialized via the 'import_data' method.
     5. If some data files are considered corrupted or invalid, they can be removed using the
-    'unlink_data' method.
+       'unlink_data' method.
     6. When all required data files are uploaded, data can be made visible to others by releasing
-    the upload dataset using the 'release' method.
+       the upload dataset using the 'release' method.
 
     NOTE: This API is currently in Beta stage and is a subject to change, so no backwards
     compatibility is guaranteed at this point.
@@ -36,6 +36,12 @@ class SampleLinker(Application):
     def create_upload_dataset(self, study_number, file_type, **kwargs):
         """
         Create a dataset that will later be used to hold uploaded data files.
+
+        This method accepts additional parameters required for creating files inside Genestack.
+        These parameters depend on the file type:
+
+        * For "MappedReadsCounts": name of the reference genome
+          (specified by the "reference_genome" key).
 
         Example:
 
@@ -50,12 +56,10 @@ class SampleLinker(Application):
         :param study_number: number of the study that contains samples for uploaded files.
         :type study_number: int
         :param file_type: type of files that will be uploaded
-                          (only "MappedReadsCounts" are currently supported).
+               (only "MappedReadsCounts" are currently supported).
         :type file_type: str
         :param kwargs: additional options that are needed when creating a file. Options content
-                       depends on the type of the created file:
-                         - For "MappedReadsCounts": name of the reference genome
-                         (specified by the "reference_genome" key).
+                       depends on the type of the created file.
         :return: accession of the created dataset
         :rtype: str
         """
