@@ -89,6 +89,9 @@ def get_user(args=None):
         args = make_connection_parser().parse_args()
 
     alias = args.user
+    if args.token:
+        return User(email=None, host=args.host, password=None, token=args.token)
+
     if not args.host and not args.pwd:
         if not alias and config.default_user:
             return config.default_user

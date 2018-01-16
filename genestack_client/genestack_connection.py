@@ -7,6 +7,7 @@ import sys
 import urllib
 import urllib2
 from distutils.version import StrictVersion
+from urlparse import urlsplit
 
 import requests
 
@@ -127,7 +128,8 @@ class Connection(object):
         self.check_version()
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
-            raise GenestackAuthenticationException("Fail to login %s" % email)
+            hostname = urlsplit(self.server_url).hostname
+            raise GenestackAuthenticationException("Fail to login with %s to %s" % (email, hostname))
 
     def login_by_token(self, token):
         """
@@ -142,7 +144,8 @@ class Connection(object):
         self.check_version()
         logged = self.application('genestack/signin').invoke('authenticateByApiToken', token)
         if not logged['authenticated']:
-            raise GenestackAuthenticationException('Fail to login by token')
+            hostname = urlsplit(self.server_url).hostname
+            raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
 
     def check_version(self):
         """

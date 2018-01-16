@@ -76,7 +76,8 @@ class User(object):
         return connection
 
     def __repr__(self):
-        return "User('%s', alias='%s', host='%s', password='%s')" % (self.email, self.alias, self.host, self.password and '*****')
+        return "User('%s', alias='%s', host='%s', password='%s', token='%s')" % (
+            self.email, self.alias, self.host, self.password and '*****', self.token and '*****')
 
     def __interactive_login(self, connection):
         if not isatty():
