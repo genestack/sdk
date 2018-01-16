@@ -6,7 +6,7 @@ from genestack_client import Application, FilesUtil, SpecialFolders
 class DatasetsUtil(Application):
     APPLICATION_ID = 'genestack/datasetsUtil'
 
-    BATCH_SIZE = 500
+    BATCH_SIZE = 100
 
     def create_dataset(self, name, dataset_type, children, parent=None):
         """
