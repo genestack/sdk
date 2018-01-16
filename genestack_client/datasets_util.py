@@ -6,6 +6,8 @@ from genestack_client import Application, FilesUtil, SpecialFolders
 class DatasetsUtil(Application):
     APPLICATION_ID = 'genestack/datasetsUtil'
 
+    BATCH_SIZE = 500
+
     def create_dataset(self, name, dataset_type, children, parent=None):
         """
         Create a dataset.
@@ -38,6 +40,24 @@ class DatasetsUtil(Application):
         :rtype: int
         """
         return self.invoke('getDatasetSize', accession)
+
+    def get_dataset_children(self, accession):
+        """
+        Return children accessions of the provided dataset.
+
+        :param accession: dataset accession
+        :type accession: str
+        :return: generator over dataset's children accessions
+        """
+        count = 0
+        while True:
+            children = self.invoke('getDatasetChildren', accession, count, self.BATCH_SIZE)
+            for child in children:
+                yield child
+
+            count += len(children)
+            if len(children) < self.BATCH_SIZE:
+                break
 
     def create_subset(self, accession, children, parent=None):
         """
