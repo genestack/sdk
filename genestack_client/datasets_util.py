@@ -43,7 +43,7 @@ class DatasetsUtil(Application):
 
     def get_dataset_children(self, accession):
         """
-        Return children accessions of the provided dataset.
+        Return generator over children accessions of the provided dataset.
 
         :param accession: dataset accession
         :type accession: str
