@@ -15,8 +15,7 @@ class SudoUtils(Application):
 
     def is_sudo_active(self):
         """
-        Returns a boolean indicating whether superuser mode is still active. This request extends
-        the duration of a superuser session.
+        Returns a boolean indicating whether superuser mode is still active.
 
         :return: ``True`` if sudo is active
         :rtype: bool
