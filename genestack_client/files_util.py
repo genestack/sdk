@@ -502,6 +502,7 @@ class FilesUtil(Application):
             - owner
             - name
             - typeKey
+            - isDataset
             - application
 
                 - id
@@ -547,6 +548,7 @@ class FilesUtil(Application):
             - accession
             - owner
             - name
+            - isDataset
             - application
 
                 - id
@@ -647,7 +649,7 @@ class FilesUtil(Application):
         Search for files with ``file_filter`` and return dictionary with two key/value pairs:
 
          - ``'total'``: total number (``int``) of files matching the query
-         - ``'result'``: list of file info dictionaries for subset of matching files 
+         - ``'result'``: list of file info dictionaries for subset of matching files
                          (from ``offset`` to ``offset+limit``). See the documentation of
                          :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure
                          of these objects.
