@@ -1,6 +1,8 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 from genestack_client import FilesUtil, get_connection, make_connection_parser
 
 # parse script arguments
@@ -12,16 +14,16 @@ args = parser.parse_args()
 source_folder = args.folder
 move_files = args.move_files
 
-print "Connecting to Genestack..."
+print('Connecting to Genestack...')
 
 # get connection and application handlers
 connection = get_connection(args)
 files_util = FilesUtil(connection)
 
-print "Collecting files..."
+print('Collecting files...')
 files = files_util.get_file_children(source_folder)
 files_count = len(files)
-print "Found %d files to organise. Retrieving infos..." % files_count
+print('Found %d files to organise. Retrieving infos...' % files_count)
 infos = files_util.get_complete_infos(files)
 
 output_folder = files_util.create_folder("Organized files", parent=source_folder)
@@ -29,7 +31,7 @@ grouping_folders = {}
 
 for i, entry in enumerate(infos, 1):
     accession = entry['accession']
-    print "Processing file %d of %d (%s)..." % (i, files_count, accession)
+    print('Processing file %d of %d (%s)...' % (i, files_count, accession))
 
     # use either application name, application ID or "Unknown application" (in this order of preference)
     app_entry = entry.get('application')
@@ -47,4 +49,4 @@ for i, entry in enumerate(infos, 1):
     if move_files:
         files_util.unlink_file(accession, source_folder)
 
-print "All done! Your files can be found inside the folder with accession %s" % output_folder
+print('All done! Your files can be found inside the folder with accession %s' % output_folder)

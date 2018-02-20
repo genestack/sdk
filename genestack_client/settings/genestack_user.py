@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 from getpass import getpass
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
@@ -88,7 +90,7 @@ class User(object):
         message = 'Connecting to %s' % self.host
         while True:
             if message:
-                print message
+                print(message)
             if email and '@' in email:
                 email = raw_input('e-mail [%s]: ' % email).strip() or email
             else:

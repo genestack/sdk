@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import cookielib
 import json
 import os
@@ -24,7 +26,7 @@ class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
 
 class _NoRedirect(urllib2.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        #print 'Redirect: %s %s %s -> %s' % (code, msg, req.get_full_url(), newurl)
+        # print('Redirect: %s %s %s -> %s' % (code, msg, req.get_full_url(), newurl))
         return
 
 
@@ -288,7 +290,7 @@ class Application(object):
             message = '\nLogs:\n' + '\n'.join(
                 item['message'] + item.get('stackTrace', '') for item in response.log
             )
-            print message
+            print(message)
 
         return response
 

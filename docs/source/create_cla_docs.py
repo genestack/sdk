@@ -14,9 +14,6 @@ template = '''
 
 '''
 
-import os
-print os.getcwd()
-
 
 def main():
     with open('_cla_reference.rst', 'w') as f:
