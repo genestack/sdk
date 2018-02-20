@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import argparse
 import subprocess
 import sys
@@ -141,7 +143,7 @@ def ask_confirmation(question, default=None):
             return True
         if text in ('n', 'no'):
             return False
-        print 'Unexpected response please input "y[es]" or "n[o]"'
+        print('Unexpected response please input "y[es]" or "n[o]"')
 
 
 def validate_constant(cls, key):
