@@ -4,7 +4,9 @@ import sys
 
 
 if not ((2, 7, 5) <= sys.version_info < (3, 0)):
-    sys.stderr.write('%s Python version is not supported. Required version 2.7.5+, Python 3 not supported\n' % sys.version)
+    sys.stderr.write(
+        'Python version "%s" is not supported. Required version 2.7.5+, Python 3 is not supported\n' % sys.version
+    )
     exit(1)
 
 

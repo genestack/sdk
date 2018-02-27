@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import cmd
 import os
 import shlex
@@ -234,28 +236,28 @@ class GenestackShell(cmd.Cmd):
         args, others = parser.parse_known_args()
 
         if args.version:
-            print __version__
+            print(__version__)
             exit(0)
 
         command = self.COMMANDS.get(args.command)
         if command:
             command = command()
         elif args.command:
-            print "*** Unknown command: %s" % args.command
-            print get_help(parser)
+            print("*** Unknown command: %s" % args.command)
+            print(get_help(parser))
             exit(0)
         elif others:
-            print "*** Unknown arguments: %s" % ' '.join(others)
-            print get_help(parser)
+            print("*** Unknown arguments: %s" % ' '.join(others))
+            print(get_help(parser))
             exit(0)
 
         if args.help:
             if not command:
-                print get_help(parser)
+                print(get_help(parser))
             elif command.OFFLINE:
-                print get_help(command.get_command_parser())
+                print(get_help(command.get_command_parser()))
             else:
-                print get_help(command.get_command_parser(make_connection_parser()))
+                print(get_help(command.get_command_parser(make_connection_parser())))
             exit(0)
 
         if command:
@@ -340,8 +342,8 @@ class GenestackShell(cmd.Cmd):
             command.run()
             return 0
         except (KeyboardInterrupt, EOFError):
-            print
-            print "Command interrupted."
+            print()
+            print("Command interrupted.")
         except GenestackException as e:
             sys.stdout.flush()
             sys.stderr.write('%s\n' % e)
@@ -353,9 +355,9 @@ class GenestackShell(cmd.Cmd):
     def do_debug(self, line):
         self.connection.debug = not self.connection.debug
         if self.connection.debug:
-            print 'Debug enabled'
+            print('Debug enabled')
         else:
-            print 'Debug disabled'
+            print('Debug disabled')
 
     def get_commands_for_help(self):
         """
@@ -370,22 +372,22 @@ class GenestackShell(cmd.Cmd):
         return sorted(commands)
 
     def do_help(self, line):
-        print
+        print()
 
         command = self.COMMANDS.get(line)
         if command:
-            print get_help(command().get_command_parser())
+            print(get_help(command().get_command_parser()))
             return
 
         if not line:
-            print self.doc_header
-            print '=' * len(self.doc_header)
+            print(self.doc_header)
+            print('=' * len(self.doc_header))
             commands = self.get_commands_for_help()
             max_size = max(len(command_name) for command_name, _ in commands)
             help_size = max((20, max_size + 3))
             for command_name, short_description in self.get_commands_for_help():
-                print '%-*s%s' % (help_size, command_name, short_description)
-            print '=' * len(self.doc_header)
+                print('%-*s%s' % (help_size, command_name, short_description))
+            print('=' * len(self.doc_header))
 
         try:
             getattr(self, 'help_' + line)()
@@ -430,5 +432,5 @@ class GenestackShell(cmd.Cmd):
         try:
             cmd.Cmd.cmdloop(self, intro=intro)
         except (KeyboardInterrupt, EOFError):
-            print
+            print()
             self.postloop()

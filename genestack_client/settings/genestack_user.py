@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 from getpass import getpass
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
@@ -76,7 +78,8 @@ class User(object):
         return connection
 
     def __repr__(self):
-        return "User('%s', alias='%s', host='%s', password='%s')" % (self.email, self.alias, self.host, self.password and '*****')
+        return "User('%s', alias='%s', host='%s', password='%s', token='%s')" % (
+            self.email, self.alias, self.host, self.password and '*****', self.token and '*****')
 
     def __interactive_login(self, connection):
         if not isatty():
@@ -98,7 +101,7 @@ class User(object):
 
         while True:
             if message:
-                print message
+                print(message)
 
             if choice == choose_by_email:
                 if email and '@' in email:

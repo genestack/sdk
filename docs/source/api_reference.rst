@@ -74,6 +74,12 @@ DatasetsUtil
         :members:
         :undoc-members:
 
+SampleLinker (Beta)
+-------------------
+.. autoclass:: genestack_client.samples.SampleLinker
+        :members:
+        :undoc-members:
+
 Command-Line Applications
 *************************
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import csv
 
 from genestack_client import (BioMetaKeys, FilesUtil, GenestackException, Metainfo, get_connection,
@@ -37,15 +39,15 @@ if __name__ == "__main__":
     csv_input = args.csv_file
     local_key = args.local_key
 
-    print "Connecting to Genestack..."
+    print('Connecting to Genestack...')
 
     # get connection and application handlers
     connection = get_connection(args)
     files_util = FilesUtil(connection)
 
-    print "Collecting files..."
+    print('Collecting files...')
     files = files_util.get_file_children(args.folder)
-    print "Found %d files. Collecting metadata..." % len(files)
+    print('Found %d files. Collecting metadata...' % len(files))
     infos = files_util.get_infos(files)
 
     identifier_map = {info['name']: info['accession'] for info in infos}
@@ -63,7 +65,7 @@ if __name__ == "__main__":
             local_identifier = file_data[local_key]
             remote_file = identifier_map.get(local_identifier)
             if not remote_file:
-                print "Warning: no match found for file name '%s'" % local_identifier
+                print('Warning: no match found for file name "%s"' % local_identifier)
                 continue
 
             # prepare a Metainfo object
@@ -86,6 +88,6 @@ if __name__ == "__main__":
 
             # edit the metadata on Genestack
             files_util.add_metainfo_values(remote_file, metainfo)
-            print "Edited metainfo for '%s' (%s)" % (local_identifier, remote_file)
+            print("Edited metainfo for '%s' (%s)" % (local_identifier, remote_file))
 
-    print "All done!"
+    print('All done!')

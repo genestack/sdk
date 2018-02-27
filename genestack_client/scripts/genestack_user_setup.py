@@ -1,6 +1,8 @@
 #!python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -25,18 +27,18 @@ def validate_alias(alias):
 
 
 def input_alias(existing):
-    print ('Please input alias. (Alias can contain: letters (a-z, A-Z), '
-           'digits (0-9), at-sign (@), underscore (_), hyphen (-))')
+    print('Please input alias. (Alias can contain: letters (a-z, A-Z), '
+          'digits (0-9), at-sign (@), underscore (_), hyphen (-))')
     while True:
         alias = raw_input('alias: ').strip()
         if not alias:
-            print 'Alias cannot be empty'
+            print('Alias cannot be empty')
             continue
         if not validate_alias(alias):
-            print 'Restricted symbols message'
+            print('Restricted symbols message')
             continue
         if alias in existing:
-            print 'Alias must be unique'
+            print('Alias must be unique')
             continue
         return alias
 
@@ -74,11 +76,11 @@ def create_user_from_input_email_and_password(host, alias=None):
     :return: user
     :rtype: User
     """
-    print 'Specify email and password for host: "%s"' % host,
+    print('Specify email and password for host: "%s"' % host, end=' ')
     if alias:
-        print 'and alias: "%s"' % alias
+        print('and alias: "%s"' % alias)
     else:
-        print
+        print()
     user_login = None
     while True:
         if user_login:
@@ -88,49 +90,49 @@ def create_user_from_input_email_and_password(host, alias=None):
         else:
             user_login = raw_input('Please specify your user login (email): ').strip()
             if not user_login:
-                print 'Login cannot be empty'
+                print('Login cannot be empty')
                 continue
         user_password = getpass('Please specify your password for %s: ' % user_login)
         if not user_password:
-            print 'Password cannot be empty'
+            print('Password cannot be empty')
             continue
 
         if not user_login or not user_password:
-            print
+            print()
             continue
         user = User(user_login, host=host, password=user_password, alias=alias)
         try:
             user.get_connection()
             break
         except GenestackAuthenticationException:
-            print 'Your username or password was incorrect, please try again'
+            print('Your username or password was incorrect, please try again')
     return user
 
 
 def create_user_from_token(host, alias=None):
-    print 'Host: %s' % host
+    print('Host: %s' % host)
     msg = 'Please specify Genestack API token%s: '
     with_alias = '' if not alias else ' for "%s"' % alias
     msg = msg % with_alias
     while True:
         token = getpass(msg)
         if not token:
-            print 'Token cannot be empty'
+            print('Token cannot be empty')
             continue
         user = User(email=None, host=host, password=None, alias=alias, token=token)
         try:
             user.get_connection()
             break
         except GenestackAuthenticationException:
-            print 'Could not login with given token, please try again'
+            print('Could not login with given token, please try again')
     return user
 
 
 def check_config():
     config_path = config.get_settings_file()
     if not os.path.exists(config_path):
-        print ('You do not seem to have a config file yet. '
-               'Please run `genestack-user-setup init`. Exiting')
+        print('You do not seem to have a config file yet. '
+              'Please run `genestack-user-setup init`. Exiting')
         exit(1)
 
 
@@ -144,7 +146,7 @@ class AddUser(Command):
         host = input_host()
         user = create_user_from_input(host, alias)
         config.add_user(user)
-        print 'User "%s" has been created' % user.alias
+        print('User "%s" has been created' % user.alias)
 
 
 def select_user(users, selected=None):
@@ -188,7 +190,7 @@ class ChangePassword(Command):
             except GenestackAuthenticationException:
                 continue
         config.change_password(user.alias, user.password)
-        print 'Password has been changed successfully'
+        print('Password has been changed successfully')
 
 
 class ChangeToken(Command):
@@ -209,7 +211,7 @@ class ChangeToken(Command):
         new_user = create_user_from_token(user.host, alias=user.alias)
         user.token = new_user.token
         config.change_token(user.alias, user.token)
-        print 'Token has been changed successfully'
+        print('Token has been changed successfully')
 
 
 class SetDefault(Command):
@@ -228,9 +230,9 @@ class SetDefault(Command):
             user = select_user(users, selected=config.default_user)
         if user.alias != config.default_user.alias:
             config.set_default_user(user)
-            print 'Default user has been set to "%s"' % user.alias
+            print('Default user has been set to "%s"' % user.alias)
         else:
-            print 'Default user has not been changed'
+            print('Default user has not been changed')
 
 
 class Remove(Command):
@@ -249,10 +251,10 @@ class Remove(Command):
         if not user:
             user = select_user(users)
         if user.alias == config.default_user.alias:
-            print 'Cannot delete default user'
+            print('Cannot delete default user')
             return
         config.remove_user(user)
-        print '"%s" has been removed from config' % user.alias
+        print('"%s" has been removed from config' % user.alias)
 
 
 class RenameUser(Command):
@@ -271,10 +273,10 @@ class RenameUser(Command):
         user = users.get(self.args.alias)
 
         if not user:
-            print 'Select user to rename'
+            print('Select user to rename')
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
-            print 'Enter new alias'
+            print('Enter new alias')
             new_alias = input_alias(users.keys())
         else:
             new_alias = self.args.new_alias
@@ -287,7 +289,7 @@ class RenameUser(Command):
             config.set_default_user(new_user, save=False)
 
         config.remove_user(user)
-        print '"%s" alias changed to "%s"' % (user.alias, new_user.alias)
+        print('"%s" alias changed to "%s"' % (user.alias, new_user.alias))
 
 
 class List(Command):
@@ -302,10 +304,10 @@ class List(Command):
         default_user_alias = config.default_user and config.default_user.alias
 
         for key, user in users:
-            print
-            print '%s%s:' % (key, ' (default)' if default_user_alias == key else '')
-            print '  %-10s%s' % ('email', user.email)
-            print '  %-10s%s' % ('host', user.host)
+            print()
+            print('%s%s:' % (key, ' (default)' if default_user_alias == key else ''))
+            print('  %-10s%s' % ('email', user.email))
+            print('  %-10s%s' % ('host', user.host))
 
 
 class Path(Command):
@@ -314,7 +316,7 @@ class Path(Command):
     OFFLINE = True
 
     def run(self):
-        print config.get_settings_file()
+        print(config.get_settings_file())
 
 
 class Init(Command):
@@ -350,13 +352,13 @@ class Init(Command):
         try:
             config_path = config.get_settings_file()
             if os.path.exists(config_path):
-                print 'A config file already exists at %s' % config_path
+                print('A config file already exists at %s' % config_path)
                 return
-            print 'If you do not have a Genestack account, you need to create one first'
+            print('If you do not have a Genestack account, you need to create one first')
 
             user = create_user_from_input(self.args.host, default_alias)
             config.add_user(user)  # adding first user make him default.
-            print 'Config file at "%s" has been created successfully' % config_path
+            print('Config file at "%s" has been created successfully' % config_path)
         except (KeyboardInterrupt, EOFError):
             sys.stdout.flush()
             sys.stderr.write('\nError: Init is not finished\n')
@@ -382,7 +384,7 @@ class UserManagement(GenestackShell):
     def set_shell_user(self, args):
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
-            print 'No config file was found, creating one interactively'
+            print('No config file was found, creating one interactively')
             self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], False)
             args.host = None  # do not provide host for future use of arguments
 

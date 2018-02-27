@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from genestack_client import (FilesUtil, get_connection, make_connection_parser, get_user,
                               ExpressionNavigatorforGenes, ExpressionNavigatorforIsoforms,
-                              ExpressionNavigatorforMicroarrays, AffymetrixMicroarraysNormalisationApplication,
+                              ExpressionNavigatorforMicroarrays, AffymetrixMicroarraysNormalizationApplication,
                               SpecialFolders, GenomeQuery)
 
 # Tests must be run on internal-dev
@@ -70,7 +70,7 @@ def test_en_isoforms(conn, keep_files):
 def test_en_microarrays(conn, keep_files):
     fu = FilesUtil(conn)
     en = ExpressionNavigatorforMicroarrays(conn)
-    norm_app = AffymetrixMicroarraysNormalisationApplication(conn)
+    norm_app = AffymetrixMicroarraysNormalizationApplication(conn)
     en_file = None
     norm_file = None
     try:

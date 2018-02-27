@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import argparse
 import subprocess
 import sys
@@ -89,6 +91,9 @@ def get_user(args=None):
         args = make_connection_parser().parse_args()
 
     alias = args.user
+    if args.token:
+        return User(email=None, host=args.host, password=None, token=args.token)
+
     if not args.host and not args.pwd:
         if not alias and config.default_user:
             return config.default_user
@@ -139,7 +144,7 @@ def ask_confirmation(question, default=None):
             return True
         if text in ('n', 'no'):
             return False
-        print 'Unexpected response please input "y[es]" or "n[o]"'
+        print('Unexpected response please input "y[es]" or "n[o]"')
 
 
 def interactive_select(items, message, to_string=None, selected=None):
@@ -165,11 +170,11 @@ def interactive_select(items, message, to_string=None, selected=None):
     while True:
         for i, option in enumerate(items, start=1):
             if option == selected:
-                print '* ',
+                print('* ', end=' ')
                 about_default = ' [%s]' % i
             else:
-                print '  ',
-            print '%-2s %s' % ('%s)' % i, to_string(option))
+                print('  ', end=' ')
+            print('%-2s %s' % ('%s)' % i, to_string(option)))
 
         raw_index = raw_input('%s%s: ' % (message, about_default)).strip()
 
@@ -177,13 +182,13 @@ def interactive_select(items, message, to_string=None, selected=None):
             return selected
 
         if not raw_index.isdigit():
-            print 'Wrong number: "%s"' % raw_index
+            print('Wrong number: "%s"' % raw_index)
             continue
 
         item_index = int(raw_index) - 1
 
         if not 0 <= item_index < len(items):
-            print 'Number is not in list'
+            print('Number is not in list')
             continue
         return items[item_index]
 
