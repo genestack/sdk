@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from genestack_client import Application, FilesUtil, SpecialFolders
+from genestack_client import Application, FilesUtil, SpecialFolders, Metainfo, GenestackException
 
 
 class DatasetsUtil(Application):
@@ -8,7 +8,7 @@ class DatasetsUtil(Application):
 
     BATCH_SIZE = 100
 
-    def create_dataset(self, name, dataset_type, children, parent=None):
+    def create_dataset(self, name, dataset_type, children, parent=None, dataset_metainfo=None):
         """
         Create a dataset.
 
@@ -20,6 +20,8 @@ class DatasetsUtil(Application):
         :type children: list[str]
         :param parent: folder for the new dataset, 'My datasets' if not specified
         :type parent: str
+        :param dataset_metainfo: metainfo of the created dataset
+        :type dataset_metainfo: Metainfo
 
         :return: dataset accession
         :rtype: str
@@ -27,7 +29,15 @@ class DatasetsUtil(Application):
         if parent is None:
             parent = self.__get_mydatasets_folder()
 
-        return self.invoke('createDataset', parent, name, dataset_type, children)
+        dataset_metainfo = dataset_metainfo or Metainfo()
+        if Metainfo.NAME in dataset_metainfo:
+            raise GenestackException(
+                'Provided metainfo must not have "%s" field set' % Metainfo.NAME
+            )
+
+        dataset_metainfo.add_string(Metainfo.NAME, name)
+
+        return self.invoke('createDataset', parent, dataset_type, dataset_metainfo, children)
 
     def get_dataset_size(self, accession):
         """
