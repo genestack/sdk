@@ -14,7 +14,7 @@ class DatasetsUtil(Application):
 
         :param name: name of the dataset
         :type name: str
-        :param dataset_type: type of the dataset
+        :param dataset_type: type of the dataset (children files interface name, must extend IDataFile)
         :type dataset_type: str
         :param children: list of children accessions
         :type children: list[str]
@@ -29,6 +29,36 @@ class DatasetsUtil(Application):
         if parent is None:
             parent = self.__get_mydatasets_folder()
 
+        dataset_metainfo = self._fill_dataset_metainfo(dataset_metainfo, name)
+
+        return self.invoke('createDataset', parent, dataset_type, dataset_metainfo, children)
+
+    def create_empty_dataset(self, name, dataset_type, parent=None, dataset_metainfo=None):
+        """
+        Create an empty dataset.
+
+        :param name: name of the dataset
+        :type name: str
+        :param dataset_type: type of the dataset (children files interface name, must extend IDataFile)
+        :type dataset_type: str
+        :param parent: folder for the new dataset, 'My datasets' if not specified
+        :type parent: str
+        :param dataset_metainfo: metainfo of the created dataset
+        :type dataset_metainfo: Metainfo
+
+        :return: dataset accession
+        :rtype: str
+        """
+
+        if parent is None:
+            parent = self.__get_mydatasets_folder()
+
+        dataset_metainfo = self._fill_dataset_metainfo(dataset_metainfo, name)
+
+        return self.invoke('createEmptyDataset', parent, dataset_type, dataset_metainfo)
+
+    @staticmethod
+    def _fill_dataset_metainfo(dataset_metainfo, name):
         dataset_metainfo = dataset_metainfo or Metainfo()
         if Metainfo.NAME in dataset_metainfo:
             raise GenestackException(
@@ -36,8 +66,7 @@ class DatasetsUtil(Application):
             )
 
         dataset_metainfo.add_string(Metainfo.NAME, name)
-
-        return self.invoke('createDataset', parent, dataset_type, dataset_metainfo, children)
+        return dataset_metainfo
 
     def get_dataset_size(self, accession):
         """
