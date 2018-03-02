@@ -89,25 +89,24 @@ class User(object):
         email = self.email
         message = 'Connecting to %s' % self.host
 
-        choose_by_token = 'by token'
-        choose_by_email = 'by email and password'
-        choose_anonymously = 'anonymously'
+        login_by_token = 'by token'
+        login_by_email = 'by email and password'
+        login_anonymously = 'anonymously'
 
-        choice = interactive_select([choose_by_token, choose_by_email, choose_anonymously],
+        choice = interactive_select([login_by_token, login_by_email, login_anonymously],
                                     'How do you want to login')
 
-        if choice == choose_anonymously:
+        if choice == login_anonymously:
             return
 
         while True:
             if message:
                 print(message)
 
-            if choice == choose_by_email:
-                if email and '@' in email:
-                    email = raw_input('e-mail [%s]: ' % email).strip() or email
-                else:
-                    email = raw_input('e-mail: ').strip() or email
+            if choice == login_by_email:
+                input_message = 'e-mail [%s]: ' % email if email and '@' in email else 'e-mail: '
+                email = raw_input(input_message).strip() or email
+
                 password = getpass('password for %s: ' % email)
                 try:
                     connection.login(email, password)
@@ -115,8 +114,8 @@ class User(object):
                     self.password = password
                     return
                 except GenestackAuthenticationException:
-                    message = ('Your username or password was incorrect for %s. '
-                               'Please try again.' % self.host)
+                    message = ('Your username and password have been rejected by %s, '
+                               'please try again' % self.host)
             else:
                 token = getpass('token: ')
                 try:
@@ -124,7 +123,7 @@ class User(object):
                     self.token = token
                     return
                 except GenestackAuthenticationException:
-                    message = 'Your token was incorrect for %s. Please try again.' % self.host
+                    message = 'Your token has been rejected by %s, please try again' % self.host
 
     def __eq__(self, other):
         return (

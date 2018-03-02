@@ -121,8 +121,8 @@ def get_connection(args=None):
 def ask_confirmation(question, default=None):
     """
     Ask confirmation and return response as boolean value.
-    This function will not end until user input correct answer.
-    This function does not check if the file is connected to a tty device.
+    Will be looping until user provides correct credentials.
+    Does not check if program is attached to tty device.
 
     :param question: question to ask, without [y/n] suffix and question mark.
     :param default: default value for empty string. Can be ``'y'``, ``'n'``, and ``None``
@@ -150,8 +150,8 @@ def ask_confirmation(question, default=None):
 def interactive_select(items, message, to_string=None, selected=None):
     """
     Asks user to choose one of the items.
-    This function will not end until user input correct answer.
-    This function does not check if the file is connected to a tty device.
+    Will be looping until user provides correct credentials.
+    Does not check if program is attached to tty device.
 
     :param items: list of possible choices
     :param message: clarifying message
