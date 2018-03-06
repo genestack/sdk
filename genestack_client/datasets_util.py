@@ -117,6 +117,28 @@ class DatasetsUtil(Application):
 
         return self.invoke('createSubset', parent, accession, children)
 
+    def add_dataset_children(self, accession, children):
+        """
+        Add new files to a dataset.
+
+        :param accession: dataset accession
+        :type accession: str
+        :param children: list of children accessions to add to the dataset
+        :type children: list[str]
+        """
+        return self.invoke('addFiles', accession, children)
+
+    def add_file_to_datasets(self, file_accession, dataset_accessions):
+        """
+        Add given file to several datasets.
+
+        :param file_accession: file accession
+        :type file_accession: str
+        :param dataset_accessions: accessions of the datasets
+        :type dataset_accessions: list[str]
+        """
+        return self.invoke('addFileToDatasets', file_accession, dataset_accessions)
+
     def remove_dataset_children(self, accession, children):
         """
         Remove children from dataset.
