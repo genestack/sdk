@@ -1,8 +1,12 @@
-* 0.21.0
-    * Changed methods `FilesUtil.share_folder` and `FilesUtil.share_files` does not require password
+* 0.22.0
     * `DatasetsUtil.create_dataset` now accepts an optional `dataset_metainfo` parameter to specify
     created dataset metainfo
     * Added `DatasetsUtil.create_empty_dataset` method
+    * Added `DatasetsUtil.add_dataset_children` and `DatasetsUtil.add_file_to_datasets` methods
+    for adding files to datasets
+
+* 0.21.0
+    * Changed methods `FilesUtil.share_folder` and `FilesUtil.share_files` does not require password
 
 * 0.20.0
     * Added `Connection.login_by_token` method
