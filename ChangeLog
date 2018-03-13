@@ -4,6 +4,7 @@
     * Added `DatasetsUtil.create_empty_dataset` method
     * Added `DatasetsUtil.add_dataset_children` and `DatasetsUtil.add_file_to_datasets` methods
     for adding files to datasets
+    * Added `GroupsUtil.find_group_by_name` method
 
 * 0.21.0
     * Changed methods `FilesUtil.share_folder` and `FilesUtil.share_files` does not require password
