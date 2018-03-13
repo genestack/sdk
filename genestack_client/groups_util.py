@@ -8,7 +8,7 @@ class GroupsUtil(Application):
     def find_group_by_name(self, name):
         """
         Finds group with specified name.
-        If there are no or more than one group with this name, an exception is thrown.
+        If there are no groups or more than one group with this name, an exception is thrown.
 
         :param name: group name
         :type name: str
