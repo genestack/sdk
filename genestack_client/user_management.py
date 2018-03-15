@@ -2,8 +2,8 @@
 from genestack_client import Application
 
 
-class GroupsUtil(Application):
-    APPLICATION_ID = 'genestack/groupsUtil'
+class UserManagement(Application):
+    APPLICATION_ID = 'genestack/userManagement'
 
     def find_group_by_name(self, name):
         """
@@ -17,4 +17,15 @@ class GroupsUtil(Application):
         """
         return self.invoke(
             'findGroupByName', name
+        )
+
+    def get_user_organization(self):
+        """
+        Gets name of the current users' organization.
+
+        :return: organization name
+        :rtype: str
+        """
+        return self.invoke(
+            'getUserOrganization'
         )
