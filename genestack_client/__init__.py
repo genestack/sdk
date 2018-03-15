@@ -29,7 +29,7 @@ from utils import get_connection, get_user, make_connection_parser, validate_con
 from file_filters import *
 from files_util import FilesUtil, SortOrder, SpecialFolders
 from datasets_util import DatasetsUtil
-from groups_util import GroupsUtil
+from user_management import UserManagement
 from task_log_viewer import TaskLogViewer
 from cla import *
 from expression_navigator import *
