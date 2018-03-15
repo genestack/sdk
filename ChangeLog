@@ -2,6 +2,7 @@
     * Added `GroupsUtil.find_group_by_name` method
     * Added `DatasetsUtil.add_dataset_children` and `DatasetsUtil.add_file_to_datasets` methods
     for adding files to datasets
+    * Removed warning about missing config
 
 * 0.22.0
     * `DatasetsUtil.create_dataset` now accepts an optional `dataset_metainfo` parameter to specify
