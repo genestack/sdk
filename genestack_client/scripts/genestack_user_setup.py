@@ -10,9 +10,10 @@ from argparse import ArgumentParser
 from getpass import getpass
 from operator import attrgetter
 
-from genestack_client import GenestackAuthenticationException, GenestackException
+from genestack_client import GenestackAuthenticationException
 from genestack_client.genestack_shell import Command, GenestackShell
 from genestack_client.settings import DEFAULT_HOST, User, config
+from genestack_client.utils import interactive_select
 
 
 def input_host():
@@ -42,48 +43,6 @@ def input_alias(existing):
         return alias
 
 
-def _select(items, message, to_string=None, selected=None):
-    """
-    Asks user to choose one of the items.
-
-    :param items: list of possible choices
-    :param message: clarifying message
-    :type to_string: function to convert choice to string
-    :return:
-    """
-    to_string = to_string or str
-
-    if selected and selected not in items:
-        raise GenestackException('Selected item "%s" is not in list: %s' % (selected, items))
-
-    about_default = ''
-
-    while True:
-        for i, option in enumerate(items, start=1):
-            if option == selected:
-                print('* ', end=' ')
-                about_default = ' [%s]' % i
-            else:
-                print('  ', end=' ')
-            print('%-2s %s' % ('%s)' % i, to_string(option)))
-
-        raw_index = raw_input('%s%s: ' % (message, about_default)).strip()
-
-        if not raw_index and selected:
-            return selected
-
-        if not raw_index.isdigit():
-            print('Wrong number: "%s"' % raw_index)
-            continue
-
-        item_index = int(raw_index) - 1
-
-        if not 0 <= item_index < len(items):
-            print('Number is not in list')
-            continue
-        return items[item_index]
-
-
 def create_user_from_input(host, alias):
     """
     Ask credentials interactively and return user that can login to platform.
@@ -97,7 +56,7 @@ def create_user_from_input(host, alias):
     """
     by_token = 'by token'
     items = [by_token, 'by email and password']
-    use_token = _select(items, 'Select authentication') == by_token
+    use_token = interactive_select(items, 'Select authentication') == by_token
 
     if use_token:
         return create_user_from_token(host, alias=alias)
@@ -201,7 +160,7 @@ def select_user(users, selected=None):
     """
     user_list = users.values()
     user_list.sort(key=lambda x: x.alias)
-    return _select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
+    return interactive_select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 
 class ChangePassword(Command):

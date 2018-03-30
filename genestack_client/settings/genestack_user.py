@@ -5,7 +5,7 @@ from __future__ import print_function
 from getpass import getpass
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
-from genestack_client.utils import ask_confirmation, isatty
+from genestack_client.utils import isatty, interactive_select
 
 DEFAULT_HOST = 'platform.genestack.org'
 
@@ -88,26 +88,42 @@ class User(object):
 
         email = self.email
         message = 'Connecting to %s' % self.host
+
+        login_by_token = 'by token'
+        login_by_email = 'by email and password'
+        login_anonymously = 'anonymously'
+
+        choice = interactive_select([login_by_token, login_by_email, login_anonymously],
+                                    'How do you want to login')
+
+        if choice == login_anonymously:
+            return
+
         while True:
             if message:
                 print(message)
-            if email and '@' in email:
-                email = raw_input('e-mail [%s]: ' % email).strip() or email
-            else:
-                email = raw_input('e-mail: ').strip() or email
-            if not email:
-                anonymously = ask_confirmation('Proceed anonymously', default='n')
-                if anonymously:
+
+            if choice == login_by_email:
+                input_message = 'e-mail [%s]: ' % email if email and '@' in email else 'e-mail: '
+                email = raw_input(input_message).strip() or email
+
+                password = getpass('password for %s: ' % email)
+                try:
+                    connection.login(email, password)
+                    self.email = email
+                    self.password = password
                     return
-                continue
-            password = getpass('password for %s: ' % email)
-            try:
-                connection.login(email, password)
-                self.email = email
-                self.password = password
-                return
-            except GenestackAuthenticationException:
-                message = 'Your username or password was incorrect for %s. Please try again.' % self.host
+                except GenestackAuthenticationException:
+                    message = ('Your username and password have been rejected by %s, '
+                               'please try again' % self.host)
+            else:
+                token = getpass('token: ')
+                try:
+                    connection.login_by_token(token)
+                    self.token = token
+                    return
+                except GenestackAuthenticationException:
+                    message = 'Your token has been rejected by %s, please try again' % self.host
 
     def __eq__(self, other):
         return (
