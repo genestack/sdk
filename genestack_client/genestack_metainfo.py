@@ -317,8 +317,7 @@ class Metainfo(dict):
 
     @staticmethod
     def _parse_scalar_value(source_dict):
-        java_type = source_dict.pop('type')
-
+        java_type = source_dict['type']
         if java_type == BooleanValue._TYPE:
             return BooleanValue(source_dict['value'])
         elif java_type == DateTimeValue._TYPE:

@@ -1,3 +1,6 @@
+* 0.24.0
+    * Fix `Metainfo.parse_metainfo_from_dict(m)` modifies `m` https://github.com/genestack/python-client/issues/269
+
 * 0.23.0
     * Added `GroupsUtil.find_group_by_name` method
     * Added `DatasetsUtil.add_dataset_children` and `DatasetsUtil.add_file_to_datasets` methods
