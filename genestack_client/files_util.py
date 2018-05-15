@@ -327,6 +327,7 @@ class FilesUtil(Application):
     def get_metainfo_values_as_strings(self, accessions_list, keys_list=None):
         """
         Retrieve metainfo values as strings for specific files and metainfo keys.
+        Metainfo value lists are concatenated to string using comma as delimiter.
         The function returns a dictionary.
 
         :param accessions_list: accessions of the files to retrieve
@@ -337,6 +338,20 @@ class FilesUtil(Application):
         :rtype: dict
         """
         return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+
+    def get_metainfo_values_as_string_list(self, accessions_list, keys_list=None):
+        """
+        Retrieve metainfo values as lists of strings for specific files and metainfo keys.
+        The function returns a dictionary.
+
+        :param accessions_list: accessions of the files to retrieve
+        :type: accessions: list[str]
+        :param keys_list: metainfo keys to retrieve (if ``None``, all non-technical keys are retrieved for each file)
+        :type: keys: list[str]|None
+        :return: a two-level dictionary with the following structure: accession -> key -> value
+        :rtype: dict
+        """
+        return self.invoke('getMetainfoValuesAsStringList', accessions_list, keys_list)
 
     def get_special_folder(self, name):
         """
