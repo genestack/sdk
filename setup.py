@@ -1,18 +1,26 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+# noinspection PyUnresolvedReferences
+import setuptools
+
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
+
+with open('README.md') as f:
+    long_descrption = f.read()
 
 setup(
     name='genestack_client',
     version=__version__,
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
-    url='',
+    url='https://github.com/genestack/python-client',
     license='MIT',
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
+    long_description=long_descrption,
+    long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
     entry_points={
         'console_scripts': [
@@ -23,6 +31,15 @@ setup(
         ],
     },
     classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-    ],
+        'Programming Language :: Python :: 2.7',
+        ],
+
+    project_urls={
+        'Documentation': 'http://genestack-client.readthedocs.io/en/stable/',
+        'Source': 'https://github.com/genestack/python-client/',
+        'Tracker': 'https://github.com/genestack/python-client/issues',
+    },
 )
