@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from time import sleep
-
 import sys
+from time import sleep
 
 import genestack_client
 from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
                               validate_constant)
+from genestack_client.share_util import ShareUtil
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -375,6 +375,9 @@ class FilesUtil(Application):
         """
         Shares files and links them.
 
+        .. deprecated:: 0.24.0
+           Use :class:`ShareUtil` class instead.
+
         :param accessions: accession or list/tuple/set of accessions to be shared
         :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
@@ -386,14 +389,11 @@ class FilesUtil(Application):
         :rtype: None
         """
         if password is not None:
-            sys.stderr.write('Parameter `password` is deprecated. Use `share_files` without password.\n')
-        share_utils = self.connection.application('genestack/shareutils')
-
-        accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
-
-        share_utils.invoke('shareFilesForViewing', accessions, [group])
-        if destination_folder is not None:
-            share_utils.invoke('linkFiles', accessions, destination_folder, group)
+            sys.stderr.write(
+                'Parameter `password` is deprecated. Use `share_files` without password.\n'
+            )
+        share_util = ShareUtil(self.connection)
+        share_util.share_files_for_view(accessions, group, destination_folder)
 
     def share_folder(self, folder_accession, group, destination_folder=None, password=None):
         """
@@ -415,9 +415,13 @@ class FilesUtil(Application):
         :rtype: None
         """
         if password is not None:
-            sys.stderr.write('Parameter `password` is deprecated. Use `share_folder` without password.\n')
-        self.share_files([folder_accession], group, destination_folder=destination_folder)
-        share_utils = self.connection.application('genestack/shareutils')
+            sys.stderr.write(
+                'Parameter `password` is deprecated. Use `share_folder` without password.\n'
+            )
+
+        share_utils = ShareUtil(self.connection)
+        share_utils.share_files_for_view(folder_accession, group, destination_folder)
+
         limit = 100
         delay_seconds = 1  # delay between attempts
 
@@ -440,7 +444,7 @@ class FilesUtil(Application):
         :rtype: dict
 
         """
-        share_utils = self.connection.application('genestack/shareutils')
+        share_utils = ShareUtil(self.connection)
         return share_utils.invoke('getGroupsToShare')
 
     def get_group_folder_info(self, group_accession):
@@ -453,7 +457,7 @@ class FilesUtil(Application):
         :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
         :rtype: dict
         """
-        share_utils = self.connection.application('genestack/shareutils')
+        share_utils = ShareUtil(self.connection)
         return share_utils.invoke('getGroupFolderInfo', group_accession)
 
     def get_folder(self, parent, *names, **kwargs):
