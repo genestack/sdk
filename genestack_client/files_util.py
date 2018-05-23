@@ -4,8 +4,7 @@ from time import sleep
 
 import genestack_client
 from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
-                              validate_constant)
-from genestack_client.share_util import ShareUtil
+                              validate_constant, ShareUtil)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'

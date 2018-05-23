@@ -9,9 +9,8 @@ import shlex
 import sys
 from datetime import datetime
 
-from genestack_client import FilesUtil
 from genestack_client.genestack_shell import Command, GenestackShell
-from genestack_client.share_util import ShareUtil
+from genestack_client import ShareUtil
 
 APPLICATION_SHELL = 'genestack/shell'
 
