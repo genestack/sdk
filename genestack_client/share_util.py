@@ -19,10 +19,10 @@ class ShareUtil(Application):
         :type file_accessions: str | collections.Iterable[str]
         :param group_accession: accession of the group to share the files with
         :type group_accession: str
-        :param destination_folder: accession of the folder to link shared files into. This parameter
-               is required for linking files into the group folder, because current user might not
-               have enough permissions to do that. No links will be created if this parameter is
-               `None`.
+        :param destination_folder: accession of the folder to link shared files into. Typically
+               this parameter should be used for linking files into group folders, which is
+               currently impossible to do using the :meth:`FilesUtil.link_file` method. No links
+               will be created if this parameter is equal to `None`.
         :type destination_folder: str
         """
         self.__share_files(
@@ -39,10 +39,10 @@ class ShareUtil(Application):
         :type file_accessions: str | collections.Iterable[str]
         :param group_accession: accession of the group to share the files with
         :type group_accession: str
-        :param destination_folder: accession of the folder to link shared files into. This parameter
-               is required for linking files into the group folder, because current user might not
-               have enough permissions to do that. No links will be created if this parameter is
-               `None`.
+        :param destination_folder: accession of the folder to link shared files into. Typically
+               this parameter should be used for linking files into group folders, which is
+               currently impossible to do using the :meth:`FilesUtil.link_file` method. No links
+               will be created if this parameter is equal to `None`.
         :type destination_folder: str
         """
         self.__share_files(
