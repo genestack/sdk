@@ -11,6 +11,7 @@ from datetime import datetime
 
 from genestack_client import FilesUtil
 from genestack_client.genestack_shell import Command, GenestackShell
+from genestack_client.share_util import ShareUtil
 
 APPLICATION_SHELL = 'genestack/shell'
 
@@ -68,9 +69,9 @@ class Groups(Command):
     COMMAND = 'groups'
 
     def run(self):
-        fu = FilesUtil(self.connection)
+        share_util = ShareUtil(self.connection)
         print('User groups:')
-        for accession, name in fu.get_groups_to_share().items():
+        for accession, name in share_util.get_available_sharing_groups().items():
             print('  %s (%s)' % (name, accession))
 
 

@@ -50,7 +50,8 @@ class ShareUtil(Application):
         )
 
     def __share_files(self, method_name, file_accessions, group_accession, destination_folder):
-        if isinstance(file_accessions, collections.Iterable) and not isinstance(file_accessions, basestring):
+        is_iterable = isinstance(file_accessions, collections.Iterable)
+        if is_iterable and not isinstance(file_accessions, basestring):
             file_accessions = list(file_accessions)
         else:
             file_accessions = [file_accessions]
@@ -58,3 +59,13 @@ class ShareUtil(Application):
         self.invoke(method_name, file_accessions, [group_accession])
         if destination_folder is not None:
             self.invoke('linkFiles', file_accessions, destination_folder, group_accession)
+
+    def get_available_sharing_groups(self):
+        """
+        Find groups that the current user can share files with, which means that he is either
+        a sharing user or an administrator of these groups.
+
+        :return: dictionary in format 'group accession' -> 'group name'
+        :rtype: dict
+        """
+        return self.invoke('getGroupsToShare')

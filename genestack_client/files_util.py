@@ -440,12 +440,15 @@ class FilesUtil(Application):
         """
         Returns a dictionary of the form ``group_accession: group_name``.
 
+        .. deprecated:: 0.24.0
+           Use :meth:`ShareUtil.get_available_sharing_groups` instead.
+
         :return: group dict
         :rtype: dict
 
         """
         share_utils = ShareUtil(self.connection)
-        return share_utils.invoke('getGroupsToShare')
+        return share_utils.get_available_sharing_groups()
 
     def get_group_folder_info(self, group_accession):
         """
