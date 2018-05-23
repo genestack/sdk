@@ -22,6 +22,7 @@ setup(
     long_description=long_descrption,
     long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
+    python_requires='>=2.7,<3',
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
