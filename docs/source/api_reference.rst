@@ -39,7 +39,7 @@ FilesUtil
 
 .. _ShareUtil:
 
-SharesUtil
+ShareUtil
 ----------
 
 .. autoclass:: genestack_client.ShareUtil
