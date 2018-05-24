@@ -4,11 +4,13 @@
 # This script parses ENCODE metadata files such as this one:
 # https://www.encodeproject.org/metadata/type=Experiment&replicates.library.biosample.donor.organism.scientific_name = Homo + sapiens & files.file_type = fastq & assay_title = RNA - seq / metadata.tsv
 
+
+from __future__ import print_function
+
 import csv
 
-from genestack_client import (DataImporter, BioMetaKeys,
-                              make_connection_parser, get_connection,
-                              Metainfo)
+from genestack_client import (BioMetaKeys, DataImporter, Metainfo, get_connection,
+                              make_connection_parser)
 
 # ENCODE data
 FILE_ACCESSION = "File accession"
@@ -35,7 +37,7 @@ parser.add_argument('tsv_file', metavar='<tsv_file>',
 args = parser.parse_args()
 tsv_input = args.tsv_file
 
-print "Connecting to Genestack..."
+print('Connecting to Genestack...')
 
 # get connection and application handlers
 connection = get_connection(args)
@@ -45,7 +47,7 @@ importer = DataImporter(connection)
 experiment = importer.create_experiment(name="ENCODE Human RNA-seq",
                                         description="Human RNA-seq assays from ENCODE")
 
-print "Created a new experiment with accession %s..." % experiment
+print('Created a new experiment with accession %s...' % experiment)
 
 created_pairs = set()
 
@@ -75,6 +77,6 @@ with open(tsv_input, 'r') as the_file:
         # create the sequencing assay on Genestack
         created_file = importer.create_sequencing_assay(experiment, metainfo=metainfo)
 
-        print "Created file '%s' (%s)" % (file_data[FILE_ACCESSION], created_file)
+        print('Created file "%s" (%s)' % (file_data[FILE_ACCESSION], created_file))
 
-print "All done!"
+print('All done!')

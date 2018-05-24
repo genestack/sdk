@@ -1,8 +1,12 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-from genestack_client import (FilesUtil, BowtieApplication, AlignedReadsQC, VariationCaller2Application,
-                              BioMetaKeys, SpecialFolders, make_connection_parser, get_connection)
+
+from __future__ import print_function
+
+from genestack_client import (AlignedReadsQC, BioMetaKeys, BowtieApplication, FilesUtil,
+                              SpecialFolders, VariationCaller2Application, get_connection,
+                              make_connection_parser)
 
 
 # base class to create multiple files with a CLA
@@ -25,13 +29,13 @@ class BatchFilesCreator(object):
         self._custom_args = custom_args
 
     def create_files(self, sources):
-        print "Creating %s files..." % self._friendly_name
+        print('Creating %s files...' % self._friendly_name)
         output_folder = self._files_util.create_folder(self._friendly_name, parent=self._base_folder)
         output_files = []
         for i, source in enumerate(sources, 1):
             output = self._create_output_file(source)
             self._files_util.link_file(output, output_folder)
-            print "Created %s file %s (%d/%d)" % (self._friendly_name, output, i, len(output))
+            print('Created %s file %s (%d/%d)' % (self._friendly_name, output, i, len(output)))
             output_files.append(output)
         return output_files
 
@@ -75,7 +79,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     project_name = args.name
 
-    print "Connecting to Genestack..."
+    print('Connecting to Genestack...')
 
     # get connection and create output folder
     connection = get_connection(args)
@@ -93,14 +97,14 @@ if __name__ == "__main__":
     vc_creator = BatchFilesCreator(variant_calling_app, project_folder, "Variants", custom_args=VC_ARGUMENTS_NO_INDELS)
 
     # collect files
-    print "Collecting raw reads..."
+    print('Collecting raw reads...')
     raw_reads = files_util.get_file_children(args.raw_reads_folder)
     files_count = len(raw_reads)
-    print "Found %d files to process" % files_count
+    print('Found %d files to process' % files_count)
 
     # Create pipeline files
     mapped_reads = bowtie_creator.create_files(raw_reads)
     mapped_reads_qcs = mapped_qc_creator.create_files(mapped_reads)
     vc_creator.create_files(mapped_reads)
 
-    print "All done! Your files are in the folder %s" % project_folder
+    print('All done! Your files are in the folder %s' % project_folder)

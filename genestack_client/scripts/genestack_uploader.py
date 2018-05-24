@@ -1,16 +1,18 @@
 #!python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import os
 import sys
+from argparse import RawTextHelpFormatter
 from datetime import datetime
 from itertools import groupby
 from operator import itemgetter
-from argparse import RawTextHelpFormatter
-from genestack_client import (make_connection_parser, get_connection,
-                              DataImporter, FilesUtil, SpecialFolders)
-from genestack_client.genestack_exceptions import (GenestackServerException,
-                                                   GenestackVersionException)
+
+from genestack_client import (DataImporter, FilesUtil, GenestackServerException,
+                              GenestackVersionException, SpecialFolders, get_connection,
+                              make_connection_parser)
 
 DESCRIPTION = '''Upload raw files to server and try to auto recognize them as genestack files.
 
@@ -138,29 +140,29 @@ def recognize_files(connection, accession_file_map, new_folder):
     created_files = application.invoke('createFiles', recognised_files, [], None)
     groups = sorted(created_files['files'], key=itemgetter('kind'))
     for name, group in groupby(groups, key=itemgetter('kind')):
-        print name
+        print(name)
         # maybe sort by filename before printing a group?
         for f in group:
-            print '\t%s / %s' % (f['accession'], f['name'])
+            print('\t%s / %s' % (f['accession'], f['name']))
 
     unrecognized_file_infos = set(accession_file_map) - recognized_accessions
 
     if unrecognized_file_infos:
-        print 'Unrecognized Raw Files'
+        print('Unrecognized Raw Files')
         for accession in unrecognized_file_infos:
-            print '\t%s / %s' % (accession, accession_file_map[accession].decode('utf-8'))
+            print('\t%s / %s' % (accession, accession_file_map[accession].decode('utf-8')))
         # move unrecognized files to new folder
         unrecognized_folder = fu.create_folder("Unrecognized files", parent=new_folder)
         for accession in unrecognized_file_infos:
             fu.link_file(accession, unrecognized_folder)
             fu.unlink_file(accession, new_folder)
-        print "Unrecognized files moved to %s / %s" % (unrecognized_folder, "Unrecognized files")
+        print('Unrecognized files moved to %s / %s' % (unrecognized_folder, 'Unrecognized files'))
 
 
 def main():
     args = parser.parse_args()
     files, size = get_files(args.paths)
-    print 'Collected %s files with total size: %s' % (len(files), friendly_number(size))
+    print('Collected %s files with total size: %s' % (len(files), friendly_number(size)))
     try:
         connection = get_connection(args)
     except GenestackVersionException as e:
@@ -168,7 +170,7 @@ def main():
         sys.stderr.write('\n')
         exit(13)
     new_folder, folder_name, accessions = upload_files(connection, files, args.folder_name)
-    print '%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name)
+    print('%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name))
     if args.no_recognition:
         exit(0)
     try:

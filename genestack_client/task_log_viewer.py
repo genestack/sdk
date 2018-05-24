@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import time
+from __future__ import print_function
+
 import sys
+import time
+
 from genestack_client import Application, GenestackException
 
 
@@ -51,9 +54,9 @@ class TaskLogViewer(Application):
                 # the current chunk is empty
                 if offset == 0:
                     if log_chunk['isTerminal']:
-                        print "No logs were produced."
+                        print('No logs were produced.')
                     elif follow and not waiting_message_shown:
-                        print "No logs produced yet..."
+                        print('No logs produced yet...')
                         waiting_message_shown = True
 
                 if log_chunk['isTerminal'] or not follow:

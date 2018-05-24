@@ -1,19 +1,22 @@
 #!python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import glob
+import json
 import os
 import sys
+import time
 import urllib2
 import xml.dom.minidom as minidom
-import json
-import time
 import zipfile
+from collections import OrderedDict, namedtuple
 from textwrap import TextWrapper
-from collections import namedtuple, OrderedDict
+
 from genestack_client import GenestackException, GenestackServerException
-from genestack_client.genestack_shell import GenestackShell, Command
-from genestack_client.utils import isatty, ask_confirmation
+from genestack_client.genestack_shell import Command, GenestackShell
+from genestack_client.utils import ask_confirmation, isatty
 
 if sys.stdout.encoding is None:
     # wrap sys.stdout into a StreamWriter to allow writing unicode to pipe
@@ -194,7 +197,7 @@ class ListVersions(Command):
                 visibility +=\
                     ', groups: ' + ('-' if 'group' not in levels else '\'' + ('\', \''.join(levels['group'])) + '\'')
                 output_string += '    %s' % visibility
-            print output_string
+            print(output_string)
 
 
 class Status(Command):
@@ -229,7 +232,7 @@ class Status(Command):
             if not self.args.state_only:
                 lines.extend(format_loading_messages_by_lines(app_info.get('loadingErrors', []),
                                                               app_info.get('loadingWarnings', [])))
-        print '\n'.join(lines)
+        print('\n'.join(lines))
 
 
 class Visibility(Command):
@@ -293,7 +296,7 @@ class ListApplications(Command):
         result = self.connection.application(APPLICATION_ID).invoke('listApplications')
         result.sort()
         for item in result:
-            print item
+            print(item)
 
 
 class MarkAsStable(Command):
@@ -417,9 +420,9 @@ class Invoke(Command):
         response = application.invoke(self.args.method_name, *args)
         if isinstance(response, list):
             for item in response:
-                print item
+                print(item)
         else:
-            print response
+            print(response)
 
 
 def match_jar_globs(paths):
@@ -536,7 +539,7 @@ def upload_single_file(application, file_path, version, override,
         result = application.upload_file(file_path, upload_token)
         # hack before fix ApplicationManagerApplication#processReceivedFile // TODO: return some useful information
         if result:
-            print result
+            print(result)
     except urllib2.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
@@ -552,7 +555,7 @@ def upload_single_file(application, file_path, version, override,
                     lines.extend(
                         format_loading_messages_by_lines(errors, warns)
                     )
-                    print '\n'.join(lines)
+                    print('\n'.join(lines))
     else:
         sys.stdout.write("Uploading was done with 'no_wait' flag. Loading errors and warnings can be viewed"
                          " with 'status' command.\n")
@@ -703,20 +706,20 @@ def show_info(files, vendor_only, with_filename, no_filename):
 
         if vendor_only:
             if no_filename:
-                print app_info.vendor
+                print(app_info.vendor)
             else:
-                print '%s %s' % (file_path, app_info.vendor)
+                print('%s %s' % (file_path, app_info.vendor))
             continue
 
         if with_filename or not no_filename and len(files) > 1:
             if not first_file:
-                print ''
-            print 'File:', file_path
+                print()
+            print('File:', file_path)
 
-        print 'Vendor:', app_info.vendor
-        print 'Applications:'
+        print('Vendor:', app_info.vendor)
+        print('Applications:')
         for app_id in sorted(app_info.identifiers):
-            print '\t%s' % app_id
+            print('\t%s' % app_id)
 
         first_file = False
 

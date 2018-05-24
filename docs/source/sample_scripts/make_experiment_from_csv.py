@@ -1,10 +1,12 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import csv
 
-from genestack_client import (unaligned_reads, DataImporter, BioMetaKeys, Metainfo,
-                              make_connection_parser, get_connection, GenestackException)
+from genestack_client import (BioMetaKeys, DataImporter, GenestackException, Metainfo,
+                              get_connection, make_connection_parser, unaligned_reads)
 
 # keys that must be supplied in the CSV file
 MANDATORY_KEYS = ['name', 'link']
@@ -23,7 +25,7 @@ parser.add_argument('--description', help='Description of the experiment to disp
 args = parser.parse_args()
 csv_input = args.csv_file
 
-print "Connecting to Genestack..."
+print('Connecting to Genestack...')
 
 # get connection and application handlers
 connection = get_connection(args)
@@ -37,7 +39,7 @@ file_format = unaligned_reads.compose_format_map(unaligned_reads.Space.BASESPACE
 experiment = importer.create_experiment(name=args.name or "Imported experiment",
                                         description=args.description or "No description provided")
 
-print "Created a new experiment with accession %s..." % experiment
+print('Created a new experiment with accession %s...' % experiment)
 
 
 # parse the CSV file
@@ -69,6 +71,6 @@ with open(csv_input, 'r') as the_file:
         # create the sequencing assay on Genestack
         created_file = importer.create_sequencing_assay(experiment, metainfo=metainfo)
 
-        print "Created file '%s' (%s)" % (file_data['name'], created_file)
+        print('Created file "%s" (%s)' % (file_data['name'], created_file))
 
-print "All done! Bye now..."
+print('All done! Bye now...')

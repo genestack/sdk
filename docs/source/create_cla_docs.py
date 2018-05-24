@@ -1,6 +1,6 @@
 from inspect import getmembers, isclass
-from genestack_client import cla
 
+from genestack_client import cla
 
 template = '''
 {name}
@@ -13,9 +13,6 @@ template = '''
         .. autoattribute:: genestack_client.{name}.APPLICATION_ID
 
 '''
-
-import os
-print os.getcwd()
 
 
 def main():

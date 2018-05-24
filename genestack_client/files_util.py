@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-
 import sys
+from time import sleep
+
 import genestack_client
-from genestack_client import GenestackException, Metainfo, Application, SudoUtils, FileFilter, validate_constant
+from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
+                              validate_constant, ShareUtil)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
@@ -86,7 +88,7 @@ class FilesUtil(Application):
         :return: accession
         :rtype: str
         :raises: :py:class:`~genestack_client.genestack_exceptions.GenestackServerException`
-        if more than one genome, or no genome is found
+                 if more than one genome, or no genome is found
         """
         return self.invoke('findReferenceGenome', organism, assembly, release)
 
@@ -324,6 +326,7 @@ class FilesUtil(Application):
     def get_metainfo_values_as_strings(self, accessions_list, keys_list=None):
         """
         Retrieve metainfo values as strings for specific files and metainfo keys.
+        Metainfo value lists are concatenated to string using ', ' as delimiter.
         The function returns a dictionary.
 
         :param accessions_list: accessions of the files to retrieve
@@ -331,9 +334,23 @@ class FilesUtil(Application):
         :param keys_list: metainfo keys to retrieve (if ``None``, all non-technical keys are retrieved for each file)
         :type: keys: list[str]|None
         :return: a two-level dictionary with the following structure: accession -> key -> value
-        :rtype: dict
+        :rtype: dict[str, dict[str, str]]
         """
         return self.invoke('getMetainfoValuesAsStrings', accessions_list, keys_list)
+
+    def get_metainfo_values_as_string_list(self, accessions_list, keys_list=None):
+        """
+        Retrieve metainfo values as lists of strings for specific files and metainfo keys.
+        The function returns a dictionary.
+
+        :param accessions_list: accessions of the files to retrieve
+        :type: accessions: list[str]
+        :param keys_list: metainfo keys to retrieve (if ``None``, all non-technical keys are retrieved for each file)
+        :type: keys: list[str]|None
+        :return: a two-level dictionary with the following structure: accession -> key -> value list
+        :rtype: dict[str, dict[str, list[str]]]
+        """
+        return self.invoke('getMetainfoValuesAsStringList', accessions_list, keys_list)
 
     def get_special_folder(self, name):
         """
@@ -357,6 +374,9 @@ class FilesUtil(Application):
         """
         Shares files and links them.
 
+        .. deprecated:: 0.24.0
+           Use :class:`ShareUtil` class instead.
+
         :param accessions: accession or list/tuple/set of accessions to be shared
         :type accessions: str | list[str] | tuple[str] | set[str]
         :param group: accession of the group to share the files with
@@ -364,30 +384,70 @@ class FilesUtil(Application):
         :param destination_folder: accession of folder to link shared files into.
                No links are created if ``None``.
         :type destination_folder: str
-        :param password: password for sharing,
-               if not specified, will be asked for in an interactive prompt (if possible)
         :type: str
         :rtype: None
         """
-        SudoUtils(self.connection).ensure_sudo_interactive(password)
-        share_utils = self.connection.application('genestack/shareutils')
+        if password is not None:
+            sys.stderr.write(
+                'Parameter `password` is deprecated. Use `share_files` without password.\n'
+            )
+        share_util = ShareUtil(self.connection)
+        share_util.share_files_for_view(accessions, group, destination_folder)
 
-        accessions = list(accessions) if isinstance(accessions, (list, tuple, set)) else [accessions]
+    def share_folder(self, folder_accession, group, destination_folder=None, password=None):
+        """
+        Recursively share folder.
 
-        share_utils.invoke('shareFilesForViewing', accessions, [group])
-        if destination_folder is not None:
-            share_utils.invoke('linkFiles', accessions, destination_folder, group)
+        This method makes repeated calls to server, each method call
+        shares chunk of files in the given folder that aren't shared yet with ``group` or ``WORLD``.
+
+        Due to the indexing lag, same files can be included in different calls.
+        Method implementation is written to overcome this limitation.
+
+        :param folder_accession: accession of the folder
+        :type folder_accession: basestring
+        :param group: accession of the group to share the files with
+        :param destination_folder: accession of folder to link shared folder into.
+               No links are created if ``None``.
+        :type destination_folder: str
+        :type: str
+        :rtype: None
+        """
+        if password is not None:
+            sys.stderr.write(
+                'Parameter `password` is deprecated. Use `share_folder` without password.\n'
+            )
+
+        share_utils = ShareUtil(self.connection)
+        share_utils.share_files_for_view(folder_accession, group, destination_folder)
+
+        limit = 100
+        delay_seconds = 1  # delay between attempts
+
+        offset = 0
+        while True:
+            count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
+            if count == 0 and offset == 0:
+                return
+            if count < limit:
+                sleep(delay_seconds)
+                offset = 0
+            else:
+                offset += limit
 
     def get_groups_to_share(self):
         """
         Returns a dictionary of the form ``group_accession: group_name``.
 
+        .. deprecated:: 0.24.0
+           Use :meth:`ShareUtil.get_available_sharing_groups` instead.
+
         :return: group dict
         :rtype: dict
 
         """
-        share_utils = self.connection.application('genestack/shareutils')
-        return share_utils.invoke('getGroupsToShare')
+        share_utils = ShareUtil(self.connection)
+        return share_utils.get_available_sharing_groups()
 
     def get_group_folder_info(self, group_accession):
         """
@@ -399,7 +459,7 @@ class FilesUtil(Application):
         :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
         :rtype: dict
         """
-        share_utils = self.connection.application('genestack/shareutils')
+        share_utils = ShareUtil(self.connection)
         return share_utils.invoke('getGroupFolderInfo', group_accession)
 
     def get_folder(self, parent, *names, **kwargs):
@@ -463,6 +523,7 @@ class FilesUtil(Application):
             - owner
             - name
             - typeKey
+            - isDataset
             - application
 
                 - id
@@ -508,6 +569,7 @@ class FilesUtil(Application):
             - accession
             - owner
             - name
+            - isDataset
             - application
 
                 - id
@@ -605,12 +667,18 @@ class FilesUtil(Application):
             limit=MAX_FILE_SEARCH_LIMIT
     ):
         """
-        Search for files using filters.
+        Search for files with ``file_filter`` and return dictionary with two key/value pairs:
+
+         - ``'total'``: total number (``int``) of files matching the query
+         - ``'result'``: list of file info dictionaries for subset of matching files
+                         (from ``offset`` to ``offset+limit``). See the documentation of
+                         :py:meth:`~genestack_client.FilesUtil.get_infos` for the structure
+                         of these objects.
 
         :param file_filter: file filter
         :type file_filter: FileFilter
-        :param sort_order: sorting order for the results
-        (see :py:class:`~genestack_client.files_util.SortOrder`)
+        :param sort_order: sorting order for the results,
+                           see :py:class:`~genestack_client.files_util.SortOrder`
         :type sort_order: str
         :param ascending: should the results be in ascending order? (default: False)
         :type ascending: bool
@@ -618,14 +686,7 @@ class FilesUtil(Application):
         :type offset: int
         :param limit: maximum number of results to return (max and default: 100)
         :type limit: int
-        :return: a dictionary with entries the following entries:
-
-            - total (int): total number of files on the platform matching the search filter
-            - result (list): list of file info dictionaries for the matching files between
-            ``offset`` and ``offset+limit``.
-              See the documentation of :py:meth:`~genestack_client.files_util.get_infos` for the
-              structure of these objects.
-
+        :return: a dictionary with search response
         :rtype: dict[str, int|list[dict[str, str|dict]]]
         """
         limit = min(self.MAX_FILE_SEARCH_LIMIT, limit)

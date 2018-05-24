@@ -1,17 +1,18 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
+import sys
 import argparse
 import json
 import shlex
+
 from getpass import getpass
 from datetime import datetime
 
-import sys
-
-from genestack_client import FilesUtil
-
-from genestack_client.genestack_shell import GenestackShell, Command
+from genestack_client.genestack_shell import Command, GenestackShell
+from genestack_client import ShareUtil
 
 APPLICATION_SHELL = 'genestack/shell'
 
@@ -50,7 +51,7 @@ class Call(Command):
 
     def run(self):
         res = self.do_request()
-        print json.dumps(res, indent=2)
+        print(json.dumps(res, indent=2))
 
 class Sudo(Call):
     COMMAND = 'sudo'
@@ -81,17 +82,17 @@ class Time(Call):
     def run(self):
         start = datetime.now()
         Call.run(self)
-        print 'Execution time: %s' % (datetime.now() - start)
+        print('Execution time: %s' % (datetime.now() - start))
 
 class Groups(Command):
     DESCRIPTION = 'print information about user groups'
     COMMAND = 'groups'
 
     def run(self):
-        fu = FilesUtil(self.connection)
-        print 'User groups:'
-        for accession, name in fu.get_groups_to_share().items():
-            print '  %s (%s)' % (name, accession)
+        share_util = ShareUtil(self.connection)
+        print('User groups:')
+        for accession, name in share_util.get_available_sharing_groups().items():
+            print('  %s (%s)' % (name, accession))
 
 
 class Shell(GenestackShell):
