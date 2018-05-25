@@ -37,6 +37,16 @@ FilesUtil
         :show-inheritance:
 
 
+.. _ShareUtil:
+
+ShareUtil
+----------
+
+.. autoclass:: genestack_client.ShareUtil
+        :members:
+        :show-inheritance:
+
+
 FileInitializer
 ---------------
 
