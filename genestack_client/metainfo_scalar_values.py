@@ -24,6 +24,9 @@ class MetainfoScalarValue(dict):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields(value)
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get('value'))
+
     @staticmethod
     def _xstr(arg):
         """
@@ -81,6 +84,9 @@ class ExternalLink(MetainfoScalarValue):
             text = os.path.basename(urlparse(unquote(url)).path)
         self._set_fields({'text': text, 'url': url, 'format': fmt})
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_url())
+
     def get_text(self):
         return self.get('text')
 
@@ -98,6 +104,9 @@ class FileReference(MetainfoScalarValue):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields({'accession': accession})
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_accession())
+
     def get_accession(self):
         return self.get('accession')
 
@@ -112,6 +121,9 @@ class DateTimeValue(MetainfoScalarValue):
         super(MetainfoScalarValue, self).__init__()
         milliseconds = self._parse_date_time(time)
         self._set_fields({'date': milliseconds})
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_date())
 
     @staticmethod
     def _can_be_cast_to_int(time_str):
@@ -162,6 +174,9 @@ class Person(MetainfoScalarValue):
         super(MetainfoScalarValue, self).__init__()
         self._set_fields({'name': name, 'phone': phone, 'email': email})
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_person())
+
     def get_person(self):
         return {key: self.get(key) for key in {'name', 'phone', 'email'}}
 
@@ -180,6 +195,9 @@ class Publication(MetainfoScalarValue):
             'issueNumber': issue_number,
             'pages': pages
         })
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_publication())
 
     def get_publication(self):
         return {key: self.get(key) for key in {'identifiers', 'journalName', 'issueDate', 'title', 'authors',
@@ -204,6 +222,9 @@ class Organization(MetainfoScalarValue):
             'email': email,
             'url': url
         })
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_organization())
 
     def get_organization(self):
         return {key: self.get(key) for key in {'name', 'department', 'country', 'city', 'street',
