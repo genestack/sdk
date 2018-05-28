@@ -7,7 +7,7 @@
 ### Installation
 
    - install library
-     - `pip install genestack-client --upgrade`
+     - `pip install genestack-client`
    - setup default user
      - `genestack-user-setup init`
 
