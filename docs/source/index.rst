@@ -1,7 +1,7 @@
 Genestack Python Client Library
 ===============================
 
-The Genestack Python Client Library is a Python library that allows you to interact programatically with an instance of the Genestack platform.
+The Genestack Python Client Library is a Python library that allows you to interact programmatically with an instance of the Genestack platform.
 
 **Python 2** supported from version `2.7.5`, **Python 3** is not supported.
 

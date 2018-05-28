@@ -8,7 +8,7 @@ from distutils.core import setup
 exec(open('genestack_client/version.py').read())
 
 with open('README.md') as f:
-    long_descrption = f.read()
+    long_description = f.read()
 
 setup(
     name='genestack_client',
@@ -19,7 +19,7 @@ setup(
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
-    long_description=long_descrption,
+    long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
     python_requires='>=2.7,<3',
