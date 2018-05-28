@@ -54,12 +54,18 @@ class BooleanValue(MetainfoScalarValue):
     def get_boolean(self):
         return bool(self.get('value'))
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_boolean())
+
 
 class IntegerValue(MetainfoScalarValue):
     _TYPE = 'integer'
 
     def get_int(self):
         return int(self.get('value'))
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_int())
 
 
 class MemorySizeValue(MetainfoScalarValue):
@@ -68,12 +74,18 @@ class MemorySizeValue(MetainfoScalarValue):
     def get_int(self):
         return int(self.get('value'))
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_int())
+
 
 class DecimalValue(MetainfoScalarValue):
     _TYPE = 'decimal'
 
     def get_decimal(self):
         return float(self.get('value'))
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.get_decimal())
 
 
 class ExternalLink(MetainfoScalarValue):
