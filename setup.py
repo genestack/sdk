@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 # noinspection PyUnresolvedReferences
+"""
+Python library that allows you to interact programmatically with an instance of
+the Genestack platform.
+"""
 import setuptools
 
 from distutils.core import setup
@@ -19,7 +23,7 @@ setup(
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
-    long_description=long_description,
+    long_description=__doc__,
     long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
     python_requires='>=2.7,<3',
