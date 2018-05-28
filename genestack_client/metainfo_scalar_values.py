@@ -26,7 +26,7 @@ class MetainfoScalarValue(dict):
         self._set_fields(value)
 
     def __repr__(self):
-        return '{}({})'.format(self.__class__.__name__, self.get('value'))
+        return '{}({!r})'.format(self.__class__.__name__, self.get('value'))
 
     @staticmethod
     def _xstr(arg):
