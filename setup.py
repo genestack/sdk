@@ -11,9 +11,6 @@ import setuptools
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
 
-with open('README.md') as f:
-    long_description = f.read()
-
 setup(
     name='genestack_client',
     version=__version__,
