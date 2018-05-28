@@ -47,4 +47,5 @@ setup(
         'Source': 'https://github.com/genestack/python-client/',
         'Tracker': 'https://github.com/genestack/python-client/issues',
     },
+    keywords=['genestack', 'genomics', 'api'],
 )
