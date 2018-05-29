@@ -1,11 +1,10 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-
-# noinspection PyUnresolvedReferences
 """
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
+# noinspection PyUnresolvedReferences
 import setuptools
 
 from distutils.core import setup
