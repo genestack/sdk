@@ -1,14 +1,14 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-
+"""
+Python library that allows you to interact programmatically with an instance of
+the Genestack platform.
+"""
 # noinspection PyUnresolvedReferences
 import setuptools
 
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
-
-with open('README.md') as f:
-    long_descrption = f.read()
 
 setup(
     name='genestack_client',
@@ -19,7 +19,7 @@ setup(
     author='Genestack Limited',
     author_email='',
     description='Genestack Python Client Library',
-    long_description=long_descrption,
+    long_description=__doc__,
     long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
     python_requires='>=2.7,<3',
@@ -36,6 +36,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         ],
 
     project_urls={
@@ -43,4 +46,5 @@ setup(
         'Source': 'https://github.com/genestack/python-client/',
         'Tracker': 'https://github.com/genestack/python-client/issues',
     },
+    keywords=['genestack', 'genomics', 'api'],
 )
