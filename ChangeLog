@@ -1,6 +1,7 @@
 * 0.25.0
     * Fixed `Metainfo.parse_metainfo_from_dict(m)` modifies `m` https://github.com/genestack/python-client/issues/269
     * Added 'FilesUtil.get_metainfo_values_as_string_list' method
+    * Implement simple `MetainfoScalarValue.__repr__()` for its subclasses
 
 * 0.24.0
     * Added `ShareUtil` class for working with sharing-related operations
