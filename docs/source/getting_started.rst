@@ -8,7 +8,7 @@ You can install Genestack Python Client Library using ``pip`` if it is available
 
 .. code-block:: sh
 
-    $ pip install https://github.com/genestack/python-client/archive/stable.zip
+    $ pip install genestack-client
 
 
 .. note::
