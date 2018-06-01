@@ -53,7 +53,7 @@ def test_metainfo_io(conn):
     report_file = None
     try:
         report_file = data_importer.create_report_file(metainfo=info, urls=[TEST_URL], parent=created)
-        metainfo = fu.collect_metainfos([report_file])[0]
+        metainfo = next(iter(fu.collect_metainfos([report_file])))
         assert metainfo.get('a')[0].get_boolean()
         assert isinstance(metainfo.get('b')[0].get_accession(), str)
         assert metainfo.get('c')[0].get_date() == _strptime_local('2015-12-13', '%Y-%m-%d')
