@@ -9,6 +9,7 @@ class ShareUtil(Application):
     Application that acts as a facade for sharing-related operations.
     """
     APPLICATION_ID = 'genestack/shareutils'
+    SHARE_FOLDER_LIMIT = 100
 
     class Permissions(object):
         """
@@ -170,22 +171,21 @@ class ShareUtil(Application):
 
         self.share_files(folder_accession, group_accession, permissions, destination_folder)
 
-        limit = 100
         delay_seconds = 1  # delay between attempts
 
         offset = 0
         while True:
             count = self.invoke(
                 'shareChunkInFolder',
-                folder_accession, group_accession, permissions, offset, limit
+                folder_accession, group_accession, permissions, offset, self.SHARE_FOLDER_LIMIT
             )
             if count == 0 and offset == 0:
                 return
-            if count < limit:
+            if count < self.SHARE_FOLDER_LIMIT:
                 sleep(delay_seconds)
                 offset = 0
             else:
-                offset += limit
+                offset += self.SHARE_FOLDER_LIMIT
 
     @staticmethod
     def __to_list(args):
