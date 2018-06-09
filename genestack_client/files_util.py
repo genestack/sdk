@@ -404,6 +404,9 @@ class FilesUtil(Application):
         Due to the indexing lag, same files can be included in different calls.
         Method implementation is written to overcome this limitation.
 
+        .. deprecated:: 0.26.0
+           Use :meth:`ShareUtil.share_folder` instead.
+
         :param folder_accession: accession of the folder
         :type folder_accession: basestring
         :param group: accession of the group to share the files with
