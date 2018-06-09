@@ -140,7 +140,8 @@ class ShareUtil(Application):
 
     def share_folder(self, folder_accession, group_accession, permissions, destination_folder=None):
         """
-        Recursively share the given folder, its subfolders and files inside them.
+        Recursively share the given folder, its subfolders and files inside them. Files that
+        cannot be shared by the current user will be skipped.
 
         This method is useful for sharing folders with a lot of files because calling
         :meth:`share_files` may result in a timeout. This method shares files in chunks and may take
