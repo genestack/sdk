@@ -60,6 +60,7 @@ class Sudo(Call):
 
     def update_parser(self, p):
         p.add_argument('email', help='user email to act as')
+        p.add_argument('application id', help='application id')
         p.add_argument('method', help='application method')
         p.add_argument('params', nargs=argparse.REMAINDER, help='params')
 
@@ -73,7 +74,6 @@ class Sudo(Call):
         if isinstance(res, basestring) and res.startswith('Incorrect password!'):
             password = getpass('Enter your password: ')
             res = self.do_request(password)
-        print json.dumps(res, indent=2)
 
 class Time(Call):
     DESCRIPTION = 'invoke with timer'
