@@ -1,8 +1,10 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+import datetime
 import os
 import sys
+import time
 
 import pytest
 
@@ -20,6 +22,16 @@ def conn():
     conn = get_connection(make_connection_parser().parse_args())
     return conn
 
+
+def _strptime_local(date, fmt_str):
+    '''
+    Helper function to wrap `strptime` returning local (TZ-aware) datetime
+    '''
+    tzless_dt = datetime.datetime.strptime(date, fmt_str)
+    ts_now = time.time()
+    tz_offset = (datetime.datetime.fromtimestamp(ts_now)
+                 - datetime.datetime.utcfromtimestamp(ts_now))
+    return tzless_dt + tz_offset
 
 def test_metainfo_io(conn):
     data_importer = DataImporter(conn)
@@ -41,10 +53,10 @@ def test_metainfo_io(conn):
     report_file = None
     try:
         report_file = data_importer.create_report_file(metainfo=info, urls=[TEST_URL], parent=created)
-        metainfo = fu.collect_metainfos([report_file])[0]
+        metainfo = next(iter(fu.collect_metainfos([report_file])))
         assert metainfo.get('a')[0].get_boolean()
         assert isinstance(metainfo.get('b')[0].get_accession(), str)
-        assert metainfo.get('c')[0].get_date() == datetime.datetime.strptime('2015-12-13', '%Y-%m-%d')
+        assert metainfo.get('c')[0].get_date() == _strptime_local('2015-12-13', '%Y-%m-%d')
         assert metainfo.get('d')[0].get_int() == 239
         assert metainfo.get('e')[0].get_decimal() == 238.583
         assert metainfo.get('e')[1].get_decimal() == -13.4

@@ -6,10 +6,18 @@
 
 ### Installation
 
-   - install library
-     - `pip install https://github.com/genestack/python-client/archive/stable.zip --upgrade`
+   - install library and scripts:
+     ```
+     pip install genestack-client
+     ```
+     if you need the latest development version:
+     ```
+     pip install --upgrade https://github.com/genestack/python-client/archive/master.zip
+     ```
    - setup default user
-     - `genestack-user-setup init`
+     ```
+     genestack-user-setup init
+     ```
 
 ### Repo
 

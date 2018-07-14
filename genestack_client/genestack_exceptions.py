@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
+PYPI_PACKAGE = 'genestack-client'
 
 
 class GenestackException(Exception):
@@ -78,17 +80,18 @@ class GenestackVersionException(GenestackException):
         :type required_version: distutils.version.StrictVersion
         """
         if required_version:
-            branch = 'master' if required_version.prerelease else 'stable'
+            package = MASTER_BRANCH if required_version.prerelease else PYPI_PACKAGE
             message = (
                 'Your Genestack Client version "{current_version}" is too old, '
                 'at least "{required_version}" is required.\n'
-                       ).format(current_version=current_version, required_version=required_version)
+                ).format(current_version=current_version, required_version=required_version)
         else:
-            branch = 'stable'
+            package = PYPI_PACKAGE
             message = 'Cannot get required version from server.\n'
 
         message += (
             'You can update client with the following command:\n'
-            '    pip install https://github.com/genestack/python-client/archive/{branch}.zip'
-        ).format(branch=branch)
+            '    pip install {package} --upgrade'
+            ).format(package=package)
+
         super(GenestackVersionException, self).__init__(message)

@@ -9,7 +9,7 @@ from genestack_client import BioMetaKeys, Metainfo
 class BioMetainfo(Metainfo, BioMetaKeys):
     """
     A metainfo representation with additional methods for biological metadata.
-    
+
     This class is deprecated, use :py:class:`~genestack_client.Metainfo` instead.
     Constants are moved to BioMetaKeys.
     """
@@ -22,7 +22,7 @@ class BioMetainfo(Metainfo, BioMetaKeys):
     def add_organism(self, key, value):
         """
         Add an organism value.
-        
+
         This method is deprecated use :py:meth:`~genestack_client.Metainfo.add_string` instead.
 
         :param key: key
@@ -39,7 +39,7 @@ class BioMetainfo(Metainfo, BioMetaKeys):
     def add_ethnic_group(self, key, value):
         """
         Add an ethnic group value.
-        
+
         This method is deprecated use :py:meth:`~genestack_client.Metainfo.add_string` instead.
 
         :param key: key
