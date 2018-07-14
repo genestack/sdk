@@ -60,20 +60,27 @@ class Sudo(Call):
 
     def update_parser(self, p):
         p.add_argument('email', help='user email to act as')
-        p.add_argument('application id', help='application id')
+        p.add_argument('application', help='application id')
         p.add_argument('method', help='application method')
         p.add_argument('params', nargs=argparse.REMAINDER, help='params')
 
     def do_request(self, password):
-        params = [self.args.email, password, self.args.method] + self.args.params
+        params = [self.args.email, password, self.args.application, self.args.method] + self.args.params
         params = serialize_params(params)
+        #print(params)
         return self.connection.application('genestack/shell').invoke('sudo', *params)
 
     def run(self):
         res = self.do_request('')
-        if isinstance(res, basestring) and res.startswith('Incorrect password!'):
-            password = getpass('Enter your password: ')
+        password_attempts = 0
+        while password_attempts < 3 and isinstance(res, basestring) and res.startswith('Incorrect password!'):
+            if password_attempts > 0:
+                print('Sorry, try again.')
+            password = getpass('Password: ')
             res = self.do_request(password)
+            password_attempts += 1
+        if password_attempts == 3:
+            print('sudo: 3 incorrect password attempts')
 
 class Time(Call):
     DESCRIPTION = 'invoke with timer'
