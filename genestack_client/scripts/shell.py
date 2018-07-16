@@ -12,7 +12,7 @@ from getpass import getpass
 from datetime import datetime
 
 from genestack_client.genestack_shell import Command, GenestackShell
-from genestack_client import ShareUtil
+from genestack_client import ShareUtil, SudoUtils
 
 APPLICATION_SHELL = 'genestack/shell'
 
@@ -64,23 +64,16 @@ class Sudo(Call):
         p.add_argument('method', help='application method')
         p.add_argument('params', nargs=argparse.REMAINDER, help='params')
 
-    def do_request(self, password):
-        params = [self.args.email, password, self.args.application, self.args.method] + self.args.params
+    def do_request(self):
+        params = [self.args.email, self.args.application, self.args.method] + self.args.params
         params = serialize_params(params)
         #print(params)
         return self.connection.application('genestack/shell').invoke('sudo', *params)
 
     def run(self):
-        res = self.do_request('')
-        password_attempts = 0
-        while password_attempts < 3 and isinstance(res, basestring) and res.startswith('Incorrect password!'):
-            if password_attempts > 0:
-                print('Sorry, try again.')
-            password = getpass('Password: ')
-            res = self.do_request(password)
-            password_attempts += 1
-        if password_attempts == 3:
-            print('sudo: 3 incorrect password attempts')
+        sudo_utils = SudoUtils(self.connection)
+        sudo_utils.ensure_sudo_interactive(None)
+        res = self.do_request()
 
 class Time(Call):
     DESCRIPTION = 'invoke with timer'
