@@ -3,7 +3,7 @@
 
 class Permissions(object):
 
-    _JAVA_PKG = "com.genestack.file"
+    _JAVA_PKG = "com.genestack.file."
 
     FILE_ACCESS = _JAVA_PKG + "access"
     FILE_READ_CONTENT = _JAVA_PKG + "readContent"
