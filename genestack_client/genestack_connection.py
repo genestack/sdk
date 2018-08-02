@@ -6,6 +6,7 @@ import cookielib
 import json
 import os
 import sys
+import ssl
 import urllib
 import urllib2
 from distutils.version import StrictVersion
@@ -86,6 +87,7 @@ class Connection(object):
         self.server_url = server_url
         cj = cookielib.CookieJar()
         self.__cookies_jar = cj
+        ssl._https_verify_certificates(False)
         self.opener = urllib2.build_opener(
             urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler
         )
