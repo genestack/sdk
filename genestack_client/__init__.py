@@ -11,7 +11,8 @@ if not ((2, 7, 5) <= sys.version_info < (3, 0)):
 from version import __version__
 
 from genestack_exceptions import (GenestackAuthenticationException, GenestackException,
-                                  GenestackServerException, GenestackVersionException)
+                                  GenestackServerException, GenestackVersionException,
+                                  GenestackConnectionException, GenestackConnectionError)
 from genestack_connection import Connection, Application
 from file_types import FileTypes
 from file_permissions import Permissions
