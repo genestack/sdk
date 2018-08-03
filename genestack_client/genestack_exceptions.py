@@ -63,7 +63,7 @@ class GenestackServerException(GenestackException):
 
 class GenestackConnectionException(urllib2.URLError):
     """
-    Should be thrown when a server responds with error status.
+    Should be thrown when a server responses with error status.
 
     Bases :py:class:`urllib2.URLError` for backward compatibility.
     """
@@ -77,7 +77,7 @@ class GenestackConnectionException(urllib2.URLError):
 
 class GenestackConnectionError(urllib2.URLError):
     """
-    Should be thrown when a server did not manage to response.
+    Should be thrown when connection with server was not established.
 
     Bases :py:class:`urllib2.URLError` for backward compatibility.
     """
