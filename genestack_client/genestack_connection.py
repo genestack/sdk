@@ -163,8 +163,9 @@ class Connection(object):
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
-        :param headers: additional headers as list of pairs
-        :type headers: dict[str, str]
+        :param headers: additional headers as dict,
+               for backward compatibility list of pairs supported till release 1.0
+        :type headers: dict[str, str] | list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
         """
