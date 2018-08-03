@@ -38,4 +38,4 @@ class FileTypes(object):
     GENOME_WIGGLE_DATA = _JAVA_BIO_PKG + "IGenomeWiggleData"
 
     FEATURE_LIST = _JAVA_BIO_PKG + "IFeatureList"
-    GeneExpressionSignature = _JAVA_BIO_PKG + "IGeneExpressionSignature"
+    GENE_EXPRESSION_SIGNATURE = _JAVA_BIO_PKG + "IGeneExpressionSignature"
