@@ -96,8 +96,8 @@ class ShareUtil(Application):
         :type destination_folder: str
 
         :raises GenestackServerException: if some of the given files cannot be shared by the current
-        user (i.e. he doesn't own them or doesn't have the :attr:`ShareUtil.Permissions.SHARE`
-        permission).
+                user (i.e. he doesn't own them or doesn't have the
+                :attr:`ShareUtil.Permissions.SHARE` permission).
         """
         permissions = self.__to_list(permissions)
         self.__share(
