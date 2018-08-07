@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (Connection, GenestackAuthenticationException,
-                              GenestackConnectionError, GenestackConnectionException, get_user)
+                              GenestackConnectionError, GenestackResponseError, get_user)
 from genestack_client.settings.genestack_user import _get_server_url
 
 wrong_url = 'http://localhost:9999/aaaaz'
@@ -26,7 +26,7 @@ def test_connection_to_wrong_url():
 
 
 def test_connection_404():
-    with pytest.raises(GenestackConnectionException, match='<urlopen error 404 Client Error: Not Found for url:'):
+    with pytest.raises(GenestackResponseError, match='<urlopen error 404 Client Error: Not Found for url:'):
         connection = Connection(server_url)
         connection.open('/hhhh')
 

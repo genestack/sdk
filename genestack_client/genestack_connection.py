@@ -13,8 +13,8 @@ import requests
 from requests import HTTPError, RequestException
 
 from genestack_client import (GenestackAuthenticationException, GenestackConnectionError,
-                              GenestackConnectionException, GenestackException,
-                              GenestackServerException, GenestackVersionException, __version__)
+                              GenestackException, GenestackResponseError, GenestackServerException,
+                              GenestackVersionException, __version__)
 from genestack_client.chunked_upload import upload_by_chunks
 from genestack_client.utils import isatty
 
@@ -187,7 +187,7 @@ class Connection(object):
                 response.raise_for_status()
                 return response.raw
             except HTTPError as e:
-                raise GenestackConnectionException(*e.args)
+                raise GenestackResponseError(*e.args)
         except RequestException as e:
             raise GenestackConnectionError(str(e))
 

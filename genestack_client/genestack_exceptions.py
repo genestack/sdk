@@ -61,7 +61,7 @@ class GenestackServerException(GenestackException):
         return message
 
 
-class GenestackConnectionException(URLError):
+class GenestackResponseError(URLError):
     """
     Should be thrown when a server responses with error status.
 
