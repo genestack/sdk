@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from urllib2 import URLError
+
 MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
 PYPI_PACKAGE = 'genestack-client'
 
@@ -57,6 +59,33 @@ class GenestackServerException(GenestackException):
                 message += '\nEnable debug option to retrieve traceback'
 
         return message
+
+
+class GenestackResponseError(URLError):
+    """
+    Thrown if server responds with an error.
+
+    Extends :py:class:`urllib2.URLError` for backward compatibility.
+    """
+    def __init__(self, reason):
+        self.args = reason,
+        self.reason = reason
+
+    def __str__(self):
+        return '<urlopen error %s>' % self.reason
+
+
+class GenestackConnectionFailure(URLError):
+    """
+    Thrown if connection with Genestack server cannot be established.
+
+    Extends :py:class:`urllib2.URLError` for backward compatibility.
+    """
+    def __init__(self, message):
+        self.message = "<connection failed %s>" % message
+
+    def __str__(self):
+        return self.message
 
 
 class GenestackAuthenticationException(GenestackException):
