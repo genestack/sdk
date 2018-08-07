@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib2
+from urllib2 import URLError
 
 MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
 PYPI_PACKAGE = 'genestack-client'
@@ -61,7 +61,7 @@ class GenestackServerException(GenestackException):
         return message
 
 
-class GenestackConnectionException(urllib2.URLError):
+class GenestackConnectionException(URLError):
     """
     Should be thrown when a server responses with error status.
 
@@ -75,7 +75,7 @@ class GenestackConnectionException(urllib2.URLError):
         return '<urlopen error %s>' % self.reason
 
 
-class GenestackConnectionError(urllib2.URLError):
+class GenestackConnectionError(URLError):
     """
     Should be thrown when connection with server was not established.
 
