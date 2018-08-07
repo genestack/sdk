@@ -1,10 +1,9 @@
 * 0.27.0
     * Added `GenestackConnectionException` and `GenestackConnectionError`,
-      these exception bases `urllib2.URLError` for backward compatibility.
-    * Changed `Connection.open` method,
-      instead of `urllib2.URLError` it raises `GenestackConnectionException` or
-      `GenestackConnectionError`
-    * Updated `FileType` constants to core changes
+      these exception extend `urllib2.URLError` for backward compatibility.
+    * Changed `Connection.open` method, raise `GenestackConnectionException`
+      or `GenestackConnectionError` instead of `urllib2.URLError`
+    * Updated `FileType` constants to match changes in core
 
 * 0.26.0
     * New methods in the `ShareUtil` class:
