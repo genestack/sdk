@@ -26,7 +26,8 @@ def test_connection_to_wrong_url():
 
 
 def test_connection_404():
-    with pytest.raises(GenestackResponseError, match='<urlopen error 404 Client Error: Not Found for url:'):
+    with pytest.raises(GenestackResponseError,
+                       match='<urlopen error 404 Client Error: Not Found for url:'):
         connection = Connection(server_url)
         connection.open('/hhhh')
 
@@ -40,7 +41,8 @@ def test_login_by_password_positive():
 
 def test_login_negative():
     connection = Connection(server_url)
-    with pytest.raises(GenestackAuthenticationException, match='Fail to login with "test" to "localhost"'):
+    with pytest.raises(GenestackAuthenticationException,
+                       match='Fail to login with "test" to "localhost"'):
         connection.login('test', 'test')
 
     with pytest.raises(GenestackAuthenticationException):
