@@ -158,13 +158,14 @@ class Connection(object):
 
     def open(self, path, data=None, follow=True, headers=None):
         """
-        Sends data to a URL. The URL is the concatenation of the server URL and "path".
+        Sends data to a URL. The URL is the concatenation of the server URL and
+        ``path``.
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
-        :param headers: additional headers as dict,
-               for backward compatibility list of pairs supported till release 1.0
+        :param headers: dictionary of additional headers; list of pairs is
+                        supported too until v1.0 (for backward compatibility)
         :type headers: dict[str, str] | list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
