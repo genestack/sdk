@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (Connection, GenestackAuthenticationException,
-                              GenestackConnectionError, GenestackResponseError, get_user)
+                              GenestackConnectionFailure, GenestackResponseError, get_user)
 from genestack_client.settings.genestack_user import _get_server_url
 
 wrong_url = 'http://localhost:9999/aaaaz'
@@ -20,7 +20,7 @@ user_pwd = user.password
 
 
 def test_connection_to_wrong_url():
-    with pytest.raises(GenestackConnectionError, match='<connection failed '):
+    with pytest.raises(GenestackConnectionFailure, match='<connection failed '):
         connection = Connection(wrong_url)
         connection.login(user_login, user_pwd)
 

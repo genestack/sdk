@@ -12,7 +12,7 @@ from urlparse import urlsplit
 import requests
 from requests import HTTPError, RequestException
 
-from genestack_client import (GenestackAuthenticationException, GenestackConnectionError,
+from genestack_client import (GenestackAuthenticationException, GenestackConnectionFailure,
                               GenestackException, GenestackResponseError, GenestackServerException,
                               GenestackVersionException, __version__)
 from genestack_client.chunked_upload import upload_by_chunks
@@ -189,7 +189,7 @@ class Connection(object):
             except HTTPError as e:
                 raise GenestackResponseError(*e.args)
         except RequestException as e:
-            raise GenestackConnectionError(str(e))
+            raise GenestackConnectionFailure(str(e))
 
     def application(self, application_id):
         """

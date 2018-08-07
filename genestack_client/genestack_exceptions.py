@@ -75,7 +75,7 @@ class GenestackResponseError(URLError):
         return '<urlopen error %s>' % self.reason
 
 
-class GenestackConnectionError(URLError):
+class GenestackConnectionFailure(URLError):
     """
     Should be thrown when connection with server was not established.
 

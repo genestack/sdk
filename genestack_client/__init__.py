@@ -10,7 +10,7 @@ if not ((2, 7, 5) <= sys.version_info < (3, 0)):
 
 from version import __version__
 
-from genestack_exceptions import (GenestackAuthenticationException, GenestackConnectionError,
+from genestack_exceptions import (GenestackAuthenticationException, GenestackConnectionFailure,
                                   GenestackException, GenestackResponseError,
                                   GenestackServerException, GenestackVersionException)
 from genestack_connection import Connection, Application
