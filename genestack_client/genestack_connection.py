@@ -10,11 +10,11 @@ from distutils.version import StrictVersion
 from urlparse import urlsplit
 
 import requests
-from requests import RequestException, HTTPError
+from requests import HTTPError, RequestException
 
-from genestack_client import (GenestackAuthenticationException, GenestackException,
-                              GenestackServerException, GenestackVersionException, __version__,
-                              GenestackConnectionException, GenestackConnectionError)
+from genestack_client import (GenestackAuthenticationException, GenestackConnectionError,
+                              GenestackConnectionException, GenestackException,
+                              GenestackServerException, GenestackVersionException, __version__)
 from genestack_client.chunked_upload import upload_by_chunks
 from genestack_client.utils import isatty
 
