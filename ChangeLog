@@ -3,6 +3,7 @@
       these exception extend `urllib2.URLError` for backward compatibility.
     * Changed `Connection.open` method, raise `GenestackConnectionException`
       or `GenestackConnectionError` instead of `urllib2.URLError`
+    * Removed `AuthenticationErrorHandler` class
     * Updated `FileType` constants to match changes in core
 
 * 0.26.0
