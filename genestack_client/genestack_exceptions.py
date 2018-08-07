@@ -77,7 +77,7 @@ class GenestackResponseError(URLError):
 
 class GenestackConnectionFailure(URLError):
     """
-    Should be thrown when connection with server was not established.
+    Thrown if connection with Genestack server cannot be established.
 
     Extends :py:class:`urllib2.URLError` for backward compatibility.
     """
