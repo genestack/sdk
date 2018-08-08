@@ -49,9 +49,10 @@ class ShareUtil(Application):
         :param group_accession: accession of the group to share the files with
         :type group_accession: str
         :param destination_folder: accession of the folder to link shared files into. Typically
-               this parameter should be used for linking files into group folders, which is
-               currently impossible to do using the :meth:`FilesUtil.link_file` method. No links
-               will be created if this parameter is equal to `None`.
+                                   this parameter should be used for linking files into group
+                                   folders, which is currently impossible to do using the
+                                   :meth:`FilesUtil.link_file` method. No links will be created if
+                                   this parameter is equal to `None`.
         :type destination_folder: str
         """
         self.__share(file_accessions, group_accession, destination_folder, 'shareFilesForViewing')
@@ -96,8 +97,8 @@ class ShareUtil(Application):
         :type destination_folder: str
 
         :raises GenestackServerException: if some of the given files cannot be shared by the current
-        user (i.e. he doesn't own them or doesn't have the :attr:`ShareUtil.Permissions.SHARE`
-        permission).
+                user (i.e. he doesn't own them or doesn't have the
+                :attr:`ShareUtil.Permissions.SHARE` permission).
         """
         permissions = self.__to_list(permissions)
         self.__share(
