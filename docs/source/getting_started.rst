@@ -169,8 +169,9 @@ If no connection parameter is passed to your script, ``get_connection`` will att
 
 If only the parameter ``-u <alias>`` is supplied, the parser will look for the corresponding identity in the local configuration file. If no match is found, the script will switch to interactive login.
 
-You can also supply the parameters ``-u <email> -H <host> -p <password>``. By default, the host is ``platform.genestack.com`` and if no password is provided, you will be prompted for one.
-Or you can supply ``-H <host> --token <token>`.
+You can also supply the parameters ``-u <email> -H <host> -p <password>``.
+By default, the host is ``platform.genestack.com`` and if no password is provided, you will be prompted for one.
+Or you can supply ``-H <host> --token <token>``.
 
 .. code-block:: sh
 
