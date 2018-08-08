@@ -1,4 +1,6 @@
 * 0.27.0
+    * Added `GenestackBaseException` to the top of exception hierarchy
+    * Changed `GenestackException` to extend `GenestackBaseException`
     * Added `GenestackConnectionException` and `GenestackConnectionError`,
       these exception extend `urllib2.URLError` for backward compatibility.
     * Changed `Connection.open` method, raise `GenestackConnectionException`

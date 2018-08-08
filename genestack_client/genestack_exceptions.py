@@ -5,10 +5,18 @@ MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
 PYPI_PACKAGE = 'genestack-client'
 
 
-class GenestackException(Exception):
+class GenestackBaseException(Exception):
     """
-    This is the base Genestack exception class. It should be used instead of
-    :py:class:`~exceptions.Exception` to raise exceptions if something goes wrong.
+    This is the base Genestack exception class.
+    It should be used to catch all exceptions produced by python client.
+    """
+    pass
+
+
+class GenestackException(GenestackBaseException):
+    """
+    Should be used instead of :py:class:`~exceptions.Exception`
+    to raise exceptions if something goes wrong.
     """
     pass
 
@@ -61,7 +69,7 @@ class GenestackServerException(GenestackException):
         return message
 
 
-class GenestackResponseError(URLError):
+class GenestackResponseError(GenestackBaseException, URLError):
     """
     Thrown if server responds with an error.
 
@@ -75,7 +83,7 @@ class GenestackResponseError(URLError):
         return '<urlopen error %s>' % self.reason
 
 
-class GenestackConnectionFailure(URLError):
+class GenestackConnectionFailure(GenestackBaseException, URLError):
     """
     Thrown if connection with Genestack server cannot be established.
 
