@@ -7,9 +7,12 @@ class FileTypes(object):
     _JAVA_BIO_PKG = "com.genestack.bio.files."
 
     # Core file types
+    FILE = _JAVA_PKG + "IFile"
+
     DATASET = _JAVA_PKG + "IDataset"
 
-    AUXILIARY_FILE = _JAVA_PKG + "IAuxilaryFile"
+    AUXILIARY_FILE = _JAVA_PKG + "IAuxiliaryFile"
+    CONTAINER = _JAVA_PKG + 'IContainerFile'
     FOLDER = _JAVA_PKG + "IFolder"
     SEARCH_FOLDER = _JAVA_PKG + "ISearchFolder"
     INDEX_FILE = _JAVA_PKG + "IIndexFile"
