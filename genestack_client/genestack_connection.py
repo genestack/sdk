@@ -168,7 +168,7 @@ class Connection(object):
                         supported too until v1.0 (for backward compatibility)
         :type headers: dict[str, str] | list[tuple[str]]
         :return: response
-        :rtype: urllib.addinfourl
+        :rtype: urllib3.response.HTTPResponse
         """
         if data is None:
             data = ''
@@ -254,7 +254,7 @@ class Application(object):
         if trace:
             headers['Genestack-Trace'] = 'true'
         f = self.connection.open(path, post_data, headers=headers)
-        response = Response(json.load(f))
+        response = Response(json.loads(f.read(decode_content=True)))
 
         if response.error is not None:
             raise GenestackServerException(
