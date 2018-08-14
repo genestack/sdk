@@ -7,7 +7,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import (Connection, GenestackAuthenticationException,
-                              GenestackConnectionFailure, GenestackResponseError, get_user)
+                              GenestackConnectionFailure, GenestackResponseError, get_user,
+                              GenestackException)
 from genestack_client.settings.genestack_user import _get_server_url
 
 wrong_url = 'http://localhost:9999/aaaaz'
@@ -29,7 +30,7 @@ def test_connection_404():
     with pytest.raises(GenestackResponseError,
                        match='<urlopen error 404 Client Error: Not Found for url:'):
         connection = Connection(server_url)
-        connection.open('/hhhh')
+        connection.get_response('/hhhh')
 
 
 def test_login_by_password_positive():
@@ -54,7 +55,9 @@ def test_login_negative():
 
 def test_access_by_anonymous():
     connection = Connection(server_url)
-    connection.open('/')
+    with pytest.raises(GenestackException,
+                       match="Cannot parse content: No JSON object could be decoded"):
+        connection.get_response('/')
 
 
 def test_method_forbidden_for_anonymous():

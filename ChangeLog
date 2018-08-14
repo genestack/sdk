@@ -3,8 +3,9 @@
     * Added `GenestackResponseError` and `GenestackConnectionFailure`,
       extending both `urllib2.URLError` (for backward compatibility)
       and `GenestackBaseException`
-    * Changed `Connection.open` method to raise `GenestackConnectionFailure`
-      or `GenestackResponseError` instead of `urllib2.URLError`
+    * Deprecated `Connection.open` method, use `Connection.get_response` instead.
+    * Changed `Application.invoke` and `Application.upload_file` methods to raise
+      `GenestackConnectionFailure` or `GenestackResponseError` instead of `urllib2.URLError`
     * Removed `AuthenticationErrorHandler` class
     * Updated `FileType` constants to match changes in core
 

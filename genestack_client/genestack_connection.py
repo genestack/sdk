@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import urllib
+from StringIO import StringIO
 from distutils.version import StrictVersion
 from urlparse import urlsplit
 
@@ -161,6 +162,9 @@ class Connection(object):
         Sends data to a URL. The URL is the concatenation of the server URL and
         ``path``.
 
+        .. deprecated:: 0.27.0
+           Use :py:meth:`~Connection.get_response`
+
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
@@ -169,6 +173,45 @@ class Connection(object):
         :type headers: dict[str, str] | list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
+        """
+        print('Connection.open is deprecated. All usages should be removed.', file=sys.stderr)
+
+        if data is None:
+            data = ''
+        elif isinstance(data, dict):
+            data = urllib.urlencode(data)
+
+        _headers = {'gs-extendSession': 'true'}
+
+        if headers:
+            _headers.update(headers)
+        try:
+            url = self.server_url + path
+            response = self.session.post(url, data=data, headers=_headers,
+                                         allow_redirects=follow, stream=True)
+            if response.status_code == 401:
+                raise GenestackAuthenticationException('Authentication failure')
+            try:
+                response.raise_for_status()
+                return urllib.addinfourl(StringIO(response.raw.read(decode_content=True)),
+                                         headers, url, code=response.status_code)
+            except HTTPError as e:
+                raise GenestackResponseError(*e.args)
+        except RequestException as e:
+            raise GenestackConnectionFailure(str(e))
+
+    def get_response(self, path, data=None, follow=True, headers=None):
+        """
+        Get response from an URL. The URL is the concatenation of the server URL and ``path``.
+
+        :param path: part of URL that is added to self.server_url
+        :param data: dict of parameters, file-like objects or strings
+        :param follow: should we follow a redirection if any?
+        :param headers: dictionary of additional headers; list of pairs is
+                        supported too until v1.0 (for backward compatibility)
+        :type headers: dict[str, str] | list[tuple[str]]
+        :return: response
+        :rtype: Response
         """
         if data is None:
             data = ''
@@ -181,14 +224,18 @@ class Connection(object):
             _headers.update(headers)
         try:
             response = self.session.post(self.server_url + path, data=data, headers=_headers,
-                                         allow_redirects=follow, stream=True)
+                                         allow_redirects=follow)
             if response.status_code == 401:
                 raise GenestackAuthenticationException('Authentication failure')
             try:
                 response.raise_for_status()
-                return response.raw
             except HTTPError as e:
                 raise GenestackResponseError(*e.args)
+            try:
+                return Response(response.json())
+            except ValueError as e:
+                raise GenestackException('Cannot parse content: %s' % e)
+
         except RequestException as e:
             raise GenestackConnectionFailure(str(e))
 
@@ -253,8 +300,8 @@ class Application(object):
         headers = {}
         if trace:
             headers['Genestack-Trace'] = 'true'
-        f = self.connection.open(path, post_data, headers=headers)
-        response = Response(json.load(f))
+        # noinspection PyProtectedMember
+        response = self.connection.get_response(path, post_data, headers=headers)
 
         if response.error is not None:
             raise GenestackServerException(
