@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from getpass import getpass
+from urlparse import urlsplit
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
 from genestack_client.utils import isatty, interactive_select
@@ -11,10 +12,17 @@ DEFAULT_HOST = 'platform.genestack.org'
 
 
 def _get_server_url(host):
-        if host.startswith('localhost'):
-            return 'http://%s/frontend/endpoint' % host
-        else:
-            return 'https://%s/endpoint' % host
+    has_scheme = bool(urlsplit(host).scheme)
+
+    # compatibility with dev settings
+    # TODO Add code that will do migration in configs and remove this check.
+    if host.startswith('localhost'):
+        return 'http://%s/frontend/endpoint' % host
+
+    if has_scheme:
+        return '%s/endpoint' % host
+    else:
+        return 'https://%s/endpoint' % host
 
 
 class User(object):
