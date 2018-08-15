@@ -15,6 +15,7 @@ def _get_server_url(host):
     has_scheme = bool(urlsplit(host).scheme)
 
     # compatibility with dev settings
+    # TODO Add code that will do migration in configs and remove this check.
     if host.startswith('localhost'):
         return 'http://%s/frontend/endpoint' % host
 
