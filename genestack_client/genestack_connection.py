@@ -203,20 +203,17 @@ class Connection(object):
 
     def perform_request(self, path, data='', follow=True, headers=None):
         """
-        Get response from an URL. The URL is the concatenation of the server URL and ``path``.
-
-                Perform an HTTP request to Genestack server.
+        Perform an HTTP request to Genestack server.
 
         Connects to remote server and sends ``data`` to an endpoint ``path``
         with additional ``headers``.
 
-        :param path: URL path (endpoint) to be used (concatenated with
+        :param str path: URL path (endpoint) to be used (concatenated with
                      ``self.server_url``).
         :param dict|file|str data: dictionary, bytes, or file-like object to send in the body
-        :param follow: should we follow a redirection (if any)
-        :param headers: dictionary of additional headers; list of pairs is
+        :param bool follow: should we follow a redirection (if any)
+        :param dict[str, str] headers: dictionary of additional headers; list of pairs is
                         supported too until v1.0 (for backward compatibility)
-        :type headers: dict[str, str] | list[tuple[str]]
         :return: response from server
         :rtype: Response
         """
