@@ -3,7 +3,7 @@
     * Added `GenestackResponseError` and `GenestackConnectionFailure`,
       extending both `urllib2.URLError` (for backward compatibility)
       and `GenestackBaseException`
-    * Deprecated `Connection.open` method, use `Connection.get_response` instead.
+    * Deprecated `Connection.open` method, use `Connection.perform_request` instead.
     * Changed `Application.invoke` and `Application.upload_file` methods to raise
       `GenestackConnectionFailure` or `GenestackResponseError` instead of `urllib2.URLError`
     * Removed `AuthenticationErrorHandler` class
@@ -76,7 +76,7 @@
 
 * 0.14.0
     * Added `Response` class, it represents response from server and allow to access logs and traces
-    * Added `Application.get_response` method
+    * Added `Application.perform_request` method
 
 * 0.13.0
   * Added flag ``-l` to `versions` command in application manager for viewing loading state of
