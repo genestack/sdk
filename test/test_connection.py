@@ -30,7 +30,7 @@ def test_connection_404():
     with pytest.raises(GenestackResponseError,
                        match='<urlopen error 404 Client Error: Not Found for url:'):
         connection = Connection(server_url)
-        connection.get_response('/hhhh')
+        connection.perform_request('/hhhh')
 
 
 def test_login_by_password_positive():
@@ -57,7 +57,7 @@ def test_access_by_anonymous():
     connection = Connection(server_url)
     with pytest.raises(GenestackException,
                        match="Cannot parse content: No JSON object could be decoded"):
-        connection.get_response('/')
+        connection.perform_request('/')
 
 
 def test_method_forbidden_for_anonymous():

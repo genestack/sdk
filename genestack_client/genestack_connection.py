@@ -163,7 +163,7 @@ class Connection(object):
         ``path``.
 
         .. deprecated:: 0.27.0
-           Use :py:meth:`~Connection.get_response`
+           Use :py:meth:`~Connection.perform_request`
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
@@ -174,7 +174,8 @@ class Connection(object):
         :return: response
         :rtype: urllib.addinfourl
         """
-        print('Connection.open is deprecated. All usages should be removed.', file=sys.stderr)
+        print('`Connection.open()` is deprecated, use `Connection.perform_request()` instead.',
+              file=sys.stderr)
 
         if data is None:
             data = ''
@@ -200,24 +201,22 @@ class Connection(object):
         except RequestException as e:
             raise GenestackConnectionFailure(str(e))
 
-    def get_response(self, path, data=None, follow=True, headers=None):
+    def perform_request(self, path, data='', follow=True, headers=None):
         """
-        Get response from an URL. The URL is the concatenation of the server URL and ``path``.
+        Perform an HTTP request to Genestack server.
 
-        :param path: part of URL that is added to self.server_url
-        :param data: dict of parameters, file-like objects or strings
-        :param follow: should we follow a redirection if any?
-        :param headers: dictionary of additional headers; list of pairs is
+        Connects to remote server and sends ``data`` to an endpoint ``path``
+        with additional ``headers``.
+
+        :param str path: URL path (endpoint) to be used (concatenated with
+                     ``self.server_url``).
+        :param dict|file|str data: dictionary, bytes, or file-like object to send in the body
+        :param bool follow: should we follow a redirection (if any)
+        :param dict[str, str] headers: dictionary of additional headers; list of pairs is
                         supported too until v1.0 (for backward compatibility)
-        :type headers: dict[str, str] | list[tuple[str]]
-        :return: response
+        :return: response from server
         :rtype: Response
         """
-        if data is None:
-            data = ''
-        elif isinstance(data, dict):
-            data = urllib.urlencode(data)
-
         _headers = {'gs-extendSession': 'true'}
 
         if headers:
@@ -300,8 +299,7 @@ class Application(object):
         headers = {}
         if trace:
             headers['Genestack-Trace'] = 'true'
-        # noinspection PyProtectedMember
-        response = self.connection.get_response(path, post_data, headers=headers)
+        response = self.connection.perform_request(path, post_data, headers=headers)
 
         if response.error is not None:
             raise GenestackServerException(
