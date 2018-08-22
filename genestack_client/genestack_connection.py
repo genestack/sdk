@@ -253,10 +253,15 @@ class Connection(object):
         return 'Connection("%s")' % self.server_url
 
     def get_request(self, path, params=None, follow=True):
-        return self.session.get(
+        # Server might close keep-alive connection via GET,
+        # so we should create new connection here each time
+        # python2.7 cannot reestablish that connection itself and have confusing message
+        # https://bugs.python.org/issue3566
+        return requests.get(
             url=self.server_url + path,
             params=params,
             allow_redirects=follow,
+            cookies=self.session.cookies
         )
 
     def post_multipart(self, path, data=None, files=None, follow=True):
