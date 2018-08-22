@@ -1,13 +1,11 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 """
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
 # noinspection PyUnresolvedReferences
-import setuptools
+from setuptools import setup
 
-from distutils.core import setup
+
 exec(open('genestack_client/version.py').read())
 
 setup(
@@ -23,6 +21,11 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=['keyring', 'requests', 'pyOpenSSL'],
     python_requires='>=2.7,<3',
+    options={
+        'build_scripts': {
+            'executable': '/usr/bin/env python2.7',
+        }
+    },
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
@@ -31,6 +34,7 @@ setup(
             'genestack-uploader = genestack_client.scripts.genestack_uploader:main',
         ],
     },
+
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
