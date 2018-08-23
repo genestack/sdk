@@ -253,10 +253,14 @@ class Connection(object):
         return 'Connection("%s")' % self.server_url
 
     def get_request(self, path, params=None, follow=True):
-        return self.session.get(
+        # This request also serves for download method of an application
+        # It is possible that next request that uses same connection will fail,
+        # that why we create new connection every time instead of reuse self.session
+        return requests.get(
             url=self.server_url + path,
             params=params,
             allow_redirects=follow,
+            cookies=self.session.cookies
         )
 
     def post_multipart(self, path, data=None, files=None, follow=True):
