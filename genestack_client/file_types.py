@@ -22,6 +22,7 @@ class FileTypes(object):
     PREFERENCES_FILE = _JAVA_PKG + "IPreferencesFile"
     RAW_FILE = _JAVA_PKG + "IRawFile"
     REPORT_FILE = _JAVA_PKG + "IReportFile"
+    SAMPLE = _JAVA_PKG + "ISample"
 
     # Biological file types
     REFERENCE_GENOME = _JAVA_BIO_PKG + "IReferenceGenome"
