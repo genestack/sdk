@@ -1,0 +1,13 @@
+Source: genestack-python-client
+Section: python
+Priority: extra
+Maintainer: Ilya Barsukov <just@yandex-team.ru>
+Build-Depends: debhelper (>= 9.0), dh-python, python2.7, python-setuptools
+Standards-Version: 3.9.1
+X-Python-Version: >= 2.7
+
+Package: genestack-python-client
+Architecture: amd64
+Depends: python2.7, python-setuptools
+X-Python-Version: ${python:Versions}
+Description: Genestack's official CLI client

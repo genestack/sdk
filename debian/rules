@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+COMPONENT=genestack-python-client
+
+%:
+	dh $@ --with=python2
+
+clean:
+	dh_testroot
+	dh_testdir
+	rm -f `find . -name "*~"`
+	rm -rf build debian/$(COMPONENT)* debian/tmp debian/files* debian/*substvars debian/*debhelper *.egg-info debian/*-build-stamp

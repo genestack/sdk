@@ -1,0 +1,5 @@
+genestack-python-client (0.26.0-1) stable; urgency=low
+
+  * Initial release. (Closes: #773)
+
+ -- Ilya Barsukov <just@yandex-team.ru>  Mon, 02 Jul 2018 16:25:00 +0400
