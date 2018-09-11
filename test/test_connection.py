@@ -1,17 +1,15 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-
 import os
 import sys
-from urllib2 import URLError
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack_client import (Connection, GenestackAuthenticationException, GenestackException,
-                              get_user)
+from genestack_client import (Connection, GenestackAuthenticationException,
+                              GenestackConnectionFailure, GenestackResponseError, get_user,
+                              GenestackException)
 from genestack_client.settings.genestack_user import _get_server_url
-
 
 wrong_url = 'http://localhost:9999/aaaaz'
 
@@ -23,9 +21,16 @@ user_pwd = user.password
 
 
 def test_connection_to_wrong_url():
-    with pytest.raises(URLError):
+    with pytest.raises(GenestackConnectionFailure, match='<connection failed '):
         connection = Connection(wrong_url)
         connection.login(user_login, user_pwd)
+
+
+def test_connection_404():
+    with pytest.raises(GenestackResponseError,
+                       match='<urlopen error 404 Client Error: Not Found for url:'):
+        connection = Connection(server_url)
+        connection.perform_request('/hhhh')
 
 
 def test_login_by_password_positive():
@@ -37,26 +42,28 @@ def test_login_by_password_positive():
 
 def test_login_negative():
     connection = Connection(server_url)
-    with pytest.raises(GenestackException):
+    with pytest.raises(GenestackAuthenticationException,
+                       match='Fail to login with "test" to "localhost"'):
         connection.login('test', 'test')
 
-    with pytest.raises(GenestackException):
+    with pytest.raises(GenestackAuthenticationException):
         connection.login(user_login, user_login)
 
-    with pytest.raises(GenestackException):
+    with pytest.raises(GenestackAuthenticationException):
         connection.login(user_pwd, user_pwd)
 
 
 def test_access_by_anonymous():
     connection = Connection(server_url)
-    connection.open('/')
+    with pytest.raises(GenestackException,
+                       match="Cannot parse content: No JSON object could be decoded"):
+        connection.perform_request('/')
 
 
 def test_method_forbidden_for_anonymous():
     connection = Connection(server_url)
-    with pytest.raises(GenestackException) as e:
+    with pytest.raises(GenestackAuthenticationException) as e:
         connection.application('genestack/signin').invoke('whoami')
-    assert isinstance(e.value, GenestackAuthenticationException)
 
 
 def test_time_measurement():

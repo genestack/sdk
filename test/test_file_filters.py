@@ -27,7 +27,7 @@ def files_utils():
 
 def test_find_files(files_utils):
     test_filter = (OwnerFileFilter(PUBLIC_USER) |
-                   TypeFileFilter(FileTypes.EXPERIMENT) & FixedValueFileFilter(True) |
+                   TypeFileFilter(FileTypes.DATASET) & FixedValueFileFilter(True) |
                    MetainfoValuePatternFileFilter(Metainfo.ACCESSION, "GSF") |
                    ChildrenFileFilter(PUBLIC_FOLDER) |
                    ContainsFileFilter(PUBLIC_FOLDER) |

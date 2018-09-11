@@ -26,6 +26,11 @@ class Metainfo(dict):
     DATA_TYPE = 'genestack:dataType'
     LAST_UPDATE_DATE = 'genestack:file.last-update'
 
+    # Metainfo key for links from data files to their samples.
+    SAMPLE_LINK = "genestack:sampleLink"
+    # Metainfo key for links from the dataset with data files to the according study.
+    STUDY_LINK = "genestack:studyLink"
+
     YEAR = 'YEAR'
     MONTH = 'MONTH'
     WEEK = 'WEEK'

@@ -2,38 +2,22 @@
 
 from __future__ import print_function
 
-import cookielib
 import json
 import os
 import sys
 import urllib
-import urllib2
+from StringIO import StringIO
 from distutils.version import StrictVersion
 from urlparse import urlsplit
 
 import requests
+from requests import HTTPError, RequestException
 
-from genestack_client import (GenestackAuthenticationException, GenestackException,
-                              GenestackServerException, GenestackVersionException, __version__)
+from genestack_client import (GenestackAuthenticationException, GenestackConnectionFailure,
+                              GenestackException, GenestackResponseError, GenestackServerException,
+                              GenestackVersionException, __version__)
 from genestack_client.chunked_upload import upload_by_chunks
 from genestack_client.utils import isatty
-
-
-class AuthenticationErrorHandler(urllib2.HTTPErrorProcessor):
-    def http_error_401(self, req, fp, code, msg, headers):
-        raise GenestackAuthenticationException('Authentication failure')
-
-
-class _NoRedirect(urllib2.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        # print('Redirect: %s %s %s -> %s' % (code, msg, req.get_full_url(), newurl))
-        return
-
-
-class _NoRedirectError(urllib2.HTTPErrorProcessor):
-    def http_error_307(self, req, fp, code, msg, headers):
-        return fp
-    http_error_301 = http_error_302 = http_error_303 = http_error_307
 
 
 class Response(object):
@@ -84,17 +68,7 @@ class Connection(object):
         :type show_logs: bool
         """
         self.server_url = server_url
-        cj = cookielib.CookieJar()
-        self.__cookies_jar = cj
-        self.opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(cj), AuthenticationErrorHandler
-        )
-        self._no_redirect_opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(cj),
-            _NoRedirect,
-            _NoRedirectError,
-            AuthenticationErrorHandler
-        )
+        self.session = requests.session()
         self.debug = debug
         self.show_logs = show_logs
 
@@ -131,7 +105,8 @@ class Connection(object):
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
-            raise GenestackAuthenticationException("Fail to login with %s to %s" % (email, hostname))
+            raise GenestackAuthenticationException(
+                'Fail to login with "%s" to "%s"' % (email, hostname))
 
     def login_by_token(self, token):
         """
@@ -184,34 +159,84 @@ class Connection(object):
 
     def open(self, path, data=None, follow=True, headers=None):
         """
-        Sends data to a URL. The URL is the concatenation of the server URL and "path".
+        Sends data to a URL. The URL is the concatenation of the server URL and
+        ``path``.
+
+        .. deprecated:: 0.27.0
+           Use :py:meth:`~Connection.perform_request`
 
         :param path: part of URL that is added to self.server_url
         :param data: dict of parameters, file-like objects or strings
         :param follow: should we follow a redirection if any?
-        :param headers: additional headers as list of pairs
-        :type headers: list[tuple[str]]
+        :param headers: dictionary of additional headers; list of pairs is
+                        supported too until v1.0 (for backward compatibility)
+        :type headers: dict[str, str] | list[tuple[str]]
         :return: response
         :rtype: urllib.addinfourl
         """
+        print('`Connection.open()` is deprecated, use `Connection.perform_request()` instead.',
+              file=sys.stderr)
+
         if data is None:
             data = ''
         elif isinstance(data, dict):
             data = urllib.urlencode(data)
 
-        self.opener.addheaders = [('gs-extendSession', 'true')]
-        if headers:
-            self.opener.addheaders += headers
+        _headers = {'gs-extendSession': 'true'}
 
+        if headers:
+            _headers.update(headers)
         try:
-            if follow:
-                return self.opener.open(self.server_url + path, data)
-            else:
-                return self._no_redirect_opener.open(self.server_url + path, data)
-        except urllib2.URLError, e:
-            raise urllib2.URLError('Fail to connect %s%s %s' % (
-                self.server_url, path, str(e).replace('urlopen error', '').strip('<\ >')
-            ))
+            url = self.server_url + path
+            response = self.session.post(url, data=data, headers=_headers,
+                                         allow_redirects=follow, stream=True)
+            if response.status_code == 401:
+                raise GenestackAuthenticationException('Authentication failure')
+            try:
+                response.raise_for_status()
+                return urllib.addinfourl(StringIO(response.raw.read(decode_content=True)),
+                                         headers, url, code=response.status_code)
+            except HTTPError as e:
+                raise GenestackResponseError(*e.args)
+        except RequestException as e:
+            raise GenestackConnectionFailure(str(e))
+
+    def perform_request(self, path, data='', follow=True, headers=None):
+        """
+        Perform an HTTP request to Genestack server.
+
+        Connects to remote server and sends ``data`` to an endpoint ``path``
+        with additional ``headers``.
+
+        :param str path: URL path (endpoint) to be used (concatenated with
+                     ``self.server_url``).
+        :param dict|file|str data: dictionary, bytes, or file-like object to send in the body
+        :param bool follow: should we follow a redirection (if any)
+        :param dict[str, str] headers: dictionary of additional headers; list of pairs is
+                        supported too until v1.0 (for backward compatibility)
+        :return: response from server
+        :rtype: Response
+        """
+        _headers = {'gs-extendSession': 'true'}
+
+        if headers:
+            _headers.update(headers)
+        try:
+            response = self.session.post(self.server_url + path, data=data, headers=_headers,
+                                         allow_redirects=follow)
+            if response.status_code == 401:
+                raise GenestackAuthenticationException('Authentication failure')
+            try:
+                response.raise_for_status()
+            except HTTPError as e:
+                raise GenestackResponseError(*e.args)
+            try:
+                return Response(response.json())
+            except ValueError as e:
+                raise GenestackException('Cannot parse content: %s' % e)
+
+        except RequestException as e:
+            raise GenestackConnectionFailure(str(e))
 
     def application(self, application_id):
         """
@@ -228,20 +253,22 @@ class Connection(object):
         return 'Connection("%s")' % self.server_url
 
     def get_request(self, path, params=None, follow=True):
+        # This request also serves for download method of an application
+        # It is possible that next request that uses same connection will fail,
+        # that why we create new connection every time instead of reuse self.session
         return requests.get(
             url=self.server_url + path,
             params=params,
             allow_redirects=follow,
-            cookies=self.__cookies_jar
+            cookies=self.session.cookies
         )
 
     def post_multipart(self, path, data=None, files=None, follow=True):
-        return requests.post(
+        return self.session.post(
             url=self.server_url + path,
             data=data,
             files=files,
             allow_redirects=follow,
-            cookies=self.__cookies_jar
         )
 
 
@@ -273,11 +300,10 @@ class Application(object):
             )
 
     def __invoke(self, path, post_data, trace=None):
-        headers = []
+        headers = {}
         if trace:
-            headers.append(('Genestack-Trace', 'true'))
-        f = self.connection.open(path, post_data, headers=headers)
-        response = Response(json.load(f))
+            headers['Genestack-Trace'] = 'true'
+        response = self.connection.perform_request(path, post_data, headers=headers)
 
         if response.error is not None:
             raise GenestackServerException(

@@ -191,6 +191,14 @@ get_user
 Exceptions
 **********
 
+GenestackBaseException
+----------------------
+
+.. autoclass:: genestack_client.GenestackBaseException
+        :members:
+        :show-inheritance:
+
+
 GenestackException
 ------------------
 
@@ -214,6 +222,21 @@ GenestackAuthenticationException
         :members:
         :show-inheritance:
 
+
+GenestackResponseError
+----------------------
+
+.. autoclass:: genestack_client.GenestackResponseError
+        :members:
+        :show-inheritance:
+
+
+GenestackConnectionFailure
+--------------------------
+
+.. autoclass:: genestack_client.GenestackConnectionFailure
+        :members:
+        :show-inheritance:
 
 Others
 ******
