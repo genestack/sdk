@@ -19,17 +19,18 @@ class StudyDesign(Application):
         :type study_accession: str
         :return: dictionary with the following entries:
 
-            * ``studyNumber``: number of study unique for the organization,
-            * ``studyStatus``: current workflow step,
-            * ``approved``: mark of passed curator's review,
-            * ``hasApprovalButton``: mark of *Approve/Disapprove* button visibility in UI,
+            * ``studyNumber``: number of study unique for the organization (int or *None* if no
+              study number has been generated),
+            * ``studyStatus``: current workflow step (str),
+            * ``approved``: mark of passed curator's review (bool),
+            * ``hasApprovalButton``: mark of *Approve/Disapprove* button visibility in UI (bool),
             * ``approvalButtonHidden``: *true* if *Approve/Disapprove* button was hidden via
-              the :meth:`set_approval_button_visibility` method, *false* otherwise,
+              the :meth:`set_approval_button_visibility` method, *false* otherwise (bool),
             * ``linkedDataset``: accession of the most recently created dataset with expression data
               that is linked to this study and can be opened in the Expression Repository
-              application or *None* if no datasets can be found.
+              application or *None* if no datasets can be found (str).
 
-        :rtype: dict[str, str]
+        :rtype: dict
         """
         return self.invoke('getStudyInfo', study_accession)
 
@@ -66,7 +67,8 @@ class StudyDesign(Application):
         However, all users are still able to do that using the :meth:`set_study_approval_status`
         method.
 
-        :param group_name: name of the curators group. If *None* - curators group will be unset.
+        :param group_name: name of the curators group. If *None* - curators group setting will be
+               unset.
         :type group_name: str
         """
         self.invoke('setCuratorsGroupName', group_name)
