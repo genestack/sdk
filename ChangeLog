@@ -1,6 +1,9 @@
-* 0.28.0
+* 0.29.0
     * Added `FilesUtil.replace_metainfo_value` for replacing metainfo value for several files
     * Added `OrganizationUtil` class for working with organization of the current user
+
+* 0.28.0
+    * Added `StudyDesign` class for working with studies and managing the Study Design application.
 
 * 0.27.0
     * Added `GenestackBaseException` to the top of exception hierarchy
