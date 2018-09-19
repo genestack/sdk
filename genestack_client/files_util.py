@@ -293,6 +293,20 @@ class FilesUtil(Application):
         """
         self.invoke('replaceMetainfoStringValue', accession_list, key, value)
 
+    def replace_metainfo_value(self, accession_list, key, value):
+        """
+        Replace a value in the metainfo of specified files.
+
+        :param accession_list: list of files to be updated
+        :type accession_list: list
+        :param key: metainfo key
+        :type key: str
+        :param value: metainfo value
+        :type value: MetainfoScalarValue
+        :rtype: None
+        """
+        self.invoke('replaceMetainfoValue', accession_list, key, value)
+
     def remove_metainfo_value(self, accession_list, key):
         """
         Delete a key from the metainfo of specified files.
