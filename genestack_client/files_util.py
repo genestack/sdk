@@ -270,7 +270,7 @@ class FilesUtil(Application):
         Add a string value to the metainfo of specified files.
 
         :param accession_list: list of files to be updated
-        :type accession_list: list
+        :type accession_list: list[str]
         :param key: metainfo key
         :type key: str
         :param value: string
@@ -284,7 +284,7 @@ class FilesUtil(Application):
         Replace a string value in the metainfo of specified files.
 
         :param accession_list: list of files to be updated
-        :type accession_list: list
+        :type accession_list: list[str]
         :param key: metainfo key
         :type key: str
         :param value: string
@@ -298,7 +298,7 @@ class FilesUtil(Application):
         Replace a value in the metainfo of specified files.
 
         :param accession_list: list of files to be updated
-        :type accession_list: list
+        :type accession_list: list[str]
         :param key: metainfo key
         :type key: str
         :param value: metainfo value
@@ -312,7 +312,7 @@ class FilesUtil(Application):
         Delete a key from the metainfo of specified files.
 
         :param accession_list: list of files to be updated
-        :type accession_list: list
+        :type accession_list: list[str]
         :param key: metainfo key
         :type key: str
         :rtype: None
