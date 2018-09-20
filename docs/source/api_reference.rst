@@ -42,8 +42,8 @@ OrganizationUtil
 ----------------
 
 .. autoclass:: genestack_client.OrganizationUtil
-:members:
-                :show-inheritance:
+        :members:
+        :show-inheritance:
 
 .. _ShareUtil:
 
