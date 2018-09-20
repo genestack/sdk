@@ -36,6 +36,14 @@ FilesUtil
         :members:
         :show-inheritance:
 
+.. _OrganizationUtil:
+
+OrganizationUtil
+----------------
+
+.. autoclass:: genestack_client.OrganizationUtil
+        :members:
+        :show-inheritance:
 
 .. _ShareUtil:
 
@@ -46,14 +54,12 @@ ShareUtil
         :members:
         :show-inheritance:
 
-
 FileInitializer
 ---------------
 
 .. autoclass:: genestack_client.FileInitializer
         :members:
         :show-inheritance:
-
 
 SudoUtils
 ---------
