@@ -314,7 +314,7 @@ class Application(object):
 
         if response.log and (self.connection.show_logs or self.connection.debug):
             message = '\nLogs:\n' + '\n'.join(
-                item['message'] + item.get('stackTrace', '') for item in response.log
+                item['message'] + ('\n' + item['stackTrace'] if item.get('stackTrace') else '') for item in response.log
             )
             print(message)
 
