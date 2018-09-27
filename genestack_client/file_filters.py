@@ -185,3 +185,21 @@ class OrFileFilter(FileFilter):
     def __init__(self, first, second):
         super(OrFileFilter, self).__init__()
         self._dict.update({'or': [first.get_dict(), second.get_dict()]})
+
+
+class MetainfoRelatedValueFilter(FileFilter):
+    """
+    Filter to select files with metainfo values related to given terms by a dictionary relationship.
+    """
+    def __init__(self, key, term_labels, dictionary_accession, relationship_label, transitive):
+        super(MetainfoRelatedValueFilter, self).__init__()
+        filter_dict = {
+            'relationship': {
+                'dictionaryAccession': dictionary_accession,
+                'label': relationship_label,
+                'transitive': transitive
+            },
+            'key': key,
+            'termLabels': term_labels
+        }
+        self._dict.update({'relatedTerm': filter_dict})
