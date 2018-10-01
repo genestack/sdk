@@ -189,9 +189,29 @@ class OrFileFilter(FileFilter):
 
 class MetainfoRelatedValueFilter(FileFilter):
     """
-    Filter to select files with metainfo values related to given terms by a dictionary relationship.
+    Filters files by related terms in the specified dictionary.
+
+    Example usage - find files with "Tissue=Midbrain" by query for "Tissue=Nervous system". Only
+    related terms are found, not the given terms (use combination with other filters if you need to
+    find these terms as well).
+
+    Search with `transitive==False` considers only directly related terms, with `transitive==true`
+    transitively-related terms are also found.
+
+    For example, if dictionary contains relationship "broader" and terms are related as:
+        - "Nervous system" is broader than "Brain"
+        - "Brain" is broader than "Midbrain"
+    Only files with "Midbrain" will be found by "Brain" query with `transitive==false`.
+    With `transitive==true` both "Brain" and "Nervous system" queries will find these files.
     """
     def __init__(self, key, term_labels, dictionary_accession, relationship_label, transitive):
+        """
+        :param key: metainfo key
+        :param term_labels: list of term labels, must not be empty
+        :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :param relationship_label: name of dictionary relationship
+        :param transitive: whether to look for transitively-related terms
+        """
         super(MetainfoRelatedValueFilter, self).__init__()
         filter_dict = {
             'relationship': {
