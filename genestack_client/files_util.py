@@ -72,6 +72,7 @@ class FilesUtil(Application):
     EXPRESSION_SIGNATURE = 'com.genestack.bio.files.IGeneExpressionSignature'
 
     MAX_FILE_SEARCH_LIMIT = 100
+    MAX_RELATED_TERMS_LIMIT = 10000
 
     def find_reference_genome(self, organism, assembly, release):
         """
@@ -748,3 +749,72 @@ class FilesUtil(Application):
             if parent is None:
                 parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
             return self.invoke('createDataset', parent, name, dataset_type, children)
+
+    def find_metainfo_related_terms(
+            self,
+            file_filter,
+            dictionary_accession,
+            relationship_label,
+            transitive,
+            key,
+            prefix_match=False,
+            search_string='',
+            offset=0,
+            limit=MAX_RELATED_TERMS_LIMIT
+    ):
+        """
+        Find dictionary terms related to metainfo values present on files matching given filter.
+
+        Example usage: find all synonyms of attribute values present on available files.
+        If available files contain values "Human" and "Mouse" for "Organism" attribute,
+        synonyms "Homo sapiens" and "Mus musculus" will be found when searching for "synonym"
+        dictionary relation.
+
+        Another usage is to find all broader (i.e. more general) dictionary terms for attributes
+        present on available files. If available files contain "Brain" and "Lung" for "Tissue"
+        attribute, "Nervous System" and "Respiratory system" will be found when searching for
+        "broader term" dictionary relation.
+
+        Search with `transitive==False` considers only directly related terms, with
+        `transitive==true` transitively-related terms are also found.
+
+        See also MetainfoRelatedValueFilter.
+
+        :param file_filter: filter matching files for loading related terms
+        :type file_filter FileFilter
+        :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :type dictionary_accession str
+        :param relationship_label: relationship label
+        :type relationship_label str
+        :param transitive: whether to look for transitively-related terms
+        :type transitive bool
+        :param key: values for this key will be matched in dictionary
+        :type key str
+        :param prefix_match: True if filter results by prefix match, False for substring match
+        :type prefix_match bool
+        :param search_string: search string for filtering query results
+        :type search_string str
+        :param offset: offset for paging
+        :type offset int
+        :param limit: maximum number of results to return
+        :type limit int
+        :return: list of found dictionary term labels
+        :rtype: list[str]
+        """
+        limit = min(self.MAX_RELATED_TERMS_LIMIT, limit)
+        if offset < 0 or limit < 0:
+            raise GenestackException("Search offset/limit cannot be negative")
+        return self.invoke(
+            'findMetainfoRelatedTerms',
+            {
+                'dictionaryAccession': dictionary_accession,
+                'label': relationship_label,
+                'transitive': transitive
+            },
+            file_filter.get_dict(),
+            key,
+            prefix_match,
+            search_string,
+            offset,
+            limit
+        )
