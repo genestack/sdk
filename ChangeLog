@@ -2,6 +2,7 @@
     * Added `FilesUtil.replace_metainfo_value` for replacing metainfo value for several files
     * Added `OrganizationUtil` class for working with organization of the current user
     * Fixed error when response log printed without traceback.
+    * Added `MetainfoRelatedValueFilter` file filter
 
 * 0.28.0
     * Added `StudyDesign` class for working with studies and managing the Study Design application.

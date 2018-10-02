@@ -185,3 +185,46 @@ class OrFileFilter(FileFilter):
     def __init__(self, first, second):
         super(OrFileFilter, self).__init__()
         self._dict.update({'or': [first.get_dict(), second.get_dict()]})
+
+
+class MetainfoRelatedValueFilter(FileFilter):
+    """
+    Filters files by related terms in the specified dictionary.
+
+    Example usage - find files with "Tissue=Midbrain" by query for "Tissue=Nervous system". Only
+    related terms are found, not the given terms (use combination with other filters if you need to
+    find these terms as well).
+
+    Search with `transitive==False` considers only directly related terms, with `transitive==true`
+    transitively-related terms are also found.
+
+    For example, if dictionary contains relationship "broader" and terms are related as:
+        - "Nervous system" is broader than "Brain"
+        - "Brain" is broader than "Midbrain"
+    Only files with "Midbrain" will be found by "Brain" query with `transitive==false`.
+    With `transitive==true` both "Brain" and "Nervous system" queries will find these files.
+    """
+    def __init__(self, key, term_labels, dictionary_accession, relationship_label, transitive):
+        """
+        :param key: metainfo key
+        :type key: str
+        :param term_labels: list of term labels, must not be empty
+        :type term_labels: list[str]
+        :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :type dictionary_accession: str
+        :param relationship_label: name of dictionary relationship
+        :type relationship_label: str
+        :param transitive: whether to look for transitively-related terms
+        :type transitive: bool
+        """
+        super(MetainfoRelatedValueFilter, self).__init__()
+        filter_dict = {
+            'relationship': {
+                'dictionaryAccession': dictionary_accession,
+                'label': relationship_label,
+                'transitive': transitive
+            },
+            'key': key,
+            'termLabels': term_labels
+        }
+        self._dict.update({'relatedTerm': filter_dict})
