@@ -207,10 +207,15 @@ class MetainfoRelatedValueFilter(FileFilter):
     def __init__(self, key, term_labels, dictionary_accession, relationship_label, transitive):
         """
         :param key: metainfo key
+        :type key: str
         :param term_labels: list of term labels, must not be empty
+        :type term_labels: list[str]
         :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :type dictionary_accession: str
         :param relationship_label: name of dictionary relationship
+        :type relationship_label: str
         :param transitive: whether to look for transitively-related terms
+        :type transitive: bool
         """
         super(MetainfoRelatedValueFilter, self).__init__()
         filter_dict = {
