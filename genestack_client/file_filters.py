@@ -204,7 +204,7 @@ class MetainfoRelatedValueFilter(FileFilter):
     Only files with "Midbrain" will be found by "Brain" query with `transitive==false`.
     With `transitive==true` both "Brain" and "Nervous system" queries will find these files.
     """
-    def __init__(self, key, term_labels, dictionary_accession, relationship_label, transitive):
+    def __init__(self, key, term_labels, dictionary_accession, relationship_name, transitive):
         """
         :param key: metainfo key
         :type key: str
@@ -212,8 +212,8 @@ class MetainfoRelatedValueFilter(FileFilter):
         :type term_labels: list[str]
         :param dictionary_accession: dictionary accession, must reference a valid dictionary
         :type dictionary_accession: str
-        :param relationship_label: name of dictionary relationship
-        :type relationship_label: str
+        :param relationship_name: name of dictionary relationship
+        :type relationship_name: str
         :param transitive: whether to look for transitively-related terms
         :type transitive: bool
         """
@@ -221,7 +221,7 @@ class MetainfoRelatedValueFilter(FileFilter):
         filter_dict = {
             'relationship': {
                 'dictionaryAccession': dictionary_accession,
-                'label': relationship_label,
+                'name': relationship_name,
                 'transitive': transitive
             },
             'key': key,

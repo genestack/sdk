@@ -36,6 +36,15 @@ class SortOrder(object):
     DEFAULT = "DEFAULT"
 
 
+class MatchType(object):
+    """
+    Match types for related term queries.
+    See :func:`~genestack_client.FilesUtil.find_metainfo_related_terms`
+    """
+    PREFIX = 'PREFIX'
+    SUBSTRING = 'SUBSTRING'
+
+
 class FilesUtil(Application):
     """
     An application to perform file management operations on Genestack.
@@ -754,10 +763,10 @@ class FilesUtil(Application):
             self,
             file_filter,
             dictionary_accession,
-            relationship_label,
+            relationship_name,
             transitive,
             key,
-            prefix_match=False,
+            match_type=MatchType.SUBSTRING,
             search_string='',
             offset=0,
             limit=MAX_RELATED_TERMS_LIMIT
@@ -778,20 +787,20 @@ class FilesUtil(Application):
         Search with `transitive==False` considers only directly related terms, with
         `transitive==true` transitively-related terms are also found.
 
-        See also MetainfoRelatedValueFilter.
+        See :ref:`MetainfoRelatedValueFilter`.
 
         :param file_filter: filter matching files for loading related terms
         :type file_filter FileFilter
         :param dictionary_accession: dictionary accession, must reference a valid dictionary
         :type dictionary_accession str
-        :param relationship_label: relationship label
-        :type relationship_label str
+        :param relationship_name: relationship name
+        :type relationship_name str
         :param transitive: whether to look for transitively-related terms
         :type transitive bool
         :param key: values for this key will be matched in dictionary
         :type key str
-        :param prefix_match: True if filter results by prefix match, False for substring match
-        :type prefix_match bool
+        :param match_type: match type - by prefix or by substring
+        :type match_type MatchType
         :param search_string: search string for filtering query results
         :type search_string str
         :param offset: offset for paging
@@ -802,18 +811,16 @@ class FilesUtil(Application):
         :rtype: list[str]
         """
         limit = min(self.MAX_RELATED_TERMS_LIMIT, limit)
-        if offset < 0 or limit < 0:
-            raise GenestackException("Search offset/limit cannot be negative")
         return self.invoke(
             'findMetainfoRelatedTerms',
             {
                 'dictionaryAccession': dictionary_accession,
-                'label': relationship_label,
+                'name': relationship_name,
                 'transitive': transitive
             },
             file_filter.get_dict(),
             key,
-            prefix_match,
+            match_type,
             search_string,
             offset,
             limit
