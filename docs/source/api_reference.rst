@@ -36,6 +36,15 @@ FilesUtil
         :members:
         :show-inheritance:
 
+.. _GroupsUtil:
+
+GroupsUtil
+----------------
+
+.. autoclass:: genestack_client.GroupsUtil
+        :members:
+        :show-inheritance:
+
 .. _OrganizationUtil:
 
 OrganizationUtil
