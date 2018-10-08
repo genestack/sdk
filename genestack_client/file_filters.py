@@ -210,7 +210,7 @@ class MetainfoRelatedValueFilter(FileFilter):
         :type key: str
         :param term_labels: list of term labels, must not be empty
         :type term_labels: list[str]
-        :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :param dictionary_accession: dictionary accession
         :type dictionary_accession: str
         :param relationship_name: name of dictionary relationship
         :type relationship_name: str

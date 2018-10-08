@@ -791,7 +791,7 @@ class FilesUtil(Application):
 
         :param file_filter: filter matching files for loading related terms
         :type file_filter FileFilter
-        :param dictionary_accession: dictionary accession, must reference a valid dictionary
+        :param dictionary_accession: dictionary accession
         :type dictionary_accession str
         :param relationship_name: relationship name
         :type relationship_name str
