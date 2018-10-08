@@ -39,7 +39,7 @@ FilesUtil
 .. _GroupsUtil:
 
 GroupsUtil
-----------------
+----------
 
 .. autoclass:: genestack_client.GroupsUtil
         :members:
@@ -57,7 +57,7 @@ OrganizationUtil
 .. _ShareUtil:
 
 ShareUtil
-----------
+---------
 
 .. autoclass:: genestack_client.ShareUtil
         :members:
