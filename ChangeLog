@@ -2,6 +2,8 @@
     * Added `FilesUtil.replace_metainfo_value` for replacing metainfo value for several files
     * Added `OrganizationUtil` class for working with organization of the current user
     * Fixed error when response log printed without traceback.
+    * Added `MetainfoRelatedValueFilter` file filter
+    * Addded method `FilesUtil.find_metainfo_related_terms` for loading related terms
     * Fixed `UnicodeEncodeError` when deserialize `MetainfoScalarValue`
 
 * 0.28.0
