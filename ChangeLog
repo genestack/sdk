@@ -4,7 +4,7 @@
     * Fixed error when response log printed without traceback.
     * Added `MetainfoRelatedValueFilter` file filter
     * Addded method `FilesUtil.find_metainfo_related_terms` for loading related terms
-    * Fixed `UnicodeEncodeError` when deserialize `MetainfoScalarValue`
+    * Fixed deserialization of Unicode `MetainfoScalarValue`s
 
 * 0.28.0
     * Added `StudyDesign` class for working with studies and managing the Study Design application.

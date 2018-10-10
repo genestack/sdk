@@ -38,7 +38,11 @@ class MetainfoScalarValue(dict):
         :return: string representation of the object
         :rtype: str
         """
-        return unicode(arg, 'utf-8').encode('utf-8', 'ignore') if arg is not None else None
+        if arg is None:
+            return None
+        if isinstance(arg, unicode):
+            return arg.encode('utf-8', 'ignore')
+        return str(arg)
 
 
 class StringValue(MetainfoScalarValue):
