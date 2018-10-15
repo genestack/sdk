@@ -41,7 +41,7 @@ class MetainfoScalarValue(dict):
         if arg is None:
             return None
         if isinstance(arg, unicode):
-            return arg.encode('utf-8', 'ignore')
+            return arg.encode('utf-8', errors='replace')
         return str(arg)
 
 
