@@ -43,3 +43,4 @@ class FileTypes(object):
 
     FEATURE_LIST = _JAVA_BIO_PKG + "IFeatureList"
     GENE_EXPRESSION_SIGNATURE = _JAVA_BIO_PKG + "IGeneExpressionSignature"
+    EXPRESSION_LEVELS = _JAVA_BIO_PKG + "IExpressionLevels"

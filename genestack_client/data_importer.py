@@ -581,6 +581,38 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'mappedReadCounts', metainfo)
 
+    def create_expression_levels(self,
+                                  parent=None,
+                                  unit=None,
+                                  name=None,
+                                  url=None,
+                                  metainfo=None):
+        """
+        Create a Expression Levels file from a local or remote expression levels file.
+        ``name``, ``url`` and ``unit`` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param name: name of the file
+        :type name: str
+        :param url: URL of a file
+        :type url: str
+        :param unit: unit of expression, e.g. ``TPM``, ``FPKM``
+        :type unit: str
+        :param metainfo: metainfo object
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = DataImporter._copy_metainfo(metainfo)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.EXPRESSION_LEVEL_UNIT, unit, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
+        return self.__invoke_loader(parent, 'expressionLevels', metainfo)
+
     def create_gene_list(self, parent=None, name=None, url=None,
                          organism=None, metainfo=None):
         """

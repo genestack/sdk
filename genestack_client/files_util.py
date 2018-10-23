@@ -79,6 +79,7 @@ class FilesUtil(Application):
     SEQUENCING_ASSAY = 'com.genestack.bio.files.ISequencingAssay'
     FEATURE_LIST = 'com.genestack.bio.files.IFeatureList'
     EXPRESSION_SIGNATURE = 'com.genestack.bio.files.IGeneExpressionSignature'
+    EXPRESSION_LEVELS = 'com.genestack.bio.files.IExpressionLevels'
 
     MAX_FILE_SEARCH_LIMIT = 100
     MAX_RELATED_TERMS_LIMIT = 10000
