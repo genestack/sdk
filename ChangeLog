@@ -1,3 +1,6 @@
+* 0.31.0
+    * Added `FilesUtil.SAMPLE` constant
+
 * 0.30.0
     * Fixed deserialization of Unicode `MetainfoScalarValue`s
 

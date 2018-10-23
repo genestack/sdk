@@ -55,6 +55,7 @@ class FilesUtil(Application):
     FOLDER = 'com.genestack.api.files.IFolder'
     EXPERIMENT = 'com.genestack.bio.files.IExperiment'
     DATASET = 'com.genestack.api.files.IDataset'
+    SAMPLE = 'com.genestack.api.files.ISample'
 
     FILE = 'com.genestack.api.files.IFile'
     UNALIGNED_READS = 'com.genestack.bio.files.IUnalignedReads'
