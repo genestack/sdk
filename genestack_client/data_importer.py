@@ -598,7 +598,7 @@ class DataImporter(object):
         :type parent: str
         :param name: name of the file
         :type name: str
-        :param url: URL of a file
+        :param url: URL of the file
         :type url: str
         :param unit: unit of expression, e.g. ``TPM``, ``FPKM``
         :type unit: str
