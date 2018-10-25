@@ -21,6 +21,7 @@ class BioMetaKeys(object):
     AGE = 'genestack.bio:age'
     SEX = 'genestack.bio:sex'
     HUMAN_ETHNIC_GROUP = 'genestack.bio:humanEthnicGroup'
+    EXPRESSION_LEVEL_UNIT = 'genestack.bio:expressionLevelUnit'
     READS_LINK = 'genestack.url:reads'
     DATA_LINK = 'genestack.url:data'
     BAM_FILE_LINK = 'genestack.url:bamfile'
