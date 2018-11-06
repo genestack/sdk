@@ -2,6 +2,7 @@
     * Added new method `DataImporter.create_expression_levels`
     * Added `BioMetaKeys.EXPRESSION_LEVEL_UNIT` constant
     * Added `IExpressionLevels` file type
+    * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
 
 * 0.30.0
     * Fixed deserialization of Unicode `MetainfoScalarValue`s

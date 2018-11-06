@@ -81,7 +81,7 @@ class FilesUtil(Application):
     EXPRESSION_SIGNATURE = 'com.genestack.bio.files.IGeneExpressionSignature'
     EXPRESSION_LEVELS = 'com.genestack.bio.files.IExpressionLevels'
 
-    MAX_FILE_SEARCH_LIMIT = 100
+    MAX_FILE_SEARCH_LIMIT = 2000
     MAX_RELATED_TERMS_LIMIT = 10000
 
     def find_reference_genome(self, organism, assembly, release):
