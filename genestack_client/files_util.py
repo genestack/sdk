@@ -492,19 +492,37 @@ class FilesUtil(Application):
 
     def get_folder(self, parent, *names, **kwargs):
         """
-        Finds path recursively. As first argument it accepts any existing folder accession.
-        For each path in path corresponding folder founded.  If folder is not found exception raised,
-        except key ``create=True`` specified. In that case all folders will be created.
+        Find a subfolder (by name) in a folder passed as an accession,
+        returning accession of that subfolder.  If several names are provided,
+        treat them as a path components for the sub-sub-...-folder down the
+        folder hierarchy, returning accession of that deepmost folder:
 
-        :param parent: parent accession
+        - ``fu.get_folder('GS777', 'RNASeq')`` looks for subfolder with *name*
+          "RNASeq" in folder with *accession* "GS777", and returns accession of
+          that "RNASeq" subfolder;
+
+        - ``fu.get_folder('GS777', 'Experiments', 'RNASeq')`` looks for
+          subfolder with *name* "Experiments" in a folder with *accession*
+          "GS777", then looks for "RNASeq" in "Experiments", and returns the
+          accession of "RNASeq".
+
+        If ``create=True`` is passed as a *kwarg*, all the folders in ``names``
+        hierarchy will be created (otherwise ``GenestackException`` is raised).
+
+        :param parent: accession of folder to search in
         :type parent: str
-        :param names: tuple of folder names that should be found/created
+        :param \*names: tuple of "path components", a hierarchy of folders to
+                        find
         :type names: tuple
-        :param created: set True if missed folder should be created. Default is False
-        :type created: bool
-        :return: accession of last folder in paths.
+        :param create: whether to create folders from ``names`` if they don't
+                       exist or not; default is ``False`` (raise
+                       ``GenestackException`` if any folder doesn't exist)
+        :type create: bool
+        :return: accession of found (or created) subfolder
         :rtype: str
-        :raises:  GenestackException: when paths are not specified or parent cannot be found.
+        :raises GenestackException:
+            if no name is passed, or folder with required name is not found
+            (and shouldn't be created)
         """
         if not names:
             raise GenestackException("At least one path should be specified")
