@@ -500,8 +500,8 @@ class FilesUtil(Application):
         :type parent: str
         :param names: tuple of folder names that should be found/created
         :type names: tuple
-        :param created: set True if missed folder should be created. Default is False
-        :type created: bool
+        :param create: set True if missed folder should be created. Default is False
+        :type create: bool
         :return: accession of last folder in paths.
         :rtype: str
         :raises:  GenestackException: when paths are not specified or parent cannot be found.
