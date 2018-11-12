@@ -1,9 +1,7 @@
-* 0.31.0
+* 0.30.0
     * Added new method `DataImporter.create_expression_levels`
     * Added `BioMetaKeys.EXPRESSION_LEVEL_UNIT` constant
     * Added `IExpressionLevels` file type
-
-* 0.30.0
     * Fixed deserialization of Unicode `MetainfoScalarValue`s
 
 * 0.29.0
