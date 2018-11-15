@@ -1,3 +1,6 @@
+* 0.32.0
+    * Changed supported file types of upload dataset in `SampleLinker`
+
 * 0.31.0
     * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
 
