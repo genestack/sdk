@@ -1,4 +1,5 @@
 * 0.31.0
+    * Changed supported file types of upload dataset in `SampleLinker`
     * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
     * Added `jsonschema` dependency
 

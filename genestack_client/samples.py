@@ -40,8 +40,7 @@ class SampleLinker(Application):
         This method accepts additional parameters required for creating files inside Genestack.
         These parameters depend on the file type:
 
-        * For "MappedReadsCounts": name of the reference genome
-          (specified by the "reference_genome" key).
+        * "ExpressionLevels": no additional parameters.
 
         Example:
 
@@ -49,14 +48,17 @@ class SampleLinker(Application):
 
             sample_linker.create_upload_dataset(
                 study_number=1,
-                file_type='MappedReadsCounts',
-                reference_genome='Homo sapiens / GRCh37 release 68'
+                file_type='ExpressionLevels'
             )
+
+        Supported file types:
+
+        * "ExpressionLevels": expression data
+        * "MappedReadCounts": deprecated, use "ExpressionLevels" instead
 
         :param study_number: number of the study that contains samples for uploaded files.
         :type study_number: int
         :param file_type: type of files that will be uploaded
-               (only "MappedReadsCounts" are currently supported).
         :type file_type: str
         :param kwargs: additional options that are needed when creating a file. Options content
                        depends on the type of the created file.
