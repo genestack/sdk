@@ -1,4 +1,5 @@
 keyring
 requests
 pyOpenSSL
+jsonschema
 sphinx-rtd-theme==0.1.9
