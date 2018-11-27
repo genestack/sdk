@@ -97,11 +97,11 @@ class Connection(object):
         """
         if auth_result.get('userDeactivated'):
             raise GenestackAuthenticationException(
-                'User\'s Genestack account was deactivated.'
-                ' Contact your organization administrator.')
+                "User's Genestack account was deactivated."
+                " Contact your organization administrator")
         elif auth_result.get('userNotConfirmed'):
             raise GenestackAuthenticationException(
-                'User\'s Genestack account was not confirmed.')
+                "User's Genestack account was not confirmed")
 
     def login(self, email, password):
         """
