@@ -88,6 +88,21 @@ class Connection(object):
         """
         return self.application('genestack/signin').invoke('whoami')
 
+    @staticmethod
+    def _handle_inactive_user_auth(auth_result):
+        """
+        Check authentication response and throw descriptive exception for inactive users.
+
+        :param auth_result: authentication response
+        """
+        if auth_result.get('userDeactivated'):
+            raise GenestackAuthenticationException(
+                "User's Genestack account was deactivated."
+                " Contact your organization administrator")
+        elif auth_result.get('userNotConfirmed'):
+            raise GenestackAuthenticationException(
+                "User's Genestack account was not confirmed")
+
     def login(self, email, password):
         """
         Attempt a login on the connection with the specified credentials.
@@ -103,6 +118,7 @@ class Connection(object):
         """
         self.check_version()
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
+        Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException(
@@ -120,6 +136,7 @@ class Connection(object):
         """
         self.check_version()
         logged = self.application('genestack/signin').invoke('authenticateByApiToken', token)
+        Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
