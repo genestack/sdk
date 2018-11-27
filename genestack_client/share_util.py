@@ -55,7 +55,9 @@ class ShareUtil(Application):
                                    this parameter is equal to `None`.
         :type destination_folder: str
         """
-        self.__share(file_accessions, group_accession, destination_folder, 'shareFilesForViewing')
+        self.safe_share_files(
+            file_accessions, group_accession, [ShareUtil.Permissions.VIEW], destination_folder
+        )
 
     def share_files_for_edit(self, file_accessions, group_accession, destination_folder=None):
         """
@@ -76,7 +78,9 @@ class ShareUtil(Application):
                will be created if this parameter is equal to `None`.
         :type destination_folder: str
         """
-        self.__share(file_accessions, group_accession, destination_folder, 'shareFilesForEditing')
+        self.safe_share_files(
+            file_accessions, group_accession, [ShareUtil.Permissions.EDIT], destination_folder
+        )
 
     def share_files(self, file_accessions, group_accession, permissions, destination_folder=None):
         """
