@@ -1,5 +1,8 @@
 * 0.31.0
+    * Changed supported file types of upload dataset in `SampleLinker`
     * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
+    * Added `jsonschema` dependency
+    * Changed `login` and `login_by_token` methods to handle new error codes in authentication response.
     * Renamed `BioMetaKeys.EXPRESSION_LEVEL_UNIT` metainfo key
 
 * 0.30.0
