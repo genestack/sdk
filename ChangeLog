@@ -1,5 +1,6 @@
 * 0.31.0
     * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
+    * Renamed `BioMetaKeys.EXPRESSION_LEVEL_UNIT` metainfo key
 
 * 0.30.0
     * Added new method `DataImporter.create_expression_levels`
