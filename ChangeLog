@@ -3,7 +3,8 @@
     * Increased `FilesUtil.MAX_FILE_SEARCH_LIMIT` constant
     * Added `jsonschema` dependency
     * Changed `login` and `login_by_token` methods to handle new error codes in authentication response.
-    * Renamed `BioMetaKeys.EXPRESSION_LEVEL_UNIT` metainfo key
+    * Renamed `BioMetaKeys.EXPRESSION_LEVEL_UNIT` metainfo key, the old key will be supported
+        for at least 1 month
 
 * 0.30.0
     * Added new method `DataImporter.create_expression_levels`
@@ -16,7 +17,7 @@
     * Added `OrganizationUtil` class for working with organization of the current user
     * Fixed error when response log printed without traceback.
     * Added `MetainfoRelatedValueFilter` file filter
-    * Addded method `FilesUtil.find_metainfo_related_terms` for loading related terms
+    * Added method `FilesUtil.find_metainfo_related_terms` for loading related terms
 
 * 0.28.0
     * Added `StudyDesign` class for working with studies and managing the Study Design application.
