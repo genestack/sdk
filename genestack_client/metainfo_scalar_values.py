@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 from pprint import pformat
 from urlparse import unquote, urlparse
 
@@ -27,6 +28,12 @@ class MetainfoScalarValue(dict):
 
     def __repr__(self):
         return '{}({!r})'.format(self.__class__.__name__, self.get('value'))
+
+    def _print_deprecation_message(self):
+        sys.stderr.write(
+            "Metainfo type `%s` is deprecated. Use a combination of other metainfo types to store "
+            "a complex value.\n" % self._TYPE
+        )
 
     @staticmethod
     def _xstr(arg):
@@ -189,6 +196,7 @@ class Person(MetainfoScalarValue):
 
     def __init__(self, name, phone=None, email=None):
         super(MetainfoScalarValue, self).__init__()
+        self._print_deprecation_message()
         self._set_fields({'name': name, 'phone': phone, 'email': email})
 
     def __repr__(self):
@@ -204,6 +212,7 @@ class Publication(MetainfoScalarValue):
 
     def __init__(self, title, authors, journal_name, issue_date, identifiers=None, issue_number=None, pages=None):
         super(MetainfoScalarValue, self).__init__()
+        self._print_deprecation_message()
         self._set_fields({
             'identifiers': identifiers if identifiers else {},
             'journalName': journal_name,
@@ -229,6 +238,7 @@ class Organization(MetainfoScalarValue):
     def __init__(self, name, department=None, country=None, city=None, street=None,
                  postal_code=None, state=None, phone=None, email=None, url=None):
         super(MetainfoScalarValue, self).__init__()
+        self._print_deprecation_message()
         self._set_fields({
             'name': name,
             'department': department,

@@ -155,7 +155,10 @@ class Metainfo(dict):
         :param email: contact email
         :type email: str
         :rtype: None
+
+        **Deprecated** since *0.32.0*, use compound metainfo keys instead
         """
+        self._print_metainfo_type_deprecation_message('add_person')
         self.add_value(key, Person(name, phone, email))
 
     def add_publication(self, key, title, authors, journal_name,
@@ -181,7 +184,10 @@ class Metainfo(dict):
         :param pages: pages in the journal issue
         :type pages: str
         :rtype: None
+
+        **Deprecated** since *0.32.0*, use compound metainfo keys instead
         """
+        self._print_metainfo_type_deprecation_message('add_publication')
         self.add_value(key, Publication(title, authors, journal_name, issue_date,
                                         identifiers, issue_number, pages))
 
@@ -214,7 +220,10 @@ class Metainfo(dict):
         :param url: organisation web page
         :type url: str
         :rtype: None
+
+        **Deprecated** since *0.32.0*, use compound metainfo keys instead
         """
+        self._print_metainfo_type_deprecation_message('add_organization')
         self.add_value(key, Organization(name, department, country, city, street,
                                          postal_code, state, phone, email, url))
 
@@ -241,10 +250,10 @@ class Metainfo(dict):
         :param unit: unit
         :type unit: str
         :rtype: None
+
+        **Deprecated** since *0.32.0*, use compound metainfo keys instead
         """
-        sys.stderr.write("Method `Metainfo.add_time` is deprecated. "
-                         "Use compound metainfo keys to store a value with a unit "
-                         "(e.g. two separate keys: 'myKey/value' and 'myKey/unit').\n")
+        self._print_metainfo_type_deprecation_message('add_time')
         result = Metainfo._create_dict_with_type('time')
         result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
@@ -268,10 +277,10 @@ class Metainfo(dict):
         :param unit: unit
         :type unit: str
         :rtype: None
+
+        **Deprecated** since *0.32.0*, use compound metainfo keys instead
         """
-        sys.stderr.write("Method `Metainfo.add_temperature` is deprecated. "
-                         "Use compound metainfo keys to store a value with a unit "
-                         "(e.g. two separate keys: 'myKey/value' and 'myKey/unit').\n")
+        self._print_metainfo_type_deprecation_message('add_temperature')
         result = Metainfo._create_dict_with_type('temperature')
         result['value'] = MetainfoScalarValue._xstr(value)
         result['unit'] = unit.upper()
@@ -363,3 +372,11 @@ class Metainfo(dict):
             # this is safer than raising an exception, since new metainfo types
             # can be added in Java (and some deprecated ones like physical values are not handled here)
             return MetainfoScalarValue(source_dict)
+
+
+    @staticmethod
+    def _print_metainfo_type_deprecation_message(method_name):
+        sys.stderr.write(
+            "Method `%s` is deprecated. Use compound metainfo keys to store complex values "
+            "(e.g. two separate keys: 'myKey/value' and 'myKey/unit').\n" % method_name
+        )
