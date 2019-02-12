@@ -27,7 +27,7 @@ class StudyDesign(Application):
             * ``approvalButtonHidden``: *true* if *Approve/Disapprove* button was hidden via
               the :meth:`set_approval_button_visibility` method, *false* otherwise (bool),
             * ``linkedDataset``: accession of the most recently created dataset with expression data
-              that is linked to this study and can be opened in the Expression Repository
+              that is linked to this study and can be opened in the Expression Data Miner
               application or *None* if no datasets can be found (str).
 
         :rtype: dict
