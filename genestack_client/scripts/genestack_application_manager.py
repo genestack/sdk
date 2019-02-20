@@ -162,6 +162,9 @@ class ListVersions(Command):
 
     def run(self):
         app_id = self.args.app_id
+        show_loading_state = self.args.show_loading_state
+        show_release_state = self.args.show_release_state
+        show_visibilities = self.args.show_visibilities
         if not validate_application_id(app_id):
             return
         app_info = self.connection.application(APPLICATION_ID).invoke(
@@ -175,6 +178,7 @@ class ListVersions(Command):
         app_info = OrderedDict(sorted(app_info.items()))
 
         max_len = max(len(x) for x in app_info.keys())
+        multi_column_mode = show_loading_state or show_release_state or show_visibilities
         for item in app_info.items():
             version_name = item[0]
             version_details = item[1]
@@ -185,12 +189,15 @@ class ListVersions(Command):
                     'U' if 'USER' in version_details['stableScopes'] else '-',
                     'E' if 'SESSION' in version_details['stableScopes'] else '-'
                 )
-            output_string += '%-*s' % (max_len + 2, version_name)
-            if self.args.show_loading_state:
+            if multi_column_mode:
+                output_string += '%-*s' % (max_len + 2, version_name)
+            else:
+                output_string += version_name
+            if show_loading_state:
                 output_string += '%7s' % (version_details['loadingState'].lower())
-            if self.args.show_release_state:
+            if show_release_state:
                 output_string += '%15s' % ('released' if version_details['released'] else 'not released')
-            if self.args.show_visibilities:
+            if show_visibilities:
                 levels = version_details['visibilityLevels']
                 visibility = 'all: ' + ('+' if 'all' in levels else '-')
                 visibility += ', owner\'s organization: ' + ('+' if 'organization' in levels else '-')
