@@ -736,3 +736,39 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, annotation_type, metainfo)
+
+    def create_pathway_database(
+            self, db_name=None, version=None, parent=None, url=None, name=None, metainfo=None
+    ):
+        """
+        Create a Pathway Database file from a local or remote BioPAX archive.
+        ``name`` and ``url` are required fields.
+        They can be specified through the arguments or
+        via a :py:class:`~genestack_client.Metainfo` instance.
+
+        :param db_name: pathway database name (e.g. 'Reactome')
+        :type db_name: str
+        :param version: pathway database version (e.g. 'v50')
+        :type version: str
+        :param parent: accession of parent folder
+            (if not provided, files will be created in the ``Imported files`` folder)
+        :type parent: str
+        :param url: URL of a BioPAX archive
+        :type url: str
+        :param name: name of the created Genestack file
+        :type name: str
+        :param metainfo: metainfo of the created Genestack file
+        :type metainfo: Metainfo
+        :return: file accession
+        :rtype: str
+        """
+        metainfo = DataImporter._copy_metainfo(metainfo)
+        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
+        self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
+        self.__add_to_metainfo(
+            metainfo, 'genestack.bio:pathwayDatabaseName', db_name, StringValue, required=True
+        )
+        self.__add_to_metainfo(
+            metainfo, 'genestack.bio:pathwayDatabaseVersion', version, StringValue, required=True
+        )
+        return self.__invoke_loader(parent, 'pathwayDatabase', metainfo)
