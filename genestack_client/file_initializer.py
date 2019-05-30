@@ -14,7 +14,7 @@ class FileInitializer(Application):
         Start initialization for the specified accessions.
         Missed accession and initialization failures are ignored silently.
 
-        :param accessions: list of accessions
+        :param list[str] accessions: list of accessions
         :rtype: None
         """
         self.invoke('initialize', accessions)
@@ -39,7 +39,7 @@ class FileInitializer(Application):
             - Failed
 
 
-        :param accessions: list of accessions
+        :param list[str] accessions: list of accessions
         :return: list of dictionaries
         :rtype: list
         """
