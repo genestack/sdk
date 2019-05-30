@@ -239,8 +239,11 @@ class Connection(object):
         if headers:
             _headers.update(headers)
         try:
-            response = self.session.post(self.server_url + path, data=data, headers=_headers,
-                                         allow_redirects=follow, timeout=os.environ.get("CLIENT_TIMEOUT", None))
+            response = self.session.post(
+                self.server_url + path, data=data, headers=_headers,
+                allow_redirects=follow,
+                timeout=int(os.environ.get("GENESTACK_CLIENT_TIMEOUT"))
+                if os.environ.get("GENESTACK_CLIENT_TIMEOUT", None) else None)
             if response.status_code == 401:
                 raise GenestackAuthenticationException('Authentication failure')
             try:
