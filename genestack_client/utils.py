@@ -72,9 +72,9 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     group.add_argument('--token', dest='token', default=token, metavar='<api-token>',
                        help='API token to be used instead of the login and password')
     group.add_argument('--debug', dest='debug', action='store_true',
-                       help='print additional stacktrace on error')
+                       help='include server stacktrace into error messages (implies --show-logs)')
     group.add_argument('--show-logs', dest='show_logs', action='store_true',
-                       help='print application logs (received from server)')
+                       help='print application logs received from server to stdout')
     return parser
 
 
