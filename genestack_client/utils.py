@@ -59,6 +59,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     :type password: str
     :param host: host
     :type host: str
+    :param token: API token string
+    :type token: str
     :return: parser
     :rtype: argparse.ArgumentParser
     """
