@@ -65,8 +65,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     parser = GenestackArgumentParser()
     group = parser.add_argument_group('connection')
     group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
-    group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
-    group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
+    group.add_argument('-u', '--user', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
+    group.add_argument('-p', '--password', dest='pwd', default=password, metavar='<password>', help='user password')
     group.add_argument('--token', dest='token', default=token, metavar='<api-token>',
                        help='API token to be used instead of the login and password')
     group.add_argument('--debug', dest='debug', help='print additional stacktrace on error', action='store_true')
