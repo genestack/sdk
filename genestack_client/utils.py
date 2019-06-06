@@ -59,18 +59,24 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     :type password: str
     :param host: host
     :type host: str
+    :param token: API token string
+    :type token: str
     :return: parser
     :rtype: argparse.ArgumentParser
     """
     parser = GenestackArgumentParser()
     group = parser.add_argument_group('connection')
-    group.add_argument('-H', '--host', default=host, help="server host", metavar='<host>')
-    group.add_argument('-u', dest='user', metavar='<user>', default=user, help='user alias from settings or email')
-    group.add_argument('-p', dest='pwd', default=password, metavar='<password>', help='user password')
+    group.add_argument('-H', '--host', default=host, help='server host', metavar='<host>')
+    group.add_argument('-u', '--user', dest='user', metavar='<user>', default=user,
+                       help='user alias from settings or email')
+    group.add_argument('-p', '--password', dest='pwd', default=password, metavar='<password>',
+                       help='user password')
     group.add_argument('--token', dest='token', default=token, metavar='<api-token>',
                        help='API token to be used instead of the login and password')
-    group.add_argument('--debug', dest='debug', help='print additional stacktrace on error', action='store_true')
-    group.add_argument('--show-logs', dest='show_logs', help="print application logs (received from server)", action='store_true')
+    group.add_argument('--debug', dest='debug', action='store_true',
+                       help='include server stacktrace into error messages (implies --show-logs)')
+    group.add_argument('--show-logs', dest='show_logs', action='store_true',
+                       help='print application logs received from server to stdout')
     return parser
 
 
