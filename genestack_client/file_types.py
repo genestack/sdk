@@ -5,6 +5,7 @@ class FileTypes(object):
 
     _JAVA_PKG = "com.genestack.api.files."
     _JAVA_BIO_PKG = "com.genestack.bio.files."
+    _JAVA_BTB_PKG = "com.genestack.api.files.btb."
 
     # Core file types
     FILE = _JAVA_PKG + "IFile"
@@ -44,3 +45,5 @@ class FileTypes(object):
     FEATURE_LIST = _JAVA_BIO_PKG + "IFeatureList"
     GENE_EXPRESSION_SIGNATURE = _JAVA_BIO_PKG + "IGeneExpressionSignature"
     EXPRESSION_LEVELS = _JAVA_BIO_PKG + "IExpressionLevels"
+
+    BTB_DOCUMENT = _JAVA_BTB_PKG + "IBTBDocumentFile"
