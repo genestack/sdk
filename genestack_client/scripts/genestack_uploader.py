@@ -53,8 +53,12 @@ group.add_argument('paths',
                    help='path to files or folders',
                    metavar='<paths>', nargs='+')
 group.add_argument('-n', '--no-recognition', help="don't try to recognize files", action='store_true')
-group.add_argument('-F', '--folder_name', metavar='<name>',
-                   help='name of the upload folder, if name is not specified it will be generated')
+
+exclusive_group = group.add_mutually_exclusive_group()
+exclusive_group.add_argument('-F', '--folder_name', metavar='<name>',
+                             help='name of the upload folder, if name is not specified it will be generated')
+exclusive_group.add_argument('--upload-to', metavar='<accession>',
+                             help='accession of the upload folder')
 
 
 def friendly_number(number):
@@ -108,20 +112,29 @@ def get_files(paths):
     return files_list, total_size
 
 
-def upload_files(connection, files, folder_name):
+def upload_files(connection, files, folder_name, folder_accession):
+    """
+    :param genestack_client.Connection connection:
+    :param list[str] files:
+    :param str folder_name:
+    :param str folder_accession:
+    """
     importer = DataImporter(connection)
     fu = FilesUtil(connection)
     upload = fu.get_special_folder(SpecialFolders.UPLOADED)
-    folder_name = folder_name or datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
-    new_folder = fu.create_folder(folder_name, parent=upload,
-                                  description='Files uploaded by genestack-uploader')
+    if not folder_accession:
+        folder_name = folder_name or datetime.now().strftime('Upload %d.%m.%y %H:%M:%S')
+        folder_accession = fu.create_folder(
+            folder_name, parent=upload, description='Files uploaded by genestack-uploader')
+    else:
+        folder_name = fu.get_infos([folder_accession])[0]['name']
     accession_file_map = {}
     for f in files:
         accession = importer.load_raw(f)
-        fu.link_file(accession, new_folder)
+        fu.link_file(accession, folder_accession)
         fu.unlink_file(accession, upload)
         accession_file_map[accession] = f
-    return new_folder, folder_name, accession_file_map
+    return folder_accession, folder_name, accession_file_map
 
 
 def recognize_files(connection, accession_file_map, new_folder):
@@ -169,7 +182,7 @@ def main():
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
         exit(13)
-    new_folder, folder_name, accessions = upload_files(connection, files, args.folder_name)
+    new_folder, folder_name, accessions = upload_files(connection, files, args.folder_name, args.upload_to)
     print('%s files were uploaded to %s / %s' % (len(accessions), new_folder, folder_name))
     if args.no_recognition:
         exit(0)
