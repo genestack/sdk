@@ -77,14 +77,14 @@ def friendly_number(number):
     return template % (number, powers[-1])
 
 
-def chekc_duplicated_file_names(files_list):
+def check_duplicated_file_names(files_list):
     names = ((os.path.basename(x), x) for x in files_list)
     duplication = {}
     for file_name, collected_paths in names:
         duplication.setdefault(file_name, []).append(collected_paths)
     duplication = {k: sorted(v) for k, v in duplication.items() if len(v) > 1}
     if duplication:
-        print("Files with duplicated file names found, "
+        print("Files with duplicated file names were found, "
               "please rename them or load them separately to avoid confusion", file=sys.stderr)
         for name, duplicated_paths in sorted(duplication.items()):
             print(" - %s: %s" % (name, ', '.join(duplicated_paths)), file=sys.stderr)
@@ -122,7 +122,7 @@ def get_files(paths):
                 folder_path = os.path.join(base, f)
                 if os.path.islink(folder_path):
                     sys.stderr.write("WARNING: Symlink %s was skipped!\n" % folder_path)
-    chekc_duplicated_file_names(files_list)
+    check_duplicated_file_names(files_list)
     return files_list, total_size
 
 
