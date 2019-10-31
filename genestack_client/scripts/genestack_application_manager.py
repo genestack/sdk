@@ -470,6 +470,10 @@ def resolve_jar_file(file_path):
 
 
 def mark_as_stable(application, version, app_id_list, scope):
+    """
+    :return: exit code
+    :rtype: int
+    """
     print('Setting the application version "%s" stable for scope %s' % (version, scope))
     scope = SCOPE_DICT[scope]
     result = 0
@@ -493,6 +497,10 @@ def mark_as_stable(application, version, app_id_list, scope):
 
 
 def remove_applications(application, version, app_id_list):
+    """
+    :return: exit code
+    :rtype: int
+    """
     print('Removing application(s) with version "%s"' % version)
     result = 0
     if app_id_list:
@@ -519,6 +527,10 @@ def remove_applications(application, version, app_id_list):
 
 
 def reload_applications(application, version, app_id_list):
+    """
+    :return: exit code
+    :rtype: int
+    """
     print('Reloading applications')
     result = 0
     for app_id in app_id_list:
@@ -536,6 +548,10 @@ def reload_applications(application, version, app_id_list):
 
 def upload_file(application, files_list, version, override, stable, scope, force,
                 initial_visibility, no_wait):
+    """
+    :return: exit code
+    :rtype: int
+    """
     result = 0
     for file_path in files_list:
         result |= upload_single_file(
@@ -547,6 +563,10 @@ def upload_file(application, files_list, version, override, stable, scope, force
 
 def upload_single_file(application, file_path, version, override,
                        stable, scope, force=False, initial_visibility=None, no_wait=False):
+    """
+    :return: exit code
+    :rtype: int
+    """
     app_info = read_jar_file(file_path)
     if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
         if get_system_stable_apps_version(application, app_info.identifiers, version):
@@ -602,7 +622,7 @@ def upload_single_file(application, file_path, version, override,
         )
 
     if not stable:
-        return
+        return 0
 
     return mark_as_stable(
         application,
@@ -613,6 +633,10 @@ def upload_single_file(application, file_path, version, override,
 
 
 def release_applications(application, app_ids, version, new_version):
+    """
+    :return: exit code
+    :rtype: int
+    """
     print('Releasing new version "%s"' % new_version)
     result = 0
     for app_id in app_ids:
@@ -630,6 +654,10 @@ def release_applications(application, app_ids, version, new_version):
 
 
 def change_applications_visibility(remove, application, app_ids, version, level, accessions=None):
+    """
+    :return: exit code
+    :rtype: int
+    """
     def invoke_change(group_accession=None):
         application.invoke(
             'removeVisibility' if remove else 'addVisibility',
