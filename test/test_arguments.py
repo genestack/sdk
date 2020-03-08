@@ -1,9 +1,11 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from future import standard_library
+standard_library.install_aliases()
 import os
 import sys
-from StringIO import StringIO
+from io import StringIO
 from argparse import Namespace
 
 import pytest

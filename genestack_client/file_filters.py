@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from builtins import object
 from copy import deepcopy
 
 from genestack_client import FileTypes, GenestackException, Permissions, validate_constant

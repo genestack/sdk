@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import input
+from past.builtins import basestring
 import argparse
 import subprocess
 import sys
@@ -91,7 +94,7 @@ def get_user(args=None):
     :rtype: settings.User
     """
 
-    from settings import config, User
+    from .settings import config, User
 
     if args is None:
         args = make_connection_parser().parse_args()
@@ -142,7 +145,7 @@ def ask_confirmation(question, default=None):
     question_suffix = '[%s/%s]' % tuple(x.upper() if x == default else x for x in 'yn')
 
     while True:
-        text = raw_input('%s %s? ' % (question, question_suffix)).strip().lower()
+        text = input('%s %s? ' % (question, question_suffix)).strip().lower()
         if not text and default:
             text = default
 
@@ -182,7 +185,7 @@ def interactive_select(items, message, to_string=None, selected=None):
                 print('  ', end=' ')
             print('%-2s %s' % ('%s)' % i, to_string(option)))
 
-        raw_index = raw_input('%s%s: ' % (message, about_default)).strip()
+        raw_index = input('%s%s: ' % (message, about_default)).strip()
 
         if not raw_index and selected:
             return selected
@@ -200,5 +203,5 @@ def interactive_select(items, message, to_string=None, selected=None):
 
 
 def validate_constant(cls, key):
-    constants = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
+    constants = {v for k, v in cls.__dict__.items() if (not k.startswith("_") and isinstance(v, basestring))}
     return key in constants

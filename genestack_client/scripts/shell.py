@@ -3,6 +3,9 @@
 
 from __future__ import print_function
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import argparse
 import json
 import shlex
@@ -70,7 +73,7 @@ class Groups(Command):
     def run(self):
         share_util = ShareUtil(self.connection)
         print('User groups:')
-        for accession, name in share_util.get_available_sharing_groups().items():
+        for accession, name in list(share_util.get_available_sharing_groups().items()):
             print('  %s (%s)' % (name, accession))
 
 

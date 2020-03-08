@@ -3,12 +3,16 @@
 
 from __future__ import print_function
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import map
 import glob
 import json
 import os
 import sys
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom as minidom
 import zipfile
 from collections import OrderedDict, namedtuple
@@ -96,11 +100,11 @@ class Install(Command):
             help='mark installed applications as stable'
         )
         p.add_argument(
-            '-S', '--scope', metavar='<scope>', choices=SCOPE_DICT.keys(),
+            '-S', '--scope', metavar='<scope>', choices=list(SCOPE_DICT.keys()),
             default=DEFAULT_SCOPE,
             help='scope in which application will be stable'
                  ' (default is \'%s\'): %s' %
-                 (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
+                 (DEFAULT_SCOPE, ' | '.join(list(SCOPE_DICT.keys())))
         )
         p.add_argument(
             '-i', '--visibility', metavar='<visibility>',
@@ -179,9 +183,9 @@ class ListVersions(Command):
             return 1
         app_info = OrderedDict(sorted(app_info.items()))
 
-        max_len = max(len(x) for x in app_info.keys())
+        max_len = max(len(x) for x in list(app_info.keys()))
         multi_column_mode = show_loading_state or show_release_state or show_visibilities
-        for item in app_info.items():
+        for item in list(app_info.items()):
             version_name = item[0]
             version_details = item[1]
             output_string = ''
@@ -330,11 +334,11 @@ class MarkAsStable(Command):
             help='ID of the application to be marked as stable'
         )
         p.add_argument(
-            '-S', '--scope', metavar='<scope>', choices=SCOPE_DICT.keys(),
+            '-S', '--scope', metavar='<scope>', choices=list(SCOPE_DICT.keys()),
             default=DEFAULT_SCOPE,
             help='scope in which the application will be stable'
                  ' (default is \'%s\'): %s' %
-                 (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
+                 (DEFAULT_SCOPE, ' | '.join(list(SCOPE_DICT.keys())))
         )
 
     def run(self):
@@ -582,18 +586,13 @@ def upload_single_file(application, file_path, version, override,
     if upload_token is None:
         raise GenestackException('Received a null token, the upload is not accepted')
 
-    # upload_token, as returned by json.load(), is a Unicode string.
-    # Without the conversion, urllib2.py passes a Unicode URL created from it
-    # to httplib.py, and httplib.py fails in a non-graceful way
-    # (http://bugs.python.org/issue12398)
-    upload_token = upload_token.encode('UTF-8', 'ignore')
     try:
         result = application.upload_file(file_path, upload_token)
         # hack before fix ApplicationManagerApplication#processReceivedFile
         # // TODO: return some useful information
         if result:
             print(result)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     if not no_wait:

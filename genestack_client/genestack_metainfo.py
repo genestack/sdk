@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from builtins import map
 import sys
 
 from genestack_client import (BooleanValue, DateTimeValue, DecimalValue, ExternalLink,

@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import object
 import os
 import sys
-from urllib import quote
-from urlparse import urlparse
+from urllib.parse import quote
+from urllib.parse import urlparse
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo
 from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
@@ -80,7 +84,7 @@ class DataImporter(object):
         self.importer = connection.application('genestack/upload')
 
     def __process_links(self, metainfo):
-        all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
+        all_links = [(key, val) for key, val in list(metainfo.items()) if val[0]['type'] == 'externalLink']
         for key, external_link_list in all_links:
             links = [x['url'] for x in external_link_list]
             if self.__are_files_local(links):

@@ -1,8 +1,14 @@
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import basestring
+from past.utils import old_div
 import datetime
 import os
 import sys
 from pprint import pformat
-from urlparse import unquote, urlparse
+from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
 
@@ -47,7 +53,7 @@ class MetainfoScalarValue(dict):
         """
         if arg is None:
             return None
-        if isinstance(arg, unicode):
+        if isinstance(arg, str):
             return arg.encode('utf-8', errors='replace')
         return str(arg)
 
@@ -174,7 +180,7 @@ class DateTimeValue(MetainfoScalarValue):
                                                                                                     cls._DATE_FORMAT))
         if isinstance(time, datetime.datetime):
             diff = time - datetime.datetime(1970, 1, 1)
-            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + diff.microseconds / 1000
+            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + old_div(diff.microseconds, 1000)
         elif isinstance(time, datetime.date):
             diff = time - datetime.date(1970, 1, 1)
             milliseconds = diff.days * 24 * 60 * 60 * 1000

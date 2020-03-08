@@ -1,4 +1,6 @@
 # coding=utf-8
+from past.builtins import basestring
+from builtins import object
 import collections
 
 from genestack_client import Application

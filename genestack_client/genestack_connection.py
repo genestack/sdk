@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import division
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.utils import old_div
+from builtins import object
 import json
 import os
 import sys
-import urllib
-from StringIO import StringIO
+import urllib.request, urllib.parse, urllib.error
+from io import StringIO
 from distutils.version import StrictVersion
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 import requests
 from requests import HTTPError, RequestException
@@ -197,7 +203,7 @@ class Connection(object):
         if data is None:
             data = ''
         elif isinstance(data, dict):
-            data = urllib.urlencode(data)
+            data = urllib.parse.urlencode(data)
 
         _headers = {'gs-extendSession': 'true'}
 
@@ -360,7 +366,7 @@ class Application(object):
             params = []
 
         post_data = json.dumps(params)
-        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.parse.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
         return self.__invoke(path, post_data, trace=trace)
@@ -399,25 +405,31 @@ class Application(object):
         file_to_upload = FileWithCallback(file_path, 'rb', progress)
         filename = os.path.basename(file_path)
         path = '/application/upload/%s/%s/%s' % (
-            self.application_id, token, urllib.quote(filename)
+            self.application_id, token, urllib.parse.quote(filename)
         )
         return self.__invoke(path, file_to_upload).result
 
 
-class FileWithCallback(file):
+class FileWithCallback:
     def __init__(self, path, mode, callback):
-        file.__init__(self, path, mode)
-        self.seek(0, os.SEEK_END)
-        self.__total = self.tell()
-        self.seek(0)
+        self.f = open(path, mode)
+        self.f.seek(0, os.SEEK_END)
+        self.__total = self.f.tell()
+        self.f.seek(0)
         self.__callback = callback
+
+    def __enter__ (self):
+        return self.f
+
+    def __exit__ (self, exc_type, exc_value, traceback):
+        self.f.close()
 
     def __len__(self):
         return self.__total
 
     def read(self, size=None):
-        data = file.read(self, size)
-        self.__callback(os.path.basename(self.name), len(data), self.__total)
+        data = self.f.read(size)
+        self.__callback(os.path.basename(self.f.name), len(data), self.__total)
         return data
 
 
@@ -445,7 +457,7 @@ class DottedProgress(object):
             if self.__seen == 0:
                 sys.stderr.write('Uploading %s: ' % name)
             self.__seen += size
-            dots = int(self.__seen * self.__full_length / total)
+            dots = int(old_div(self.__seen * self.__full_length, total))
             while dots > self.__dots and self.__dots < self.__full_length:
                 self.__dots += 1
                 sys.stderr.write('.')

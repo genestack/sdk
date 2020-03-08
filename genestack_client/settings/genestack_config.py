@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from builtins import str
+from builtins import object
 import os
 import platform
 from copy import deepcopy
@@ -153,7 +155,7 @@ class Config(object):
         users_element = document.createElement('users')
         top.appendChild(users_element)
 
-        for user in self.__users.values():
+        for user in list(self.__users.values()):
             if not user.alias:
                 continue
 

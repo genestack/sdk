@@ -68,7 +68,7 @@ class SampleLinker(Application):
 
         options = {
             key: value if isinstance(value, (list, tuple)) else [value]
-            for key, value in kwargs.viewitems()
+            for key, value in kwargs.items()
         }
         return self.invoke('createUploadDataset', study_number, file_type, options)
 

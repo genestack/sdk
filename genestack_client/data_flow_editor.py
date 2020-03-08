@@ -81,6 +81,6 @@ class DataFlowEditor(Application):
         """
         Return node id by its accession.
         """
-        for node, node_data in self.__get_graph(page_accession)['fullGraph'].items():
+        for node, node_data in list(self.__get_graph(page_accession)['fullGraph'].items()):
             if accession in node_data['userData']['originalAccessions']:
                 return node

@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import object
 import cmd
 import os
 import shlex
@@ -11,8 +16,8 @@ from traceback import print_exc
 
 from genestack_client import (GenestackAuthenticationException, GenestackException,
                               GenestackVersionException)
-from utils import get_connection, isatty, make_connection_parser, get_terminal_width
-from version import __version__
+from .utils import get_connection, isatty, make_connection_parser, get_terminal_width
+from .version import __version__
 
 if isatty():
     # To have autocomplete and console navigation on windows you need to have pyreadline installed.
@@ -367,7 +372,7 @@ class GenestackShell(cmd.Cmd):
         :rtype: list[(str, str)]
         """
         commands = [('quit', 'Exit shell.'), ('debug', 'Toggle debug for connection.')]
-        for name, value in self.COMMANDS.items():
+        for name, value in list(self.COMMANDS.items()):
             commands.append((name, value().get_short_description()))
         return sorted(commands)
 
@@ -424,7 +429,7 @@ class GenestackShell(cmd.Cmd):
     def completenames(self, text, *ignored):
         dotext = 'do_' + text
         commands = [a[3:] for a in self.get_names() if a.startswith(dotext)]
-        commands += [x for x in self.COMMANDS.keys() if x.startswith(text)]
+        commands += [x for x in list(self.COMMANDS.keys()) if x.startswith(text)]
         return commands
 
     def cmdloop(self, intro=None):

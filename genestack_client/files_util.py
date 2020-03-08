@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from builtins import map
+from builtins import object
 import sys
 from time import sleep
 
@@ -700,7 +702,7 @@ class FilesUtil(Application):
         :return: None
         """
         metainfo = Metainfo()
-        for key, value in expected_checksums.items():
+        for key, value in list(expected_checksums.items()):
             metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
         self.add_metainfo_values(app_file, metainfo)
 
@@ -751,7 +753,7 @@ class FilesUtil(Application):
         :return: list of metainfo objects
         :rtype: list[Metainfo]
         """
-        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
+        return list(map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions)))
 
     # TODO: remove after release 0.53
     def create_dataset(self, name, dataset_type, children, parent=None):

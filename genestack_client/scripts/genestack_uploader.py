@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+from builtins import str
 import os
 import sys
 from argparse import RawTextHelpFormatter
@@ -86,7 +87,7 @@ def check_duplicated_file_names(files_list):
     duplication = {}
     for file_name, collected_paths in names:
         duplication.setdefault(file_name, []).append(collected_paths)
-    duplication = {k: sorted(v) for k, v in duplication.items() if len(v) > 1}
+    duplication = {k: sorted(v) for k, v in list(duplication.items()) if len(v) > 1}
     if duplication:
         print("Files with duplicated file names were found, "
               "please rename them or load them separately to avoid confusion", file=sys.stderr)
@@ -160,11 +161,11 @@ def recognize_files(connection, accession_file_map, new_folder):
     fu = FilesUtil(connection)
 
     application = connection.application('genestack/upload')
-    recognised_files = application.invoke('recognizeGroupsByAccession', accession_file_map.keys())
+    recognised_files = application.invoke('recognizeGroupsByAccession', list(accession_file_map.keys()))
 
     recognized_accessions = set()
     for x in recognised_files:
-        for sources in x['sourceFileInfos'].values():
+        for sources in list(x['sourceFileInfos'].values()):
             for info in sources:
                 recognized_accessions.add(info['accession'])
 

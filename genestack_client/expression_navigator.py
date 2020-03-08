@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import map
 import sys
 
 from genestack_client import Application, GenestackException
@@ -27,7 +29,7 @@ class _BaseExpressionNavigator(Application):
         options = options or {}
         params = {
             'accessionList': [acc for group_id, acc in assignments],
-            'groupIdList': map(str, [group_id for group_id, acc in assignments]),
+            'groupIdList': list(map(str, [group_id for group_id, acc in assignments])),
             'organism': organism,
             'groupsNameList': group_names,
             'groupsDescriptionList': group_descriptions,
@@ -73,7 +75,7 @@ class _BaseExpressionNavigator(Application):
         :rtype: dict[list[dict]]
         """
         return self.invoke('getDifferentialExpressionStats', {acc: query.get_map() for acc, query in
-                                                              accessions_to_queries.iteritems()})
+                                                              accessions_to_queries.items()})
 
 
 class ExpressionNavigatorforMicroarrays(_BaseExpressionNavigator):

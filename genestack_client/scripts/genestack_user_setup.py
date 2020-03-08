@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+from builtins import input
 import os
 import re
 import sys
@@ -17,7 +18,7 @@ from genestack_client.utils import interactive_select
 
 
 def input_host():
-    host = raw_input('host [%s]: ' % DEFAULT_HOST).strip()
+    host = input('host [%s]: ' % DEFAULT_HOST).strip()
     return host or DEFAULT_HOST
 
 
@@ -30,7 +31,7 @@ def input_alias(existing):
     print('Please input alias. (Alias can contain: letters (a-z, A-Z), '
           'digits (0-9), at-sign (@), underscore (_), hyphen (-))')
     while True:
-        alias = raw_input('alias: ').strip()
+        alias = input('alias: ').strip()
         if not alias:
             print('Alias cannot be empty')
             continue
@@ -84,11 +85,11 @@ def create_user_from_input_email_and_password(host, alias=None):
     user_login = None
     while True:
         if user_login:
-            res = raw_input('Please specify your user login (email) [%s]: ' % user_login).strip()
+            res = input('Please specify your user login (email) [%s]: ' % user_login).strip()
             if res:
                 user_login = res
         else:
-            user_login = raw_input('Please specify your user login (email): ').strip()
+            user_login = input('Please specify your user login (email): ').strip()
             if not user_login:
                 print('Login cannot be empty')
                 continue
@@ -142,7 +143,7 @@ class AddUser(Command):
     OFFLINE = True
 
     def run(self):
-        alias = input_alias(config.users.keys())
+        alias = input_alias(list(config.users.keys()))
         host = input_host()
         user = create_user_from_input(host, alias)
         config.add_user(user)
@@ -158,7 +159,7 @@ def select_user(users, selected=None):
     :return:
     :rtype: User
     """
-    user_list = users.values()
+    user_list = list(users.values())
     user_list.sort(key=lambda x: x.alias)
     return interactive_select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
@@ -277,7 +278,7 @@ class RenameUser(Command):
             user = select_user(users)
         if not self.args.new_alias or not validate_alias(self.args.new_alias):
             print('Enter new alias')
-            new_alias = input_alias(users.keys())
+            new_alias = input_alias(list(users.keys()))
         else:
             new_alias = self.args.new_alias
 
