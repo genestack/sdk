@@ -22,8 +22,6 @@ class Metainfo(dict):
     CREATION_DATE = 'genestack:dateCreated'
     PARENT_DICTIONARY = 'genestack.dictionary:parent'
     SOURCE_DATA = 'genestack:sourceData'
-    INDEX_DATA_SIZE = 'genestack:indexDataSize'
-    DATABASE_SIZE = 'genestack:databaseDataSize'
     DATA_TYPE = 'genestack:dataType'
     LAST_UPDATE_DATE = 'genestack:file.last-update'
 
