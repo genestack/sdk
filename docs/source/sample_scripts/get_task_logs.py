@@ -1,6 +1,13 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 from genestack_client import TaskLogViewer, get_connection, make_connection_parser
 
 # add extra arguments to the Genestack arguments parser for this script

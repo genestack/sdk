@@ -2,7 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import *
 import os
 import re
 import sys
@@ -17,7 +24,7 @@ from genestack_client.utils import interactive_select
 
 
 def input_host():
-    host = raw_input('host [%s]: ' % DEFAULT_HOST).strip()
+    host = input('host [%s]: ' % DEFAULT_HOST).strip()
     return host or DEFAULT_HOST
 
 
@@ -30,7 +37,7 @@ def input_alias(existing):
     print('Please input alias. (Alias can contain: letters (a-z, A-Z), '
           'digits (0-9), at-sign (@), underscore (_), hyphen (-))')
     while True:
-        alias = raw_input('alias: ').strip()
+        alias = input('alias: ').strip()
         if not alias:
             print('Alias cannot be empty')
             continue
@@ -84,11 +91,11 @@ def create_user_from_input_email_and_password(host, alias=None):
     user_login = None
     while True:
         if user_login:
-            res = raw_input('Please specify your user login (email) [%s]: ' % user_login).strip()
+            res = input('Please specify your user login (email) [%s]: ' % user_login).strip()
             if res:
                 user_login = res
         else:
-            user_login = raw_input('Please specify your user login (email): ').strip()
+            user_login = input('Please specify your user login (email): ').strip()
             if not user_login:
                 print('Login cannot be empty')
                 continue

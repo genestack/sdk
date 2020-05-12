@@ -4,6 +4,13 @@
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 # noinspection PyUnresolvedReferences
 import setuptools
 
@@ -21,8 +28,8 @@ setup(
     description='Genestack Python Client Library',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema'],
-    python_requires='>=2.7,<3',
+    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'future'],
+    python_requires='>2.7,!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
@@ -36,6 +43,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',

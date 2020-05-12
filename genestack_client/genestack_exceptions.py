@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from urllib2 import URLError
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 
 MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
 PYPI_PACKAGE = 'genestack-client'
@@ -44,7 +51,7 @@ class GenestackServerException(GenestackException):
         :param stack_trace: server stack trace
         :type stack_trace: str
         """
-        message = message.encode('utf-8', 'ignore') if isinstance(message, unicode) else message
+        message = message.encode('utf-8', 'ignore') if isinstance(message, str) else message
 
         GenestackException.__init__(self, message, path, post_data, debug, stack_trace)
         self.message = message
