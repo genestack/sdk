@@ -415,7 +415,7 @@ class Application(object):
 
 class FileWithCallback(TextIOWrapper):
     def __init__(self, path, mode, callback):
-        file.__init__(self, path, mode)
+        TextIOWrapper.__init__(self, path, mode)
         self.seek(0, os.SEEK_END)
         self.__total = self.tell()
         self.seek(0)
@@ -425,7 +425,7 @@ class FileWithCallback(TextIOWrapper):
         return self.__total
 
     def read(self, size=None):
-        data = file.read(self, size)
+        data = TextIOWrapper.read(self, size)
         self.__callback(os.path.basename(self.name), len(data), self.__total)
         return data
 
