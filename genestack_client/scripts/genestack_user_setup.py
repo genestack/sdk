@@ -165,8 +165,7 @@ def select_user(users, selected=None):
     :return:
     :rtype: User
     """
-    user_list = users.values()
-    user_list.sort(key=lambda x: x.alias)
+    user_list = sorted(users.values(), key=lambda x: x.alias)
     return interactive_select(user_list, 'Select user', to_string=attrgetter('alias'), selected=selected)
 
 

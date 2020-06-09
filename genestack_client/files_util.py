@@ -760,7 +760,8 @@ class FilesUtil(Application):
         :return: list of metainfo objects
         :rtype: list[Metainfo]
         """
-        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
+        return [Metainfo.parse_metainfo_from_dict(mi)
+                for mi in self.invoke('getMetainfo', accessions)]
 
     # TODO: remove after release 0.53
     def create_dataset(self, name, dataset_type, children, parent=None):

@@ -36,7 +36,7 @@ class _BaseExpressionNavigator(Application):
         options = options or {}
         params = {
             'accessionList': [acc for group_id, acc in assignments],
-            'groupIdList': map(str, [group_id for group_id, acc in assignments]),
+            'groupIdList': [str(group_id) for group_id, acc in assignments],
             'organism': organism,
             'groupsNameList': group_names,
             'groupsDescriptionList': group_descriptions,
