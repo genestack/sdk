@@ -208,5 +208,5 @@ def interactive_select(items, message, to_string=None, selected=None):
 
 
 def validate_constant(cls, key):
-    constants = {v for k, v in cls.__dict__.iteritems() if (not k.startswith("_") and isinstance(v, basestring))}
+    constants = {v for k, v in cls.__dict__.items() if (not k.startswith("_") and isinstance(v, basestring))}
     return key in constants

@@ -82,7 +82,7 @@ class _BaseExpressionNavigator(Application):
         :rtype: dict[list[dict]]
         """
         return self.invoke('getDifferentialExpressionStats', {acc: query.get_map() for acc, query in
-                                                              accessions_to_queries.iteritems()})
+                                                              accessions_to_queries.items()})
 
 
 class ExpressionNavigatorforMicroarrays(_BaseExpressionNavigator):
