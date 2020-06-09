@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom as minidom
 import zipfile
 from collections import OrderedDict, namedtuple
@@ -601,7 +601,7 @@ def upload_single_file(application, file_path, version, override,
         # // TODO: return some useful information
         if result:
             print(result)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     if not no_wait:

@@ -11,7 +11,7 @@ from builtins import input
 from builtins import *
 from builtins import object
 from getpass import getpass
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
 from genestack_client.utils import isatty, interactive_select

@@ -14,10 +14,10 @@ from builtins import object
 import json
 import os
 import sys
-import urllib
-from StringIO import StringIO
+import urllib.request, urllib.parse, urllib.error
+from io import StringIO, TextIOWrapper
 from distutils.version import StrictVersion
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 import requests
 from requests import HTTPError, RequestException
@@ -206,7 +206,7 @@ class Connection(object):
         if data is None:
             data = ''
         elif isinstance(data, dict):
-            data = urllib.urlencode(data)
+            data = urllib.parse.urlencode(data)
 
         _headers = {'gs-extendSession': 'true'}
 
@@ -369,7 +369,7 @@ class Application(object):
             params = []
 
         post_data = json.dumps(params)
-        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.parse.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
         return self.__invoke(path, post_data, trace=trace)
@@ -408,12 +408,12 @@ class Application(object):
         file_to_upload = FileWithCallback(file_path, 'rb', progress)
         filename = os.path.basename(file_path)
         path = '/application/upload/%s/%s/%s' % (
-            self.application_id, token, urllib.quote(filename)
+            self.application_id, token, urllib.parse.quote(filename)
         )
         return self.__invoke(path, file_to_upload).result
 
 
-class FileWithCallback(file):
+class FileWithCallback(TextIOWrapper):
     def __init__(self, path, mode, callback):
         file.__init__(self, path, mode)
         self.seek(0, os.SEEK_END)

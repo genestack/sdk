@@ -11,8 +11,8 @@ from builtins import *
 from builtins import object
 import os
 import sys
-from urllib import quote
-from urlparse import urlparse
+from urllib.parse import quote
+from urllib.parse import urlparse
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo
 from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue

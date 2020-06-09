@@ -12,7 +12,7 @@ import datetime
 import os
 import sys
 from pprint import pformat
-from urlparse import unquote, urlparse
+from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
 

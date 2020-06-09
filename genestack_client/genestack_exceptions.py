@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from urllib2 import URLError
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -7,6 +6,7 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
+from urllib.error import URLError
 
 MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'
 PYPI_PACKAGE = 'genestack-client'
