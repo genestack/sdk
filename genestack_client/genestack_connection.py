@@ -19,6 +19,12 @@ from io import StringIO, TextIOWrapper
 from distutils.version import StrictVersion
 from urllib.parse import urlsplit
 
+# FIXME: used in deprecated `Connection.open`, drop it
+try:
+    from urllib.parse import addinfourl
+except ImportError:
+    from urllib import addinfourl
+
 import requests
 from requests import HTTPError, RequestException
 
@@ -220,7 +226,7 @@ class Connection(object):
                 raise GenestackAuthenticationException('Authentication failure')
             try:
                 response.raise_for_status()
-                return urllib.addinfourl(StringIO(response.raw.read(decode_content=True)),
+                return addinfourl(StringIO(response.raw.read(decode_content=True)),
                                          headers, url, code=response.status_code)
             except HTTPError as e:
                 raise GenestackResponseError(*e.args)
