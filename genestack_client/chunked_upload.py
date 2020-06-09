@@ -142,7 +142,7 @@ class ChunkedUpload(object):
         def _iterator():
             start = 0
             info = [chunk_size, total_size, token, self.filename, path, chunk_count, launch_time]
-            for x in xrange(1, chunk_count + 1):
+            for x in range(1, chunk_count + 1):
                 if x == chunk_count:
                     current_chunk_size = self.total_size - start
                 else:
@@ -205,7 +205,7 @@ class ChunkedUpload(object):
         upload_checked = False
         error = None
 
-        for attempt in xrange(RETRY_ATTEMPTS):
+        for attempt in range(RETRY_ATTEMPTS):
             # Check if chunk is already uploaded
             if not upload_checked:
                 try:
