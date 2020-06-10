@@ -70,13 +70,6 @@ FileInitializer
         :members:
         :show-inheritance:
 
-SudoUtils
----------
-
-.. autoclass:: genestack_client.SudoUtils
-        :members:
-        :show-inheritance:
-
 .. _TaskLogViewer:
 
 TaskLogViewer
