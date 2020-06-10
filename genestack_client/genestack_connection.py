@@ -21,9 +21,9 @@ from urllib.parse import urlsplit
 
 # FIXME: used in deprecated `Connection.open`, drop it
 try:
-    from urllib.parse import addinfourl
+    import urllib.response as urllib_response
 except ImportError:
-    from urllib import addinfourl
+    import urllib as urllib_response
 
 import requests
 from requests import HTTPError, RequestException
@@ -204,7 +204,7 @@ class Connection(object):
                         supported too until v1.0 (for backward compatibility)
         :type headers: dict[str, str] | list[tuple[str]]
         :return: response
-        :rtype: urllib.addinfourl
+        :rtype: urllib_response.addinfourl
         """
         print('`Connection.open()` is deprecated, use `Connection.perform_request()` instead.',
               file=sys.stderr)
@@ -226,7 +226,7 @@ class Connection(object):
                 raise GenestackAuthenticationException('Authentication failure')
             try:
                 response.raise_for_status()
-                return addinfourl(StringIO(response.raw.read(decode_content=True)),
+                return urllib_response.addinfourl(StringIO(response.raw.read(decode_content=True)),
                                          headers, url, code=response.status_code)
             except HTTPError as e:
                 raise GenestackResponseError(*e.args)
