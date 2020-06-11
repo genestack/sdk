@@ -104,7 +104,7 @@ def test_get_en_stats(conn):
     result = en.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
     entries = list(result.values())[0]
     assert len(entries) == 30  # limit of 15 * 2 contrasts in file
-    assert entries[0]['genomeFeature']['featureName'] == u'ENSG00000175745'
+    assert entries[0]['genomeFeature']['featureName'] == 'ENSG00000175745'
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])
