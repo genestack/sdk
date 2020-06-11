@@ -51,7 +51,8 @@ class GenestackServerException(GenestackException):
         :param stack_trace: server stack trace
         :type stack_trace: str
         """
-        message = message.encode('utf-8', 'ignore') if isinstance(message, str) else message
+        message = (message.decode('utf-8', 'ignore')
+                   if isinstance(message, bytes) else message)
 
         GenestackException.__init__(self, message, path, post_data, debug, stack_trace)
         self.message = message
