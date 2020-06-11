@@ -1,5 +1,18 @@
 * 0.33.0
-    * `SudoUtils` application was removed
+    * Initial Python 3 support
+    * Removed:
+        * `SudoUtils` application
+        * `AffymetrixMicroarraysNormalisationApplication` and
+          `AgilentMicroarraysNormalisationApplication` applications
+        * `BioMetainfo` class
+        * `normalised_input` argument for ExpressionNavigator applications
+        * `FilesUtil.share_folder` method
+        * `Connection.open` method
+        * `CLApplication.rename_file` method
+        * `DataImporter.create_owl_ontology` method
+        * `FilesUtil`: `create_dataset`, `get_groups_to_share`, `share_files`
+          methods
+        * `TaskLogViewer.view_log` method
 
 * 0.32.0
     * Deprecated:

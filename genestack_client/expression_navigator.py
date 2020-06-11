@@ -13,17 +13,7 @@ from genestack_client import Application, GenestackException
 
 
 class _BaseExpressionNavigator(Application):
-    def _create_file(self, groups, organism=None, normalized_input=None, options=None,
-                     # TODO: remove normalised_input argument.
-                     # This argument is deprecated, use normalized_input instead.
-                     # We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
-                     normalised_input=None):
-
-        # TODO: reomve this after removing the normalised_input argument
-        if normalized_input and normalised_input:
-            raise GenestackException('Both normalized_input and normalised_input are not allowed')
-        normalized_input = normalized_input or normalised_input
-
+    def _create_file(self, groups, organism=None, normalized_input=None, options=None):
         assignments = [(group_id, accession) for group_id, group in enumerate(groups, 1)
                        for accession in group['accessions']]
         organism = organism or "unknown organism"

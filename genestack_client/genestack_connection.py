@@ -19,12 +19,6 @@ from io import StringIO, TextIOWrapper
 from distutils.version import StrictVersion
 from urllib.parse import urlsplit
 
-# FIXME: used in deprecated `Connection.open`, drop it
-try:
-    import urllib.response as urllib_response
-except ImportError:
-    import urllib as urllib_response
-
 import requests
 from requests import HTTPError, RequestException
 
@@ -188,50 +182,6 @@ class Connection(object):
         :rtype: None
         """
         self.application('genestack/signin').invoke('signOut')
-
-    def open(self, path, data=None, follow=True, headers=None):
-        """
-        Sends data to a URL. The URL is the concatenation of the server URL and
-        ``path``.
-
-        .. deprecated:: 0.27.0
-           Use :py:meth:`~Connection.perform_request`
-
-        :param path: part of URL that is added to self.server_url
-        :param data: dict of parameters, file-like objects or strings
-        :param follow: should we follow a redirection if any?
-        :param headers: dictionary of additional headers; list of pairs is
-                        supported too until v1.0 (for backward compatibility)
-        :type headers: dict[str, str] | list[tuple[str]]
-        :return: response
-        :rtype: urllib_response.addinfourl
-        """
-        print('`Connection.open()` is deprecated, use `Connection.perform_request()` instead.',
-              file=sys.stderr)
-
-        if data is None:
-            data = ''
-        elif isinstance(data, dict):
-            data = urllib.parse.urlencode(data)
-
-        _headers = {'gs-extendSession': 'true'}
-
-        if headers:
-            _headers.update(headers)
-        try:
-            url = self.server_url + path
-            response = self.session.post(url, data=data, headers=_headers,
-                                         allow_redirects=follow, stream=True)
-            if response.status_code == 401:
-                raise GenestackAuthenticationException('Authentication failure')
-            try:
-                response.raise_for_status()
-                return urllib_response.addinfourl(StringIO(response.raw.read(decode_content=True)),
-                                         headers, url, code=response.status_code)
-            except HTTPError as e:
-                raise GenestackResponseError(*e.args)
-        except RequestException as e:
-            raise GenestackConnectionFailure(str(e))
 
     def perform_request(self, path, data='', follow=True, headers=None):
         """
