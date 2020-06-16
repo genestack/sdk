@@ -15,7 +15,7 @@ import json
 import os
 import sys
 import urllib.request, urllib.parse, urllib.error
-from io import StringIO, TextIOWrapper
+from io import StringIO, FileIO
 from distutils.version import StrictVersion
 from urllib.parse import urlsplit
 
@@ -369,9 +369,9 @@ class Application(object):
         return self.__invoke(path, file_to_upload).result
 
 
-class FileWithCallback(TextIOWrapper):
+class FileWithCallback(FileIO):
     def __init__(self, path, mode, callback):
-        TextIOWrapper.__init__(self, path, mode)
+        FileIO.__init__(self, path, mode)
         self.seek(0, os.SEEK_END)
         self.__total = self.tell()
         self.seek(0)
@@ -381,7 +381,7 @@ class FileWithCallback(TextIOWrapper):
         return self.__total
 
     def read(self, size=None):
-        data = TextIOWrapper.read(self, size)
+        data = FileIO.read(self, size)
         self.__callback(os.path.basename(self.name), len(data), self.__total)
         return data
 
