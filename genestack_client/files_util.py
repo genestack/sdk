@@ -461,7 +461,9 @@ class FilesUtil(Application):
             else:
                 _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.FOLDER)
                 if _parent_accession is None:
-                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
+                    raise GenestackException('Cannot find folder with name "%s" '
+                                             'in folder with accession: %s'
+                                             % (path, parent))
                 parent = _parent_accession
         return parent
 
