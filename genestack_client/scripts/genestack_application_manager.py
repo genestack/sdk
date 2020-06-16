@@ -590,11 +590,6 @@ def upload_single_file(application, file_path, version, override,
     if upload_token is None:
         raise GenestackException('Received a null token, the upload is not accepted')
 
-    # upload_token, as returned by json.load(), is a Unicode string.
-    # Without the conversion, urllib2.py passes a Unicode URL created from it
-    # to httplib.py, and httplib.py fails in a non-graceful way
-    # (http://bugs.python.org/issue12398)
-    upload_token = upload_token.encode('UTF-8', 'ignore')
     try:
         result = application.upload_file(file_path, upload_token)
         # hack before fix ApplicationManagerApplication#processReceivedFile
