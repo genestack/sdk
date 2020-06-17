@@ -4,15 +4,7 @@
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import *
-# noinspection PyUnresolvedReferences
-import setuptools
+from __future__ import absolute_import, print_function, unicode_literals
 
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
