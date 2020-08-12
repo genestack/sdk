@@ -468,19 +468,6 @@ class FilesUtil(Application):
         share_utils = ShareUtil(self.connection)
         return share_utils.get_available_sharing_groups()
 
-    def get_group_folder_info(self, group_accession):
-        """
-        Return dictionary with information about group folder.
-        It has two keys: ``name`` (name of the group) and ``accession`` (accession of the group folder).
-
-        :param group_accession: group accession
-        :type group_accession: str
-        :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
-        :rtype: dict
-        """
-        share_utils = ShareUtil(self.connection)
-        return share_utils.invoke('getGroupFolderInfo', group_accession)
-
     def get_folder(self, parent, *names, **kwargs):
         """
         Find a subfolder (by name) in a folder passed as an accession,

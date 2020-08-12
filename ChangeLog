@@ -1,5 +1,6 @@
 * 0.33.0
     * `SudoUtils` application was removed
+    * `FilesUtil.get_group_folder_info` method was removed
 
 * 0.32.0
     * Deprecated:
