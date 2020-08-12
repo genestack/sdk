@@ -468,6 +468,9 @@ class FilesUtil(Application):
         share_utils = ShareUtil(self.connection)
         return share_utils.get_available_sharing_groups()
 
+    def get_group_folder_info(self, group_accession):
+        raise NotImplementedError("FilesUtil.get_group_folder_info has been removed in v0.33")
+
     def get_folder(self, parent, *names, **kwargs):
         """
         Find a subfolder (by name) in a folder passed as an accession,
