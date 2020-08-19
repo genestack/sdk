@@ -1,6 +1,8 @@
 * 0.33.0
     * Removed:
+      * `StudyDesign` application
       * `SudoUtils` application
+      * `FilesUtil.clear_container` method
       * `FilesUtil.get_group_folder_info` method
 
 * 0.32.0

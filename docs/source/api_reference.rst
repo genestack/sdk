@@ -92,12 +92,6 @@ DatasetsUtil
         :members:
         :undoc-members:
 
-StudyDesign
------------
-.. autoclass:: genestack_client.study.StudyDesign
-        :members:
-        :undoc-members:
-
 SampleLinker (Beta)
 -------------------
 .. autoclass:: genestack_client.samples.SampleLinker
