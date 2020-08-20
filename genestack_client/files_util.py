@@ -257,16 +257,6 @@ class FilesUtil(Application):
         """
         self.invoke('unlinkFiles', children_to_parents_dict)
 
-    def clear_container(self, container_accession):
-        """
-        Unlink all files from a container.
-
-        :param container_accession: accession of the container
-        :type container_accession: str
-        :rtype: None
-        """
-        self.invoke('clearContainer', container_accession)
-
     def add_metainfo_string_value(self, accession_list, key, value):
         """
         Add a string value to the metainfo of specified files.
@@ -536,54 +526,6 @@ class FilesUtil(Application):
         :rtype: str
         """
         return 'public'
-
-    def get_complete_infos(self, accession_list):
-        """
-        Returns a list of dictionaries with complete information about each of the specified files.
-        This will return an error if any of the accessions is not valid.
-        The order of the output list is the same as the order of the accessions input list.
-
-        The information dictionaries have the following structure:
-
-            - accession
-            - kind
-            - owner
-            - name
-            - typeKey
-            - isDataset
-            - application
-
-                - id
-                - name
-
-            - initializationStatus
-
-                - displayString
-                - isError
-                - id
-
-            - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
-
-                - displayStrings
-                - groupNames
-                - ids
-
-            - time
-
-                - fileCreation
-                - initializationQueued
-                - initializationStart
-                - initializationEnd
-                - fileCreation
-                - lastMetainfoModification
-
-
-        :param accession_list: list of valid accessions.
-        :type accession_list: list
-        :return: list of file info dictionaries.
-        :rtype: list
-        """
-        return self.invoke('getCompleteInfos', accession_list)
 
     def get_infos(self, accession_list):
         """
