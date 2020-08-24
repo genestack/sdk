@@ -1,5 +1,6 @@
 * 0.33.0
     * Removed:
+      * `OrganizationUtil` class
       * `StudyDesign` application
       * `SudoUtils` application
       * `FilesUtil.clear_container` method

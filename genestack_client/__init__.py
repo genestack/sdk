@@ -30,7 +30,6 @@ from share_util import ShareUtil
 from files_util import FilesUtil, SortOrder, SpecialFolders
 from datasets_util import DatasetsUtil
 from groups_util import GroupsUtil
-from organization_util import OrganizationUtil
 from task_log_viewer import TaskLogViewer
 from cla import *
 from expression_navigator import *
