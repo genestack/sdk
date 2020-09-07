@@ -45,15 +45,6 @@ GroupsUtil
         :members:
         :show-inheritance:
 
-.. _OrganizationUtil:
-
-OrganizationUtil
-----------------
-
-.. autoclass:: genestack_client.OrganizationUtil
-        :members:
-        :show-inheritance:
-
 .. _ShareUtil:
 
 ShareUtil
