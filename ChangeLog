@@ -1,4 +1,5 @@
 * 0.33.0
+    * Added requirements - pyrsistent
     * Removed:
       * `OrganizationUtil` class
       * `StudyDesign` application
