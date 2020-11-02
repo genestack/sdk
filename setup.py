@@ -20,7 +20,7 @@ setup(
     description='Genestack Python Client Library',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'future'],
+    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'future', 'pyrsistent==0.16.0'],
     python_requires='>2.7,!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     entry_points={
         'console_scripts': [

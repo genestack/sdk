@@ -45,15 +45,6 @@ GroupsUtil
         :members:
         :show-inheritance:
 
-.. _OrganizationUtil:
-
-OrganizationUtil
-----------------
-
-.. autoclass:: genestack_client.OrganizationUtil
-        :members:
-        :show-inheritance:
-
 .. _ShareUtil:
 
 ShareUtil
@@ -89,12 +80,6 @@ Expression Navigator
 DatasetsUtil
 ------------
 .. autoclass:: genestack_client.DatasetsUtil
-        :members:
-        :undoc-members:
-
-StudyDesign
------------
-.. autoclass:: genestack_client.study.StudyDesign
         :members:
         :undoc-members:
 

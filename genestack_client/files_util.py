@@ -45,15 +45,6 @@ class SortOrder(object):
     DEFAULT = "DEFAULT"
 
 
-class MatchType(object):
-    """
-    Match types for related term queries.
-    See :func:`~genestack_client.FilesUtil.find_metainfo_related_terms`
-    """
-    PREFIX = 'PREFIX'
-    SUBSTRING = 'SUBSTRING'
-
-
 class FilesUtil(Application):
     """
     An application to perform file management operations on Genestack.
@@ -275,16 +266,6 @@ class FilesUtil(Application):
         """
         self.invoke('unlinkFiles', children_to_parents_dict)
 
-    def clear_container(self, container_accession):
-        """
-        Unlink all files from a container.
-
-        :param container_accession: accession of the container
-        :type container_accession: str
-        :rtype: None
-        """
-        self.invoke('clearContainer', container_accession)
-
     def add_metainfo_string_value(self, accession_list, key, value):
         """
         Add a string value to the metainfo of specified files.
@@ -405,17 +386,7 @@ class FilesUtil(Application):
         return self.invoke('getSpecialFolder', name)
 
     def get_group_folder_info(self, group_accession):
-        """
-        Return dictionary with information about group folder.
-        It has two keys: ``name`` (name of the group) and ``accession`` (accession of the group folder).
-
-        :param group_accession: group accession
-        :type group_accession: str
-        :return: dictionary with keys ``name`` (name of the group) and ``accession`` (accession of the group folder)
-        :rtype: dict
-        """
-        share_utils = ShareUtil(self.connection)
-        return share_utils.invoke('getGroupFolderInfo', group_accession)
+        raise NotImplementedError("FilesUtil.get_group_folder_info has been removed in v0.33")
 
     def get_folder(self, parent, *names, **kwargs):
         """
@@ -484,54 +455,6 @@ class FilesUtil(Application):
         :rtype: str
         """
         return 'public'
-
-    def get_complete_infos(self, accession_list):
-        """
-        Returns a list of dictionaries with complete information about each of the specified files.
-        This will return an error if any of the accessions is not valid.
-        The order of the output list is the same as the order of the accessions input list.
-
-        The information dictionaries have the following structure:
-
-            - accession
-            - kind
-            - owner
-            - name
-            - typeKey
-            - isDataset
-            - application
-
-                - id
-                - name
-
-            - initializationStatus
-
-                - displayString
-                - isError
-                - id
-
-            - permissionsByGroup (the value for each key is a dictionary with group accessions as keys)
-
-                - displayStrings
-                - groupNames
-                - ids
-
-            - time
-
-                - fileCreation
-                - initializationQueued
-                - initializationStart
-                - initializationEnd
-                - fileCreation
-                - lastMetainfoModification
-
-
-        :param accession_list: list of valid accessions.
-        :type accession_list: list
-        :return: list of file info dictionaries.
-        :rtype: list
-        """
-        return self.invoke('getCompleteInfos', accession_list)
 
     def get_infos(self, accession_list):
         """
@@ -682,70 +605,3 @@ class FilesUtil(Application):
         """
         return [Metainfo.parse_metainfo_from_dict(mi)
                 for mi in self.invoke('getMetainfo', accessions)]
-
-    def find_metainfo_related_terms(
-            self,
-            file_filter,
-            dictionary_accession,
-            relationship_name,
-            transitive,
-            key,
-            match_type=MatchType.SUBSTRING,
-            search_string='',
-            offset=0,
-            limit=MAX_RELATED_TERMS_LIMIT
-    ):
-        """
-        Find dictionary terms related to metainfo values present on files matching given filter.
-
-        Example usage: find all synonyms of attribute values present on available files.
-        If available files contain values "Human" and "Mouse" for "Organism" attribute,
-        synonyms "Homo sapiens" and "Mus musculus" will be found when searching for "synonym"
-        dictionary relation.
-
-        Another usage is to find all broader (i.e. more general) dictionary terms for attributes
-        present on available files. If available files contain "Brain" and "Lung" for "Tissue"
-        attribute, "Nervous System" and "Respiratory system" will be found when searching for
-        "broader term" dictionary relation.
-
-        Search with `transitive==False` considers only directly related terms, with
-        `transitive==true` transitively-related terms are also found.
-
-        See :ref:`MetainfoRelatedValueFilter`.
-
-        :param file_filter: filter matching files for loading related terms
-        :type file_filter FileFilter
-        :param dictionary_accession: dictionary accession
-        :type dictionary_accession str
-        :param relationship_name: relationship name
-        :type relationship_name str
-        :param transitive: whether to look for transitively-related terms
-        :type transitive bool
-        :param key: values for this key will be matched in dictionary
-        :type key str
-        :param match_type: match type - by prefix or by substring
-        :type match_type MatchType
-        :param search_string: search string for filtering query results
-        :type search_string str
-        :param offset: offset for paging
-        :type offset int
-        :param limit: maximum number of results to return
-        :type limit int
-        :return: list of found dictionary term labels
-        :rtype: list[str]
-        """
-        limit = min(self.MAX_RELATED_TERMS_LIMIT, limit)
-        return self.invoke(
-            'findMetainfoRelatedTerms',
-            {
-                'dictionaryAccession': dictionary_accession,
-                'name': relationship_name,
-                'transitive': transitive
-            },
-            file_filter.get_dict(),
-            key,
-            match_type,
-            search_string,
-            offset,
-            limit
-        )

@@ -27,10 +27,9 @@ from .genome_query import GenomeQuery
 from .utils import get_connection, get_user, make_connection_parser, validate_constant
 from .file_filters import *
 from .share_util import ShareUtil
-from .files_util import FilesUtil, MatchType, SortOrder, SpecialFolders
+from .files_util import FilesUtil, SortOrder, SpecialFolders
 from .datasets_util import DatasetsUtil
 from .groups_util import GroupsUtil
-from .organization_util import OrganizationUtil
 from .task_log_viewer import TaskLogViewer
 from .cla import *
 from .expression_navigator import *
