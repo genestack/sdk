@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
 from past.builtins import basestring
 from builtins import *
 from past.utils import old_div
@@ -16,6 +15,9 @@ from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
 
+# TODO: drop this kludge when sopport for Python 2 is over
+if sys.version_info.major > 2:
+    unicode = str
 
 class MetainfoScalarValue(dict):
     _TYPE = None
@@ -48,7 +50,7 @@ class MetainfoScalarValue(dict):
     @staticmethod
     def _xstr(arg):
         """
-        Convert the input argument to a string if it is not ``None``.
+        Convert the input argument to a (unicode) string if it is not ``None``.
 
         :param arg: input object
         :type arg: object
@@ -59,7 +61,11 @@ class MetainfoScalarValue(dict):
             return None
         if isinstance(arg, bytes):
             return arg.decode('utf-8', errors='replace')
-        return str(arg)
+        # `requests` on Python2 breaks if all-unicode dictionary of parameters
+        # with one `str` value is supplied (strange `KeyError(47)` is thrown)
+        # let's simply make sure it's ``unicode`` in Python 2 and revert to
+        # ``str`` when support for Python 2 is over (see TODO at the top)
+        return unicode(arg)
 
 
 class StringValue(MetainfoScalarValue):
