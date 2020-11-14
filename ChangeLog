@@ -11,8 +11,7 @@
         * `DataImporter.create_owl_ontology` method
         * `FilesUtil`: `clear_container`, `create_dataset`,
           `get_group_folder_info`, `get_groups_to_share`, `share_files`,
-          `share_folder`,
-          methods
+          `share_folder` methods
         * `OrganizationUtil` class
         * `StudyDesign` application
         * `SudoUtils` application
