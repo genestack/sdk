@@ -102,7 +102,7 @@ def test_get_en_stats(conn):
     query.add_filter(GenomeQuery.Filter.REGULATION, GenomeQuery.Regulation.UP)
 
     result = en.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
-    entries = list(result.values())[0]
+    entries = next(iter(result.values()))
     assert len(entries) == 30  # limit of 15 * 2 contrasts in file
     assert entries[0]['genomeFeature']['featureName'] == 'ENSG00000175745'
 

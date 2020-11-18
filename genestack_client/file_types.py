@@ -9,6 +9,8 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 from builtins import object
+
+
 class FileTypes(object):
 
     _JAVA_PKG = "com.genestack.api.files."

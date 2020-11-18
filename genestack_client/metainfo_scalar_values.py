@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
 
-# TODO: drop this kludge when sopport for Python 2 is over
+# TODO: drop this kludge when support for Python 2 is over
 if sys.version_info.major > 2:
     unicode = str
 
@@ -275,4 +275,3 @@ class Organization(MetainfoScalarValue):
     def get_organization(self):
         return {key: self.get(key) for key in {'name', 'department', 'country', 'city', 'street',
                                                'postalCode', 'state', 'phone', 'email', 'url'}}
-
