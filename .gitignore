@@ -1,8 +1,13 @@
-.idea
 *.pyc
-docs/build
-.DS_Store
-build/
-docs/source/scripts/genestack-user-setup.rst
 .cache
+
+.idea
+.DS_Store
 *.iml
+
+build/
+dist/
+docs/build/
+genestack_client.egg-info/
+# generated shell docs
+docs/source/scripts/genestack-user-setup.rst

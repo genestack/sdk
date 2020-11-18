@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from builtins import object
 import cmd
 import os
 import shlex
@@ -11,8 +19,8 @@ from traceback import print_exc
 
 from genestack_client import (GenestackAuthenticationException, GenestackException,
                               GenestackVersionException)
-from utils import get_connection, isatty, make_connection_parser, get_terminal_width
-from version import __version__
+from .utils import get_connection, isatty, make_connection_parser, get_terminal_width
+from .version import __version__
 
 if isatty():
     # To have autocomplete and console navigation on windows you need to have pyreadline installed.

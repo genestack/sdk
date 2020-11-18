@@ -1,6 +1,13 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import os
 import sys
 
@@ -95,9 +102,9 @@ def test_get_en_stats(conn):
     query.add_filter(GenomeQuery.Filter.REGULATION, GenomeQuery.Regulation.UP)
 
     result = en.get_differential_expression_stats({EN_TUTORIAL_FILE: query})
-    entries = result.values()[0]
+    entries = next(iter(result.values()))
     assert len(entries) == 30  # limit of 15 * 2 contrasts in file
-    assert entries[0]['genomeFeature']['featureName'] == u'ENSG00000175745'
+    assert entries[0]['genomeFeature']['featureName'] == 'ENSG00000175745'
 
 if __name__ == '__main__':
     pytest.main(['-v', '--tb', 'long', __file__])

@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import next
+from builtins import range
+from builtins import *
+from past.utils import old_div
+from builtins import object
 import json
 import os
 import re
@@ -110,7 +122,7 @@ class ChunkedUpload(object):
         if total_size < chunk_size * 2:
             chunk_count = 1
         else:
-            chunk_count = total_size / chunk_size
+            chunk_count = old_div(total_size, chunk_size)
 
         self.total_size = total_size
         self.filename = os.path.basename(path)
@@ -121,16 +133,16 @@ class ChunkedUpload(object):
         # import from here to avoid circular imports
         # TODO move progress functions to other module.
         if isatty():
-            from genestack_connection import TTYProgress
+            from .genestack_connection import TTYProgress
             self.progress = TTYProgress()
         else:
-            from genestack_connection import DottedProgress
+            from .genestack_connection import DottedProgress
             self.progress = DottedProgress(40)
 
         def _iterator():
             start = 0
             info = [chunk_size, total_size, token, self.filename, path, chunk_count, launch_time]
-            for x in xrange(1, chunk_count + 1):
+            for x in range(1, chunk_count + 1):
                 if x == chunk_count:
                     current_chunk_size = self.total_size - start
                 else:
@@ -193,7 +205,7 @@ class ChunkedUpload(object):
         upload_checked = False
         error = None
 
-        for attempt in xrange(RETRY_ATTEMPTS):
+        for attempt in range(RETRY_ATTEMPTS):
             # Check if chunk is already uploaded
             if not upload_checked:
                 try:

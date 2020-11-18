@@ -1,11 +1,10 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
-# noinspection PyUnresolvedReferences
-import setuptools
+from __future__ import absolute_import, print_function, unicode_literals
 
 from distutils.core import setup
 exec(open('genestack_client/version.py').read())
@@ -21,8 +20,8 @@ setup(
     description='Genestack Python Client Library',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'pyrsistent==0.16.0'],
-    python_requires='>=2.7,<3',
+    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'future', 'pyrsistent==0.16.0'],
+    python_requires='>2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
@@ -36,6 +35,11 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',

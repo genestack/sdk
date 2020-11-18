@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from past.utils import old_div
+from builtins import object
 import json
 import os
 import sys
-import urllib
-from StringIO import StringIO
+import urllib.request, urllib.parse, urllib.error
+from io import StringIO, FileIO
 from distutils.version import StrictVersion
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 import requests
 from requests import HTTPError, RequestException
@@ -174,50 +183,6 @@ class Connection(object):
         """
         self.application('genestack/signin').invoke('signOut')
 
-    def open(self, path, data=None, follow=True, headers=None):
-        """
-        Sends data to a URL. The URL is the concatenation of the server URL and
-        ``path``.
-
-        .. deprecated:: 0.27.0
-           Use :py:meth:`~Connection.perform_request`
-
-        :param path: part of URL that is added to self.server_url
-        :param data: dict of parameters, file-like objects or strings
-        :param follow: should we follow a redirection if any?
-        :param headers: dictionary of additional headers; list of pairs is
-                        supported too until v1.0 (for backward compatibility)
-        :type headers: dict[str, str] | list[tuple[str]]
-        :return: response
-        :rtype: urllib.addinfourl
-        """
-        print('`Connection.open()` is deprecated, use `Connection.perform_request()` instead.',
-              file=sys.stderr)
-
-        if data is None:
-            data = ''
-        elif isinstance(data, dict):
-            data = urllib.urlencode(data)
-
-        _headers = {'gs-extendSession': 'true'}
-
-        if headers:
-            _headers.update(headers)
-        try:
-            url = self.server_url + path
-            response = self.session.post(url, data=data, headers=_headers,
-                                         allow_redirects=follow, stream=True)
-            if response.status_code == 401:
-                raise GenestackAuthenticationException('Authentication failure')
-            try:
-                response.raise_for_status()
-                return urllib.addinfourl(StringIO(response.raw.read(decode_content=True)),
-                                         headers, url, code=response.status_code)
-            except HTTPError as e:
-                raise GenestackResponseError(*e.args)
-        except RequestException as e:
-            raise GenestackConnectionFailure(str(e))
-
     def perform_request(self, path, data='', follow=True, headers=None):
         """
         Perform an HTTP request to Genestack server.
@@ -360,7 +325,7 @@ class Application(object):
             params = []
 
         post_data = json.dumps(params)
-        path = '/application/invoke/%s/%s' % (self.application_id, urllib.quote(method))
+        path = '/application/invoke/%s/%s' % (self.application_id, urllib.parse.quote(method))
 
         # there might be present also self.__invoke(path, post_data)['log'] -- show it?
         return self.__invoke(path, post_data, trace=trace)
@@ -399,14 +364,14 @@ class Application(object):
         file_to_upload = FileWithCallback(file_path, 'rb', progress)
         filename = os.path.basename(file_path)
         path = '/application/upload/%s/%s/%s' % (
-            self.application_id, token, urllib.quote(filename)
+            self.application_id, token, urllib.parse.quote(filename)
         )
         return self.__invoke(path, file_to_upload).result
 
 
-class FileWithCallback(file):
+class FileWithCallback(FileIO):
     def __init__(self, path, mode, callback):
-        file.__init__(self, path, mode)
+        FileIO.__init__(self, path, mode)
         self.seek(0, os.SEEK_END)
         self.__total = self.tell()
         self.seek(0)
@@ -416,7 +381,7 @@ class FileWithCallback(file):
         return self.__total
 
     def read(self, size=None):
-        data = file.read(self, size)
+        data = FileIO.read(self, size)
         self.__callback(os.path.basename(self.name), len(data), self.__total)
         return data
 
@@ -445,7 +410,7 @@ class DottedProgress(object):
             if self.__seen == 0:
                 sys.stderr.write('Uploading %s: ' % name)
             self.__seen += size
-            dots = int(self.__seen * self.__full_length / total)
+            dots = int(old_div(self.__seen * self.__full_length, total))
             while dots > self.__dots and self.__dots < self.__full_length:
                 self.__dots += 1
                 sys.stderr.write('.')

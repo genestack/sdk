@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import *
+from builtins import object
 import os
 import sys
-from urllib import quote
-from urlparse import urlparse
+from urllib.parse import quote
+from urllib.parse import urlparse
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo
 from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
@@ -666,11 +675,6 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue, required=True)
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'geneExpressionSignature', metainfo)
-
-    def create_owl_ontology(self, parent=None, name=None, url=None, metainfo=None):
-        sys.stderr.write('DataImporter.create_owl_ontology method is deprecated, '
-                         'it is renamed to DataImporter.create_dictionary\n')
-        return self.create_dictionary(parent=parent, name=name, url=url, metainfo=metainfo)
 
     def create_dictionary(self, parent=None, name=None, url=None, term_type=None, metainfo=None,
                           parent_dictionary=None):

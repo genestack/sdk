@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import sys
 import time
 
@@ -18,10 +24,6 @@ class TaskLogViewer(Application):
     STDERR = 'stderr'
     STDOUT = 'stdout'
     MAX_CHUNK_SIZE = 128000
-
-    def view_log(self, accession, log_type=None, follow=True, offset=0):
-        sys.stderr.write('Usage of `TaskLogViewer.view_log` deprecated, use `TaskLogViewer.print_log` instead.\n')
-        self.print_log(accession, log_type=log_type, follow=follow, offset=offset)
 
     def print_log(self, accession, log_type=None, follow=True, offset=0):
         """

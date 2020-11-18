@@ -1,9 +1,16 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
 from genestack_client import (AlignedReadsQC, BioMetaKeys, BowtieApplication, FilesUtil,
                               SpecialFolders, VariationCaller2Application, get_connection,
                               make_connection_parser)

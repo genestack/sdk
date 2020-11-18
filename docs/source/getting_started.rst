@@ -38,8 +38,10 @@ If the command executes without returning an error, you have successfully instal
 
 .. note::
 
-    If you see a warning such as ``InsecurePlatformWarning: A true SSLContext object is not available`` in the console,
-    you can either update your Python to the latest ``2.7.*`` version, or install the ``security`` package extras using ``pip``:
+    If you see a warning such as ``InsecurePlatformWarning: A true SSLContext
+    object is not available`` in the console, you can either update your Python
+    to the latest ``2.7.*`` version (or switch to an up-to-date Python 3
+    version), or install the ``security`` package extras using ``pip``:
 
     .. code-block:: sh
 

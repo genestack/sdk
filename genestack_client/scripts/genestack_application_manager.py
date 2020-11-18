@@ -2,13 +2,21 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import map
+from builtins import *
 import glob
 import json
 import os
 import sys
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom as minidom
 import zipfile
 from collections import OrderedDict, namedtuple
@@ -582,18 +590,13 @@ def upload_single_file(application, file_path, version, override,
     if upload_token is None:
         raise GenestackException('Received a null token, the upload is not accepted')
 
-    # upload_token, as returned by json.load(), is a Unicode string.
-    # Without the conversion, urllib2.py passes a Unicode URL created from it
-    # to httplib.py, and httplib.py fails in a non-graceful way
-    # (http://bugs.python.org/issue12398)
-    upload_token = upload_token.encode('UTF-8', 'ignore')
     try:
         result = application.upload_file(file_path, upload_token)
         # hack before fix ApplicationManagerApplication#processReceivedFile
         # // TODO: return some useful information
         if result:
             print(result)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
 
     if not no_wait:

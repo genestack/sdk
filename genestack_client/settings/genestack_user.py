@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import *
+from builtins import object
 from getpass import getpass
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
 from genestack_client.utils import isatty, interactive_select
@@ -113,7 +121,7 @@ class User(object):
 
             if choice == login_by_email:
                 input_message = 'e-mail [%s]: ' % email if email and '@' in email else 'e-mail: '
-                email = raw_input(input_message).strip() or email
+                email = input(input_message).strip() or email
 
                 password = getpass('password for %s: ' % email)
                 try:

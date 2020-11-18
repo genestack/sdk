@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import *
+from builtins import object
 import sys
 from time import sleep
 
@@ -376,88 +385,6 @@ class FilesUtil(Application):
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
-    def share_files(self, accessions, group, destination_folder=None, password=None):
-        """
-        Shares files and links them.
-
-        .. deprecated:: 0.24.0
-           Use :class:`ShareUtil` class instead.
-
-        :param accessions: accession or list/tuple/set of accessions to be shared
-        :type accessions: str | list[str] | tuple[str] | set[str]
-        :param group: accession of the group to share the files with
-        :type group: str
-        :param destination_folder: accession of folder to link shared files into.
-               No links are created if ``None``.
-        :type destination_folder: str
-        :type: str
-        :rtype: None
-        """
-        if password is not None:
-            sys.stderr.write(
-                'Parameter `password` is deprecated. Use `share_files` without password.\n'
-            )
-        share_util = ShareUtil(self.connection)
-        share_util.share_files_for_view(accessions, group, destination_folder)
-
-    def share_folder(self, folder_accession, group, destination_folder=None, password=None):
-        """
-        Recursively share folder.
-
-        This method makes repeated calls to server, each method call
-        shares chunk of files in the given folder that aren't shared yet with ``group` or ``WORLD``.
-
-        Due to the indexing lag, same files can be included in different calls.
-        Method implementation is written to overcome this limitation.
-
-        .. deprecated:: 0.26.0
-           Use :meth:`ShareUtil.share_folder` instead.
-
-        :param folder_accession: accession of the folder
-        :type folder_accession: basestring
-        :param group: accession of the group to share the files with
-        :param destination_folder: accession of folder to link shared folder into.
-               No links are created if ``None``.
-        :type destination_folder: str
-        :type: str
-        :rtype: None
-        """
-        if password is not None:
-            sys.stderr.write(
-                'Parameter `password` is deprecated. Use `share_folder` without password.\n'
-            )
-
-        share_utils = ShareUtil(self.connection)
-        share_utils.share_files_for_view(folder_accession, group, destination_folder)
-
-        limit = 100
-        delay_seconds = 1  # delay between attempts
-
-        offset = 0
-        while True:
-            count = share_utils.invoke('shareChunkInFolder', folder_accession, group, offset, limit)
-            if count == 0 and offset == 0:
-                return
-            if count < limit:
-                sleep(delay_seconds)
-                offset = 0
-            else:
-                offset += limit
-
-    def get_groups_to_share(self):
-        """
-        Returns a dictionary of the form ``group_accession: group_name``.
-
-        .. deprecated:: 0.24.0
-           Use :meth:`ShareUtil.get_available_sharing_groups` instead.
-
-        :return: group dict
-        :rtype: dict
-
-        """
-        share_utils = ShareUtil(self.connection)
-        return share_utils.get_available_sharing_groups()
-
     def get_group_folder_info(self, group_accession):
         raise NotImplementedError("FilesUtil.get_group_folder_info has been removed in v0.33")
 
@@ -505,7 +432,9 @@ class FilesUtil(Application):
             else:
                 _parent_accession = self.find_file_by_name(path, parent=parent, file_class=self.FOLDER)
                 if _parent_accession is None:
-                    raise Exception('Cant find folder with name "%s" in folder with accession: %s' % (path, parent))
+                    raise GenestackException('Cannot find folder with name "%s" '
+                                             'in folder with accession: %s'
+                                             % (path, parent))
                 parent = _parent_accession
         return parent
 
@@ -674,29 +603,5 @@ class FilesUtil(Application):
         :return: list of metainfo objects
         :rtype: list[Metainfo]
         """
-        return map(Metainfo.parse_metainfo_from_dict, self.invoke('getMetainfo', accessions))
-
-    # TODO: remove after release 0.53
-    def create_dataset(self, name, dataset_type, children, parent=None):
-        """
-        Create a dataset.
-
-        :param name: name of the dataset
-        :type name: str
-        :param dataset_type: type of the dataset
-        :type dataset_type: str
-        :param children: list fo children accessions
-        :type children: list[str]
-        :param parent: if not specified, create folder in the user's 'My datasets' folder
-        :type parent: str
-
-        :return: dataset accession
-        :rtype: str
-        """
-        sys.stderr.write('Deprecated: use DatasetsUtil.create_dataset instead\n')
-        try:
-            return genestack_client.DatasetsUtil(self.connection).create_dataset(name, dataset_type, children, parent)
-        except GenestackException:
-            if parent is None:
-                parent = self.get_special_folder(SpecialFolders.MY_DATASETS)
-            return self.invoke('createDataset', parent, name, dataset_type, children)
+        return [Metainfo.parse_metainfo_from_dict(mi)
+                for mi in self.invoke('getMetainfo', accessions)]

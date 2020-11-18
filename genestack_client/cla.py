@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import sys
 
 from genestack_client import Application, FilesUtil, GenestackException
@@ -94,10 +101,6 @@ class CLApplication(Application):
         :return: None
         """
         self.invoke('start', self.__to_list(accession))
-
-    def rename_file(self, accession, name):
-        sys.stderr.write('Deprecated: use FilesUtil.rename_file instead\n')
-        FilesUtil(self.connection).rename_file(accession, name)
 
     def replace_file_reference(self, accession, key, accession_to_remove, accession_to_add):
         """
@@ -209,17 +212,6 @@ class GenePixMicroarraysNormalizationApplication(CLApplication):
 
 class InfiniumMicroarraysNormalizationApplication(CLApplication):
     APPLICATION_ID = 'genestack/infinium-methylation-normalization'
-
-
-# TODO: Deprecated at 0.20.0, will be removed at 0.23.0.
-# TODO: We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
-class AffymetrixMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/affymetrix-normalization'
-
-# TODO: Deprecated at 0.20.0, will be removed at 0.23.0.
-# TODO: We perform renaming in a scope of global 's' -> 'z' refactoring (american style english).
-class AgilentMicroarraysNormalisationApplication(CLApplication):
-    APPLICATION_ID = 'genestack/agilent-normalization'
 
 
 # preprocess mapped reads
