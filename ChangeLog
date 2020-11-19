@@ -1,21 +1,24 @@
-* 0.33.0
+* 0.34.0
     * Initial Python 3 support
+    * Removed:
+      * `AffymetrixMicroarraysNormalisationApplication` and
+        `AgilentMicroarraysNormalisationApplication` applications
+      * `BioMetainfo` class
+      * `normalised_input` argument for ExpressionNavigator applications
+      * `Connection.open` method
+      * `CLApplication.rename_file` method
+      * `DataImporter.create_owl_ontology` method
+      * `FilesUtil`: `create_dataset`, `get_groups_to_share`, `share_files`,
+                     `share_folder` methods
+      * `TaskLogViewer.view_log` method
+
+* 0.33.0
     * New requirement: pyrsistent
     * Removed:
-        * `AffymetrixMicroarraysNormalisationApplication` and
-          `AgilentMicroarraysNormalisationApplication` applications
-        * `BioMetainfo` class
-        * `normalised_input` argument for ExpressionNavigator applications
-        * `Connection.open` method
-        * `CLApplication.rename_file` method
-        * `DataImporter.create_owl_ontology` method
-        * `FilesUtil`: `clear_container`, `create_dataset`,
-          `get_group_folder_info`, `get_groups_to_share`, `share_files`,
-          `share_folder` methods
-        * `OrganizationUtil` class
-        * `StudyDesign` application
-        * `SudoUtils` application
-        * `TaskLogViewer.view_log` method
+      * `FilesUtil`: `clear_container`, `get_group_folder_info` methods
+      * `OrganizationUtil` class
+      * `StudyDesign` application
+      * `SudoUtils` application
 
 * 0.32.0
     * Deprecated:
