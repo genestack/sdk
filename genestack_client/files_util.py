@@ -385,34 +385,6 @@ class FilesUtil(Application):
             raise GenestackException("Name '%s' must be one of %s" % (name, ', '.join(special_folders)))
         return self.invoke('getSpecialFolder', name)
 
-
-    def share_files(self, accessions, group, destination_folder=None, password=None):
-        """
-        Shares files and links them.
-
-        .. deprecated:: 0.24.0
-           Use :class:`ShareUtil` class instead.
-
-        :param accessions: accession or list/tuple/set of accessions to be shared
-        :type accessions: str | list[str] | tuple[str] | set[str]
-        :param group: accession of the group to share the files with
-        :type group: str
-        :param destination_folder: accession of folder to link shared files into.
-               No links are created if ``None``.
-        :type destination_folder: str
-        :type: str
-        :rtype: None
-        """
-        print("FilesUtil.share_files() is deprecated since v0.24.0, "
-              "use `ShareUtil` class instead", file=sys.stderr)
-        if password is not None:
-            sys.stderr.write(
-                'Parameter `password` is deprecated. Use `share_files` without password.\n'
-            )
-        share_util = ShareUtil(self.connection)
-        share_util.share_files_for_view(accessions, group, destination_folder)
-
-
     def get_group_folder_info(self, group_accession):
         raise NotImplementedError("FilesUtil.get_group_folder_info has been removed in v0.33")
 
