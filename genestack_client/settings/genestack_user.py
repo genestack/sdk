@@ -19,7 +19,7 @@ from genestack_client.utils import isatty, interactive_select
 DEFAULT_HOST = 'platform.genestack.org'
 
 
-def _get_server_url(host):
+def _get_endpoint_from_host(host):
     has_scheme = bool(urlsplit(host).scheme)
 
     # compatibility with dev settings
@@ -27,10 +27,7 @@ def _get_server_url(host):
     if host.startswith('localhost'):
         return 'http://%s/frontend/endpoint' % host
 
-    if has_scheme:
-        return '%s/endpoint' % host
-    else:
-        return 'https://%s/endpoint' % host
+    url_builder = host if has_scheme else 'https://%s' % host
 
 
 class User(object):
@@ -42,11 +39,14 @@ class User(object):
      - server URL (or is it hostname?)
      - token *or* email/password pair
     """
-    def __init__(self, email, alias=None, host=None, password=None, token=None):
+    def __init__(self, email, alias=None, host=None, endpoint=None,
+                 password=None, token=None):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
         If no ``host`` is specified, the ``DEFAULT_HOST`` be used.
+
+        # FIXME: to be expanded for endpoint
 
         If you login interactively, no ``email`` or ``password`` is required.
         The alias is used to find the matching user in :py:func:`~genestack_client.get_user`
@@ -57,10 +57,12 @@ class User(object):
         :type alias: str
         :param host: host
         :type host: str
+        :param endpoint: full endpoint URL
+        :type endpoint: str
         :param password: password
         :type password: str
         """
-        self.host = host or DEFAULT_HOST
+        self.endpoint = endpoint or _get_endpoint_from_host(host)
         self.email = email
         self.password = password  # TODO make property
         self.alias = alias or email
@@ -73,6 +75,8 @@ class User(object):
         they will be asked in interactive mode.
         If no host is specified, the ``DEFAULT_HOST`` will be used.
 
+        # FIXME: to be expanded for endpoint
+
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
         :param debug: print stack trace in case of exception
@@ -82,7 +86,7 @@ class User(object):
         :return: logged connection
         :rtype: genestack_client.Connection
         """
-        connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
+        connection = Connection(self.endpoint, debug=debug, show_logs=show_logs)
         if self.token:
             connection.login_by_token(self.token)
         elif self.email and self.password:
@@ -94,8 +98,9 @@ class User(object):
         return connection
 
     def __repr__(self):
-        return "User('%s', alias='%s', host='%s', password='%s', token='%s')" % (
-            self.email, self.alias, self.host, self.password and '*****', self.token and '*****')
+        return "User('%s', alias='%s', endpoint='%s', password='%s', token='%s')" % (
+            self.email, self.alias, self.endpoint,
+            self.password and '*****', self.token and '*****')
 
     def __interactive_login(self, connection):
         if not isatty():
@@ -103,7 +108,7 @@ class User(object):
         connection.check_version()
 
         email = self.email
-        message = 'Connecting to %s' % self.host
+        message = 'Connecting to %s' % self.endpoint
 
         login_by_token = 'by token'
         login_by_email = 'by email and password'
@@ -131,7 +136,7 @@ class User(object):
                     return
                 except GenestackAuthenticationException:
                     message = ('Your username and password have been rejected by %s, '
-                               'please try again' % self.host)
+                               'please try again' % self.endpoint)
             else:
                 token = getpass('token: ')
                 try:
@@ -139,14 +144,14 @@ class User(object):
                     self.token = token
                     return
                 except GenestackAuthenticationException:
-                    message = 'Your token has been rejected by %s, please try again' % self.host
+                    message = 'Your token has been rejected by %s, please try again' % self.endpoint
 
     def __eq__(self, other):
         return (
             isinstance(other, User) and
             self.alias == other.alias and
             self.password == other.password and
-            self.host == other.host and
+            self.endpoint == other.endpoint and
             self.email == other.email
         )
 

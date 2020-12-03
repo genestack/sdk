@@ -67,16 +67,16 @@ class Connection(object):
     To do so, you need to call the :py:meth:`~genestack_client.Connection.login` method.
     """
 
-    def __init__(self, server_url, debug=False, show_logs=False):
+    def __init__(self, endpoint, debug=False, show_logs=False):
         """
-        :param server_url: server url
-        :type server_url: str
+        :param endpoint: server url
+        :type endpoint: str
         :param debug:  will print additional traceback from application
         :type debug: bool
         :param show_logs: will print application logs (received from server)
         :type show_logs: bool
         """
-        self.server_url = server_url
+        self.endpoint = endpoint
         self.session = requests.session()
         self.debug = debug
         self.show_logs = show_logs
@@ -129,7 +129,7 @@ class Connection(object):
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
-            hostname = urlsplit(self.server_url).hostname
+            hostname = urlsplit(self.endpoint).hostname
             raise GenestackAuthenticationException(
                 'Fail to login with "%s" to "%s"' % (email, hostname))
 
@@ -147,7 +147,7 @@ class Connection(object):
         logged = self.application('genestack/signin').invoke('authenticateByApiToken', token)
         Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
-            hostname = urlsplit(self.server_url).hostname
+            hostname = urlsplit(self.endpoint).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
 
     def check_version(self):
@@ -191,7 +191,7 @@ class Connection(object):
         with additional ``headers``.
 
         :param str path: URL path (endpoint) to be used (concatenated with
-                     ``self.server_url``).
+                     ``self.endpoint``).
         :param dict|file|str data: dictionary, bytes, or file-like object to send in the body
         :param bool follow: should we follow a redirection (if any)
         :param dict[str, str] headers: dictionary of additional headers; list of pairs is
@@ -205,7 +205,7 @@ class Connection(object):
             _headers.update(headers)
         try:
             response = self.session.post(
-                self.server_url + path, data=data, headers=_headers,
+                self.endpoint + path, data=data, headers=_headers,
                 allow_redirects=follow,
                 timeout=int(os.environ.get("GENESTACK_CLIENT_TIMEOUT"))
                 if os.environ.get("GENESTACK_CLIENT_TIMEOUT", None) else None)
@@ -235,14 +235,14 @@ class Connection(object):
         return Application(self, application_id)
 
     def __repr__(self):
-        return 'Connection("%s")' % self.server_url
+        return 'Connection("%s")' % self.endpoint
 
     def get_request(self, path, params=None, follow=True):
         # This request also serves for download method of an application
         # It is possible that next request that uses same connection will fail,
         # that why we create new connection every time instead of reuse self.session
         return requests.get(
-            url=self.server_url + path,
+            url=self.endpoint + path,
             params=params,
             allow_redirects=follow,
             cookies=self.session.cookies
@@ -250,7 +250,7 @@ class Connection(object):
 
     def post_multipart(self, path, data=None, files=None, follow=True):
         return self.session.post(
-            url=self.server_url + path,
+            url=self.endpoint + path,
             data=data,
             files=files,
             allow_redirects=follow,

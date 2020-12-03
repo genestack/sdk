@@ -55,7 +55,8 @@ class GenestackArgumentParser(argparse.ArgumentParser):
         return args, argv
 
 
-def make_connection_parser(user=None, password=None, host=None, token=None):
+def make_connection_parser(user=None, password=None, endpoint=None, host=None,
+                           token=None):
     """
     Creates an argument parser with the provided connection parameters.
     If one of ``email``, ``password`` or ``user`` is specified, they are used. Otherwise, the default
@@ -67,6 +68,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     :type password: str
     :param host: host
     :type host: str
+    :param endpoint: connection endpoint (if ``host`` is not enough)
+    :type endpoint: str
     :param token: API token string
     :type token: str
     :return: parser
@@ -74,7 +77,11 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     """
     parser = GenestackArgumentParser()
     group = parser.add_argument_group('connection')
-    group.add_argument('-H', '--host', default=host, help='server host', metavar='<host>')
+    endpoint_group = group.add_mutually_exclusive_group()
+    endpoint_group.add_argument('-H', '--host', default=host, help='server host', metavar='<host>')
+    endpoint_group.add_argument('-E', '--endpoint', default=endpoint, metavar='<endpoint>',
+                                help='full endpoint URL if "host" is not enough '
+                                     '(e.g., with port and/or custom path)')
     group.add_argument('-u', '--user', dest='user', metavar='<user>', default=user,
                        help='user alias from settings or email')
     group.add_argument('-p', '--password', dest='pwd', default=password, metavar='<password>',
@@ -108,12 +115,13 @@ def get_user(args=None):
     if args.token:
         return User(email=None, host=args.host, password=None, token=args.token)
 
-    if not args.host and not args.pwd:
+    if not (args.host or args.endpoint) and not args.pwd:
         if not alias and config.default_user:
             return config.default_user
         if alias in config.users:
             return config.users[alias]
-    return User(email=alias, host=args.host, password=args.pwd, token=args.token)
+    return User(email=alias, host=args.host, endpoint=args.endpoint,
+                password=args.pwd, token=args.token)
 
 
 def get_connection(args=None):
