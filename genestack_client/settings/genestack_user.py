@@ -33,7 +33,8 @@ def _get_server_url(host):
     # default to HTTPS if not explicitly defined
     url_stub = host if has_scheme else 'https://%s' % host
     # trust provided path if it ends with '/frontend'
-    if split_host.path.rstrip('/').split('/')[-1] == 'frontend':
+    url_stub = url_stub.rstrip('/')
+    if url_stub.split('/')[-1] == 'frontend':
         return '/'.join([url_stub, 'endpoint'])
     # check both '/frontend/endpoint' and '/endpoint' and return the one that
     # works
