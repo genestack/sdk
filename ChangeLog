@@ -1,5 +1,7 @@
 * 0.34.0
     * Initial Python 3 support
+    * Implement auto checking for common sub-URLs (no explicit `/frontend`
+      required appended to `--host`)
     * Removed:
       * `AffymetrixMicroarraysNormalisationApplication` and
         `AgilentMicroarraysNormalisationApplication` applications

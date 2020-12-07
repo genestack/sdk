@@ -13,6 +13,8 @@ from builtins import object
 from getpass import getpass
 from urllib.parse import urlsplit
 
+import requests
+
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
 from genestack_client.utils import isatty, interactive_select
 
@@ -20,17 +22,31 @@ DEFAULT_HOST = 'platform.genestack.org'
 
 
 def _get_server_url(host):
-    has_scheme = bool(urlsplit(host).scheme)
+    split_host = urlsplit(host)
+    has_scheme = bool(split_host.scheme)
 
     # compatibility with dev settings
     # TODO Add code that will do migration in configs and remove this check.
     if host.startswith('localhost'):
         return 'http://%s/frontend/endpoint' % host
 
-    if has_scheme:
-        return '%s/endpoint' % host
-    else:
-        return 'https://%s/endpoint' % host
+    # default to HTTPS if not explicitly defined
+    url_stub = host if has_scheme else 'https://%s' % host
+    # trust provided path if it ends with '/frontend'
+    url_stub = url_stub.rstrip('/')
+    if url_stub.split('/')[-1] == 'frontend':
+        return '/'.join([url_stub, 'endpoint'])
+    # check both '/frontend/endpoint' and '/endpoint' and return the one that
+    # works
+    for path in ('frontend/', ''):
+        url = '{}/{}{}'.format(url_stub, path, 'endpoint')
+        # all the code later on expects base URL without trailing '/',
+        # but Tomcat responds 404 for such URL, so we check with '/' appended
+        if requests.get(url + '/').ok:
+            return url
+    raise GenestackAuthenticationException(
+        "Could not connect to host '{}', check if it is defined correctly"
+        "".format(host))
 
 
 class User(object):
