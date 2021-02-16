@@ -123,13 +123,9 @@ class User(object):
 
         login_by_token = 'by token'
         login_by_email = 'by email and password'
-        login_anonymously = 'anonymously'
 
-        choice = interactive_select([login_by_token, login_by_email, login_anonymously],
+        choice = interactive_select([login_by_token, login_by_email],
                                     'How do you want to login')
-
-        if choice == login_anonymously:
-            return
 
         while True:
             if message:

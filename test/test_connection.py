@@ -60,13 +60,6 @@ def test_login_negative():
         connection.login(user_pwd, user_pwd)
 
 
-def test_access_by_anonymous():
-    connection = Connection(server_url)
-    with pytest.raises(GenestackException,
-                       match="Cannot parse content: No JSON object could be decoded"):
-        connection.perform_request('/')
-
-
 def test_method_forbidden_for_anonymous():
     connection = Connection(server_url)
     with pytest.raises(GenestackAuthenticationException) as e:

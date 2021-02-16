@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client.file_filters import *
 from genestack_client.metainfo_scalar_values import *
 from genestack_client import (Metainfo, FilesUtil, get_connection, make_connection_parser,
-                              Permissions, FileTypes, SortOrder)
+                              Permissions, FileTypes, SortOrder, GroupsUtil)
 
 SOME_KEY = "someKey"
 PUBLIC_FOLDER = "public"
@@ -30,10 +30,17 @@ PUBLIC_USER = "public@genestack.com"
 def files_utils():
     connection = get_connection(make_connection_parser().parse_args())
     files_utils = FilesUtil(connection)
-    return files_utils
+    return files_utils\
+
+@pytest.fixture(scope='module')
+def group_utils():
+    connection = get_connection(make_connection_parser().parse_args())
+    group_utils = GroupsUtil(connection)
+    return group_utils
 
 
-def test_find_files(files_utils):
+def test_find_files(files_utils, group_utils):
+    all_users_accession = group_utils.find_group_by_name("All users")
     test_filter = (OwnerFileFilter(PUBLIC_USER) |
                    TypeFileFilter(FileTypes.DATASET) & FixedValueFileFilter(True) |
                    MetainfoValuePatternFileFilter(Metainfo.ACCESSION, "GSF") |
@@ -42,7 +49,7 @@ def test_find_files(files_utils):
                    ActualOwnerFileFilter() |
                    ActualPermissionFileFilter(Permissions.FILE_ACCESS) |
                    HasInProvenanceFileFilter("public") |
-                   PermissionFileFilter("world", Permissions.FILE_ACCESS) |
+                   PermissionFileFilter(all_users_accession, Permissions.FILE_ACCESS) |
                    KeyValueFileFilter(Metainfo.NAME, "Test"))
 
     result = files_utils.find_files(test_filter, SortOrder.BY_LAST_UPDATE, True, 4, 80)
