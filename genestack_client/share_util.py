@@ -177,7 +177,7 @@ class ShareUtil(Application):
 
         # This method makes repeated calls to server, each method call
         # shares chunk of files in the given folder that aren't shared yet with the provided group
-        # or ``WORLD``.
+        # or ``All users``.
         # Due to the indexing lag, same files can be included in different calls. See the
         # `ShareUtilsApplication.shareChunkInFolder` javadoc for details.
         from time import sleep
