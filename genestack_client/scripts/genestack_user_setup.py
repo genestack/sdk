@@ -342,8 +342,7 @@ class Init(Command):
         group = parser.add_argument_group('command arguments')
         self.update_parser(group)
         group.add_argument('-H', '--host',
-                           help='Genestack host, '
-                                'Set it to the host you\'re connecting to.',
+                           help='Genestack host,',
                            metavar='<host>')
         return parser
 
