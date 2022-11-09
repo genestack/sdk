@@ -6,6 +6,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import input
 from builtins import *
@@ -17,8 +18,6 @@ import requests
 
 from genestack_client import Connection, GenestackAuthenticationException, GenestackException
 from genestack_client.utils import isatty, interactive_select
-
-DEFAULT_HOST = 'platform.genestack.org'
 
 
 def _get_server_url(host):
@@ -62,7 +61,6 @@ class User(object):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
-        If no ``host`` is specified, the ``DEFAULT_HOST`` be used.
 
         If you login interactively, no ``email`` or ``password`` is required.
         The alias is used to find the matching user in :py:func:`~genestack_client.get_user`
@@ -76,7 +74,7 @@ class User(object):
         :param password: password
         :type password: str
         """
-        self.host = host or DEFAULT_HOST
+        self.host = host
         self.email = email
         self.password = password  # TODO make property
         self.alias = alias or email
@@ -86,8 +84,7 @@ class User(object):
         """
         Return a logged-in connection for current user.
         If ``interactive`` is ``True`` and the password or email are unknown,
-        they will be asked in interactive mode.
-        If no host is specified, the ``DEFAULT_HOST`` will be used.
+        they will be asked in interactive mode.`
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
