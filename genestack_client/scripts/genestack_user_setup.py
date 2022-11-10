@@ -342,7 +342,7 @@ class Init(Command):
         group = parser.add_argument_group('command arguments')
         self.update_parser(group)
         group.add_argument('-H', '--host',
-                           help='Genestack host,',
+                           help='Genestack host address',
                            metavar='<host>')
         return parser
 
