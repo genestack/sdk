@@ -25,11 +25,11 @@ from genestack_client.utils import interactive_select
 
 
 def input_host():
-    print('Please input host.')
+    print('Please input Genestack host address')
     while True:
         host = input('host: ').strip()
         if not host:
-            print('Host can not be empty.')
+            print('Host can not be empty')
             continue
         return host
 
@@ -394,7 +394,7 @@ class UserManagement(GenestackShell):
 
     def set_shell_user(self, args):
         if not args.host:
-            sys.stderr.write("Host is mandatory. Please specify the host using the -H flag")
+            sys.stderr.write("Genestack host is mandatory. Please specify the host using the -H flag")
             sys.exit(1)
 
         config_path = config.get_settings_file()
