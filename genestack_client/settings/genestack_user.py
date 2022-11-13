@@ -84,7 +84,7 @@ class User(object):
         """
         Return a logged-in connection for current user.
         If ``interactive`` is ``True`` and the password or email are unknown,
-        they will be asked in interactive mode.`
+        they will be asked in interactive mode.
 
         :param interactive: ask email and/or password interactively.
         :type interactive: bool
