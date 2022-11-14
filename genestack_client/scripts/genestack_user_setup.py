@@ -7,6 +7,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import input
 from builtins import *
@@ -19,13 +20,18 @@ from operator import attrgetter
 
 from genestack_client import GenestackAuthenticationException
 from genestack_client.genestack_shell import Command, GenestackShell
-from genestack_client.settings import DEFAULT_HOST, User, config
+from genestack_client.settings import User, config
 from genestack_client.utils import interactive_select
 
 
 def input_host():
-    host = input('host [%s]: ' % DEFAULT_HOST).strip()
-    return host or DEFAULT_HOST
+    print('Please input Genestack host address')
+    while True:
+        host = input('host: ').strip()
+        if not host:
+            print('Host can not be empty')
+            continue
+        return host
 
 
 def validate_alias(alias):
@@ -335,9 +341,8 @@ class Init(Command):
         parser.description = self.DESCRIPTION
         group = parser.add_argument_group('command arguments')
         self.update_parser(group)
-        group.add_argument('-H', '--host', default=DEFAULT_HOST,
-                           help='Genestack host, '
-                                'change it to connect somewhere else than %s' % DEFAULT_HOST,
+        group.add_argument('-H', '--host',
+                           help='Genestack host address',
                            metavar='<host>')
         return parser
 
@@ -388,16 +393,21 @@ class UserManagement(GenestackShell):
     prompt = 'user_setup> '
 
     def set_shell_user(self, args):
+        if not args.host:
+            sys.stderr.write("Genestack host is mandatory. Please specify the host using the -H flag")
+            sys.exit(1)
+
         config_path = config.get_settings_file()
         if not os.path.exists(config_path):
             print('No config file was found, creating one interactively')
-            self.process_command(Init(), ['--host', args.host or DEFAULT_HOST], False)
+            self.process_command(Init(), ['--host', args.host], False)
             args.host = None  # do not provide host for future use of arguments
 
 
 def main():
     shell = UserManagement()
     shell.cmdloop()
+
 
 if __name__ == '__main__':
     main()
