@@ -17,7 +17,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from genestack_client import get_user, make_connection_parser
-from genestack_client.settings.genestack_user import User, DEFAULT_HOST
+from genestack_client.settings.genestack_user import User
 
 
 def test_parse_default_user():
@@ -100,7 +100,6 @@ def test_token_without_username():
     args = parser.parse_args(['--token', some_token])
     user = get_user(args)
     assert user.token == some_token
-    assert user.host == DEFAULT_HOST
 
 
 if __name__ == '__main__':
