@@ -1,3 +1,6 @@
+* 0.35.0
+    * Genestack host is now mandatory when setting up the Genestack user, default host has been removed
+
 * 0.34.0
     * Initial Python 3 support
     * Implement auto checking for common sub-URLs (no explicit `/frontend`
@@ -9,7 +12,7 @@
       * `normalised_input` argument for ExpressionNavigator applications
       * `Connection.open` method
       * `CLApplication.rename_file` method
-      * `DataImporter.create_owl_ontology` method
+      * `DataImporter`: `create_owl_ontology` and `create_pathway_database` methods
       * `FilesUtil`: `create_dataset`, `get_groups_to_share`, `share_files`,
                      `share_folder` methods
       * `TaskLogViewer.view_log` method
