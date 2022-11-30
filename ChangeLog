@@ -1,3 +1,6 @@
+* 0.35.1
+    * New line is added on error message when setting up the Genestack user without host
+
 * 0.35.0
     * Genestack host is now mandatory when setting up the Genestack user, default host has been removed
 
