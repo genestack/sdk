@@ -394,7 +394,7 @@ class UserManagement(GenestackShell):
 
     def set_shell_user(self, args):
         if not args.host:
-            sys.stderr.write("Genestack host is mandatory. Please specify the host using the -H flag")
+            sys.stderr.write("Genestack host is mandatory. Please specify the host using the -H flag\n")
             sys.exit(1)
 
         config_path = config.get_settings_file()
