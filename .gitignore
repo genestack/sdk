@@ -9,5 +9,6 @@ build/
 dist/
 docs/build/
 genestack_client.egg-info/
+MANIFEST
 # generated shell docs
 docs/source/scripts/genestack-user-setup.rst
