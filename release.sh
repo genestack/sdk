@@ -25,10 +25,10 @@ fi
 
 # Check that python-client is builded
 if [[ -d "dist" ]]; then
+    echo "Python-client is builded. Let's move on."
+else
     echo "Python-client isn't builded. Stop script."
     exit 1
-else
-    echo "Python-client is builded. Let's move on."
 fi
 
 
