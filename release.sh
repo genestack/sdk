@@ -28,7 +28,7 @@ if [[ -d "dist" ]]; then
     echo "Python-client isn't builded. Stop script."
     exit 1
 else
-    echo "Python-client isn't builded. Let's move on."
+    echo "Python-client is builded. Let's move on."
 fi
 
 
