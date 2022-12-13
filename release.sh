@@ -51,7 +51,8 @@ echo "RELEASE_VERSION=${RELEASE_VERSION}"
 #    exit 1
 #fi
 
-
+mkdir ~/.ssh
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 git config user.name ${GITHUB_USER}
 git config user.email ${GITHUB_USER_EMAIL}
 git config user.passwd ${GITHUB_PASSWORD}
