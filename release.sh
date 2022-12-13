@@ -1,29 +1,31 @@
 #! /bin/bash
 set -e
 
+# These script are created for executing inside Earthfile build.
+
 # Get release version from version.py
 RELEASE_VERSION=$(./setup.py --version)
 echo "RELEASE_VERSION=${RELEASE_VERSION}"
 
-# Check RTD_TOKEN env is exists.
-if [[ -z "${RTD_TOKEN}" ]]; then
-    echo "RTD_TOKEN isn't exists. Stop script."
-    exit 1
-else
-    echo "RTD_TOKEN exists. Let's move on."
-fi
+## Check RTD_TOKEN env is exists.
+#if [[ -z "${RTD_TOKEN}" ]]; then
+#    echo "RTD_TOKEN isn't exists. Stop script."
+#    exit 1
+#else
+#    echo "RTD_TOKEN exists. Let's move on."
+#fi
+#
+#
+## Check GITHUB_TOKEN env is exists.
+#if [[ -z "${GITHUB_TOKEN}" ]]; then
+#    echo "GITHUB_TOKEN isn't exists. Stop script."
+#    exit 1
+#else
+#    echo "GITHUB_TOKEN exists. Let's move on."
+#fi
 
 
-# Check GITHUB_TOKEN env is exists.
-if [[ -z "${GITHUB_TOKEN}" ]]; then
-    echo "GITHUB_TOKEN isn't exists. Stop script."
-    exit 1
-else
-    echo "GITHUB_TOKEN exists. Let's move on."
-fi
-
-
-# Check that python-client is builded
+# Check that python-client is builded.
 if [[ -d "dist" ]]; then
     echo "Python-client is builded. Let's move on."
 else
@@ -34,10 +36,10 @@ fi
 
 # Check that git tag with $RELEASE_VERSION is exists.
 if git tag -l | grep -q ${RELEASE_VERSION}; then
-    echo "v${RELEASE_VERSION} was found in git tags. Let's move on."
-else
-    echo "v${RELEASE_VERSION} wasn't found in git tags. top script."
+    echo "v${RELEASE_VERSION} was found in git tags. Stop script."
     exit 1
+else
+    echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
 fi
 
 
@@ -50,25 +52,40 @@ else
 fi
 
 
-# Create Github release
-curl \
-  -X POST \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-  -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/genestack/python-client/releases \
-  -d '{"tag_name":"v'${RELEASE_VERSION}'","target_commitish":"master","name":"genestack-python-client-v'${RELEASE_VERSION}'","body":"Description of the release here: https://github.com/genestack/python-client/blob/v'${RELEASE_VERSION}'/ChangeLog","draft":false,"prerelease":false,"generate_release_notes":false}'
+# Merge master into stable
+git checkout tmp/test1
+git pull
+git checkout stable
+git merge tmp/test2
+git push
 
 
-# Trigger Read the docs builds
-curl \
-  -X POST \
-  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/
-curl \
-  -X POST \
-  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/
+# Set version tag:
+git tag -l | xargs git tag -d
+git fetch --tags
+git tag v${RELEASE_VERSION}
+git push --tags
 
 
-# Push to pypi
-twine upload dist/* -r testpypi
-twine upload dist/*
+## Create Github release
+#curl \
+#  -X POST \
+#  -H "Accept: application/vnd.github+json" \
+#  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+#  -H "X-GitHub-Api-Version: 2022-11-28" \
+#  https://api.github.com/repos/genestack/python-client/releases \
+#  -d '{"tag_name":"v'${RELEASE_VERSION}'","target_commitish":"master","name":"genestack-python-client-v'${RELEASE_VERSION}'","body":"Description of the release here: https://github.com/genestack/python-client/blob/v'${RELEASE_VERSION}'/ChangeLog","draft":false,"prerelease":false,"generate_release_notes":false}'
+#
+#
+## Trigger Read the docs builds
+#curl \
+#  -X POST \
+#  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/
+#curl \
+#  -X POST \
+#  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/
+#
+#
+## Push to pypi
+#twine upload dist/* -r testpypi
+#twine upload dist/*
