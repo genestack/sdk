@@ -40,9 +40,7 @@ release:
     RUN --secret GITHUB_TOKEN \
      git config user.name ${GITHUB_USER} && \
      git config user.email ${GITHUB_USER_EMAIL} && \
-     echo ${GITHUB_TOKEN} > mytoken.txt && \
-     gh auth login --with-token < mytoken.txt && \
-     rm -f mytoken.txt
+     gh auth login
 
 
     SAVE IMAGE --push docker-snapshots.devops.gs.team/tmp:123
