@@ -37,7 +37,13 @@ release:
         RUN echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
     END
 
-    RUN git config user.name ${GITHUB_USER} && git config user.email ${GITHUB_USER_EMAIL}
+    RUN --secret GITHUB_TOKEN \
+     git config user.name ${GITHUB_USER} && \
+     git config user.email ${GITHUB_USER_EMAIL} && \
+     echo ${GITHUB_TOKEN} > mytoken.txt && \
+     gh auth login --with-token < mytoken.txt && \
+     rm -f mytoken.txt
+
 
     SAVE IMAGE --push docker-snapshots.devops.gs.team/tmp:123
 
