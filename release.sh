@@ -3,59 +3,21 @@ set -ex
 
 # These script are created for executing inside Earthfile build.
 
-# Get release version from version.py
-RELEASE_VERSION=$(./setup.py --version)
-echo "RELEASE_VERSION=${RELEASE_VERSION}"
-
-## Check RTD_TOKEN env is exists.
-#if [[ -z "${RTD_TOKEN}" ]]; then
-#    echo "RTD_TOKEN isn't exists. Stop script."
-#    exit 1
-#else
-#    echo "RTD_TOKEN exists. Let's move on."
-#fi
-#
-#
-## Check GITHUB_TOKEN env is exists.
-#if [[ -z "${GITHUB_TOKEN}" ]]; then
-#    echo "GITHUB_TOKEN isn't exists. Stop script."
-#    exit 1
-#else
-#    echo "GITHUB_TOKEN exists. Let's move on."
-#fi
-
-
-## Check that python-client is builded.
-#if [[ -d "dist" ]]; then
-#    echo "Python-client is builded. Let's move on."
-#else
-#    echo "Python-client isn't builded. Stop script."
-#    exit 1
-#fi
-#
 #
 ## Check that git tag with $RELEASE_VERSION is exists.
-#if git tag -l | grep -q ${RELEASE_VERSION}; then
-#    echo "v${RELEASE_VERSION} was found in git tags. Stop script."
-#    exit 1
-#else
-#    echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
-#fi
+
 #
 #
 ## Check that ChangeLog string with $RELEASE_VERSION is exists.
-#if grep -Fq ${RELEASE_VERSION} ChangeLog; then
+#if ; then
 #    echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
 #else
 #    echo "${RELEASE_VERSION} wasn't found in ChangeLog. Stop script."
 #    exit 1
 #fi
 
-mkdir ~/.ssh
-ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 git config user.name ${GITHUB_USER}
 git config user.email ${GITHUB_USER_EMAIL}
-git config user.passwd ${GITHUB_PASSWORD}
 
 
 git checkout tmp/test1
