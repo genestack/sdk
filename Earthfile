@@ -71,5 +71,10 @@ release:
 
     # Push to pypi
     RUN --push \
+     --secret PIPY_USER_PROD \
+     --secret PIPY_USER_TEST \
+     --secret PIPY_PASSWORD_PROD \
+     --secret PIPY_PASSWORD_TEST \
+        generate-pypirc.sh && \
         twine upload dist/* -r testpypi && \
         twine upload dist/*
