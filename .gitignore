@@ -11,3 +11,5 @@ docs/build/
 genestack_client.egg-info/
 # generated shell docs
 docs/source/scripts/genestack-user-setup.rst
+
+.env
