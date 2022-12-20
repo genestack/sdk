@@ -42,9 +42,7 @@ release:
      git config user.email ${GITHUB_USER_EMAIL} && \
      gh auth setup-git && \
      git fetch --all && \
-     git switch master && \
-     git pull && \
-     git switch stable #&& \
+     git checkout stable #&& \
      #git merge master && \
      #git push
      # echo ${GITHUB_TOKEN} > token.txt
