@@ -1,8 +1,6 @@
 VERSION 0.6
 
 ARG --required DOCKER_REGISTRY_GROUP
-ARG --required RTD_TOKEN
-ARG --required GITHUB_TOKEN
 ARG --required GITHUB_USER
 ARG --required GITHUB_USER_EMAIL
 
@@ -24,17 +22,17 @@ release:
     ## Check that RELEASE_VERSION exists in git tags.
     ARG PRECONDITION=$(git tag -l | grep ${RELEASE_VERSION})
     IF [ -z ${PRECONDITION} ]
-        RUN echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
+        RUN --push echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
     ELSE
-        RUN echo "v${RELEASE_VERSION} was found in git tags. Stop script." && exit 1
+        RUN --push echo "v${RELEASE_VERSION} was found in git tags. Stop script." && exit 1
     END
 
     ### Check that RELEASE_VERSION exists in ChangeLog.
     ARG PRECONDITION=$(grep ${RELEASE_VERSION} ChangeLog)
     IF [ -z ${PRECONDITION} ]
-        RUN echo "${RELEASE_VERSION} wasn't found in ChangeLog. Stop script." && exit 1
+        RUN --push echo "${RELEASE_VERSION} wasn't found in ChangeLog. Stop script." && exit 1
     ELSE
-        RUN echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
+        RUN --push echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
     END
 
     # Git magic (merge master to stable and push tag)
@@ -51,7 +49,6 @@ release:
         git fetch --tags && \
         git tag v${RELEASE_VERSION} && \
         git push --tags
-
 
     ## Create Github release
     RUN --push --secret GITHUB_TOKEN \
