@@ -45,6 +45,7 @@ release:
         git fetch --all && \
         git checkout stable && \
         git merge master && \
+        git checkout master && \
         git push && \
         git tag -l | xargs git tag -d && \
         git fetch --tags && \
