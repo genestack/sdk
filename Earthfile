@@ -74,5 +74,5 @@ release:
 
     # Push to pypi
     RUN --push \
-        twine upload dist/* -r testpypi
+        twine upload dist/* -r testpypi && \
         twine upload dist/*
