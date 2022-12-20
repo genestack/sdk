@@ -41,6 +41,7 @@ release:
      git config user.name ${GITHUB_USER} && \
      git config user.email ${GITHUB_USER_EMAIL} && \
      gh auth setup-git && \
+     git fetch --all && \
      git switch master && \
      git pull && \
      git switch stable #&& \
