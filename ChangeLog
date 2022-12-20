@@ -1,3 +1,6 @@
+* 0.35.5
+    * Release automatisation moved to Earthfile.
+
 * 0.35.4
     * Release automatisation moved to Earthfile.
 
