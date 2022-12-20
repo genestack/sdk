@@ -41,9 +41,9 @@ release:
      git config user.name ${GITHUB_USER} && \
      git config user.email ${GITHUB_USER_EMAIL} && \
      gh auth setup-git && \
-     git checkout tmp/test1 && \
+     git checkout master && \
      git pull && \
-     git checkout tmp/test2 #&& \
+     git checkout stable #&& \
      #git merge master && \
      #git push
      # echo ${GITHUB_TOKEN} > token.txt
