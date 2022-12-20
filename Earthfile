@@ -17,22 +17,22 @@ release:
 
     ### Get release version from version.py
     ARG RELEASE_VERSION=$(./setup.py --version)
-    RUN echo "RELEASE_VERSION=${RELEASE_VERSION}"
+    RUN echo --no-cache "RELEASE_VERSION=${RELEASE_VERSION}"
 
     ## Check that RELEASE_VERSION exists in git tags.
-    ARG PRECONDITION=$(git tag -l | grep ${RELEASE_VERSION})
-    IF [ -z ${PRECONDITION} ]
-        RUN --push echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
+    ARG GIT_TAG_PRECONDITION=$(git tag -l | grep ${RELEASE_VERSION})
+    IF [ -z ${GIT_TAG_PRECONDITION} ]
+        RUN --no-cache echo "v${RELEASE_VERSION} wasn't found in git tags. Let's move on."
     ELSE
-        RUN --push echo "v${RELEASE_VERSION} was found in git tags. Stop script." && exit 1
+        RUN --no-cache echo "v${RELEASE_VERSION} was found in git tags. Stop script." && exit 1
     END
 
     ### Check that RELEASE_VERSION exists in ChangeLog.
-    ARG PRECONDITION=$(grep ${RELEASE_VERSION} ChangeLog)
-    IF [ -z ${PRECONDITION} ]
-        RUN --push echo "${RELEASE_VERSION} wasn't found in ChangeLog. Stop script." && exit 1
+    ARG CHANGE_LOG_PRECONDITION=$(grep ${RELEASE_VERSION} ChangeLog)
+    IF [ -z ${CHANGE_LOG_PRECONDITION} ]
+        RUN --no-cache echo "${RELEASE_VERSION} wasn't found in ChangeLog. Stop script." && exit 1
     ELSE
-        RUN --push echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
+        RUN --no-cache echo "${RELEASE_VERSION} was found in ChangeLog. Let's move on."
     END
 
     # Git magic (merge master to stable and push tag)
