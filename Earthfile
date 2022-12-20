@@ -43,7 +43,7 @@ release:
      gh auth setup-git && \
      git switch master && \
      git pull && \
-     git checkout stable #&& \
+     git switch stable #&& \
      #git merge master && \
      #git push
      # echo ${GITHUB_TOKEN} > token.txt
