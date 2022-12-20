@@ -39,8 +39,8 @@ release:
 
     RUN --secret GITHUB_TOKEN \
      git config user.name ${GITHUB_USER} && \
-     git config user.email ${GITHUB_USER_EMAIL} && \
-     gh auth login
+     git config user.email ${GITHUB_USER_EMAIL} #&& \
+     #gh auth login
 
 
     SAVE IMAGE --push docker-snapshots.devops.gs.team/tmp:123
