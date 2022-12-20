@@ -34,26 +34,3 @@ git merge tmp/test2
 #git push --tags# Merge master into stable
 
 
-
-## Create Github release
-#curl \
-#  -X POST \
-#  -H "Accept: application/vnd.github+json" \
-#  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-#  -H "X-GitHub-Api-Version: 2022-11-28" \
-#  https://api.github.com/repos/genestack/python-client/releases \
-#  -d '{"tag_name":"v'${RELEASE_VERSION}'","target_commitish":"master","name":"genestack-python-client-v'${RELEASE_VERSION}'","body":"Description of the release here: https://github.com/genestack/python-client/blob/v'${RELEASE_VERSION}'/ChangeLog","draft":false,"prerelease":false,"generate_release_notes":false}'
-#
-#
-## Trigger Read the docs builds
-#curl \
-#  -X POST \
-#  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/
-#curl \
-#  -X POST \
-#  -H "Authorization: Token ${RTD_TOKEN}" https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/
-#
-#
-## Push to pypi
-#twine upload dist/* -r testpypi
-#twine upload dist/*
