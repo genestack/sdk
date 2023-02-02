@@ -58,7 +58,7 @@ To avoid typing in your credentials every time you connect to a Genestack instan
 
 .. code-block:: sh
 
-    $ genestack-user-setup init -H https://<odm-host>/frontend
+    $ genestack-user-setup init -H https://<odm-host>
 
 You will be prompted for your token or email and password to connect to Genestack. If they are valid and the connection to the Genestack server is successful, you're all set!
 
