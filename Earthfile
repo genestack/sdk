@@ -26,7 +26,7 @@ internal:
         generate-pypirc.sh && \
         twine upload dist/* -r nexus-pypi-snapshots
 
-global:
+public:
     FROM +build
 
     ### Get release version from version.py
