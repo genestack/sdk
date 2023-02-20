@@ -3,16 +3,30 @@ VERSION 0.6
 ARG --required DOCKER_REGISTRY_GROUP
 ARG --required GITHUB_USER
 ARG --required GITHUB_USER_EMAIL
+ARG --required PYPI_REGISTRY_GROUP
+ARG --required PYPI_REGISTRY_RELEASES
+ARG --required PYPI_REGISTRY_SNAPSHOTS
+
 
 build:
-    FROM ${DOCKER_REGISTRY_GROUP}/genestack-builder:latest
+    ARG --required BASE_IMAGES_VERSION
+    FROM ${DOCKER_REGISTRY_GROUP}/genestack-builder:${BASE_IMAGES_VERSION}
 
     COPY . .
 
     RUN python3 setup.py sdist
     SAVE IMAGE --cache-hint
 
-release:
+internal:
+    FROM +build
+
+    RUN --push \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+        generate-pypirc.sh && \
+        twine upload dist/* -r nexus-pypi-snapshots
+
+global:
     FROM +build
 
     ### Get release version from version.py
@@ -78,3 +92,6 @@ release:
         generate-pypirc.sh && \
         twine upload dist/* -r testpypi && \
         twine upload dist/*
+
+main:
+    BUILD +internal
