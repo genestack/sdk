@@ -23,7 +23,7 @@ internal:
     RUN --push \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
-        generate-pypirc.sh && \
+        pypi-login.sh && \
         twine upload dist/* -r nexus-pypi-snapshots
 
 public:
@@ -85,11 +85,11 @@ public:
 
     # Push to pypi
     RUN --push \
-     --secret PIPY_USER_PROD \
-     --secret PIPY_USER_TEST \
-     --secret PIPY_PASSWORD_PROD \
-     --secret PIPY_PASSWORD_TEST \
-        generate-pypirc.sh && \
+     --secret PYPI_USER \
+     --secret PYPI_USER_TEST \
+     --secret PYPI_PASSWORD \
+     --secret PYPI_PASSWORD_TEST \
+        pypi-login.sh && \
         twine upload dist/* -r testpypi && \
         twine upload dist/*
 
