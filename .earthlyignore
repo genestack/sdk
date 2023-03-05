@@ -1,0 +1,10 @@
+# Remove unused in build pipeline directories
+.github/
+.idea
+.vscode
+
+# Earthly stuff
+.env
+.env-woq
+.arg
+.secret
