@@ -1,11 +1,11 @@
-VERSION 0.6
+VERSION 0.7
 
-ARG --required DOCKER_REGISTRY_GROUP
-ARG --required GITHUB_USER
-ARG --required GITHUB_USER_EMAIL
-ARG --required PYPI_REGISTRY_GROUP
-ARG --required PYPI_REGISTRY_RELEASES
-ARG --required PYPI_REGISTRY_SNAPSHOTS
+ARG --global --required DOCKER_REGISTRY_GROUP
+ARG --global --required GITHUB_USER
+ARG --global --required GITHUB_USER_EMAIL
+ARG --global --required PYPI_REGISTRY_GROUP
+ARG --global --required PYPI_REGISTRY_RELEASES
+ARG --global --required PYPI_REGISTRY_SNAPSHOTS
 
 
 build:
@@ -23,8 +23,8 @@ internal:
     RUN --push \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
-        pypi-login.sh && \
-        twine upload dist/* -r nexus-pypi-snapshots
+            pypi-login.sh && \
+            twine upload dist/* -r nexus-pypi-snapshots
 
 public:
     FROM +build
@@ -50,48 +50,55 @@ public:
     END
 
     # Git magic (merge master to stable and push tag)
-    RUN --push --secret GITHUB_TOKEN \
-        git config user.name ${GITHUB_USER} && \
-        git config user.email ${GITHUB_USER_EMAIL} && \
-        gh auth setup-git && \
-        git fetch --all && \
-        git checkout stable && \
-        git merge master && \
-        git checkout master && \
-        git push && \
-        git tag -l | xargs git tag -d && \
-        git fetch --tags && \
-        git tag v${RELEASE_VERSION} && \
-        git push --tags
+    RUN --push \
+        --secret GITHUB_TOKEN \
+        --secret GITHUB_USER \
+        --secret GITHUB_USER_EMAIL \
+            git config user.name ${GITHUB_USER} && \
+            git config user.email ${GITHUB_USER_EMAIL} && \
+            gh auth setup-git && \
+            git fetch --all && \
+            git checkout stable && \
+            git merge master && \
+            git checkout master && \
+            git push && \
+            git tag -l | xargs git tag -d && \
+            git fetch --tags && \
+            git tag v${RELEASE_VERSION} && \
+            git push --tags
 
     ## Create Github release
-    RUN --push --secret GITHUB_TOKEN \
-        curl \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/genestack/python-client/releases" \
-            -d '{"tag_name":"v'${RELEASE_VERSION}'","target_commitish":"master","name":"genestack-python-client-v'${RELEASE_VERSION}'","body":"Description of the release here: https://github.com/genestack/python-client/blob/v'${RELEASE_VERSION}'/ChangeLog","draft":false,"prerelease":false,"generate_release_notes":false}'
+    RUN --push \
+        --secret GITHUB_TOKEN \
+        --secret GITHUB_USER \
+        --secret GITHUB_USER_EMAIL \
+            curl \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/genestack/python-client/releases" \
+                -d '{"tag_name":"v'${RELEASE_VERSION}'","target_commitish":"master","name":"genestack-python-client-v'${RELEASE_VERSION}'","body":"Description of the release here: https://github.com/genestack/python-client/blob/v'${RELEASE_VERSION}'/ChangeLog","draft":false,"prerelease":false,"generate_release_notes":false}'
 
     ## Trigger Read the docs builds
-    RUN --push --secret RTD_TOKEN \
-        curl \
-          -X POST \
-          -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/" && \
-        curl \
-          -X POST \
-          -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
+    RUN --push \
+        --secret RTD_TOKEN \
+            curl \
+            -X POST \
+            -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/" && \
+            curl \
+            -X POST \
+            -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
 
     # Push to pypi
     RUN --push \
-     --secret PYPI_USER \
-     --secret PYPI_USER_TEST \
-     --secret PYPI_PASSWORD \
-     --secret PYPI_PASSWORD_TEST \
-        pypi-login.sh && \
-        twine upload dist/* -r testpypi && \
-        twine upload dist/*
+        --secret PYPI_USER \
+        --secret PYPI_USER_TEST \
+        --secret PYPI_PASSWORD \
+        --secret PYPI_PASSWORD_TEST \
+            pypi-login.sh && \
+            twine upload dist/* -r testpypi && \
+            twine upload dist/*
 
 main:
     BUILD +internal

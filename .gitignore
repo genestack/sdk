@@ -12,4 +12,8 @@ genestack_client.egg-info/
 # generated shell docs
 docs/source/scripts/genestack-user-setup.rst
 
+# Earthly stuff
 .env
+.env-woq
+.arg
+.secret
