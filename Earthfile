@@ -1,8 +1,6 @@
 VERSION 0.7
 
 ARG --global --required DOCKER_REGISTRY_GROUP
-ARG --global --required GITHUB_USER
-ARG --global --required GITHUB_USER_EMAIL
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
