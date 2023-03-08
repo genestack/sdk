@@ -13,6 +13,11 @@ import collections
 from genestack_client import Application
 
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 class ShareUtil(Application):
     """
     Application that acts as a facade for sharing-related operations.
