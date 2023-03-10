@@ -1,3 +1,6 @@
+* 0.35.6
+    * Support 3.11
+
 * 0.35.5
     * Release automatisation moved to Earthfile.
 

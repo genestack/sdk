@@ -12,6 +12,11 @@ import collections
 
 from genestack_client import Application
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 
 class ShareUtil(Application):
     """
@@ -206,7 +211,7 @@ class ShareUtil(Application):
     def __to_list(args):
         if isinstance(args, list):
             return args
-        is_iterable = isinstance(args, collections.Iterable)
+        is_iterable = isinstance(args, collectionsAbc.Iterable)
         if is_iterable and not isinstance(args, basestring):
             return list(args)
         else:
