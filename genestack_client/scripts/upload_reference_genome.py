@@ -55,3 +55,7 @@ def load_ref_genome(name='',
     )
     file_initializer = FileInitializer(connection)
     file_initializer.initialize([accession])
+
+
+if __name__ == '__main__':
+    load_ref_genome(assembly='GRCh38', release='109')
