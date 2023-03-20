@@ -485,7 +485,7 @@ class DataImporter(object):
                                 parent=None,
                                 name=None,
                                 description='',
-                                sequence_urls=[],
+                                sequence_urls=None,
                                 annotation_url=None,
                                 organism=None,
                                 assembly=None,
@@ -532,7 +532,6 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_RELEASE, release, StringValue)
         self.__add_to_metainfo(metainfo, ANNOTATION_KEY, annotation_url, ExternalLink, required=True)
         self.__add_to_metainfo(metainfo, metainfo.DESCRIPTION, description, StringValue)
-        self.__add_to_metainfo(metainfo, SEQUENCE_KEY, sequence_urls, ExternalLink)
         return self.__invoke_loader(parent, 'genomes', metainfo)
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
