@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
@@ -42,7 +42,7 @@ def load_ref_genome(name='',
     organism = species.replace('_', ' ')
 
     if name == '':
-        name = f'{organism} reference genome {assembly}.{release}'
+        name = organism + ' reference genome ' + assembly + '.' + release
 
     accession = DataImporter(connection).create_reference_genome(
         parent, name=name,
