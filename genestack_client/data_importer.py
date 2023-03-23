@@ -508,7 +508,7 @@ class DataImporter(object):
         :type name: str
         :param description: experiment description
         :type description: str
-        :param sequence_urls: list urls or local path to sequencing files. (deprecated, unused)
+        :param sequence_urls: [OBSOLETE] list urls or local path to sequencing files
         :type sequence_urls: list
         :param annotation_url: url to annotation file
         :type annotation_url: str
