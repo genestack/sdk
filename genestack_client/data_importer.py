@@ -493,9 +493,9 @@ class DataImporter(object):
                                 strain=None,
                                 metainfo=None):
         """
-        Create a Genestack Reference Genome from a collection of local or
-        remote FASTA sequence files, and a GTF or GFF
-        annotation file. ``name``, ``sequence_urls``, ``organism`` and
+        Create a Genestack Reference Genome from a local or
+        remote GTF or GFF
+        annotation file. ``name``, ``organism`` and
         ``annotation_url`` are required fields.
         They can be specified through the arguments or
         via a :py:class:`~genestack_client.Metainfo` instance.
@@ -508,7 +508,7 @@ class DataImporter(object):
         :type name: str
         :param description: experiment description
         :type description: str
-        :param sequence_urls: list urls or local path to sequencing files.
+        :param sequence_urls: [OBSOLETE] list urls or local path to sequencing files
         :type sequence_urls: list
         :param annotation_url: url to annotation file
         :type annotation_url: str
@@ -532,7 +532,6 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_RELEASE, release, StringValue)
         self.__add_to_metainfo(metainfo, ANNOTATION_KEY, annotation_url, ExternalLink, required=True)
         self.__add_to_metainfo(metainfo, metainfo.DESCRIPTION, description, StringValue)
-        self.__add_to_metainfo(metainfo, SEQUENCE_KEY, sequence_urls, ExternalLink)
         return self.__invoke_loader(parent, 'genomes', metainfo)
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
