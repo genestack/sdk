@@ -5,7 +5,7 @@ ARG --global --required HARBOR_DOCKER_RELEASES
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
-
+ARG --global --required NEXUS_URL
 
 deps:
     ARG --required BASE_IMAGES_VERSION
