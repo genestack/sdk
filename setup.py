@@ -15,7 +15,6 @@ setup(
     name='genestack_client',
     version=os.environ["PYTHON_CLIENT_VERSION"],
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
-    test_suite="test",
     url='https://github.com/genestack/python-client',
     license='MIT',
     author='Genestack Limited',
