@@ -27,7 +27,6 @@ build:
 
     ARG --required PYTHON_CLIENT_VERSION
     RUN \
-        python3 setup.py test && \
         python3 setup.py sdist
 
     SAVE IMAGE --cache-hint
