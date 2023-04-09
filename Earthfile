@@ -5,15 +5,30 @@ ARG --global --required HARBOR_DOCKER_RELEASES
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
+ARG --global --required NEXUS_URL
 
-
-build:
+deps:
     ARG --required BASE_IMAGES_VERSION
     FROM ${HARBOR_DOCKER_SNAPSHOTS}/genestack-builder:${BASE_IMAGES_VERSION}
+    COPY requirements.txt .
+    RUN \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            pypi-login.sh && \
+            python3 -m pip install --no-cache-dir -r requirements.txt && \
+            pypi-clean.sh
+
+    SAVE IMAGE --cache-hint
+
+build:
+    FROM +deps
 
     COPY . .
 
-    RUN python3 setup.py sdist
+    ARG --required PYTHON_CLIENT_VERSION
+    RUN \
+        python3 setup.py sdist
+
     SAVE IMAGE --cache-hint
 
 internal:

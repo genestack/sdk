@@ -1,17 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import os
+from setuptools import setup
+
 """
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
-from __future__ import absolute_import, print_function
 
-from distutils.core import setup
-exec(open('genestack_client/version.py').read())
+# Read requirements file to download deps.
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 
 setup(
     name='genestack_client',
-    version=__version__,
+    version=os.environ["PYTHON_CLIENT_VERSION"],
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
     url='https://github.com/genestack/python-client',
     license='MIT',
@@ -20,8 +22,8 @@ setup(
     description='Genestack Python Client Library',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    install_requires=['keyring', 'requests', 'pyOpenSSL', 'jsonschema', 'future', 'pyrsistent==0.16.0'],
     python_requires='>2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    install_requires=required,
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',

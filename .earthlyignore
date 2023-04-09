@@ -8,3 +8,10 @@
 .env-woq
 .arg
 .secret
+
+# Python stuff
+venv
+build/
+dist/
+docs/build/
+genestack_client.egg-info/
