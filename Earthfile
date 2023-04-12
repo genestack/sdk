@@ -31,14 +31,23 @@ build:
 
     SAVE IMAGE --cache-hint
 
-internal:
+push:
     FROM +build
 
-    RUN --push \
+    ARG --required PYTHON_CLIENT_VERSION
+    IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([a-zA-Z0-9]+(.)?){3}$"
+        RUN --push \
+            --secret NEXUS_USER \
+            --secret NEXUS_PASSWORD \
+                pypi-login.sh && \
+                twine upload dist/* -r nexus-pypi-releases
+    ELSE
+        RUN --push \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
             pypi-login.sh && \
             twine upload dist/* -r nexus-pypi-snapshots
+    END
 
 public:
     FROM +build
@@ -115,4 +124,4 @@ public:
             twine upload dist/*
 
 main:
-    BUILD +internal
+    BUILD +push
