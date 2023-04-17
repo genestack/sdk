@@ -1,7 +1,6 @@
 VERSION 0.7
 
-ARG --global --required HARBOR_DOCKER_SNAPSHOTS
-ARG --global --required HARBOR_DOCKER_RELEASES
+ARG --global --required HARBOR_DOCKER_REGISTRY
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
@@ -9,7 +8,7 @@ ARG --global --required NEXUS_URL
 
 deps:
     ARG --required BASE_IMAGES_VERSION
-    FROM ${HARBOR_DOCKER_SNAPSHOTS}/genestack-builder:${BASE_IMAGES_VERSION}
+    FROM ${HARBOR_DOCKER_REGISTRY}/genestack-builder:${BASE_IMAGES_VERSION}
     COPY requirements.txt .
     RUN \
         --secret NEXUS_USER \
