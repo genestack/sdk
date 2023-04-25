@@ -1,4 +1,3 @@
-import os
 from setuptools import setup
 
 """
@@ -10,10 +9,13 @@ the Genestack platform.
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
+# Import version directly, without execute __init__.py script
+exec(open('genestack_client/version.py').read())
 
 setup(
     name='genestack_client',
-    version=os.environ["PYTHON_CLIENT_VERSION"],
+    install_requires=required,
+    version=__version__,
     packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
     url='https://github.com/genestack/python-client',
     license='MIT',
@@ -23,7 +25,6 @@ setup(
     long_description=__doc__,
     long_description_content_type="text/markdown",
     python_requires='>2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
-    install_requires=required,
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
@@ -50,7 +51,7 @@ setup(
         ],
 
     project_urls={
-        'Documentation': 'http://genestack-client.readthedocs.io/en/stable/',
+        'Documentation': 'https://genestack-client.readthedocs.io/en/stable/',
         'Source': 'https://github.com/genestack/python-client/',
         'Tracker': 'https://github.com/genestack/python-client/issues',
     },

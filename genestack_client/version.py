@@ -1,1 +1,2 @@
-__version__ = '0.35.6'
+import os
+__version__ = os.environ["PYTHON_CLIENT_VERSION"]
