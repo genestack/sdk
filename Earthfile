@@ -22,7 +22,7 @@ deps:
 build:
     FROM +deps
 
-    COPY . .
+    COPY --dir MANIFEST.in README.md LICENSE.txt setup.py genestack_client test docs .
 
     ARG --required PYTHON_CLIENT_VERSION
     RUN \
