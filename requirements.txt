@@ -1,3 +1,4 @@
+--extra-index-url https://nexus.devops.gs.team/repository/pypi-proxy-central/simple/
 keyring==23.13.1
 requests==2.28.2
 pyOpenSSL==23.1.1

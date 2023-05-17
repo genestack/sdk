@@ -1,13 +1,14 @@
 from setuptools import setup
-
+import re
 """
 Python library that allows you to interact programmatically with an instance of
 the Genestack platform.
 """
 
-# Read requirements file to download deps.
+regex = re.compile(r'^--.*$')
+# Read requirements file to download deps with filtering params.
 with open('requirements.txt') as f:
-    required = f.read().splitlines()
+    required = [line for line in f.read().splitlines() if not regex.match(line)]
 
 # Import version directly, without execute __init__.py script
 exec(open('genestack_client/version.py').read())
