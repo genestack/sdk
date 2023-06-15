@@ -25,7 +25,7 @@ setup(
     description='Genestack Python Client Library',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    python_requires='>2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    python_requires='>=3.7',
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
