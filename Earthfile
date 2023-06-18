@@ -8,7 +8,7 @@ ARG --global --required NEXUS_URL
 
 deps:
     ARG --required BASE_IMAGES_VERSION
-    FROM ${HARBOR_DOCKER_REGISTRY}/builder:${BASE_IMAGES_VERSION}
+    FROM ${HARBOR_DOCKER_REGISTRY}/image/builder:${BASE_IMAGES_VERSION}
     COPY requirements.txt .
     RUN \
         --secret NEXUS_USER \
