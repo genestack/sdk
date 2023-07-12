@@ -26,6 +26,7 @@ setup(
     long_description=__doc__,
     long_description_content_type="text/markdown",
     python_requires='>=3.7',
+    options={'bdist_wheel': {'universal': '1'}},
     entry_points={
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
