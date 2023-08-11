@@ -2,7 +2,7 @@
 keyring==23.13.1
 requests==2.31.0
 pyOpenSSL==23.1.1
-jsonschema==4.17.3
+jsonschema==4.19.0
 future==0.18.3
 pyrsistent==0.19.3
 pytest==7.3.0
