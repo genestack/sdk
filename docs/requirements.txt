@@ -4,4 +4,4 @@ pyOpenSSL
 jsonschema
 future
 pyrsistent==0.19.3
-sphinx-rtd-theme==0.1.9
+sphinx-rtd-theme==0.5.2
