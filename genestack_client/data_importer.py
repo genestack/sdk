@@ -6,13 +6,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import map
 from builtins import *
 from builtins import object
-import os
-import sys
 from urllib.parse import quote
-from urllib.parse import urlparse
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo
 from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
@@ -40,16 +36,14 @@ class DataImporter(object):
     However, **do not** pass the same value both through the arguments and inside a metainfo object.
 
     Genestack accepts both compressed and uncompressed files.
-    If the protocol is not specified, ``file://`` will be used.
+    ``file://`` is used for files that are local to the ODM instance.
     Special characters should be escaped except ``s3://``. Links to Amazon S3 storage should be formatted
     as in `s3cmd <http://s3tools.org/s3cmd>`__.
 
     Supported protocols:
 
     * ``file://``:
-        - ``test.txt.gz``
         - ``file://test.txt``
-        - ``file%20name.gz``
 
     * ``ftp://``
         - ``ftp://server.com/file.txt``
@@ -64,7 +58,6 @@ class DataImporter(object):
         -  ``s3://bucket/file.gz``
         -  ``s3://bucket/file name.gz``
 
-    If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
 
     #: Affymetrix microarray annotation type
