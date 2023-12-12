@@ -50,12 +50,12 @@ class ShareUtil(Application):
         EDIT = "EDIT"
         SHARE = "SHARE"
 
-    def share_files_for_view(self, file_accessions, group_accession, destination_folder=None):
+    def share_files_for_view(self, file_accessions, group_accession, destination_folder=None, safe=False):
         """
         Share files with viewing permissions. Viewing permissions include finding the shared files
         and running tasks that access their content.
 
-        This method is equivalent to calling :meth:`safe_share_files` method with
+        This method is equivalent to calling :meth:`share_files`(`safe_share_files`) methods with
         :attr:`ShareUtil.Permissions.VIEW` permission.
 
         :param file_accessions: accession or an iterable of accessions of files to be shared
@@ -68,18 +68,20 @@ class ShareUtil(Application):
                                    :meth:`FilesUtil.link_file` method. No links will be created if
                                    this parameter is equal to `None`.
         :type destination_folder: str
+        :param safe: specifying this flag as True will hide insufficient permissions errors.
+        :type safe: bool
         """
-        self.safe_share_files(
+        (if safe self.safe_share_files else self.share_files)(
             file_accessions, group_accession, [ShareUtil.Permissions.VIEW], destination_folder
         )
 
-    def share_files_for_edit(self, file_accessions, group_accession, destination_folder=None):
+    def share_files_for_edit(self, file_accessions, group_accession, destination_folder=None, safe=False):
         """
         Share files with editing permissions. Editing permissions include viewing permissions and
         also allow modifying metainfo and linking/unlinking files (only applicable to containers
         and datasets).
 
-        This method is equivalent to calling :meth:`safe_share_files` method with
+        This method is equivalent to calling :meth:`share_files`(`safe_share_files`) method with
         :attr:`ShareUtil.Permissions.EDIT` permission.
 
         :param file_accessions: accession or an iterable of accessions of files to be shared
@@ -91,8 +93,10 @@ class ShareUtil(Application):
                currently impossible to do using the :meth:`FilesUtil.link_file` method. No links
                will be created if this parameter is equal to `None`.
         :type destination_folder: str
+        :param safe: specifying this flag as True will hide insufficient permissions errors.
+        :type safe: bool
         """
-        self.safe_share_files(
+        (if safe self.safe_share_files else self.share_files)(
             file_accessions, group_accession, [ShareUtil.Permissions.EDIT], destination_folder
         )
 
