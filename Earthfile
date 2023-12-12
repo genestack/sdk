@@ -8,7 +8,7 @@ ARG --global --required NEXUS_URL
 
 deps:
     ARG --required BASE_IMAGES_VERSION
-    FROM ${HARBOR_DOCKER_REGISTRY}/genestack-builder:${BASE_IMAGES_VERSION}
+    FROM ${HARBOR_DOCKER_REGISTRY}/builder:${BASE_IMAGES_VERSION}
     COPY requirements.txt .
     RUN \
         --secret NEXUS_USER \
@@ -22,10 +22,11 @@ deps:
 build:
     FROM +deps
 
-    COPY . .
+    COPY --dir MANIFEST.in README.md LICENSE.txt setup.py genestack_client test docs .
 
     ARG --required PYTHON_CLIENT_VERSION
     RUN \
+        cat genestack_client/version.py.envtpl | envsubst > genestack_client/version.py && \
         python3 setup.py sdist
 
     SAVE IMAGE --cache-hint
@@ -34,7 +35,7 @@ push:
     FROM +build
 
     ARG --required PYTHON_CLIENT_VERSION
-    IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([a-zA-Z0-9]+(.)?){3}$"
+    IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
             --secret NEXUS_USER \
             --secret NEXUS_PASSWORD \

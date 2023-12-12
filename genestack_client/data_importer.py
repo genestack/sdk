@@ -6,13 +6,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import map
 from builtins import *
 from builtins import object
-import os
-import sys
 from urllib.parse import quote
-from urllib.parse import urlparse
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo
 from genestack_client.metainfo_scalar_values import ExternalLink, FileReference, StringValue
@@ -40,16 +36,14 @@ class DataImporter(object):
     However, **do not** pass the same value both through the arguments and inside a metainfo object.
 
     Genestack accepts both compressed and uncompressed files.
-    If the protocol is not specified, ``file://`` will be used.
+    ``file://`` is used for files that are local to the ODM instance.
     Special characters should be escaped except ``s3://``. Links to Amazon S3 storage should be formatted
     as in `s3cmd <http://s3tools.org/s3cmd>`__.
 
     Supported protocols:
 
     * ``file://``:
-        - ``test.txt.gz``
         - ``file://test.txt``
-        - ``file%20name.gz``
 
     * ``ftp://``
         - ``ftp://server.com/file.txt``
@@ -64,7 +58,6 @@ class DataImporter(object):
         -  ``s3://bucket/file.gz``
         -  ``s3://bucket/file name.gz``
 
-    If you are uploading a local file, a ``Raw Upload`` intermediary file will be created on the platform.
     """
 
     #: Affymetrix microarray annotation type
@@ -91,45 +84,9 @@ class DataImporter(object):
     def __process_links(self, metainfo):
         all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
         for key, external_link_list in all_links:
-            links = [x['url'] for x in external_link_list]
-            if self.__are_files_local(links):
-                del metainfo[key]
-                for external_link in external_link_list:
-                    # TODO: fix external_link['format']: set this value after DataFile creation?
-                    # Or put it to special metaKey?
-                    raw = self.load_raw(external_link['url'])
-                    metainfo.add_file_reference(key, raw)
-            else:
-                for x in external_link_list:
-                    if x['url'].startswith('s3://'):
-                        x['url'] = 's3://%s' % quote(x['url'][5:])
-
-    @staticmethod
-    def __are_files_local(links):
-        if not isinstance(links, list):
-            links = [links]
-        if not links:
-            return False
-        local_flags = set(map(DataImporter.__is_file_local, links))
-        if len(local_flags) != 1:
-            raise GenestackException('Different types of links: local and remote')
-        return local_flags.pop()
-
-    @staticmethod
-    def __is_file_local(filepath):
-        return DataImporter.__get_local_path(filepath) is not None
-
-    @staticmethod
-    def __get_local_path(filepath):
-        if os.path.exists(filepath):
-            return True
-        url_parse = urlparse(filepath)
-        # TODO check if next check is have any sense.
-        if url_parse.scheme == '' or url_parse.scheme == 'file':
-            if not os.path.exists(url_parse.path):
-                raise GenestackException('Local file is not found: ' + url_parse.path)
-            return url_parse.path
-        return None
+            for x in external_link_list:
+                if x['url'].startswith('s3://'):
+                    x['url'] = 's3://%s' % quote(x['url'][5:])
 
     def __invoke_loader(self, parent, importer_type, metainfo):
         self.__process_links(metainfo)
@@ -172,17 +129,6 @@ class DataImporter(object):
             value_list = value if isinstance(value, list) else [value]
             for val in value_list:
                 metainfo.add_value(key, value_type(val))
-
-    def load_raw(self, file_path):
-        """
-        Create a Genestack Raw Upload file from a local file, and return the accession of the created file.
-
-        :param file_path: existing file path
-        :type file_path: str
-        :return: accession
-        :rtype: str
-        """
-        return self.connection.application('genestack/upload').upload_chunked_file(file_path)
 
     def create_bed(self, parent=None, name=None, reference_genome=None, url=None, metainfo=None):
         """

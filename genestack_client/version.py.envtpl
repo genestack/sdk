@@ -1,0 +1,2 @@
+import os
+__version__ = '$PYTHON_CLIENT_VERSION'

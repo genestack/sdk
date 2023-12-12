@@ -3,5 +3,5 @@ requests
 pyOpenSSL
 jsonschema
 future
-pyrsistent==0.16.0
-sphinx-rtd-theme==0.1.9
+pyrsistent==0.20.0
+sphinx-rtd-theme==2.0.0
