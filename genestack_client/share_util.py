@@ -55,7 +55,7 @@ class ShareUtil(Application):
         Share files with viewing permissions. Viewing permissions include finding the shared files
         and running tasks that access their content.
 
-        This method is equivalent to calling :meth:`safe_share_files` method with
+        This method is equivalent to calling :meth:`share_files` method with
         :attr:`ShareUtil.Permissions.VIEW` permission.
 
         :param file_accessions: accession or an iterable of accessions of files to be shared
@@ -69,7 +69,7 @@ class ShareUtil(Application):
                                    this parameter is equal to `None`.
         :type destination_folder: str
         """
-        self.safe_share_files(
+        self.share_files(
             file_accessions, group_accession, [ShareUtil.Permissions.VIEW], destination_folder
         )
 
@@ -79,7 +79,7 @@ class ShareUtil(Application):
         also allow modifying metainfo and linking/unlinking files (only applicable to containers
         and datasets).
 
-        This method is equivalent to calling :meth:`safe_share_files` method with
+        This method is equivalent to calling :meth:`share_files` method with
         :attr:`ShareUtil.Permissions.EDIT` permission.
 
         :param file_accessions: accession or an iterable of accessions of files to be shared
@@ -92,7 +92,7 @@ class ShareUtil(Application):
                will be created if this parameter is equal to `None`.
         :type destination_folder: str
         """
-        self.safe_share_files(
+        self.share_files(
             file_accessions, group_accession, [ShareUtil.Permissions.EDIT], destination_folder
         )
 
