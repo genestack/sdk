@@ -8,6 +8,5 @@ Command-line utilities installed with the Python Client Library.
    :maxdepth: 2
 
    genestack-user-setup
-   genestack-application-manager
    genestack-shell
    genestack-uploader
