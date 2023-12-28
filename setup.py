@@ -30,6 +30,7 @@ setup(
         'console_scripts': [
             'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
             'genestack-shell = genestack_client.scripts.shell:main',
+            'genestack-application-manager = genestack_client.scripts.genestack_application_manager:main',
             'genestack-uploader = genestack_client.scripts.genestack_uploader:main',
         ],
     },

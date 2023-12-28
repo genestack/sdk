@@ -94,6 +94,7 @@ def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_p
 
 
 def main():
+    generate_rst_doc('genestack-application-manager', 'genestack_application_manager.py',  'ApplicationManager', 'app-manager_footer.txt', os.path.join('scripts', 'genestack-application-manager.rst'))
     generate_rst_doc('genestack-shell', 'shell.py', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
     generate_rst_doc('genestack-user-setup', 'genestack_user_setup.py', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
 

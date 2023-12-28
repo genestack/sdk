@@ -25,6 +25,7 @@
   docs/                             - folder with documentation sources
   genestack_client/                 - folder with library
   tests/                            - developer tests, require pytest to run.
+  genestack-application-manager     - script to connect to application-manager (installed as script)
   genestack-user-setup              - script to setup user (installed as script)
   genestack-uploader                - commandline uploader (installed as script)
   genestack-shell                   - shell (installed as script)
