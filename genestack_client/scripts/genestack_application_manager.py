@@ -16,7 +16,6 @@ import json
 import os
 import sys
 import time
-import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom as minidom
 import zipfile
 from collections import OrderedDict, namedtuple
@@ -82,61 +81,6 @@ class Info(Command):
         return show_info(
             jar_files, self.args.vendor,
             self.args.with_filename, self.args.no_filename
-        )
-
-
-class Install(Command):
-    COMMAND = 'install'
-    DESCRIPTION = "Upload and install an application's JAR file to a Genestack instance."
-
-    def update_parser(self, p):
-        p.add_argument(
-            '-f', '--force', action='store_true',
-            default=False,
-            help='Run installation without any prompts (use with caution)'
-        )
-        p.add_argument(
-            '-o', '--override', action='store_true',
-            help='overwrite old version of the applications with the new one'
-        )
-        p.add_argument(
-            '-s', '--stable', action='store_true',
-            help='mark installed applications as stable'
-        )
-        p.add_argument(
-            '-S', '--scope', metavar='<scope>', choices=SCOPE_DICT.keys(),
-            default=DEFAULT_SCOPE,
-            help='scope in which application will be stable'
-                 ' (default is \'%s\'): %s' %
-                 (DEFAULT_SCOPE, ' | '.join(SCOPE_DICT.keys()))
-        )
-        p.add_argument(
-            '-i', '--visibility', metavar='<visibility>',
-            help='set initial visibility (use `-i organization` for setting organization visibility'
-                 ' or `-i <group_accession>` for group visibility)'
-        )
-        p.add_argument(
-            '-n', '--no-wait', action='store_true', dest='no_wait',
-            help="Don't wait until all installed applications will be completely loaded"
-        )
-        p.add_argument(
-            'version', metavar='<version>',
-            help='version of applications to upload'
-        )
-        p.add_argument(
-            'files', metavar='<jar_file_or_folder>', nargs='+',
-            help='file to upload or folder with single JAR file inside (recursively)'
-        )
-
-    def run(self):
-        jar_files = [resolve_jar_file(f) for f in match_jar_globs(self.args.files)]
-        if not jar_files:
-            raise GenestackException('No JAR file was found')
-        return upload_file(
-            self.connection.application(APPLICATION_ID),
-            jar_files, self.args.version, self.args.override,
-            self.args.stable, self.args.scope, self.args.force, self.args.visibility,
-            self.args.no_wait
         )
 
 
@@ -552,87 +496,6 @@ def reload_applications(application, version, app_id_list):
             handle_server_error_gracefully(e)
             result = 1
     return result
-
-
-def upload_file(application, files_list, version, override, stable, scope, force,
-                initial_visibility, no_wait):
-    """
-    :return: exit code
-    :rtype: int
-    """
-    result = 0
-    for file_path in files_list:
-        result |= upload_single_file(
-            application, file_path, version, override,
-            stable, scope, force, initial_visibility, no_wait
-        )
-    return result
-
-
-def upload_single_file(application, file_path, version, override,
-                       stable, scope, force=False, initial_visibility=None, no_wait=False):
-    """
-    :return: exit code
-    :rtype: int
-    """
-    app_info = read_jar_file(file_path)
-    if not force and override and not (stable and SCOPE_DICT[scope] == 'SYSTEM'):
-        if get_system_stable_apps_version(application, app_info.identifiers, version):
-            raise GenestackException(
-                'Can\'t install version "%s". This version is already system stable.\n'
-                'If you want to upload a new version and make it stable, add "-S system" option.\n'
-                'Otherwise use another version name.' % version
-            )
-
-    parameters = {'version': version, 'override': override}
-    upload_token = application.invoke('getUploadToken', parameters)
-
-    if upload_token is None:
-        raise GenestackException('Received a null token, the upload is not accepted')
-
-    try:
-        result = application.upload_file(file_path, upload_token)
-        # hack before fix ApplicationManagerApplication#processReceivedFile
-        # // TODO: return some useful information
-        if result:
-            print(result)
-    except urllib.error.HTTPError as e:
-        raise GenestackException('HTTP Error %s: %s\n' % (e.code, e.read()))
-
-    if not no_wait:
-        identifiers_number = len(app_info.identifiers)
-        for i, app_id in enumerate(app_info.identifiers):
-            success, descriptor = wait_application_loading(application, app_id, version)
-            if i == identifiers_number - 1:
-                errors = descriptor.get('loadingErrors', [])
-                warns = descriptor.get('loadingWarnings', [])
-                if errors or warns:
-                    lines = ['Module was loaded with following errors and warnings:']
-                    lines.extend(
-                        format_loading_messages_by_lines(errors, warns)
-                    )
-                    print('\n'.join(lines))
-    else:
-        sys.stdout.write("Uploading was done with 'no_wait' flag. Loading errors and warnings can"
-                         " be viewed with 'status' command.\n")
-        sys.stdout.flush()
-
-    if initial_visibility:
-        change_applications_visibility(
-            False, application, app_info.identifiers, version,
-            'organization' if initial_visibility == 'organization' else 'group',
-            None if initial_visibility == 'organization' else [initial_visibility]
-        )
-
-    if not stable:
-        return 0
-
-    return mark_as_stable(
-        application,
-        version,
-        app_info.identifiers,
-        scope
-    )
 
 
 def release_applications(application, app_ids, version, new_version):

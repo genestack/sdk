@@ -3,54 +3,6 @@ Usage examples
 
 If ``-u`` is not specified, the default user is used.
 
-Installing applications
-^^^^^^^^^^^^^^^^^^^^^^^
-
-- If you want to install a new JAR file containing applications, simply type::
-
-        genestack-application-manager install my-version path/to/file.jar
-
-
-- If your JAR file is located in a specific folder, and this folder and its subfolders do not contain any other JAR file,
-  you can specify the path to the folder instead of the full path to the JAR file. In that case, the folder and its subfolders
-  will be searched for JAR files. If no JAR file or more than one JAR file is found, an error is returned.
-
-    genestack-application-manager install my-version path/to/folder
-
-
-- If you want to upload a JAR file and also mark all the applications inside it as stable for your current user, you can use ``-s`` option of the ``install`` command (the default scope for marking applications as stable is ``user``)::
-
-    genestack-application-manager install -s my-version path/to/file.jar
-
-- If you want to make an applications stable only for your session, you should specify ``-S session``::
-
-    genestack-application-manager install -s -S session my-version path/to/file.jar
-
-- Otherwise, you can use the ``stable`` command after installing the JAR file::
-
-    JAR=path/to/file.jar
-    VERSION=my-version
-    genestack-application-manager install $VERSION $JAR
-    for A in $(genestack-application-manager info $JAR | tail -n+3); do
-        genestack-application-manager stable -S system $VERSION $A
-    done
-
-- If you want to reinstall your applications later with the same version (whether or not that version was marked as stable),
-  you can simply use the ``-o`` option for the ``install`` command
-
-  This option works exactly as removing the old version before uploading the new one, so there are two things to keep in mind:
-  -  ``-o`` can be used to overwrite only your versions, because you cannot overwrite or remove versions uploaded by other users;
-  -  ``-o`` removes the global stable mark, so if you overwrite a globally stable version, then after that no globally stable version will be available on the system
-
-
-    genestack-application-manager install -o my-version path/to/file.jar
-
-- Sometimes you may want to upload a JAR file with many applications, and only mark as stable one of them.
-  In this case you should use the ``install`` and ``stable`` commands::
-
-    genestack-application-manager install my-version path/to/file.jar
-    genestack-application-manager stable my-version vendor/appIdFromJarFile
-
 Removing all of your applications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -70,4 +22,3 @@ Removing all of your applications
             genestack-application-manager remove $V $A
         done
     done
-
