@@ -1,4 +1,3 @@
-from past.builtins import basestring
 from builtins import *
 from builtins import object
 import collections
@@ -205,7 +204,7 @@ class ShareUtil(Application):
         if isinstance(args, list):
             return args
         is_iterable = isinstance(args, collectionsAbc.Iterable)
-        if is_iterable and not isinstance(args, basestring):
+        if is_iterable and not isinstance(args, str):
             return list(args)
         else:
             return [args]

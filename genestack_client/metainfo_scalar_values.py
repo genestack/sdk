@@ -1,4 +1,3 @@
-from past.builtins import basestring
 from builtins import *
 import datetime
 import os
@@ -7,10 +6,6 @@ from pprint import pformat
 from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
-
-# TODO: drop this kludge when support for Python 2 is over
-if sys.version_info.major > 2:
-    unicode = str
 
 
 class MetainfoScalarValue(dict):
@@ -43,23 +38,7 @@ class MetainfoScalarValue(dict):
 
     @staticmethod
     def _xstr(arg):
-        """
-        Convert the input argument to a (unicode) string if it is not ``None``.
-
-        :param arg: input object
-        :type arg: object
-        :return: string representation of the object
-        :rtype: str
-        """
-        if arg is None:
-            return None
-        if isinstance(arg, bytes):
-            return arg.decode('utf-8', errors='replace')
-        # `requests` on Python2 breaks if all-unicode dictionary of parameters
-        # with one `str` value is supplied (strange `KeyError(47)` is thrown)
-        # let's simply make sure it's ``unicode`` in Python 2 and revert to
-        # ``str`` when support for Python 2 is over (see TODO at the top)
-        return unicode(arg)
+        return str(arg)
 
 
 class StringValue(MetainfoScalarValue):
@@ -169,7 +148,7 @@ class DateTimeValue(MetainfoScalarValue):
 
     @classmethod
     def _parse_date_time(cls, time):
-        if isinstance(time, basestring):
+        if isinstance(time, str):
             if cls._can_be_cast_to_int(time):
                 return int(time)
             try:
