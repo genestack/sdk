@@ -1,6 +1,5 @@
 from past.builtins import basestring
 from builtins import *
-from past.utils import old_div
 import datetime
 import os
 import sys
@@ -185,7 +184,7 @@ class DateTimeValue(MetainfoScalarValue):
                                                                                                     cls._DATE_FORMAT))
         if isinstance(time, datetime.datetime):
             diff = time - datetime.datetime(1970, 1, 1)
-            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + old_div(diff.microseconds, 1000)
+            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + diff.microseconds / 1000
         elif isinstance(time, datetime.date):
             diff = time - datetime.date(1970, 1, 1)
             milliseconds = diff.days * 24 * 60 * 60 * 1000

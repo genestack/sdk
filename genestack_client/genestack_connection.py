@@ -1,6 +1,5 @@
 from builtins import str
 from builtins import *
-from past.utils import old_div
 from builtins import object
 import json
 import os
@@ -401,7 +400,7 @@ class DottedProgress(object):
             if self.__seen == 0:
                 sys.stderr.write('Uploading %s: ' % name)
             self.__seen += size
-            dots = int(old_div(self.__seen * self.__full_length, total))
+            dots = int(self.__seen * self.__full_length / total)
             while dots > self.__dots and self.__dots < self.__full_length:
                 self.__dots += 1
                 sys.stderr.write('.')
