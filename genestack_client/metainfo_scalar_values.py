@@ -1,9 +1,3 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
 from past.builtins import basestring
 from builtins import *
 from past.utils import old_div
@@ -18,6 +12,7 @@ from genestack_client import GenestackException
 # TODO: drop this kludge when support for Python 2 is over
 if sys.version_info.major > 2:
     unicode = str
+
 
 class MetainfoScalarValue(dict):
     _TYPE = None
