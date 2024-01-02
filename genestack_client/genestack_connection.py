@@ -4,9 +4,8 @@ from builtins import object
 import json
 import os
 import sys
-import urllib.request, urllib.parse, urllib.error
+import urllib
 from io import FileIO
-from distutils.version import StrictVersion
 from urllib.parse import urlsplit
 
 import requests
@@ -148,7 +147,6 @@ class Connection(object):
 
         :return: None
         """
-        my_version = StrictVersion(__version__)
 
         try:
             client_version_app = self.application('genestack/clientVersion')
@@ -156,14 +154,12 @@ class Connection(object):
         except GenestackServerException:
             # We don't know what happened, but it might be due to incompatible client/API versions.
             # Throw a version exception, making sure we tell the user to update.
-            raise GenestackVersionException(my_version)
+            raise GenestackVersionException(__version__)
 
-        compatible = StrictVersion(compatible_version)
-
-        if compatible <= my_version:
+        if compatible_version <= __version__:
             return
 
-        raise GenestackVersionException(my_version, compatible)
+        raise GenestackVersionException(__version__, compatible_version)
 
     def logout(self):
         """
