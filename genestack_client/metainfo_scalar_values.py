@@ -14,13 +14,9 @@ class MetainfoScalarValue(dict):
         if isinstance(value, dict):
             val = value.copy()
             val['type'] = self._TYPE
-            if stringify:
-                for key in val:
-                    if not isinstance(val[key], dict):
-                        val[key] = self._xstr(val[key])
             self.update(val)
         else:
-            self.update({'type': self._TYPE, 'value': self._xstr(value)})
+            self.update({'type': self._TYPE, 'value': value})
 
     def __init__(self, value):
         super(MetainfoScalarValue, self).__init__()
@@ -35,16 +31,12 @@ class MetainfoScalarValue(dict):
             "a complex value.\n" % self._TYPE
         )
 
-    @staticmethod
-    def _xstr(arg):
-        return str(arg)
-
 
 class StringValue(MetainfoScalarValue):
     _TYPE = 'string'
 
     def get_string(self):
-        return self._xstr(self.get('value'))
+        return self.get('value')
 
 
 class BooleanValue(MetainfoScalarValue):
