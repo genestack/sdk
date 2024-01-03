@@ -1,5 +1,3 @@
-from builtins import str
-from builtins import *
 import argparse
 import json
 import shlex
@@ -100,6 +98,7 @@ class Shell(GenestackShell):
 def main():
     shell = Shell()
     shell.cmdloop()
+
 
 if __name__ == '__main__':
     main()

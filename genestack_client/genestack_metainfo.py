@@ -1,5 +1,3 @@
-from builtins import map
-from builtins import *
 import sys
 from genestack_client import (BooleanValue, DateTimeValue, DecimalValue, ExternalLink,
                               FileReference, GenestackException, IntegerValue, MemorySizeValue,

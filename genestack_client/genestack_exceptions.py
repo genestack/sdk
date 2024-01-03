@@ -1,4 +1,3 @@
-from builtins import *
 from urllib.error import URLError
 
 MASTER_BRANCH = 'https://github.com/genestack/python-client/archive/master.zip'

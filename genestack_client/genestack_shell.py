@@ -1,6 +1,3 @@
-from builtins import str
-from builtins import *
-from builtins import object
 import cmd
 import os
 import shlex

@@ -1,8 +1,3 @@
-from builtins import str
-from builtins import *
-from builtins import object
-
-
 class GenomeQuery(object):
     """
     Class describing a genome query.

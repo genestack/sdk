@@ -1,6 +1,3 @@
-from builtins import object
-
-
 class Permissions(object):
 
     _JAVA_PKG = "com.genestack.file."

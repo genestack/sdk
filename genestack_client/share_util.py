@@ -1,5 +1,3 @@
-from builtins import *
-from builtins import object
 import collections
 
 from genestack_client import Application

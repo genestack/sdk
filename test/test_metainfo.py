@@ -1,4 +1,3 @@
-from builtins import next
 import os
 import sys
 import time
@@ -13,6 +12,7 @@ from genestack_client import (get_connection, make_connection_parser, DataImport
 
 
 TEST_URL = "https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-4265/E-MTAB-4265.raw.1.zip/SKMM1_nonorm_NT_A.txt"
+
 
 @pytest.fixture(scope='module')
 def conn():

@@ -1,6 +1,3 @@
-from builtins import object
-
-
 class FileTypes(object):
 
     _JAVA_PKG = "com.genestack.api.files."

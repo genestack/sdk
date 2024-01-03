@@ -1,7 +1,5 @@
-from builtins import *
-from builtins import object
 from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
-                              validate_constant, ShareUtil)
+                              validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'

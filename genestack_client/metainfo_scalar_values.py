@@ -1,4 +1,3 @@
-from builtins import *
 import datetime
 import os
 import sys

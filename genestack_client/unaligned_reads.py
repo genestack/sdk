@@ -1,4 +1,3 @@
-from builtins import object
 READS_LOCATION = 'genestack.location:reads'
 READS_LINK = 'genestack.url:reads'
 

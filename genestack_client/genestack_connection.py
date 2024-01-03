@@ -1,13 +1,9 @@
-from builtins import str
-from builtins import *
-from builtins import object
 import json
 import os
 import sys
 import urllib
 from io import FileIO
 from urllib.parse import urlsplit
-
 import requests
 from requests import HTTPError, RequestException
 

@@ -1,5 +1,3 @@
-from builtins import input
-from builtins import *
 import os
 import re
 import sys

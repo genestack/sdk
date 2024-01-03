@@ -1,4 +1,3 @@
-from builtins import *
 from genestack_client import Application, FilesUtil, SpecialFolders, Metainfo, GenestackException
 
 

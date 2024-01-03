@@ -1,6 +1,3 @@
-from builtins import str
-from builtins import map
-from builtins import *
 import glob
 import json
 import os

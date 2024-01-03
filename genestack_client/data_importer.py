@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from builtins import *
-from builtins import object
 from urllib.parse import quote
 
 from genestack_client import BioMetaKeys, GenestackException, Metainfo

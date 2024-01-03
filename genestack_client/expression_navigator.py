@@ -1,6 +1,3 @@
-from builtins import str
-from builtins import *
-
 from genestack_client import Application, GenestackException
 
 

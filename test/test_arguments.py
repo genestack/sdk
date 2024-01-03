@@ -1,4 +1,3 @@
-from builtins import *
 import os
 import sys
 from io import StringIO
