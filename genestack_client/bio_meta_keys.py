@@ -1,6 +1,3 @@
-from builtins import object
-
-
 class BioMetaKeys(object):
     """
     Collection of bio constants.

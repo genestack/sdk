@@ -1,6 +1,3 @@
-from builtins import input
-from builtins import *
-from builtins import object
 from getpass import getpass
 from urllib.parse import urlsplit
 
