@@ -1,15 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import map
-from builtins import *
 import sys
-
 from genestack_client import (BooleanValue, DateTimeValue, DecimalValue, ExternalLink,
                               FileReference, GenestackException, IntegerValue, MemorySizeValue,
                               MetainfoScalarValue, Organization, Person,
@@ -51,7 +40,7 @@ class Metainfo(dict):
     FAHRENHEIT = 'FAHRENHEIT'
 
     def _add_value(self, key, value, type):
-        self.setdefault(key, []).append({'type': type, 'value': MetainfoScalarValue._xstr(value)})
+        self.setdefault(key, []).append({'type': type, 'value': value})
 
     @staticmethod
     def _create_dict_with_type(type):
@@ -261,7 +250,7 @@ class Metainfo(dict):
         """
         self._print_metainfo_type_deprecation_message('add_time')
         result = Metainfo._create_dict_with_type('time')
-        result['value'] = MetainfoScalarValue._xstr(value)
+        result['value'] = value
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 
@@ -288,7 +277,7 @@ class Metainfo(dict):
         """
         self._print_metainfo_type_deprecation_message('add_temperature')
         result = Metainfo._create_dict_with_type('temperature')
-        result['value'] = MetainfoScalarValue._xstr(value)
+        result['value'] = value
         result['unit'] = unit.upper()
         self.setdefault(key, []).append(result)
 

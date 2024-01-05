@@ -1,13 +1,3 @@
-# coding=utf-8
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from past.builtins import basestring
-from builtins import *
-from builtins import object
 import collections
 
 from genestack_client import Application
@@ -212,7 +202,7 @@ class ShareUtil(Application):
         if isinstance(args, list):
             return args
         is_iterable = isinstance(args, collectionsAbc.Iterable)
-        if is_iterable and not isinstance(args, basestring):
+        if is_iterable and not isinstance(args, str):
             return list(args)
         else:
             return [args]
