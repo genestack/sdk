@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import next
-from builtins import *
-import datetime
 import os
 import sys
 import time
@@ -24,6 +12,7 @@ from genestack_client import (get_connection, make_connection_parser, DataImport
 
 
 TEST_URL = "https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-4265/E-MTAB-4265.raw.1.zip/SKMM1_nonorm_NT_A.txt"
+
 
 @pytest.fixture(scope='module')
 def conn():

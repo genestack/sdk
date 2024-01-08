@@ -1,24 +1,9 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import *
-from past.utils import old_div
-from builtins import object
 import json
 import os
 import sys
-import urllib.request, urllib.parse, urllib.error
-from io import StringIO, FileIO
-from distutils.version import StrictVersion
+import urllib
+from io import FileIO
 from urllib.parse import urlsplit
-
 import requests
 from requests import HTTPError, RequestException
 
@@ -158,7 +143,6 @@ class Connection(object):
 
         :return: None
         """
-        my_version = StrictVersion(__version__)
 
         try:
             client_version_app = self.application('genestack/clientVersion')
@@ -166,14 +150,12 @@ class Connection(object):
         except GenestackServerException:
             # We don't know what happened, but it might be due to incompatible client/API versions.
             # Throw a version exception, making sure we tell the user to update.
-            raise GenestackVersionException(my_version)
+            raise GenestackVersionException(__version__)
 
-        compatible = StrictVersion(compatible_version)
-
-        if compatible <= my_version:
+        if compatible_version <= __version__:
             return
 
-        raise GenestackVersionException(my_version, compatible)
+        raise GenestackVersionException(__version__, compatible_version)
 
     def logout(self):
         """
@@ -410,7 +392,7 @@ class DottedProgress(object):
             if self.__seen == 0:
                 sys.stderr.write('Uploading %s: ' % name)
             self.__seen += size
-            dots = int(old_div(self.__seen * self.__full_length, total))
+            dots = int(self.__seen * self.__full_length / total)
             while dots > self.__dots and self.__dots < self.__full_length:
                 self.__dots += 1
                 sys.stderr.write('.')

@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import next
-from builtins import range
-from builtins import *
-from past.utils import old_div
-from builtins import object
 import json
 import os
 import re
@@ -122,7 +108,7 @@ class ChunkedUpload(object):
         if total_size < chunk_size * 2:
             chunk_count = 1
         else:
-            chunk_count = old_div(total_size, chunk_size)
+            chunk_count = total_size / chunk_size
 
         self.total_size = total_size
         self.filename = os.path.basename(path)

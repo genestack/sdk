@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from past.builtins import basestring
-from builtins import *
 import argparse
 import subprocess
 import sys
@@ -208,5 +196,5 @@ def interactive_select(items, message, to_string=None, selected=None):
 
 
 def validate_constant(cls, key):
-    constants = {v for k, v in cls.__dict__.items() if (not k.startswith("_") and isinstance(v, basestring))}
+    constants = {v for k, v in cls.__dict__.items() if (not k.startswith("_") and isinstance(v, str))}
     return key in constants

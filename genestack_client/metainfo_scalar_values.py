@@ -1,12 +1,3 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from past.builtins import basestring
-from builtins import *
-from past.utils import old_div
 import datetime
 import os
 import sys
@@ -15,9 +6,6 @@ from urllib.parse import unquote, urlparse
 
 from genestack_client import GenestackException
 
-# TODO: drop this kludge when support for Python 2 is over
-if sys.version_info.major > 2:
-    unicode = str
 
 class MetainfoScalarValue(dict):
     _TYPE = None
@@ -26,13 +14,9 @@ class MetainfoScalarValue(dict):
         if isinstance(value, dict):
             val = value.copy()
             val['type'] = self._TYPE
-            if stringify:
-                for key in val:
-                    if not isinstance(val[key], dict):
-                        val[key] = self._xstr(val[key])
             self.update(val)
         else:
-            self.update({'type': self._TYPE, 'value': self._xstr(value)})
+            self.update({'type': self._TYPE, 'value': value})
 
     def __init__(self, value):
         super(MetainfoScalarValue, self).__init__()
@@ -47,32 +31,12 @@ class MetainfoScalarValue(dict):
             "a complex value.\n" % self._TYPE
         )
 
-    @staticmethod
-    def _xstr(arg):
-        """
-        Convert the input argument to a (unicode) string if it is not ``None``.
-
-        :param arg: input object
-        :type arg: object
-        :return: string representation of the object
-        :rtype: str
-        """
-        if arg is None:
-            return None
-        if isinstance(arg, bytes):
-            return arg.decode('utf-8', errors='replace')
-        # `requests` on Python2 breaks if all-unicode dictionary of parameters
-        # with one `str` value is supplied (strange `KeyError(47)` is thrown)
-        # let's simply make sure it's ``unicode`` in Python 2 and revert to
-        # ``str`` when support for Python 2 is over (see TODO at the top)
-        return unicode(arg)
-
 
 class StringValue(MetainfoScalarValue):
     _TYPE = 'string'
 
     def get_string(self):
-        return self._xstr(self.get('value'))
+        return self.get('value')
 
 
 class BooleanValue(MetainfoScalarValue):
@@ -175,7 +139,7 @@ class DateTimeValue(MetainfoScalarValue):
 
     @classmethod
     def _parse_date_time(cls, time):
-        if isinstance(time, basestring):
+        if isinstance(time, str):
             if cls._can_be_cast_to_int(time):
                 return int(time)
             try:
@@ -190,7 +154,7 @@ class DateTimeValue(MetainfoScalarValue):
                                                                                                     cls._DATE_FORMAT))
         if isinstance(time, datetime.datetime):
             diff = time - datetime.datetime(1970, 1, 1)
-            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + old_div(diff.microseconds, 1000)
+            milliseconds = (diff.days * 24 * 60 * 60 + diff.seconds) * 1000 + (diff.microseconds / 1000)
         elif isinstance(time, datetime.date):
             diff = time - datetime.date(1970, 1, 1)
             milliseconds = diff.days * 24 * 60 * 60 * 1000

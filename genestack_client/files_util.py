@@ -1,19 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import map
-from builtins import *
-from builtins import object
-import sys
-from time import sleep
-
-import genestack_client
 from genestack_client import (Application, FileFilter, GenestackException, Metainfo,
-                              validate_constant, ShareUtil)
+                              validate_constant)
 
 CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
 EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
