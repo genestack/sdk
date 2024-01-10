@@ -107,10 +107,8 @@ class Connection(object):
         :param password: password
         :type password: str
         :rtype: None
-        :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
-                 :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
+        :raises: :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
-        self.check_version()
         logged = self.application('genestack/signin').invoke('authenticate', email, password)
         Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
@@ -125,37 +123,13 @@ class Connection(object):
 
         :param token: token
         :rtype: None
-        :raises: :py:class:`~genestack_client.GenestackServerException` if module version is outdated
-                 :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
+        :raises: :py:class:`~genestack_client.GenestackAuthenticationException` if login failed
         """
-        self.check_version()
         logged = self.application('genestack/signin').invoke('authenticateByApiToken', token)
         Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
-
-    def check_version(self):
-        """
-        Check the version of the client library required by the server.
-        The server will return a message specifying the compatible version.
-        If the current version is not supported, an exception is raised.
-
-        :return: None
-        """
-
-        try:
-            client_version_app = self.application('genestack/clientVersion')
-            compatible_version = client_version_app.invoke('getCompatibleVersion')
-        except GenestackServerException:
-            # We don't know what happened, but it might be due to incompatible client/API versions.
-            # Throw a version exception, making sure we tell the user to update.
-            raise GenestackVersionException(__version__)
-
-        if compatible_version <= __version__:
-            return
-
-        raise GenestackVersionException(__version__, compatible_version)
 
     def logout(self):
         """

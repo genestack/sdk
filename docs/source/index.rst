@@ -10,11 +10,9 @@ Supported **Python** versions:
 
 At a low level, it allows you only to login to Genestack as a specific user (like you would through a web browser) and call the public Java methods of any application that your user has access to.
 
-Importantly, the Genestack Python Client Library includes the ``genestack-application-manager``, a command-line utility that allows you to upload your own applications to a Genestack instance. This tool is essential if you are a third-party developer, as this is currently the only way for you to upload your apps to a Genestack instance.
-
 Several functions are also provided to perform typical Genestack file system operations, such as uploading files to Genestack, finding files, retrieving their metainfo, and so on. Additionally, several wrapper classes allow you to interact with command-line applications on the platform, to create files and edit their parameters.
 
-Apart from uploading apps, typical use cases of the Python Client Library include:
+Typical use cases of the Python Client Library include:
 
 * uploading many files to Genestack at once
 * editing the metainfo of Genestack files based on some local data (e.g. an Excel spreadsheet)
