@@ -9,4 +9,3 @@ Command-line utilities installed with the Python Client Library.
 
    genestack-user-setup
    genestack-shell
-   genestack-uploader

@@ -26,7 +26,6 @@
   genestack_client/                 - folder with library
   tests/                            - developer tests, require pytest to run.
   genestack-user-setup              - script to setup user (installed as script)
-  genestack-uploader                - commandline uploader (installed as script)
   genestack-shell                   - shell (installed as script)
   setup.py                          - installation setup for genestack_client library
   ```
