@@ -91,7 +91,6 @@ class User(object):
     def __interactive_login(self, connection):
         if not isatty():
             raise GenestackException("Interactive login is not possible")
-        connection.check_version()
 
         email = self.email
         message = 'Connecting to %s' % self.host
