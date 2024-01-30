@@ -6,8 +6,8 @@ from argparse import Namespace
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from genestack_client import get_user, make_connection_parser
-from genestack_client.settings.genestack_user import User
+from odm_sdk import get_user, make_connection_parser
+from odm_sdk.settings.genestack_user import User
 
 
 def test_parse_default_user():

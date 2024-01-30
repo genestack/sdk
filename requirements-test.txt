@@ -1,0 +1,3 @@
+--extra-index-url https://nexus.devops.gs.team/repository/pypi-group/simple/
+pytest==7.4.4
+requests_mock==1.11.0

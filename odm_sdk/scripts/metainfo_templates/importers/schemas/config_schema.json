@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "JSON schema for template importer settings",
+  "description": "This schema is used to validate files with settings for the template importer script",
+  "type": "object",
+  "properties": {
+    "template_path": {
+      "description": "Local filesystem path to the JSON file with template content. Must be relative to repository root",
+      "type": "string"
+    },
+    "template_name": {
+      "description": "Name of the Genestack file that will be used when the template is uploaded to the platform",
+      "type": "string"
+    },
+    "replace": {
+      "description": "When 'true' the uploaded template will replace already existing one (if any). When 'false' - an exception will be thrown.",
+      "type": "boolean"
+    },
+    "mark_default": {
+      "description": "When 'true' the uploaded template will be set as the default template",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "template_name",
+    "template_path"
+  ],
+  "additionalProperties": true
+}

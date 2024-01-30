@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "JSON schema for metainfo templates",
+  "description": "This schema is used to validate metainfo templates upon upload",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "description": "Key name",
+        "type": "string"
+      },
+      "description": {
+        "description": "Key description",
+        "type": "string",
+        "maxLength": 500
+      },
+      "isRequired": {
+        "type": "boolean"
+      },
+      "isSingle": {
+        "description": "Deprecated",
+        "type": "boolean"
+      },
+      "isReadOnly": {
+        "description": "If the value of this key cannot be edited",
+        "type": "boolean"
+      },
+      "metainfoType": {
+        "type": "string",
+        "enum": [
+          "com.genestack.api.metainfo.IntegerValue",
+          "com.genestack.api.metainfo.DecimalValue",
+          "com.genestack.api.metainfo.StringValue",
+          "com.genestack.api.metainfo.BooleanValue",
+          "com.genestack.api.metainfo.DateTimeValue",
+          "com.genestack.api.metainfo.ExternalLink"
+        ]
+      },
+      "dataType": {
+        "description": "Data type name to which this key is applicable",
+        "type": "string",
+        "enum": [
+          "study",
+          "genestack:facsObject",
+          "genestack:genomicsObject",
+          "genestack:sampleObject",
+          "genestack:transcriptomicsObject",
+          "genestack:libraryObject",
+          "genestack:preparationObject",
+          "genestack:facsParent",
+          "genestack:genomicsParent",
+          "genestack:transcriptomicsParent"
+        ]
+      },
+      "dictionaryName": {
+        "description": "Name of the dictionary which should already be loaded and shared in ODM",
+        "type": "string"
+      },
+      "dictionaryPath": {
+        "description": "Deprecated",
+        "type": "string"
+      },
+      "referencedKeyName": {
+        "description": "Deprecated",
+        "type": "string"
+      }
+    },
+    "required": [
+      "name",
+      "isRequired",
+      "metainfoType",
+      "dataType"
+    ],
+    "dependencies": {
+      "dictionaryPath": [
+        "dictionaryName"
+      ]
+    },
+    "additionalProperties": false
+  },
+  "uniqueItems": true
+}
+
