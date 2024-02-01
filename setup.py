@@ -5,9 +5,6 @@ regex = re.compile(r'^--.*$')
 # Read requirements file to download deps with filtering params.
 with open('requirements.txt') as f:
     required = [line for line in f.read().splitlines() if not regex.match(line)]
-# Do the same for tests.
-with open('requirements-test.txt') as f:
-    required_test = [line for line in f.read().splitlines() if not regex.match(line)]
 
 # Import version directly, without execute __init__.py script
 exec(open('odm_sdk/version.py').read())
@@ -15,10 +12,8 @@ exec(open('odm_sdk/version.py').read())
 setup(
     name='odm-sdk',
     install_requires=required,
-    tests_require=required_test,
     version=__version__,
-    packages=find_packages(exclude=["test", "tests"]),
-    test_suite="odm_sdk.tests",
+    packages=find_packages(),
     url='https://github.com/genestack/python-client',
     license='MIT',
     author='Genestack Limited',
