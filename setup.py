@@ -10,7 +10,7 @@ with open('requirements-test.txt') as f:
     required_test = [line for line in f.read().splitlines() if not regex.match(line)]
 
 # Import version directly, without execute __init__.py script
-exec(open('genestack_client/version.py').read())
+exec(open('odm_sdk/version.py').read())
 
 setup(
     name='odm-sdk',
@@ -28,7 +28,7 @@ setup(
     long_description_content_type="text/markdown",
     keywords=['genestack', 'odm', 'import', 'share', 'create',
               'delete', 'curate', 'genomics', 'api'],
-    python_requires='>=3.7',
+    python_requires='>=3.10',
     entry_points={
         'console_scripts': [
             'odm-user-setup = odm_sdk.scripts.genestack_user_setup:main',
@@ -49,11 +49,9 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',

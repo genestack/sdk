@@ -1,3 +1,2 @@
---extra-index-url https://nexus.devops.gs.team/repository/pypi-group/simple/
 Sphinx==7.2.6
 sphinx-rtd-theme==2.0.0

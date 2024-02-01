@@ -27,7 +27,7 @@ build:
     ARG --required PYTHON_CLIENT_VERSION
     RUN \
         cat odm_sdk/version.py.envtpl | envsubst > odm_sdk/version.py && \
-        python3 setup.py build && \
+        python3 setup.py te && \
         python3 setup.py sdist
 
     SAVE IMAGE --cache-hint

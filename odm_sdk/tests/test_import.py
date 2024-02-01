@@ -5,7 +5,7 @@ from io import StringIO
 
 import requests_mock
 
-from odm_sdk.scripts import ImportParams, do_import
+from odm_sdk.scripts.import_ODM_data import ImportParams, do_import
 
 JOB_API_PATH = "frontend/rs/genestack/job/default-released"
 INTEGRATION_LINK_PATH = "frontend/rs/genestack/integrationCurator/default-released/integration/link"
