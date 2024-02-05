@@ -23,6 +23,7 @@ setup(
     long_description_content_type="text/markdown",
     keywords=['genestack', 'odm', 'import', 'share', 'create',
               'delete', 'curate', 'genomics', 'api'],
+    include_package_data=True,
     python_requires='>=3.10',
     entry_points={
         'console_scripts': [
