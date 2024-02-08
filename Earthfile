@@ -6,27 +6,36 @@ ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
 ARG --global --required NEXUS_URL
 
-deps:
+tox:
     ARG --required BASE_IMAGES_VERSION
     FROM ${HARBOR_DOCKER_REGISTRY}/builder:${BASE_IMAGES_VERSION}
-    COPY requirements.txt .
+    COPY requirements-tox.txt tox.ini .
     RUN \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
             pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements.txt && \
+            python3 -m pip install --no-cache-dir -r requirements-tox.txt && \
+            pypi-clean.sh
+
+    SAVE IMAGE --cache-hint
+
+test:
+    FROM +tox
+    COPY --dir requirements-build.txt requirements-test.txt requirements.txt MANIFEST.in README.md LICENSE.txt setup.py odm_sdk .
+    RUN \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            pypi-login.sh && \
+            python3 -m tox run-parallel && \
             pypi-clean.sh
 
     SAVE IMAGE --cache-hint
 
 build:
-    FROM +deps
-
-    COPY --dir MANIFEST.in README.md LICENSE.txt setup.py genestack_client test docs .
-
+    FROM +test
     ARG --required PYTHON_CLIENT_VERSION
     RUN \
-        cat genestack_client/version.py.envtpl | envsubst > genestack_client/version.py && \
+        cat odm_sdk/version.py.envtpl | envsubst > odm_sdk/version.py && \
         python3 setup.py sdist
 
     SAVE IMAGE --cache-hint

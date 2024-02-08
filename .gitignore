@@ -18,3 +18,8 @@ docs/source/scripts/genestack-user-setup.rst
 .env-woq
 .arg
 .secret
+
+# tox
+.tox
+pip-wheel-metadata
+odm_sdk.egg-info

@@ -6,9 +6,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from genestack_client.file_filters import *
-from genestack_client.metainfo_scalar_values import *
-from genestack_client import (Metainfo, FilesUtil, get_connection, make_connection_parser,
+from odm_sdk.file_filters import *
+from odm_sdk.metainfo_scalar_values import *
+from odm_sdk import (Metainfo, FilesUtil, get_connection, make_connection_parser,
                               Permissions, FileTypes, SortOrder)
 
 SOME_KEY = "someKey"

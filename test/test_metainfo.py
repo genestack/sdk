@@ -6,8 +6,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from genestack_client.metainfo_scalar_values import *
-from genestack_client import (get_connection, make_connection_parser, DataImporter, Metainfo, FilesUtil,
+from odm_sdk.metainfo_scalar_values import *
+from odm_sdk import (get_connection, make_connection_parser, DataImporter, Metainfo, FilesUtil,
                               SpecialFolders, BioMetaKeys)
 
 

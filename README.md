@@ -1,4 +1,4 @@
-# Python Client Library
+# Library `odm_sdk`
 
 ### Documentation
 
@@ -6,35 +6,30 @@
 
 ### Installation
 
-   - install library and scripts:
-     ```
-     pip install genestack-client
-     ```
-     if you need the latest development version:
-     ```
-     pip install --upgrade https://github.com/genestack/python-client/archive/master.zip
-     ```
-   - setup default user
-     ```
-     genestack-user-setup init
-     ```
+```shell
+python3 -m pip install odm-sdk
+```
 
-### Repo
+### Usage
 
-  ```
-  docs/                             - folder with documentation sources
-  genestack_client/                 - folder with library
-  tests/                            - developer tests, require pytest to run.
-  genestack-user-setup              - script to setup user (installed as script)
-  genestack-shell                   - shell (installed as script)
-  setup.py                          - installation setup for genestack_client library
-  ```
+```shell
+odm-user-setup init
+```
 
 ### Generate documentation files
 
- - install [**sphinx**](http://sphinx-doc.org/) and **sphinx-rtd-theme**
-   - `pip install Sphinx sphinx-rtd-theme`
- - `cd docs`
- - `make html`
+```shell
+python3 -m pip install -r requirements-docs.txt
+cd docs
+make html
+```
 
 **Note!** `make` use script `make_shell_docs.py` that generates documentation for shell applications
+
+### Repo structure
+
+```
+docs/                             - folder with documentation sources
+odm_sdk/                          - folder with library and tests
+setup.py                          - installation setup for odm_sdk library
+```

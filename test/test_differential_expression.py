@@ -5,7 +5,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from genestack_client import (FilesUtil, get_connection, make_connection_parser, get_user,
+from odm_sdk import (FilesUtil, get_connection, make_connection_parser, get_user,
                               ExpressionNavigatorforGenes, ExpressionNavigatorforIsoforms,
                               ExpressionNavigatorforMicroarrays, AffymetrixMicroarraysNormalizationApplication,
                               SpecialFolders, GenomeQuery)

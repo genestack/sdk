@@ -1,9 +1,5 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import re
-"""
-Python library that allows you to interact programmatically with an instance of
-the Genestack platform.
-"""
 
 regex = re.compile(r'^--.*$')
 # Read requirements file to download deps with filtering params.
@@ -11,39 +7,47 @@ with open('requirements.txt') as f:
     required = [line for line in f.read().splitlines() if not regex.match(line)]
 
 # Import version directly, without execute __init__.py script
-exec(open('genestack_client/version.py').read())
+exec(open('odm_sdk/version.py').read())
 
 setup(
-    name='genestack_client',
+    name='odm-sdk',
     install_requires=required,
     version=__version__,
-    packages=['genestack_client', 'genestack_client.settings', 'genestack_client.scripts'],
+    packages=find_packages(),
     url='https://github.com/genestack/python-client',
     license='MIT',
     author='Genestack Limited',
     author_email='',
-    description='Genestack Python Client Library',
+    description='SDK for interacting with the Open Data Manager',
     long_description=__doc__,
     long_description_content_type="text/markdown",
-    python_requires='>=3.7',
+    keywords=['genestack', 'odm', 'import', 'share', 'create',
+              'delete', 'curate', 'genomics', 'api'],
+    include_package_data=True,
+    python_requires='>=3.10',
     entry_points={
         'console_scripts': [
-            'genestack-user-setup = genestack_client.scripts.genestack_user_setup:main',
-            'genestack-shell = genestack_client.scripts.shell:main',
+            'odm-user-setup = odm_sdk.scripts.genestack_user_setup:main',
+            'odm-shell = odm_sdk.scripts.shell:main',
+            'odm-import-data = odm_sdk.scripts.import_ODM_data:main',
+            'odm-create-users = odm_sdk.scripts.users.create_users:main',
+            'odm-update-template = odm_sdk.scripts.metainfo_templates.update_template:main',
+            'odm-delete-template = odm_sdk.scripts.delete_study_or_template:main',
+            'odm-update-dictionary = odm_sdk.scripts.dictionaries.load_init_share_dictionaries:main',
+            'odm-curate-study = odm_sdk.scripts.study_management.create_curation_file:main',
+            'odm-delete-study = odm_sdk.scripts.delete_study_or_template:main',
+            'odm-share-study = odm_sdk.scripts.study_management.share_study_with_group:main',
+            'odm-geo-prepare = odm_sdk.scripts.study_management.GEO_prepare:main',
+            'odm-upload-reference-genome = odm_sdk.scripts.upload_reference_genome:main',
         ],
     },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -54,5 +58,4 @@ setup(
         'Source': 'https://github.com/genestack/python-client/',
         'Tracker': 'https://github.com/genestack/python-client/issues',
     },
-    keywords=['genestack', 'genomics', 'api'],
 )
