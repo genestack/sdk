@@ -1,4 +1,5 @@
 include requirements.txt
 include requirements-test.txt
+include requirements-internal.txt
 recursive-include odm_sdk/scripts/metainfo_templates/importers *
 recursive-include odm_sdk/scripts/internal *

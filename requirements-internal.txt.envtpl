@@ -1,0 +1,2 @@
+--extra-index-url https://nexus.devops.gs.team/repository/pypi-group/simple/
+odm-api==$ODM_OPENAPI_VERSION
