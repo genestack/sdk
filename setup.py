@@ -6,12 +6,15 @@ regex = re.compile(r'^--.*$')
 with open('requirements.txt') as f:
     required = [line for line in f.read().splitlines() if not regex.match(line)]
 
+with open('requirements-internal.txt') as f:
+    required_internal = [line for line in f.read().splitlines() if not regex.match(line)]
+
 # Import version directly, without execute __init__.py script
 exec(open('odm_sdk/version.py').read())
 
 setup(
     name='odm-sdk',
-    install_requires=required,
+    install_requires=required + required_internal,
     version=__version__,
     packages=find_packages(),
     url='https://github.com/genestack/python-client',

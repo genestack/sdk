@@ -20,12 +20,14 @@ tox:
     SAVE IMAGE --cache-hint
 
 test:
+    ARG --required ODM_OPENAPI_VERSION
     FROM +tox
-    COPY --dir requirements-build.txt requirements-test.txt requirements.txt MANIFEST.in README.md LICENSE.txt setup.py odm_sdk .
+    COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt MANIFEST.in README.md LICENSE.txt setup.py odm_sdk .
     RUN \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
             pypi-login.sh && \
+            cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
             python3 -m tox run-parallel && \
             pypi-clean.sh
 
