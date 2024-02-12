@@ -1,4 +1,4 @@
-VERSION 0.7
+VERSION 0.8
 
 ARG --global --required HARBOR_DOCKER_REGISTRY
 ARG --global --required PYPI_REGISTRY_GROUP
@@ -22,7 +22,10 @@ tox:
 test:
     ARG --required ODM_OPENAPI_VERSION
     FROM +tox
-    COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt MANIFEST.in README.md LICENSE.txt setup.py odm_sdk .
+    COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt \
+                MANIFEST.in README.md LICENSE.txt \
+                setup.py odm_sdk \
+                .
     RUN \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
