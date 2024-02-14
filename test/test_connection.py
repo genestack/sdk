@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from odm_sdk import (Connection, GenestackAuthenticationException,
                               GenestackConnectionFailure, GenestackResponseError, get_user,
                               GenestackException)
-from odm_sdk.settings.genestack_user import _get_server_url
+from odm_sdk.settings.user import _get_server_url
 
 wrong_url = 'http://localhost:9999/aaaaz'
 

@@ -4,7 +4,7 @@ import shlex
 import sys
 from datetime import datetime
 
-from odm_sdk.genestack_shell import Command, GenestackShell
+from odm_sdk.shell import Command, GenestackShell
 from odm_sdk import ShareUtil
 
 APPLICATION_SHELL = 'genestack/shell'

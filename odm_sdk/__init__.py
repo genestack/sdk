@@ -1,15 +1,15 @@
 from .version import __version__
 
-from .genestack_exceptions import (GenestackAuthenticationException, GenestackBaseException,
+from .exceptions import (GenestackAuthenticationException, GenestackBaseException,
                                   GenestackConnectionFailure, GenestackException,
                                   GenestackResponseError, GenestackServerException,
                                   GenestackVersionException)
-from .genestack_connection import Connection, Application
+from .connection import Connection, Application
 from .file_types import FileTypes
 from .file_permissions import Permissions
 from .metainfo_scalar_values import *
 from .bio_meta_keys import BioMetaKeys
-from .genestack_metainfo import Metainfo
+from .metainfo import Metainfo
 from .data_importer import DataImporter
 from .file_initializer import FileInitializer
 from .genome_query import GenomeQuery
