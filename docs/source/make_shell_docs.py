@@ -95,7 +95,7 @@ def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_p
 
 def main():
     generate_rst_doc('genestack-shell', 'shell.py', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
-    generate_rst_doc('genestack-user-setup', 'genestack_user_setup.py', 'UserManagement', None, os.path.join('scripts', 'genestack-user-setup.rst'))
+    generate_rst_doc('genestack-user-setup', 'user_setup.py', 'UserManagement', None, os.path.join('scripts', 'odm-user-setup.rst'))
 
 
 if __name__ == '__main__':

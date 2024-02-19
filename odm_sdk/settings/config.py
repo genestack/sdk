@@ -6,7 +6,7 @@ from xml.dom.minidom import getDOMImplementation, parse
 import sys
 
 from odm_sdk import GenestackException
-from odm_sdk.settings.genestack_user import User
+from odm_sdk.settings.user import User
 from odm_sdk.utils import ask_confirmation
 
 _PASSWORD_KEYRING = 'Genestack SDK'

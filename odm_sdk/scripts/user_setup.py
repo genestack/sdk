@@ -6,7 +6,7 @@ from getpass import getpass
 from operator import attrgetter
 
 from odm_sdk import GenestackAuthenticationException
-from odm_sdk.genestack_shell import Command, GenestackShell
+from odm_sdk.shell import Command, GenestackShell
 from odm_sdk.settings import User, config
 from odm_sdk.utils import interactive_select
 
@@ -132,7 +132,7 @@ def check_config():
     config_path = config.get_settings_file()
     if not os.path.exists(config_path):
         print('You do not seem to have a config file yet. '
-              'Please run `genestack-user-setup init`. Exiting')
+              'Please run `odm-user-setup init`. Exiting')
         exit(1)
 
 
@@ -329,7 +329,7 @@ class Init(Command):
         group = parser.add_argument_group('command arguments')
         self.update_parser(group)
         group.add_argument('-H', '--host',
-                           help='Genestack host address',
+                           help='ODM host address',
                            metavar='<host>')
         return parser
 
@@ -352,7 +352,7 @@ class Init(Command):
             if os.path.exists(config_path):
                 print('A config file already exists at %s' % config_path)
                 return
-            print('If you do not have a Genestack account, you need to create one first')
+            print('If you do not have a ODM account, you need to create one first')
 
             user = create_user_from_input(self.args.host, default_alias)
             config.add_user(user)  # adding first user make him default.
@@ -381,7 +381,7 @@ class UserManagement(GenestackShell):
 
     def set_shell_user(self, args):
         if not args.host:
-            sys.stderr.write("Genestack host is mandatory. Please specify the host using the -H flag\n")
+            sys.stderr.write("ODM host is mandatory. Please specify the host using the -H flag\n")
             sys.exit(1)
 
         config_path = config.get_settings_file()

@@ -30,7 +30,7 @@ setup(
     python_requires='>=3.10',
     entry_points={
         'console_scripts': [
-            'odm-user-setup = odm_sdk.scripts.genestack_user_setup:main',
+            'odm-user-setup = odm_sdk.scripts.user_setup:main',
             'odm-shell = odm_sdk.scripts.shell:main',
             'odm-import-data = odm_sdk.scripts.import_ODM_data:main',
             'odm-create-users = odm_sdk.scripts.users.create_users:main',

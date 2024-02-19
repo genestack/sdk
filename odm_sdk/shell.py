@@ -79,7 +79,7 @@ class Command(object):
         """
         Returns a command parser. This function is called each time before a command is executed.
         To add new arguments to the command,
-        you should override the :py:meth:`~odm_sdk.genestack_shell.Command.update_parser` method.
+        you should override the :py:meth:`~odm_sdk.shell.Command.update_parser` method.
 
         :param parser: base argument parser. For offline commands and commands inside shell, it will be ``None``.
             For the other cases, it will be the result of :py:func:`~odm_sdk.make_connection_parser`
@@ -141,7 +141,7 @@ class Command(object):
         If this command is executed in the shell mode,
         the failed state is ignored, otherwise exit code ``1`` is returned.
 
-        Raise :py:class:`~odm_sdk.genestack_exceptions.GenestackException` to indicate command failure
+        Raise :py:class:`~odm_sdk.exceptions.GenestackException` to indicate command failure
         without showing the stacktrace.
 
         :rtype: None
