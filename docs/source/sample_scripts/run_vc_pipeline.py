@@ -11,7 +11,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 from builtins import object
-from genestack_client import (AlignedReadsQC, BioMetaKeys, BowtieApplication, FilesUtil,
+from odm_sdk import (AlignedReadsQC, BioMetaKeys, BowtieApplication, FilesUtil,
                               SpecialFolders, VariationCaller2Application, get_connection,
                               make_connection_parser)
 

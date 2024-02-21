@@ -7,17 +7,17 @@ standard_library.install_aliases()
 from builtins import *
 from inspect import getmembers, isclass
 
-from genestack_client import cla
+from odm_sdk import cla
 
 template = '''
 {name}
 {name_underline}
 
-.. autoclass:: genestack_client.{name}
+.. autoclass:: odm_sdk.{name}
         :members:
         :show-inheritance:
 
-        .. autoattribute:: genestack_client.{name}.APPLICATION_ID
+        .. autoattribute:: odm_sdk.{name}.APPLICATION_ID
 
 '''
 

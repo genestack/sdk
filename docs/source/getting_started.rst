@@ -31,7 +31,7 @@ Then, you can test your installation by executing:
 
 .. code-block:: sh
 
-    $ python -c 'import genestack_client; print genestack_client.__version__'
+    $ python -c 'import odm_sdk; print odm_sdk.__version__'
 
 If the command executes without returning an error, you have successfully installed the Genestack Python Client Library. Yay!
 
@@ -95,7 +95,7 @@ Each user has an alias (unique identifier), an email address, a host address and
 
 .. note::
 
-    To know more about user management, have a look at: :doc:`scripts/genestack-user-setup`
+    To know more about user management, have a look at: :doc:`scripts/user-setup`
 
 .. _Connection:
 
@@ -109,11 +109,11 @@ Passing Connection Parameters via Command-line Arguments
 
 The easiest way to open a connection is through the helper function: :py:func:`~genestack.get_connection`.
 It uses command line arguments parsed by an :py:class:`argparse.ArgumentParser` to find your credentials in the local config file. If no arguments are supplied to your script, the connection will attempt to log in with the default user specified by ``genestack-user-setup``.
-You can specify another user by appending ``-u <user_alias>`` to your command line call. For example, let's consider the following script, saved in ``my_genestack_script.py``, that simply creates a connection to the Genestack server and returns the e-mail address of the current user:
+You can specify another user by appending ``-u <user_alias>`` to your command line call. For example, let's consider the following script, saved in ``my_script.py``, that simply creates a connection to the Genestack server and returns the e-mail address of the current user:
 
 .. code-block:: python
 
-    from genestack_client import get_connection
+    from odm_sdk import get_connection
 
     connection = get_connection()
     print connection.whoami()
@@ -123,11 +123,11 @@ Using the connection parameters, you can run this script from a terminal using d
 .. code-block:: sh
 
     # login with default user
-    $ python my_genestack_script.py
+    $ python my_script.py
     user@email.com
 
     # login as bob@email.com, present in the config file under the alias "bob"
-    $ python my_genestack_script.py -u bob
+    $ python my_script.py -u bob
     bob@email.com
 
 
@@ -139,7 +139,7 @@ Have a look at the following example:
 
 .. code-block:: python
 
-    from genestack_client import get_connection, make_connection_parser
+    from odm_sdk import get_connection, make_connection_parser
 
     # create an instance of argparse.ArgumentParser with predefined arguments for connection
     parser = make_connection_parser()
@@ -193,7 +193,7 @@ You can also supply hard-coded parameters for the connection directly inside you
 
 .. code-block:: python
 
-    from genestack_client import Connection
+    from odm_sdk import Connection
 
     # crease connection object for server
     connection = Connection('https://platform.genestack.org/endpoint')
@@ -215,7 +215,7 @@ You can use the client library to call the public Java methods of any applicatio
 
 .. code-block:: python
 
-    from genestack_client import get_connection
+    from odm_sdk import get_connection
 
     connection = get_connection()
     print connection.application('genestack/signin').invoke('whoami')
@@ -224,7 +224,7 @@ And here is how to call a Java method with arguments:
 
 .. code-block:: python
 
-    from genestack_client import get_connection, Metainfo, PRIVATE
+    from odm_sdk import get_connection, Metainfo, PRIVATE
 
     connection = get_connection()
     metainfo = Metainfo()
@@ -239,7 +239,7 @@ If you need to make extensive use of an application that does not already have a
 
 .. code-block:: python
 
-    from genestack_client import Application, get_connection
+    from odm_sdk import Application, get_connection
 
     class SignIn(Application):
         APPLICATION_ID = 'genestack/signin'
@@ -265,12 +265,12 @@ FilesUtil
 
 First, let's open a connection::
 
-    >>> from genestack_client import get_connection
+    >>> from odm_sdk import get_connection
     >>> connection = get_connection()
 
 Then we create a new instance of the class::
 
-    >>> from genestack_client import FilesUtil
+    >>> from odm_sdk import FilesUtil
     >>> files_util = FilesUtil(connection)
 
 Then we can create a new empty folder::
@@ -299,12 +299,12 @@ Importers
 
 As always, we start by creating a connection::
 
-    >>> from genestack_client import get_connection
+    >>> from odm_sdk import get_connection
     >>> connection = get_connection()
 
 Then we create a new instance of the app::
 
-    >>> from genestack_client import DataImporter
+    >>> from odm_sdk import DataImporter
     >>> importer = DataImporter(connection)
 
 Then let's create an experiment in ``Imported files``::
@@ -331,7 +331,7 @@ Let's print the results to know the accession of our files::
 
 And finally we can start the initialization of the file::
 
-    >>> from genestack_client import FileInitializer
+    >>> from odm_sdk import FileInitializer
     >>> initializer = FileInitializer(connection)
     >>> initializer.initialize([assay])
     >>> print 'Start initialization of %s' % assay
@@ -352,9 +352,9 @@ The Task Log Viewer allows you to access the contents of initialization logs pro
 
 Again, we start by opening a connection and instantiating the class::
 
-    >>> from genestack_client import get_connection
+    >>> from odm_sdk import get_connection
     >>> connection = get_connection()
-    >>> from genestack_client import TaskLogViewer
+    >>> from odm_sdk import TaskLogViewer
     >>> log_viewer = TaskLogViewer(connection)
 
 Then we can check the error log of a file::
