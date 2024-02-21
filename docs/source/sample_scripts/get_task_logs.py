@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
-from genestack_client import TaskLogViewer, get_connection, make_connection_parser
+from odm_sdk import TaskLogViewer, get_connection, make_connection_parser
 
 # add extra arguments to the Genestack arguments parser for this script
 parser = make_connection_parser()

@@ -11,7 +11,7 @@ standard_library.install_aliases()
 from builtins import *
 import csv
 
-from genestack_client import (BioMetaKeys, DataImporter, GenestackException, Metainfo,
+from odm_sdk import (BioMetaKeys, DataImporter, GenestackException, Metainfo,
                               get_connection, make_connection_parser, unaligned_reads)
 
 # keys that must be supplied in the CSV file

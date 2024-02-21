@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath('../../'))  # Use Python Client Library from 
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx_markdown_builder']
 
 intersphinx_mapping = {'python': ('http://docs.python.org/3', None)}
 
@@ -56,7 +56,7 @@ copyright = '2020, Genestack'
 # The short X.Y version.
 import sys
 sys.path.append('..')
-from genestack_client import __version__
+from odm_sdk import __version__
 
 
 version = '.'.join(__version__.split('.')[:2])
@@ -329,9 +329,9 @@ from create_cla_docs import main
 main()
 
 
-from genestack_client import Metainfo, Application, GenestackException, CLApplication
+from odm_sdk import Metainfo, Application, GenestackException, CLApplication
 
-Metainfo.__module__ = 'genestack_client'
-Application.__module__ = 'genestack_client'
-GenestackException.__module__ = 'genestack_client'
-CLApplication.__module__ = 'genestack_client'
+Metainfo.__module__ = 'odm_sdk'
+Application.__module__ = 'odm_sdk'
+GenestackException.__module__ = 'odm_sdk'
+CLApplication.__module__ = 'odm_sdk'

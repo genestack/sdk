@@ -14,7 +14,7 @@ Application Wrappers
 Application
 -----------
 
-.. autoclass:: genestack_client.Application
+.. autoclass:: odm_sdk.Application
         :members:
         :show-inheritance:
 
@@ -23,7 +23,7 @@ Application
 DataImporter
 ------------
 
-.. autoclass:: genestack_client.DataImporter
+.. autoclass:: odm_sdk.DataImporter
         :members:
         :show-inheritance:
 
@@ -32,7 +32,7 @@ DataImporter
 FilesUtil
 ---------
 
-.. autoclass:: genestack_client.FilesUtil
+.. autoclass:: odm_sdk.FilesUtil
         :members:
         :show-inheritance:
 
@@ -41,7 +41,7 @@ FilesUtil
 GroupsUtil
 ----------
 
-.. autoclass:: genestack_client.GroupsUtil
+.. autoclass:: odm_sdk.GroupsUtil
         :members:
         :show-inheritance:
 
@@ -50,14 +50,14 @@ GroupsUtil
 ShareUtil
 ---------
 
-.. autoclass:: genestack_client.ShareUtil
+.. autoclass:: odm_sdk.ShareUtil
         :members:
         :show-inheritance:
 
 FileInitializer
 ---------------
 
-.. autoclass:: genestack_client.FileInitializer
+.. autoclass:: odm_sdk.FileInitializer
         :members:
         :show-inheritance:
 
@@ -66,26 +66,26 @@ FileInitializer
 TaskLogViewer
 -------------
 
-.. autoclass:: genestack_client.TaskLogViewer
+.. autoclass:: odm_sdk.TaskLogViewer
         :members:
         :show-inheritance:
 
 Expression Navigator
 --------------------
 
-.. automodule:: genestack_client.expression_navigator
+.. automodule:: odm_sdk.expression_navigator
         :members:
         :undoc-members:
 
 DatasetsUtil
 ------------
-.. autoclass:: genestack_client.DatasetsUtil
+.. autoclass:: odm_sdk.DatasetsUtil
         :members:
         :undoc-members:
 
 SampleLinker (Beta)
 -------------------
-.. autoclass:: genestack_client.samples.SampleLinker
+.. autoclass:: odm_sdk.samples.SampleLinker
         :members:
         :undoc-members:
 
@@ -95,7 +95,7 @@ Command-Line Applications
 CLApplication
 -------------
 
-.. autoclass:: genestack_client.CLApplication
+.. autoclass:: odm_sdk.CLApplication
         :members:
         :show-inheritance:
 
@@ -107,27 +107,27 @@ Genestack Objects
 Metainfo
 --------
 
-.. autoclass:: genestack_client.Metainfo
+.. autoclass:: odm_sdk.Metainfo
         :members:
         :show-inheritance:
 
 Metainfo scalar values
 ----------------------
 
-.. automodule:: genestack_client.metainfo_scalar_values
+.. automodule:: odm_sdk.metainfo_scalar_values
         :members:
         :undoc-members:
 
 File filters
 ------------
 
-.. automodule:: genestack_client.file_filters
+.. automodule:: odm_sdk.file_filters
         :members:
 
 Genome Queries
 --------------
 
-.. autoclass:: genestack_client.genome_query.GenomeQuery
+.. autoclass:: odm_sdk.genome_query.GenomeQuery
         :members:
         :undoc-members:
 
@@ -136,7 +136,7 @@ Genome Queries
 File Types
 ----------
 
-.. autoclass:: genestack_client.file_types.FileTypes
+.. autoclass:: odm_sdk.file_types.FileTypes
         :members:
         :undoc-members:
 
@@ -145,7 +145,7 @@ File Types
 File Permissions
 ----------------
 
-.. autoclass:: genestack_client.file_permissions.Permissions
+.. autoclass:: odm_sdk.file_permissions.Permissions
         :members:
         :undoc-members:
 
@@ -155,14 +155,14 @@ Users and Connections
 Connection
 ----------
 
-.. autoclass:: genestack_client.Connection
+.. autoclass:: odm_sdk.Connection
         :members:
         :show-inheritance:
 
 settings.User
 -------------
 
-.. autoclass:: genestack_client.settings.User
+.. autoclass:: odm_sdk.settings.User
         :members:
         :show-inheritance:
 
@@ -172,18 +172,18 @@ Helper methods
 get_connection
 ^^^^^^^^^^^^^^
 
-.. autofunction:: genestack_client.get_connection
+.. autofunction:: odm_sdk.get_connection
 
 make_connection_parser
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. autofunction:: genestack_client.make_connection_parser
+.. autofunction:: odm_sdk.make_connection_parser
 
 
 get_user
 ^^^^^^^^
 
-.. autofunction:: genestack_client.get_user
+.. autofunction:: odm_sdk.get_user
 
 
 
@@ -193,7 +193,7 @@ Exceptions
 GenestackBaseException
 ----------------------
 
-.. autoclass:: genestack_client.GenestackBaseException
+.. autoclass:: odm_sdk.GenestackBaseException
         :members:
         :show-inheritance:
 
@@ -201,7 +201,7 @@ GenestackBaseException
 GenestackException
 ------------------
 
-.. autoclass:: genestack_client.GenestackException
+.. autoclass:: odm_sdk.GenestackException
         :members:
         :show-inheritance:
 
@@ -209,7 +209,7 @@ GenestackException
 GenestackServerException
 ------------------------
 
-.. autoclass:: genestack_client.GenestackServerException
+.. autoclass:: odm_sdk.GenestackServerException
         :members:
         :show-inheritance:
 
@@ -217,7 +217,7 @@ GenestackServerException
 GenestackAuthenticationException
 --------------------------------
 
-.. autoclass:: genestack_client.GenestackAuthenticationException
+.. autoclass:: odm_sdk.GenestackAuthenticationException
         :members:
         :show-inheritance:
 
@@ -225,7 +225,7 @@ GenestackAuthenticationException
 GenestackResponseError
 ----------------------
 
-.. autoclass:: genestack_client.GenestackResponseError
+.. autoclass:: odm_sdk.GenestackResponseError
         :members:
         :show-inheritance:
 
@@ -233,7 +233,7 @@ GenestackResponseError
 GenestackConnectionFailure
 --------------------------
 
-.. autoclass:: genestack_client.GenestackConnectionFailure
+.. autoclass:: odm_sdk.GenestackConnectionFailure
         :members:
         :show-inheritance:
 
@@ -243,7 +243,7 @@ Others
 GenestackShell
 --------------
 
-.. autoclass:: genestack_client.genestack_shell.GenestackShell
+.. autoclass:: odm_sdk.shell.GenestackShell
         :members:
         :show-inheritance:
 
@@ -251,13 +251,13 @@ GenestackShell
 Command
 -------
 
-.. autoclass:: genestack_client.genestack_shell.Command
+.. autoclass:: odm_sdk.shell.Command
         :members:
         :show-inheritance:
 
 SpecialFolders
 --------------
 
-.. autoclass:: genestack_client.SpecialFolders
+.. autoclass:: odm_sdk.SpecialFolders
         :members:
         :show-inheritance:

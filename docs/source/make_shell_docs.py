@@ -9,8 +9,8 @@ import imp
 import os
 import sys
 
-from genestack_client import make_connection_parser
-from genestack_client.genestack_shell import get_help
+from odm_sdk import make_connection_parser
+from odm_sdk.shell import get_help
 
 sys.path.append('..')
 
@@ -57,7 +57,7 @@ Commands
 
 
 def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_path):
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'genestack_client', 'scripts', file_name)) as f:
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'odm_sdk', 'scripts', file_name)) as f:
         shell_module = imp.new_module('shell_name')
         exec(f.read(), shell_module.__dict__)
 
@@ -94,8 +94,8 @@ def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_p
 
 
 def main():
-    generate_rst_doc('genestack-shell', 'shell.py', 'Shell', None, os.path.join('scripts', 'genestack-shell.rst'))
-    generate_rst_doc('genestack-user-setup', 'user_setup.py', 'UserManagement', None, os.path.join('scripts', 'odm-user-setup.rst'))
+    generate_rst_doc('odm-shell', 'shell.py', 'Shell', None, os.path.join('scripts', 'odm-shell.rst'))
+    generate_rst_doc('odm-user-setup', 'user_setup.py', 'UserManagement', None, os.path.join('scripts', 'odm-user-setup.rst'))
 
 
 if __name__ == '__main__':
