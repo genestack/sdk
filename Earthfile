@@ -51,10 +51,12 @@ push:
     ARG --required PYTHON_CLIENT_VERSION
     IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
-            --secret NEXUS_USER \
-            --secret NEXUS_PASSWORD \
+            --secret PYPI_TOKEN \
+            --secret PYPI_TOKEN_TEST \
                 pypi-login.sh && \
-                twine upload dist/* -r nexus-pypi-releases
+                twine upload dist/* -r testpypi && \
+                twine upload dist/* && \
+                pypi-clean.sh
     ELSE
         RUN --push \
         --secret NEXUS_USER \
@@ -126,16 +128,6 @@ public:
             curl \
             -X POST \
             -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
-
-    # Push to pypi
-    RUN --push \
-        --secret PYPI_USER \
-        --secret PYPI_USER_TEST \
-        --secret PYPI_PASSWORD \
-        --secret PYPI_PASSWORD_TEST \
-            pypi-login.sh && \
-            twine upload dist/* -r testpypi && \
-            twine upload dist/*
 
 main:
     BUILD +push
