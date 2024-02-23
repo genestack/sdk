@@ -49,13 +49,14 @@ build:
 push:
     FROM +build
 
+    RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
+
     ARG --required PYTHON_CLIENT_VERSION
     IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
             --secret PYPI_TOKEN \
             --secret PYPI_TOKEN_TEST \
                 pypi-login.sh && \
-                python3 -m pip install --no-cache-dir -r requirements-build.txt && \
                 twine upload dist/* -r testpypi && \
                 twine upload dist/* && \
                 pypi-clean.sh
