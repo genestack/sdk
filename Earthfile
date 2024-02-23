@@ -55,6 +55,7 @@ push:
             --secret PYPI_TOKEN \
             --secret PYPI_TOKEN_TEST \
                 pypi-login.sh && \
+                python3 -m pip install --no-cache-dir -r requirements-build.txt && \
                 twine upload dist/* -r testpypi && \
                 twine upload dist/* && \
                 pypi-clean.sh
