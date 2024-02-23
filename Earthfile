@@ -4,6 +4,7 @@ ARG --global --required HARBOR_DOCKER_REGISTRY
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
+ARG --global --required PYPI_REGISTRY_PYPI_ORG_MIRROR
 ARG --global --required NEXUS_URL
 
 tox:
