@@ -55,20 +55,20 @@ push:
     IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
             --secret PYPI_TOKEN \
-            --secret PYPI_TOKEN_TEST \
             --secret NEXUS_USER \
             --secret NEXUS_PASSWORD \
                 pypi-login.sh && \
                 twine upload dist/* -r nexus-pypi-releases && \
-                twine upload dist/* -r testpypi && \
                 twine upload dist/* && \
                 pypi-clean.sh
     ELSE
         RUN --push \
+            --secret PYPI_TOKEN_TEST \
             --secret NEXUS_USER \
             --secret NEXUS_PASSWORD \
                 pypi-login.sh && \
                 twine upload dist/* -r nexus-pypi-snapshots && \
+                twine upload dist/* -r testpypi && \
                 pypi-clean.sh
     END
 
