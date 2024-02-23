@@ -59,10 +59,11 @@ push:
                 pypi-clean.sh
     ELSE
         RUN --push \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            twine upload dist/* -r nexus-pypi-snapshots
+            --secret NEXUS_USER \
+            --secret NEXUS_PASSWORD \
+                pypi-login.sh && \
+                twine upload dist/* -r nexus-pypi-snapshots && \
+                pypi-clean.sh
     END
 
 public:
