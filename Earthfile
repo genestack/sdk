@@ -4,6 +4,7 @@ ARG --global --required HARBOR_DOCKER_REGISTRY
 ARG --global --required PYPI_REGISTRY_GROUP
 ARG --global --required PYPI_REGISTRY_RELEASES
 ARG --global --required PYPI_REGISTRY_SNAPSHOTS
+ARG --global --required PYPI_REGISTRY_PYPI_ORG_MIRROR
 ARG --global --required NEXUS_URL
 
 tox:
@@ -48,19 +49,27 @@ build:
 push:
     FROM +build
 
+    RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
+
     ARG --required PYTHON_CLIENT_VERSION
     IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
+            --secret PYPI_TOKEN \
             --secret NEXUS_USER \
             --secret NEXUS_PASSWORD \
                 pypi-login.sh && \
-                twine upload dist/* -r nexus-pypi-releases
+                twine upload dist/* -r nexus-pypi-releases && \
+                twine upload dist/* && \
+                pypi-clean.sh
     ELSE
         RUN --push \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            twine upload dist/* -r nexus-pypi-snapshots
+            --secret PYPI_TOKEN_TEST \
+            --secret NEXUS_USER \
+            --secret NEXUS_PASSWORD \
+                pypi-login.sh && \
+                twine upload dist/* -r nexus-pypi-snapshots && \
+                twine upload dist/* -r testpypi && \
+                pypi-clean.sh
     END
 
 public:
@@ -126,16 +135,6 @@ public:
             curl \
             -X POST \
             -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
-
-    # Push to pypi
-    RUN --push \
-        --secret PYPI_USER \
-        --secret PYPI_USER_TEST \
-        --secret PYPI_PASSWORD \
-        --secret PYPI_PASSWORD_TEST \
-            pypi-login.sh && \
-            twine upload dist/* -r testpypi && \
-            twine upload dist/*
 
 main:
     BUILD +push
