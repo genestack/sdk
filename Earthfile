@@ -21,7 +21,7 @@ tox:
     SAVE IMAGE --cache-hint
 
 test:
-    ARG --required ODM_OPENAPI_VERSION
+    ARG --required OPENAPI_VERSION
     FROM +tox
     COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt \
                 MANIFEST.in README.md LICENSE.txt \
@@ -39,7 +39,7 @@ test:
 
 build:
     FROM +test
-    ARG --required PYTHON_CLIENT_VERSION
+    ARG --required SDK_VERSION
     RUN \
         cat odm_sdk/version.py.envtpl | envsubst > odm_sdk/version.py && \
         python3 setup.py sdist
@@ -51,8 +51,8 @@ push:
 
     RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
 
-    ARG --required PYTHON_CLIENT_VERSION
-    IF echo ${PYTHON_CLIENT_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
+    ARG --required SDK_VERSION
+    IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
         RUN --push \
             --secret PYPI_TOKEN \
             --secret NEXUS_USER \

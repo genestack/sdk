@@ -1,1 +1,1 @@
-odm-api==$ODM_OPENAPI_VERSION
+odm-api==$OPENAPI_VERSION

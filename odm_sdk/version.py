@@ -1,5 +1,5 @@
 import os
-version = os.environ.get('PYTHON_CLIENT_VERSION')
+version = os.environ.get('SDK_VERSION')
 if version is not None:
     __version__ = version
 else:

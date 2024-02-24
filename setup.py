@@ -17,7 +17,7 @@ setup(
     install_requires=required + required_internal,
     version=__version__,
     packages=find_packages(),
-    url='https://github.com/genestack/python-client',
+    url='https://github.com/genestack/sdk',
     license='MIT',
     author='Genestack Limited',
     author_email='',
