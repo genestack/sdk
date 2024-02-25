@@ -53,24 +53,23 @@ push:
 
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
-        RUN --push \
-            --secret PYPI_TOKEN \
-            --secret NEXUS_USER \
-            --secret NEXUS_PASSWORD \
-                pypi-login.sh && \
-                twine upload dist/* -r nexus-pypi-releases && \
-                twine upload dist/* && \
-                pypi-clean.sh
+        ARG PYPI_REPOSITORY_FIRST="nexus-pypi-releases"
+        ARG PYPI_REPOSITORY_SECOND="pypi"
     ELSE
-        RUN --push \
-            --secret PYPI_TOKEN_TEST \
-            --secret NEXUS_USER \
-            --secret NEXUS_PASSWORD \
-                pypi-login.sh && \
-                twine upload dist/* -r nexus-pypi-snapshots && \
-                twine upload dist/* -r testpypi && \
-                pypi-clean.sh
+        ARG PYPI_REPOSITORY_FIRST="nexus-pypi-snapshots"
+        ARG PYPI_REPOSITORY_SECOND="testpypi"
     END
+
+    # Push sdk
+    RUN --push \
+        --secret PYPI_TOKEN \
+        --secret PYPI_TOKEN_TEST \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            pypi-login.sh && \
+            twine upload dist/* -r ${PYPI_REPOSITORY_FIRST} && \
+            twine upload dist/* ${PYPI_REPOSITORY_SECOND} && \
+            pypi-clean.sh
 
 public:
     FROM +build
