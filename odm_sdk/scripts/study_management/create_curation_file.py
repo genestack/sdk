@@ -55,9 +55,9 @@ DEFAULT_VERSION_MESSAGE = "Edited using curation script"
 class CurationApplication(Application):
     APPLICATION_ID = "genestack/curation"
 
-    def create_files(self, target_studies_accessions, template_accession=None, overwrite=False,
+    def create_files(self, target_studies_accessions, overwrite=False,
                      dry_run=False, rules=None, new_version_message=None, publish_new_version=True):
-        return self.invoke('createCurationFiles', target_studies_accessions, template_accession,
+        return self.invoke('createCurationFiles', target_studies_accessions,
                            overwrite, dry_run, rules, new_version_message, publish_new_version)
 
 
@@ -65,9 +65,6 @@ def main():
     parser = make_connection_parser()
     parser.add_argument('accessions', metavar='<accessions>', nargs='*',
                         help='Accession(s) of the study (or studies) to curate')
-    parser.add_argument('--template', metavar='<template>', default=None,
-                        help="Accession of the template to curate studies. If not specified "
-                             "use organization's default template")
     parser.add_argument('--dry-run', action='store_true', help='Do not write any metainfo')
     parser.add_argument('--overwrite', action='store_true', help='Overwrite existing curated keys')
     parser.add_argument('--rules', metavar='<rules_file>',
@@ -112,7 +109,6 @@ def main():
     print("Creating and initializing automated curation file...")
 
     accessions = curation_app.create_files(arguments.accessions,
-                                           arguments.template,
                                            arguments.overwrite,
                                            arguments.dry_run,
                                            rules,
