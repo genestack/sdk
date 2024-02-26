@@ -53,11 +53,11 @@ push:
 
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
-        ARG PYPI_REPOSITORY_FIRST="nexus-pypi-releases"
-        ARG PYPI_REPOSITORY_SECOND="pypi"
+        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-releases"
+        ARG PYPI_REPOSITORY_PUBLIC="pypi"
     ELSE
-        ARG PYPI_REPOSITORY_FIRST="nexus-pypi-snapshots"
-        ARG PYPI_REPOSITORY_SECOND="testpypi"
+        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-snapshots"
+        ARG PYPI_REPOSITORY_PUBLIC="testpypi"
     END
 
     # Push sdk
