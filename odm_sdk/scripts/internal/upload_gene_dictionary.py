@@ -32,7 +32,8 @@ def main():
         'Gene Dictionary Data',
         create=True)
 
-    accession = loader.create_file(target_folder, overwrite=args.overwrite)
+    accession = 'ACCESSION_STUB'
+    # loader.create_file(target_folder, overwrite=args.overwrite)
     print("Import started! (%s) Result folder: %s" % (accession, target_folder))
 
 
