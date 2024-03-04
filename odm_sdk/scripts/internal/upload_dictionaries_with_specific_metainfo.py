@@ -51,7 +51,7 @@ def upload_gene_ontology():
 def upload_gene_dictionaries():
     organisms_to_load = [
         'Bos taurus',
-        'Canis familiaris',
+        'Canis lupus familiaris',
         'Danio rerio',
         'Homo sapiens',
         'Macaca fascicularis',
