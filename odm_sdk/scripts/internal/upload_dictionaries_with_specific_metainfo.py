@@ -51,15 +51,13 @@ def upload_gene_ontology():
 def upload_gene_dictionaries():
     organisms_to_load = [
         'Bos taurus',
-        'Canis lupus familiaris',
         'Danio rerio',
         'Homo sapiens',
         'Macaca fascicularis',
         'Mus musculus',
         'Oryctolagus cuniculus',
         'Rattus norvegicus',
-        'Sus scrofa',
-        'Vulpes'
+        'Sus scrofa'
     ]
     connection = get_connection()
     dictionary_accessions = []
