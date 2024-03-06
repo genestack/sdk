@@ -1,8 +1,8 @@
 # README.md
 
-These scripts are designed for generating source files for some predefined dictionaries, which are uploaded by the
-initial image. The source files can be found in the `odm-init` S3 buckets. These scripts serve as a backup solution in
-case the original data is lost.
+The directory contains scripts that are designed for generating source files for some predefined dictionaries, which are
+uploaded by the initial image. The source files can be found in the `odm-init` S3 bucket. These scripts serve as a
+backup solution in case the original data is lost.
 
 ## Scripts Description
 
@@ -16,7 +16,7 @@ only upload dictionaries that are extended with gene synonyms from NCBI (see `di
 ### generate_unit_dictionaries.py
 
 This script generates unit vocabularies. It accepts `--destination-path` as an optional parameter, allowing users to
-specify the path where the generated dictionary should be saved.
+specify the path where the generated dictionaries should be saved.
 
 ### Additional Source File
 
