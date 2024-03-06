@@ -11,10 +11,15 @@ import time
 from collections import defaultdict
 from subprocess import check_call
 
+# This script combines code from initialise_raw_gene_dictionary.py and gene_dictionary_creation.py,
+# previously located in unified repo. Look up their history there for reference.
+# It primarily adapts initialise_raw_gene_dictionary.py, excluding the use of raw file metadata.
+# Instead, it incorporates get_ensembl_organisms from gene_dictionary_creation.py.
+
 MAIN_FILE_NAME = 'gene_ensembl__translation__main'
 FIRST_COLUMN_NAMES = ['label', 'gene_symbol', 'ensembl_transcript_id', 'ensembl_protein_id', 'description']
 
-# to comply with the CSV initializer which uses the default 'excel' dialect
+# to comply with the Genestack CSV initializer which uses the default 'excel' dialect
 ROW_ENTRY_SEPARATOR = ','
 TERM_SEPARATOR = ','
 BASE_ENSEMBL_FTP = 'ftp://ftp.ensembl.org/pub/release-99/mysql/ensembl_mart_99/'
@@ -22,8 +27,6 @@ ENSEMBL_SCHEMA_FILE = 'ensembl_mart_99.sql.gz'
 BASE_NCBI_FTP = 'https://ftp.ncbi.nlm.nih.gov/'
 NCBI_GENE_DATA_FOLDER = 'gene/DATA/'
 NCBI_GENE_INFO_FILENAME = 'gene_info'
-# TODO: instead of downloading 500MB generic gene info archive for each organism we may
-# download species (or species class) specific data.
 NCBI_GENE_INFO_FILENAME_GZ = 'gene_info.gz'
 
 
@@ -211,7 +214,7 @@ def prepare_cell(items):
 def prepare_csv_row(row):
     """
     row = ['1', ['2', '3'], ['4', '5, 6', '7']] ==> ['1', '2,3', '4,"5, 6",7'].
-    Such format of csv row is expected by OntologyCsvInitializer.java class
+    Such format of csv row is expected by genestack OntologyCsvInitializer.java class
     :param row: preliminary representation of the csv row
     :type row: list[list[str]]
     :return: list[str]
@@ -237,7 +240,6 @@ def parse_ensembl_mart_schema():
     schema_dict = {}
     print('Parsing Ensembl mart schema...')
     local_file = ENSEMBL_SCHEMA_FILE
-    # FIXME: move download out of cycle
     download_file(BASE_ENSEMBL_FTP + ENSEMBL_SCHEMA_FILE, local_file)
     selected_file_names = set(descriptor['name'] for descriptor in DATABASE_FILES)
 
@@ -287,7 +289,6 @@ def add_gene_synonyms_from_ncbi(result_filename, taxonomy_id):
     :param taxonomy_id: taxonomy id of the organism used to extract organism specific rows from NCBI `gene_info` file
     :return: None
     """
-    download_file(BASE_NCBI_FTP + NCBI_GENE_DATA_FOLDER + NCBI_GENE_INFO_FILENAME_GZ, NCBI_GENE_INFO_FILENAME_GZ)
     gene_synonyms_dict = load_gene_synonyms_dict(taxonomy_id)
     write_result_with_synonyms(result_filename, gene_synonyms_dict)
 
@@ -350,20 +351,21 @@ def get_foreign_key(col_names_to_indices, join_key):
 
 
 def main():
+    # download ncbi gene_info file in advance
+    download_file(BASE_NCBI_FTP + NCBI_GENE_DATA_FOLDER + NCBI_GENE_INFO_FILENAME_GZ, NCBI_GENE_INFO_FILENAME_GZ)
+    ensembl_column_mappings = parse_ensembl_mart_schema()
+    taxonomy_dict = load_taxonomy_dict(ensembl_column_mappings)
+    output_columns = FIRST_COLUMN_NAMES
+    for dic in DATABASE_FILES:
+        for value in dic['columns'].values():
+            if value not in FIRST_COLUMN_NAMES:
+                output_columns.append(value)
+
     for species, organism_name in get_ensembl_organisms():
         secondary_files_data = []
 
         # dictionary: Ensembl gene id -> dictionary of gene info
         final_data = defaultdict(lambda: defaultdict(list))
-
-        output_columns = FIRST_COLUMN_NAMES
-        for dic in DATABASE_FILES:
-            for value in dic['columns'].values():
-                if value not in FIRST_COLUMN_NAMES:
-                    output_columns.append(value)
-
-        ensembl_column_mappings = parse_ensembl_mart_schema()
-        taxonomy_dict = load_taxonomy_dict(ensembl_column_mappings)
 
         for file_descriptor in DATABASE_FILES:
             # for each of the secondary files for the current species
@@ -395,9 +397,6 @@ def main():
             with gzip.open(local_name, mode='rt', encoding='cp1251') as txt_file:
                 csv_reader = csv.reader(txt_file, delimiter='\t')
                 for entry in csv_reader:
-                    # # Entry comes from cp1251 encoding and should be decoded
-                    # entry = [cell.decode('cp1251') for cell in entry] fixme check if can be deleted
-
                     row_dictionary = defaultdict(list)
                     for input_name, output_name in file_descriptor['columns'].items():
                         col_index = col_names_to_indices[input_name]
