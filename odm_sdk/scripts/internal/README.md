@@ -2,8 +2,7 @@
 
 The directory contains scripts that are designed for generating source files for some predefined dictionaries, which are
 uploaded by the [init-image](https://github.com/genestack/init-image). The source files can be found in the `odm-init`
-S3 bucket. These scripts serve as a backup solution in case the original data is lost. They can be also used to get the
-most recent version of the dictionaries.
+S3 bucket. These scripts serve as a backup solution in case the original data is lost.
 
 ## Scripts Description
 
