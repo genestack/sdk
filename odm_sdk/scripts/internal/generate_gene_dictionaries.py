@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import argparse
 import ftplib
 import csv
 import gzip
@@ -351,6 +352,13 @@ def get_foreign_key(col_names_to_indices, join_key):
 
 
 def main():
+    # Set up command-line argument parsing
+    parser = argparse.ArgumentParser(description='Generates source files for gene dictionaries.')
+    parser.add_argument('-ncbi', action='store_true', help='Generate only dictionaries with NCBI synonyms.')
+
+    args = parser.parse_args()
+    ncbi_patched_only = args.ncbi
+
     # download ncbi gene_info file in advance
     download_file(BASE_NCBI_FTP + NCBI_GENE_DATA_FOLDER + NCBI_GENE_INFO_FILENAME_GZ, NCBI_GENE_INFO_FILENAME_GZ)
     ensembl_column_mappings = parse_ensembl_mart_schema()
@@ -362,6 +370,8 @@ def main():
                 output_columns.append(value)
 
     for species, organism_name in get_ensembl_organisms():
+        if ncbi_patched_only and organism_name not in ORGANISMS_TO_LOAD_GENE_SYNONYMS:
+            continue
         secondary_files_data = []
 
         # dictionary: Ensembl gene id -> dictionary of gene info

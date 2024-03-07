@@ -8,10 +8,11 @@ backup solution in case the original data is lost.
 
 ### generate_gene_dictionaries.py
 
-This script is used for generating gene dictionaries. It does not require any input parameters. However, it requires
-access to [Ensembl FTP](https://ftp.ensembl.org/) and [NCBI FTP](https://ftp.ncbi.nlm.nih.gov/). Currently, we
-only upload dictionaries that are extended with gene synonyms from NCBI (see `dictionaries/gene-dictionaries/` in the
-`odm-init` bucket).
+This script is used for generating gene dictionaries. It requires access to [Ensembl FTP](https://ftp.ensembl.org/)
+and [NCBI FTP](https://ftp.ncbi.nlm.nih.gov/). 
+Currently, we only upload dictionaries that are extended with gene synonyms from NCBI (
+see `dictionaries/gene-dictionaries/` in the`odm-init` bucket). To generate source files only for NCBI-patched
+dictionaries you can specify `-ncbi` option.
 
 ### generate_unit_dictionaries.py
 
