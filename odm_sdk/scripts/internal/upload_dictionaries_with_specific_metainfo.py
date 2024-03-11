@@ -80,7 +80,6 @@ def upload_gene_dictionaries():
         dictionary_accessions.append(gene_ontology_accession)
 
     sharing(connection, dictionary_accessions)
-    initialization(connection, dictionary_accessions)
 
 
 def main():
