@@ -4,7 +4,7 @@
   "pre-commit": {
     "enabled": true
   },
-  "schedule": ["every weekend", "0 */2 * * *"],
+  "schedule": ["every weekend", "* */2 * * *"],
   "labels": ["renovate"],
   "packageRules": [
     {
