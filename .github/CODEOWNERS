@@ -10,3 +10,5 @@
 **/Earthfile
 **/Dockerfile
 
+# GitHub Actions
+.github/workflows/*
