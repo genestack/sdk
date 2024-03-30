@@ -1,2 +1,2 @@
 pytest==8.1.1
-requests_mock==1.11.0
+requests_mock==1.12.1
