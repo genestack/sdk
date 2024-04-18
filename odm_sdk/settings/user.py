@@ -1,3 +1,4 @@
+import os
 from getpass import getpass
 from urllib.parse import urlsplit
 
@@ -96,10 +97,11 @@ class User(object):
         message = 'Connecting to %s' % self.host
 
         login_by_token = 'by token'
+        login_by_access_token = 'by access token'
         login_by_email = 'by email and password'
         login_anonymously = 'anonymously'
 
-        choice = interactive_select([login_by_token, login_by_email, login_anonymously],
+        choice = interactive_select([login_by_token, login_by_access_token, login_by_email, login_anonymously],
                                     'How do you want to login')
 
         if choice == login_anonymously:
@@ -122,6 +124,15 @@ class User(object):
                 except GenestackAuthenticationException:
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
+            elif choice == login_by_access_token:
+                user_input = input('environment variable with access token or value itself: ').strip()
+                token = os.getenv(user_input, user_input)
+                try:
+                    connection.login_by_access_token(token)
+                    self.token = token  # todo check user.token param
+                    return
+                except GenestackAuthenticationException:
+                    message = 'Your access token has been rejected by %s, please try again' % self.host
             else:
                 token = getpass('token: ')
                 try:

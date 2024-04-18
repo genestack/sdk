@@ -131,6 +131,22 @@ class Connection(object):
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
 
+    def login_by_access_token(self, access_token):
+        """
+        Attempt a login on the connection with the specified access token.
+        Raises an exception if the login fails.
+
+        :param access_token: OAuth access token
+        :rtype: None
+        :raises: :py:class:`~odm_sdk.GenestackAuthenticationException` if login failed
+        """
+        logged = self.application('genestack/signin').invoke('authenticateOAuthAccessToken', access_token)
+        Connection._handle_inactive_user_auth(logged)
+        if not logged['authenticated']:
+            hostname = urlsplit(self.server_url).hostname
+            raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
+        self.session.headers.update({'Authorization': f'Bearer {access_token}'})
+
     def logout(self):
         """
         Logout from server.
