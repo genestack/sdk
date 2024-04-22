@@ -36,7 +36,7 @@ class User(object):
      - server URL (or is it hostname?)
      - token *or* email/password pair
     """
-    def __init__(self, email, alias=None, host=None, password=None, token=None, access_token=None):
+    def __init__(self, email=None, alias=None, host=None, password=None, token=None, access_token=None):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
@@ -78,7 +78,7 @@ class User(object):
         connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.token:
             connection.login_by_token(self.token)
-        if self.access_token:
+        elif self.access_token:
             connection.login_by_access_token(self.access_token)
         elif self.email and self.password:
             connection.login(self.email, self.password)
@@ -128,8 +128,7 @@ class User(object):
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
             elif choice == login_by_access_token:
-                user_input = input('environment variable with access token or value itself: ').strip()
-                access_token = os.getenv(user_input, user_input)
+                access_token = input('access token or environment variable with its value: ').strip()
                 try:
                     connection.login_by_access_token(access_token)
                     self.access_token = access_token

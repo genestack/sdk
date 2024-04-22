@@ -140,12 +140,14 @@ class Connection(object):
         :rtype: None
         :raises: :py:class:`~odm_sdk.GenestackAuthenticationException` if login failed
         """
+        access_token = os.getenv(access_token, access_token)
+        self.session.headers.update({'Authorization': f'Bearer {access_token}'})
         logged = self.application('genestack/signin').invoke('authenticateOAuthAccessToken', access_token)
         Connection._handle_inactive_user_auth(logged)
         if not logged['authenticated']:
+            self.session.headers.pop('Authorization')
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
-        self.session.headers.update({'Authorization': f'Bearer {access_token}'})
 
     def logout(self):
         """

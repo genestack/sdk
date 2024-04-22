@@ -55,11 +55,14 @@ def create_user_from_input(host, alias):
     :rtype: User
     """
     by_token = 'by token'
-    items = [by_token, 'by email and password']
-    use_token = interactive_select(items, 'Select authentication') == by_token
+    by_access_token = 'by access token'
+    items = [by_token, by_access_token, 'by email and password']
+    choice = interactive_select(items, 'Select authentication')
 
-    if use_token:
+    if choice == by_token:
         return create_user_from_token(host, alias=alias)
+    elif choice == by_access_token:
+        return create_user_from_access_token(host, alias)
     else:
         return create_user_from_input_email_and_password(host, alias=alias)
 
@@ -119,7 +122,25 @@ def create_user_from_token(host, alias=None):
         if not token:
             print('Token cannot be empty')
             continue
-        user = User(email=None, host=host, password=None, alias=alias, token=token)
+        user = User(host=host, alias=alias, token=token)
+        try:
+            user.get_connection()
+            break
+        except GenestackAuthenticationException:
+            print('Could not login with given token, please try again')
+    return user
+
+
+def create_user_from_access_token(host, alias=None):
+    print(f'Host: {host}')
+    with_alias = f' for "{alias}"' if alias else ''
+    msg = f'Please specify access token or environment with its value{with_alias}: '
+    while True:
+        access_token = input(msg)
+        if not access_token:
+            print('Token cannot be empty')
+            continue
+        user = User(host=host, alias=alias, access_token=access_token)
         try:
             user.get_connection()
             break
