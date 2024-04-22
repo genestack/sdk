@@ -36,7 +36,7 @@ class User(object):
      - server URL (or is it hostname?)
      - token *or* email/password pair
     """
-    def __init__(self, email, alias=None, host=None, password=None, token=None):
+    def __init__(self, email, alias=None, host=None, password=None, token=None, access_token=None):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
@@ -58,6 +58,7 @@ class User(object):
         self.password = password  # TODO make property
         self.alias = alias or email
         self.token = token
+        self.access_token = access_token
 
     def get_connection(self, interactive=True, debug=False, show_logs=False):
         """
@@ -77,6 +78,8 @@ class User(object):
         connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.token:
             connection.login_by_token(self.token)
+        if self.access_token:
+            connection.login_by_access_token(self.access_token)
         elif self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:
@@ -126,10 +129,10 @@ class User(object):
                                'please try again' % self.host)
             elif choice == login_by_access_token:
                 user_input = input('environment variable with access token or value itself: ').strip()
-                token = os.getenv(user_input, user_input)
+                access_token = os.getenv(user_input, user_input)
                 try:
-                    connection.login_by_access_token(token)
-                    self.token = token  # todo check user.token param
+                    connection.login_by_access_token(access_token)
+                    self.access_token = access_token
                     return
                 except GenestackAuthenticationException:
                     message = 'Your access token has been rejected by %s, please try again' % self.host

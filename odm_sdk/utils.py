@@ -43,7 +43,7 @@ class GenestackArgumentParser(argparse.ArgumentParser):
         return args, argv
 
 
-def make_connection_parser(user=None, password=None, host=None, token=None):
+def make_connection_parser(user=None, password=None, host=None, token=None, access_token=None):
     """
     Creates an argument parser with the provided connection parameters.
     If one of ``email``, ``password`` or ``user`` is specified, they are used. Otherwise, the default
@@ -57,6 +57,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
     :type host: str
     :param token: API token string
     :type token: str
+    :param access_token: access token string
+    :type access_token: str
     :return: parser
     :rtype: argparse.ArgumentParser
     """
@@ -69,6 +71,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None):
                        help='user password')
     group.add_argument('--token', dest='token', default=token, metavar='<api-token>',
                        help='API token to be used instead of the login and password')
+    group.add_argument('--access-token', dest='access_token', default=access_token, metavar='<access-token>',
+                       help='Access token to be used instead of the login and password')
     group.add_argument('--debug', dest='debug', action='store_true',
                        help='include server stacktrace into error messages (implies --show-logs)')
     group.add_argument('--show-logs', dest='show_logs', action='store_true',
@@ -94,8 +98,9 @@ def get_user(args=None):
 
     alias = args.user
     if args.token:
-        return User(email=None, host=args.host, password=None, token=args.token)
-
+        return User(host=args.host, token=args.token)
+    if args.access_token:
+        return User(host=args.host, access_token=args.access_token)
     if not args.host and not args.pwd:
         if not alias and config.default_user:
             return config.default_user
