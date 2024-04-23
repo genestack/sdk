@@ -134,7 +134,7 @@ def create_user_from_token(host, alias=None):
 def create_user_from_access_token(host, alias=None):
     print(f'Host: {host}')
     with_alias = f' for "{alias}"' if alias else ''
-    msg = f'Please specify access token or environment with its value{with_alias}: '
+    msg = f'Please specify access token or environment variable with its value{with_alias}: '
     while True:
         access_token = input(msg)
         if not access_token:

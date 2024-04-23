@@ -50,6 +50,7 @@ class ShareParams:
             study_accession,
             group_name,
             token=None,
+            access_token=None,
             user=None,
             pwd=None,
             show_logs=False,
@@ -57,6 +58,7 @@ class ShareParams:
     ):
         self.host = host.rstrip('/')
         self.token = token
+        self.access_token = access_token
         self.user = user
         self.pwd = pwd
         self.study_accession = study_accession
@@ -71,6 +73,7 @@ class ShareParams:
             study_accession=args.study_accession,
             group_name=args.group_name,
             token=args.token,
+            access_token=args.access_token,
             user=args.user,
             pwd=args.pwd,
             show_logs=args.show_logs,
