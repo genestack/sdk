@@ -1,4 +1,3 @@
-import os
 from getpass import getpass
 from urllib.parse import urlsplit
 
@@ -128,7 +127,7 @@ class User(object):
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
             elif choice == login_by_access_token:
-                access_token = input('access token or environment variable with its value: ').strip()
+                access_token = input('access token or environment variable with its value: ')
                 try:
                     connection.login_by_access_token(access_token)
                     self.access_token = access_token
