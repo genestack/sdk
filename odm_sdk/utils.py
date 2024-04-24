@@ -72,7 +72,8 @@ def make_connection_parser(user=None, password=None, host=None, token=None, acce
     group.add_argument('--token', dest='token', default=token, metavar='<api-token>',
                        help='API token to be used instead of the login and password')
     group.add_argument('--access-token', dest='access_token', default=access_token, metavar='<access-token>',
-                       help='Access token to be used instead of the login and password')
+                       help='Access token or environment variable with its value to be used instead '
+                            'of the login and password')
     group.add_argument('--debug', dest='debug', action='store_true',
                        help='include server stacktrace into error messages (implies --show-logs)')
     group.add_argument('--show-logs', dest='show_logs', action='store_true',
