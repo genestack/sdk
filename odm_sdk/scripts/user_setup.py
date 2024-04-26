@@ -62,7 +62,7 @@ def create_user_from_input(host, alias):
     if choice == by_token:
         return create_user_from_token(host, alias=alias)
     elif choice == by_access_token:
-        return create_user_from_access_token(host, alias)
+        return create_user_from_access_token(host, alias=alias)
     else:
         return create_user_from_input_email_and_password(host, alias=alias)
 

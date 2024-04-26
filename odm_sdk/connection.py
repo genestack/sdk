@@ -137,6 +137,7 @@ class Connection(object):
         Raises an exception if the login fails.
 
         :param access_token: OAuth access token
+        :type access_token: str
         :rtype: None
         :raises: :py:class:`~odm_sdk.GenestackAuthenticationException` if login failed
         """
