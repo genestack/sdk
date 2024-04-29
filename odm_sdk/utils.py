@@ -36,7 +36,7 @@ def isatty():
 class GenestackArgumentParser(argparse.ArgumentParser):
     def parse_known_args(self, args=None, namespace=None):
         args, argv = super(GenestackArgumentParser, self).parse_known_args(args, namespace)
-        if sum([bool(args.token), bool(args.user), bool(args.access_token)]) != 1:
+        if sum([bool(args.token), bool(args.user), bool(args.access_token)]) > 1:
             self.error('Exactly one of token, access_token or user should be specified')
         if args.pwd and not args.user:
             self.error('Password should not be specified without user')
