@@ -1,3 +1,7 @@
+import atexit
+import sys
+import termios
+import tty
 from getpass import getpass
 from urllib.parse import urlsplit
 
@@ -127,7 +131,14 @@ class User(object):
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
             elif choice == login_by_access_token:
-                access_token = input('access token or environment variable with its value: ')
+                original_attrs = termios.tcgetattr(sys.stdin)
+                # Ensure that terminal settings are restored to their original state on program exit
+                atexit.register(lambda: termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_attrs))
+                # Temporarily switch to non-canonical mode for token input
+                tty.setcbreak(sys.stdin.fileno())
+                access_token = input('access token or environment variable with its value: ').strip()
+                # Restore the original settings
+                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_attrs)
                 try:
                     connection.login_by_access_token(access_token)
                     self.access_token = access_token
