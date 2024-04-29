@@ -1,7 +1,3 @@
-import atexit
-import sys
-import termios
-import tty
 from getpass import getpass
 from urllib.parse import urlsplit
 
@@ -28,6 +24,29 @@ def _get_server_url(host):
     raise GenestackAuthenticationException(
         "Could not connect to host '{}', check if it is defined correctly"
         "".format(host))
+
+
+def _read_non_canonical(msg):
+    try:
+        import termios, tty, atexit, sys
+        termios.tcgetattr, termios.tcsetattr
+    except (ImportError, AttributeError):
+        # fallback to standard input on systems that don't support termios
+        return input(msg).strip()
+    fd = sys.stdin.fileno()
+    original_attrs = termios.tcgetattr(fd)
+    # ensure that terminal settings are restored to their original state on program exit
+    atexit.register(lambda: termios.tcsetattr(fd, termios.TCSADRAIN, original_attrs))
+
+    # temporarily switch to non-canonical mode modifying local modes
+    new_attrs = termios.tcgetattr(fd)
+    new_attrs[3] = new_attrs[3] & ~termios.ICANON
+    termios.tcsetattr(fd, termios.TCSADRAIN, new_attrs)
+    try:
+        return input(msg).strip()
+    finally:
+        # restore the original settings
+        termios.tcsetattr(fd, termios.TCSADRAIN, original_attrs)
 
 
 class User(object):
@@ -131,14 +150,7 @@ class User(object):
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
             elif choice == login_by_access_token:
-                original_attrs = termios.tcgetattr(sys.stdin)
-                # Ensure that terminal settings are restored to their original state on program exit
-                atexit.register(lambda: termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_attrs))
-                # Temporarily switch to non-canonical mode for token input
-                tty.setcbreak(sys.stdin.fileno())
-                access_token = input('access token or environment variable with its value: ').strip()
-                # Restore the original settings
-                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_attrs)
+                access_token = _read_non_canonical('access token or environment variable with its value: ')
                 try:
                     connection.login_by_access_token(access_token)
                     self.access_token = access_token
