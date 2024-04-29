@@ -27,6 +27,15 @@ def _get_server_url(host):
 
 
 def _read_non_canonical(msg):
+    """
+    An enhanced input method designed to read user inputs that may exceed the standard terminal input buffer size,
+    typically limited to 1024 characters. It is required for interactively reading lengthy inputs such as raw access
+    tokens directly from the user.
+    The function attempts to switch the terminal to non-canonical mode, this mode is only supported on Unix-like
+    systems where the termios module is available.
+    :param msg: The prompt message displayed to the user.
+    :return: The user input, stripped of leading and trailing whitespace.
+    """
     try:
         import termios, tty, atexit, sys
         termios.tcgetattr, termios.tcsetattr
