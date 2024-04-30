@@ -26,6 +26,38 @@ def _get_server_url(host):
         "".format(host))
 
 
+def _read_non_canonical(msg):
+    """
+    An enhanced input method designed to read user inputs that may exceed the standard terminal input buffer size,
+    typically limited to 1024 characters. It is required for interactively reading lengthy inputs such as raw access
+    tokens directly from the user.
+    The function attempts to switch the terminal to non-canonical mode, this mode is only supported on Unix-like
+    systems where the termios module is available.
+    :param msg: The prompt message displayed to the user.
+    :return: The user input, stripped of leading and trailing whitespace.
+    """
+    try:
+        import termios, tty, atexit, sys
+        termios.tcgetattr, termios.tcsetattr
+    except (ImportError, AttributeError):
+        # fallback to standard input on systems that don't support termios
+        return input(msg).strip()
+    fd = sys.stdin.fileno()
+    original_attrs = termios.tcgetattr(fd)
+    # ensure that terminal settings are restored to their original state on program exit
+    atexit.register(lambda: termios.tcsetattr(fd, termios.TCSADRAIN, original_attrs))
+
+    # temporarily switch to non-canonical mode modifying local modes
+    new_attrs = termios.tcgetattr(fd)
+    new_attrs[3] = new_attrs[3] & ~termios.ICANON
+    termios.tcsetattr(fd, termios.TCSADRAIN, new_attrs)
+    try:
+        return input(msg).strip()
+    finally:
+        # restore the original settings
+        termios.tcsetattr(fd, termios.TCSADRAIN, original_attrs)
+
+
 class User(object):
     """
     Class encapsulating all user info required for authentication.
@@ -35,7 +67,7 @@ class User(object):
      - server URL (or is it hostname?)
      - token *or* email/password pair
     """
-    def __init__(self, email, alias=None, host=None, password=None, token=None):
+    def __init__(self, email=None, alias=None, host=None, password=None, token=None, access_token=None):
         """
         All fields are optional.
         If ``alias`` is None it will be the same as ``email``.
@@ -57,6 +89,7 @@ class User(object):
         self.password = password  # TODO make property
         self.alias = alias or email
         self.token = token
+        self.access_token = access_token
 
     def get_connection(self, interactive=True, debug=False, show_logs=False):
         """
@@ -76,6 +109,8 @@ class User(object):
         connection = Connection(_get_server_url(self.host), debug=debug, show_logs=show_logs)
         if self.token:
             connection.login_by_token(self.token)
+        elif self.access_token:
+            connection.login_by_access_token(self.access_token)
         elif self.email and self.password:
             connection.login(self.email, self.password)
         elif interactive:
@@ -96,10 +131,11 @@ class User(object):
         message = 'Connecting to %s' % self.host
 
         login_by_token = 'by token'
+        login_by_access_token = 'by access token'
         login_by_email = 'by email and password'
         login_anonymously = 'anonymously'
 
-        choice = interactive_select([login_by_token, login_by_email, login_anonymously],
+        choice = interactive_select([login_by_token, login_by_access_token, login_by_email, login_anonymously],
                                     'How do you want to login')
 
         if choice == login_anonymously:
@@ -122,6 +158,14 @@ class User(object):
                 except GenestackAuthenticationException:
                     message = ('Your username and password have been rejected by %s, '
                                'please try again' % self.host)
+            elif choice == login_by_access_token:
+                access_token = _read_non_canonical('access token or environment variable with its value: ')
+                try:
+                    connection.login_by_access_token(access_token)
+                    self.access_token = access_token
+                    return
+                except GenestackAuthenticationException:
+                    message = 'Your access token has been rejected by %s, please try again' % self.host
             else:
                 token = getpass('token: ')
                 try:
