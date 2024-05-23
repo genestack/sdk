@@ -56,4 +56,3 @@ class TaskLogViewer(Application):
 
                 if follow:
                     time.sleep(0.5)
-
