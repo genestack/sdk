@@ -7,6 +7,15 @@ ARG --global --required PYPI_REGISTRY_SNAPSHOTS
 ARG --global --required PYPI_REGISTRY_PYPI_ORG_MIRROR
 ARG --global --required NEXUS_URL
 
+sonarcloud:
+    FROM sonarsource/sonar-scanner-cli:5.0.1
+    ARG --required GIT_BRANCH_NAME
+    COPY . .
+    RUN \
+        --secret SONAR_TOKEN \
+            sonar-scanner \
+                -Dsonar.branch.name=${GIT_BRANCH_NAME}
+
 tox:
     ARG --required BASE_IMAGES_VERSION
     FROM ${HARBOR_DOCKER_REGISTRY}/builder:${BASE_IMAGES_VERSION}
