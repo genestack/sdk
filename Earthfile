@@ -9,12 +9,7 @@ ARG --global --required NEXUS_URL
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    ARG --required GIT_BRANCH_NAME
-    COPY . .
-    RUN \
-        --secret SONAR_TOKEN \
-            sonar-scanner \
-                -Dsonar.branch.name=${GIT_BRANCH_NAME}
+    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD
 
 tox:
     ARG --required BASE_IMAGES_VERSION
