@@ -9,7 +9,7 @@ ARG --global --required NEXUS_URL
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD
+    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD_RUN
 
 tox:
     ARG --required BASE_IMAGES_VERSION
