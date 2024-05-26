@@ -1,19 +1,10 @@
 VERSION 0.8
 
 ARG --global --required HARBOR_DOCKER_REGISTRY
-ARG --global --required PYPI_REGISTRY_GROUP
-ARG --global --required PYPI_REGISTRY_RELEASES
-ARG --global --required PYPI_REGISTRY_SNAPSHOTS
-ARG --global --required PYPI_REGISTRY_PYPI_ORG_MIRROR
-ARG --global --required NEXUS_URL
-
-sonarcloud:
-    FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD_RUN
 
 tox:
-    ARG --required BASE_IMAGES_VERSION
-    FROM ${HARBOR_DOCKER_REGISTRY}/builder:${BASE_IMAGES_VERSION}
+    FROM python:3.12.3-alpine
+    DO github.com/genestack/earthly-libs+PYTHON_PREPARE
     COPY requirements-tox.txt tox.ini .
     RUN \
         --secret NEXUS_USER \
@@ -25,12 +16,13 @@ tox:
     SAVE IMAGE --cache-hint
 
 test:
-    ARG --required OPENAPI_VERSION
     FROM +tox
     COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt \
                 MANIFEST.in README.md LICENSE.txt \
                 setup.py odm_sdk \
                 .
+
+    ARG --required OPENAPI_VERSION
     RUN \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
@@ -52,8 +44,12 @@ build:
 
 push:
     FROM +build
-
-    RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
+    RUN \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            pypi-login.sh && \
+            python3 -m pip install --no-cache-dir -r requirements-build.txt && \
+            pypi-clean.sh
 
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
@@ -87,6 +83,10 @@ rtd:
             curl \
             -X POST \
             -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
+
+sonarcloud:
+    FROM sonarsource/sonar-scanner-cli:5.0.1
+    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD_RUN
 
 main:
     BUILD +push
