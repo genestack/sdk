@@ -5,6 +5,7 @@ ARG --global --required HARBOR_DOCKER_REGISTRY
 tox:
     FROM python:3.12.3-alpine
     DO github.com/genestack/earthly-libs+PYTHON_PREPARE
+    CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
     RUN \
         --secret NEXUS_USER \
