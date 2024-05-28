@@ -88,7 +88,7 @@ rtd:
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-refs+SONARCLOUD_RUN
+    DO --pass-args github.com/genestack/earthly-libs+SONARCLOUD_RUN
 
 main:
     BUILD +push
