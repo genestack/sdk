@@ -108,3 +108,4 @@ sonarcloud:
 
 main:
     BUILD +push
+    BUILD +docs
