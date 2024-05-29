@@ -73,18 +73,34 @@ push:
             twine upload dist/* -r ${PYPI_REPOSITORY_PUBLIC} && \
             pypi-clean.sh
 
-rtd:
-    FROM +build
+docs:
+    FROM python:3.11.9
+    DO github.com/genestack/earthly-libs+PYTHON_PREPARE
 
-    ## Trigger Read the docs builds
-    RUN --push \
-        --secret RTD_TOKEN \
-            curl \
-            -X POST \
-            -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/latest/builds/" && \
-            curl \
-            -X POST \
-            -H "Authorization: Token ${RTD_TOKEN}" "https://readthedocs.org/api/v3/projects/genestack-client/versions/stable/builds/"
+    # Build
+    COPY --dir docs setup.py odm_sdk  .
+    WORKDIR docs
+    RUN \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            pypi-login.sh && \
+            python3 -m pip install --no-cache-dir -r requirements.txt && \
+            make markdown && \
+            pypi-clean.sh
+
+    # Push
+    WORKDIR build/markdown
+    ARG --required SDK_VERSION
+    ARG DOC_ARCHIVE sdk-docs-${SDK_VERSION}.tar.gz
+    RUN \
+        --push \
+        --secret NEXUS_USER \
+        --secret NEXUS_PASSWORD \
+            tar cf ${DOC_ARCHIVE} * && \
+            curl -v --fail --user ${NEXUS_USER}:${NEXUS_PASSWORD} \
+                -H 'Content-Type: application/gzip' \
+                 --upload-file ${DOC_ARCHIVE} \
+                 ${RAW_REGISTRY_SNAPSHOTS}/documentation/${DOC_ARCHIVE}
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
