@@ -1,7 +1,5 @@
 VERSION 0.8
 
-ARG --global --required HARBOR_DOCKER_REGISTRY
-
 tox:
     FROM python:3.12.3-alpine
     DO github.com/genestack/earthly-libs+PYTHON_PREPARE
@@ -90,6 +88,7 @@ docs:
 
     # Push
     WORKDIR build/markdown
+    ARG --required RAW_REGISTRY_SNAPSHOTS
     ARG --required SDK_VERSION
     RUN \
         --push \
