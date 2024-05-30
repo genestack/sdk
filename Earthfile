@@ -99,7 +99,7 @@ docs:
             curl -v --fail --user ${NEXUS_USER}:${NEXUS_PASSWORD} \
                 -H 'Content-Type: application/gzip' \
                  --upload-file ${DOC_ARCHIVE} \
-                 ${RAW_REGISTRY_SNAPSHOTS}/documentation/${DOC_ARCHIVE}
+                 ${RAW_REGISTRY_SNAPSHOTS}/docs/odm-sdk/${DOC_ARCHIVE}
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
