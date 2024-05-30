@@ -91,11 +91,11 @@ docs:
     # Push
     WORKDIR build/markdown
     ARG --required SDK_VERSION
-    ARG DOC_ARCHIVE sdk-docs-${SDK_VERSION}.tar.gz
     RUN \
         --push \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
+            export DOC_ARCHIVE=sdk-docs-${SDK_VERSION}.tar.gz && \
             tar cf ${DOC_ARCHIVE} * && \
             curl -v --fail --user ${NEXUS_USER}:${NEXUS_PASSWORD} \
                 -H 'Content-Type: application/gzip' \
