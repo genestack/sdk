@@ -1,7 +1,7 @@
 keyring==25.2.1
 requests==2.32.3
 pyOpenSSL==24.1.0
-jsonschema==4.2.0
+jsonschema==4.22.0
 future==1.0.0
 pyrsistent==0.20.0
 sphinx-rtd-theme==2.0.0
