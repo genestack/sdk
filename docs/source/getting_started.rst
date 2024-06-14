@@ -331,9 +331,9 @@ Let's print the results to know the accession of our files::
 
 And finally we can start the initialization of the file::
 
-    >>> from odm_sdk import FileInitializer
-    >>> initializer = FileInitializer(connection)
-    >>> initializer.initialize([assay])
+    >>> from odm_sdk import FilesUtil
+    >>> files_util = FilesUtil(connection)
+    >>> files_util.initialize([assay])
     >>> print 'Start initialization of %s' % assay
     Start initialization of GSF000002
 

@@ -10,7 +10,7 @@
 # https://genestack.atlassian.net/wiki/spaces/ODMP/pages/945094729/How+to+load+init+and+share+a+dictionary+on+a+remote+host+by+executing+a+script+on+your+machine+CUT+prepared+for+outer+clients
 import json
 
-from odm_sdk import (DataImporter, FileInitializer, FilesUtil,
+from odm_sdk import (DataImporter, FilesUtil,
                               GenestackException, GenestackServerException,
                               Metainfo, ShareUtil, SpecialFolders)
 from odm_sdk.utils import get_connection, make_connection_parser
@@ -77,7 +77,7 @@ def print_result(accession, name, type_name, started=False):
 
 def initialization(connection, accessions):
     try:
-        FileInitializer(connection).initialize(accessions)
+        FilesUtil(connection).initialize(accessions)
         print('Initialization of %s dictionaries started.' % len(accessions))
     except GenestackServerException:
         print(colored("Created dictionaries have not been initialized. "

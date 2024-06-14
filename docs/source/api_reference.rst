@@ -54,13 +54,6 @@ ShareUtil
         :members:
         :show-inheritance:
 
-FileInitializer
----------------
-
-.. autoclass:: odm_sdk.FileInitializer
-        :members:
-        :show-inheritance:
-
 .. _TaskLogViewer:
 
 TaskLogViewer

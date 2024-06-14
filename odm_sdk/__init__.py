@@ -11,7 +11,6 @@ from .metainfo_scalar_values import *
 from .bio_meta_keys import BioMetaKeys
 from .metainfo import Metainfo
 from .data_importer import DataImporter
-from .file_initializer import FileInitializer
 from .genome_query import GenomeQuery
 from .utils import get_connection, get_user, make_connection_parser, validate_constant
 from .file_filters import *
