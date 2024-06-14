@@ -626,3 +626,8 @@ class FilesUtil(Application):
         :rtype: list
         """
         return self.invoke('loadInfo', accessions)
+
+    def search_files(self, accession):
+        return self.invoke('searchFiles',
+                           accession,  # type: str
+                           {}, 100, 0, None, False)
