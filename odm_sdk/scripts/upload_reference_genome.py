@@ -9,7 +9,7 @@
 # actual or intended publication of such source code.
 #
 
-from odm_sdk import (DataImporter, FileInitializer, FilesUtil,
+from odm_sdk import (DataImporter, FilesUtil,
                               SpecialFolders, get_connection, make_connection_parser)
 
 
@@ -59,8 +59,8 @@ def main():
         release=args.release,
         annotation_url=annotation_url
     )
-    file_initializer = FileInitializer(connection)
-    file_initializer.initialize([accession])
+    files_util = FilesUtil(connection)
+    files_util.initialize([accession])
 
 
 def get_args():
