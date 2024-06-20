@@ -6,6 +6,13 @@
   },
   "schedule": ["* */2 * * 6,0"],
   "labels": ["renovate"],
+  "dockerfile": {
+    "fileMatch": [
+      "(^|/)Earthfile$",
+      "(^|/|\\.)Dockerfile$",
+      "(^|/)Dockerfile[^/]*$"
+    ]
+  },
   "packageRules": [
     {
       "description": "Automerge non-major updates",
