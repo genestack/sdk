@@ -24,7 +24,7 @@ def main():
 
     accession = args.accession
     try:
-        connection.application('genestack/arvados-importer').invoke('wipeStudy', accession)
+        connection.application('genestack/study-metainfo-editor').invoke('wipeStudy', accession)
         print(colored("Success", GREEN))
     except GenestackServerException as e:
         p = re.compile('File .* not found')
