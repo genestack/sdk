@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
-import imp
 import os
 import sys
+import types
 
 from odm_sdk import make_connection_parser
 from odm_sdk.shell import get_help
@@ -58,7 +58,7 @@ Commands
 
 def generate_rst_doc(shell_name, file_name, class_name, footer_file_name, save_path):
     with open(os.path.join(os.path.dirname(__file__), '..', '..', 'odm_sdk', 'scripts', file_name)) as f:
-        shell_module = imp.new_module('shell_name')
+        shell_module = types.ModuleType('shell_name')
         exec(f.read(), shell_module.__dict__)
 
     shell = getattr(shell_module, class_name)
