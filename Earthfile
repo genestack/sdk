@@ -102,7 +102,7 @@ docs:
                  ${RAW_REGISTRY_SNAPSHOTS}/docs/odm-sdk/${DOC_ARCHIVE}
 
 sonarcloud:
-    FROM sonarsource/sonar-scanner-cli:5.0.1
+    FROM sonarsource/sonar-scanner-cli:10.0.0
     DO --pass-args github.com/genestack/earthly-libs+SONARCLOUD_RUN
 
 main:
