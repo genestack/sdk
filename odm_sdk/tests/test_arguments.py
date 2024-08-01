@@ -33,7 +33,7 @@ class ArgumentsTest(unittest.TestCase):
         # Test stderr output that was written by parser before raising error:
 
         # Expected output consist of usage section and line with filename and tested error
-        expected_error_message = 'Password should not be specified without user'
+        expected_error_message = 'TEST_FAILURE. Password should not be specified without user'
 
         # Save parser.print_usage output to the variable
         f = StringIO()
