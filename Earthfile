@@ -27,7 +27,7 @@ test:
         --secret NEXUS_PASSWORD \
             pypi-login.sh && \
             cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
-            python3 -m tox run-parallel --workdir odm_sdk/tests && \
+            python3 -m tox run-parallel && \
             pypi-clean.sh
 
     SAVE IMAGE --cache-hint
