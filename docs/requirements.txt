@@ -1,4 +1,4 @@
-keyring==25.2.1
+keyring==25.3.0
 requests==2.32.3
 pyOpenSSL==24.2.1
 jsonschema==4.23.0
