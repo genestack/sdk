@@ -82,18 +82,6 @@ SampleLinker (Beta)
         :members:
         :undoc-members:
 
-Command-Line Applications
-*************************
-
-CLApplication
--------------
-
-.. autoclass:: odm_sdk.CLApplication
-        :members:
-        :show-inheritance:
-
-.. include:: _cla_reference.rst
-
 Genestack Objects
 *****************
 

@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+#  Copyright (c) 2011-2024 Genestack Limited
+#  All Rights Reserved
+#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
+#  The copyright notice above does not evidence any
+#  actual or intended publication of such source code.
+
 #
 # Python Client Library documentation build configuration file, created by
 # sphinx-quickstart on Thu Jan 15 21:46:07 2015.
@@ -325,13 +332,9 @@ sys.path.append('.')
 from make_shell_docs import main
 main()
 
-from create_cla_docs import main
-main()
 
-
-from odm_sdk import Metainfo, Application, GenestackException, CLApplication
+from odm_sdk import Metainfo, Application, GenestackException
 
 Metainfo.__module__ = 'odm_sdk'
 Application.__module__ = 'odm_sdk'
 GenestackException.__module__ = 'odm_sdk'
-CLApplication.__module__ = 'odm_sdk'

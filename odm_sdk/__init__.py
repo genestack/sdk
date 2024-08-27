@@ -1,3 +1,9 @@
+#  Copyright (c) 2011-2024 Genestack Limited
+#  All Rights Reserved
+#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
+#  The copyright notice above does not evidence any
+#  actual or intended publication of such source code.
+
 from .version import __version__
 
 from .exceptions import (GenestackAuthenticationException, GenestackBaseException,
@@ -19,5 +25,4 @@ from .files_util import FilesUtil, SortOrder, SpecialFolders
 from .datasets_util import DatasetsUtil
 from .groups_util import GroupsUtil
 from .task_log_viewer import TaskLogViewer
-from .cla import *
 from .expression_navigator import *
