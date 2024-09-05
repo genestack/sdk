@@ -36,7 +36,7 @@ build:
     FROM +test
     ARG --required SDK_VERSION
     RUN \
-        python3 -m pip install --no-cache-dir envsubst && \
+        python3 -m pip install --no-cache-dir envsubst setuptools && \
         cat odm_sdk/version.py.envtpl | envsubst > odm_sdk/version.py && \
         python3 setup.py sdist
 
