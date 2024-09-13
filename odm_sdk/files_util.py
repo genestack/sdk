@@ -630,4 +630,4 @@ class FilesUtil(Application):
     def search_files(self, accession):
         return self.invoke('searchFiles',
                            accession,  # type: str
-                           {}, 100, 0, None, False)
+                           {}, [], 100, 0, None, False)
