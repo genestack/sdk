@@ -1,7 +1,7 @@
 VERSION 0.8
 
 tox:
-    FROM python:3.12.5-alpine
+    FROM python:3.12.6-alpine
     DO github.com/genestack/earthly-libs+PYTHON_PREPARE
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
@@ -72,7 +72,7 @@ push:
             pypi-clean.sh
 
 docs:
-    FROM python:3.12.5
+    FROM python:3.12.6
     DO github.com/genestack/earthly-libs+PYTHON_PREPARE
 
     # Build
