@@ -5,6 +5,7 @@
     "enabled": true
   },
   "schedule": ["* */2 * * 6,0"],
+  "updateNotScheduled": false,
   "labels": ["renovate"],
   "dockerfile": {
     "fileMatch": [
