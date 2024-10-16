@@ -70,18 +70,6 @@ Expression Navigator
         :members:
         :undoc-members:
 
-DatasetsUtil
-------------
-.. autoclass:: odm_sdk.DatasetsUtil
-        :members:
-        :undoc-members:
-
-SampleLinker (Beta)
--------------------
-.. autoclass:: odm_sdk.samples.SampleLinker
-        :members:
-        :undoc-members:
-
 Genestack Objects
 *****************
 

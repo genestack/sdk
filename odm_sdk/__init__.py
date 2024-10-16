@@ -22,7 +22,6 @@ from .utils import get_connection, get_user, make_connection_parser, validate_co
 from .file_filters import *
 from .share_util import ShareUtil
 from .files_util import FilesUtil, SortOrder, SpecialFolders
-from .datasets_util import DatasetsUtil
 from .groups_util import GroupsUtil
 from .task_log_viewer import TaskLogViewer
 from .expression_navigator import *
