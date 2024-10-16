@@ -63,13 +63,6 @@ TaskLogViewer
         :members:
         :show-inheritance:
 
-Expression Navigator
---------------------
-
-.. automodule:: odm_sdk.expression_navigator
-        :members:
-        :undoc-members:
-
 Genestack Objects
 *****************
 
