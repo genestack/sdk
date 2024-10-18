@@ -31,7 +31,6 @@ Contents
    :maxdepth: 2
 
    Getting Started <getting_started>
-   sample_scripts_doc
    api_reference
    scripts/scripts
 

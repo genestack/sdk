@@ -23,4 +23,3 @@ from .file_filters import *
 from .share_util import ShareUtil
 from .files_util import FilesUtil, SortOrder, SpecialFolders
 from .groups_util import GroupsUtil
-from .task_log_viewer import TaskLogViewer
