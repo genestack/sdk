@@ -1792,7 +1792,7 @@ def main():
                         nargs="?")
     parser.add_argument("-flm", "--file-metadata",
                         action=make_file_action(parser_args_state),
-                        help="link to a attached file metadata file",
+                        help="link to metadata file for this attached file",
                         nargs="?")
     parser.add_argument("-nfa", "--number-of-feature-attributes",
                         action=make_signal_action(parser_args_state),
