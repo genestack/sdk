@@ -98,7 +98,8 @@ TAGS = {"-sm": "samples",
         "-vm": "variant-metadata",
         "-e": "expression",
         "-em": "expression-metadata",
-        "-fl": "file-link",
+        "-fl": "file",
+        "-flm": "file-metadata",
         "-mpf": "mapping-file",
         "-mpfa": "mapping-file-accession",
         "-mpfm": "mapping-file-metadata",
@@ -431,8 +432,8 @@ def _prepare_etl_payload(kind, metadata_link=None, template_id=None, data_link=N
 
 
 # pylint: disable-next=too-many-arguments
-def _async_import(kind, params, metadata_link=None, data_link=None, prev_version=None, number_of_feature_attributes=None,
-                  data_class=None, study=None, measurement_separator=None):
+def _async_import(kind, params, metadata_link=None, data_link=None, prev_version=None,
+                  number_of_feature_attributes=None, data_class=None, study=None, measurement_separator=None):
     ''' Import data using Job/ETL API
 
     Returns ``job_info`` dictionary with all the submitted (and finished) job
@@ -452,7 +453,7 @@ def _async_import(kind, params, metadata_link=None, data_link=None, prev_version
         params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, kind.replace('_', '-'))
     if params.ALLOW_DUPLICATES and kind != 'file':
         url += '?allow_dups=true'
-    template_id = params.TEMPLATE_ACCESSION_SUPPLIER()
+    template_id = params.TEMPLATE_ACCESSION_SUPPLIER() if kind != 'file' else None
     payload = _prepare_etl_payload(kind, metadata_link, template_id, data_link,
                                    prev_version, number_of_feature_attributes,
                                    data_class, measurement_separator, params.ETL_SOURCE, study)
@@ -984,7 +985,7 @@ def make_signal_action(parser_state):
                 last_node['metadata'] = value
             elif tag == 'number-of-feature-attributes':
                 current_tag = current_node.get('tag', '')
-                if current_tag == 'file-link':
+                if current_tag == 'file':
                     _err("Number of feature attributes is not a supported parameter for files", in_red=True)
                     sys.exit(1)
                 children = current_node.get('children', [])
@@ -1005,7 +1006,7 @@ def make_signal_action(parser_state):
                 last_node['nfa'] = value
             elif tag == 'data-class':
                 current_tag = current_node.get('tag', '')
-                if current_tag == 'file-link':
+                if current_tag == 'file':
                     if 'dc' in current_node:
                         _err(
                             "A file can only have one value of data class. "
@@ -1032,7 +1033,7 @@ def make_signal_action(parser_state):
                     last_node['dc'] = value
             elif tag == 'measurement-separator':
                 current_tag = current_node.get('tag', '')
-                if current_tag == 'file-link':
+                if current_tag == 'file':
                     _err("Measurement separator is not a supported parameter for files", in_red=True)
                     sys.exit(1)
                 children = current_node.get('children', [])
@@ -1063,9 +1064,22 @@ def make_signal_action(parser_state):
 def make_file_action(parser_state):
     class FileAction(BaseCustomAction):
         def handle_action(self, tag, value, option_string):
-            new_file_node = {'tag': tag, 'value': value}
-            parser_state.file_node_list.append(new_file_node)
-            parser_state.current_node = new_file_node
+            if tag == 'file-metadata':
+                current_node = parser_state.current_node
+                if current_node is None:
+                    _err("No file link is provided for the file metadata 'PROVIDED_METADATA_LINK'", in_red=True)
+                    sys.exit(1)
+                if 'metadata' in current_node:
+                    _err(
+                        "A file can only have one file metadata link. "
+                        "Please check --file-metadata (-flm) argument in your input.",
+                        in_red=True)
+                    sys.exit(1)
+                current_node['metadata'] = value
+            else:
+                new_file_node = {'tag': tag, 'value': value}
+                parser_state.file_node_list.append(new_file_node)
+                parser_state.current_node = new_file_node
 
     return FileAction
 
@@ -1258,13 +1272,11 @@ def handle_files_case(parser_state, params, study):
         if dc is None:
             _err("No Data class for the file was provided", in_red=True)
             sys.exit(1)
-        job_info, exists = _async_import('file', params, data_link=value, study=study, data_class=dc)
-        if exists:
-            accession = job_info.get(u'result', {}).get(u'accession')
-            _err("'{}' has already been uploaded as file with accession '{}'"
-                 "".format(value, accession))
-            if params.FAIL_IF_FILE_EXISTS:
-                sys.exit(1)
+        flm = file_node.get('metadata')
+        job_info, _ = _async_import(
+            'file', params, metadata_link=flm, data_link=value, study=study, data_class=dc)
+        accession = job_info.get(u'result', {}).get(u'accession')
+        print(f"file {accession} was attached successfully to study {study}")
 
 
 def check_for_repeated_links(link, nodes, links_cache):
@@ -1796,6 +1808,10 @@ def main():
                         dest="data",
                         metavar="FILE_LINK",
                         help="link to a file to be attached",
+                        nargs="?")
+    parser.add_argument("-flm", "--file-metadata",
+                        action=make_file_action(parser_args_state),
+                        help="link to a attached file metadata file",
                         nargs="?")
     parser.add_argument("-nfa", "--number-of-feature-attributes",
                         action=make_signal_action(parser_args_state),
