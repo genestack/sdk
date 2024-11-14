@@ -7,12 +7,6 @@ See http://odm-user-guide.rtfd.io/en/latest/doc-odm-user-guide/import-data-using
 for detailed guide
 """
 
-#  Copyright (c) 2011-2024 Genestack Limited
-#  All Rights Reserved
-#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-#  The copyright notice above does not evidence any
-#  actual or intended publication of such source code.
-
 from __future__ import division, print_function
 
 import argparse
@@ -465,6 +459,7 @@ def _async_import(kind, params, metadata_link=None, data_link=None, prev_version
         file_exists = False
     else:
         job_id = _check_job_error(resp)
+        print(f'job_id {job_id}')
         if job_id is None:
             _err("Submitting job failed!", response=resp, in_red=True)
             sys.exit(1)
