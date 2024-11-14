@@ -459,7 +459,6 @@ def _async_import(kind, params, metadata_link=None, data_link=None, prev_version
         file_exists = False
     else:
         job_id = _check_job_error(resp)
-        print(f'job_id {job_id}')
         if job_id is None:
             _err("Submitting job failed!", response=resp, in_red=True)
             sys.exit(1)
