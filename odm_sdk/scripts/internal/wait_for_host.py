@@ -49,12 +49,12 @@ def main():
         time.sleep(TIMEOUT_IN_SECONDS)
         if (is_api_ready(args.odm_url, args.odm_endpoint)
                 not in [0, 404, 500]): #  we need to wait till endpoint is actually available
-            print(f'Host {args.odm_url} is ready!')
+            print(f'Host {args.odm_url}/{args.odm_endpoint} is ready!')
             sys.exit(0)
         else:
             wait_cycle += 1
             print(
-                f'Iteration {wait_cycle}: {args.odm_url}/ '
+                f'Iteration {wait_cycle}: {args.odm_url}/{args.odm_endpoint} '
                 f'is not ready yet. Waiting another {TIMEOUT_IN_SECONDS} '
                 'seconds to re-check.'
             )
