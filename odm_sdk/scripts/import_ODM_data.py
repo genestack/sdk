@@ -1509,7 +1509,6 @@ class ImportParams:
             variant_metadata_link=None,
             flow_cytometry_link=None,
             flow_cytometry_metadata_link=None,
-            file_link=None,
             parser_args_state=None
     ):
         self.SERVER = server.rstrip('/')
@@ -1543,7 +1542,6 @@ class ImportParams:
                 expression_link, expression_metadata_link,
                 variant_link, variant_metadata_link,
                 flow_cytometry_link, flow_cytometry_metadata_link,
-                file_link
             )
         self.parser_args_state = parser_args_state
 
@@ -1552,7 +1550,6 @@ class ImportParams:
             samples_link,
             libraries_link,
             preparations_link,
-            file_link,
             expression_link,
             expression_metadata_link,
             variant_link,
@@ -1586,15 +1583,6 @@ class ImportParams:
             ).handle_action(
                 tag="preparations",
                 value=preparations_link,
-                option_string=None
-            )
-        if file_link:
-            make_file_action(parser_args_state)(
-                dest="data",
-                option_strings=[]
-            ).handle_action(
-                tag="file",
-                value=file_link,
                 option_string=None
             )
         if expression_link:
@@ -1800,8 +1788,6 @@ def main():
                         nargs="?")
     parser.add_argument("-fl", "--file",
                         action=make_file_action(parser_args_state),
-                        dest="data",
-                        metavar="FILE_LINK",
                         help="link to a file to be attached",
                         nargs="?")
     parser.add_argument("-flm", "--file-metadata",
