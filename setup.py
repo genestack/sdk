@@ -41,7 +41,6 @@ setup(
             'odm-delete-study = odm_sdk.scripts.delete_study_or_template:main',
             'odm-share-study = odm_sdk.scripts.study_management.share_study_with_group:main',
             'odm-geo-prepare = odm_sdk.scripts.study_management.GEO_prepare:main',
-            'odm-upload-reference-genome = odm_sdk.scripts.upload_reference_genome:main',
         ],
     },
     classifiers=[

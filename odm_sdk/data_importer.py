@@ -417,58 +417,6 @@ class DataImporter(object):
         self.__add_to_metainfo(metainfo, BioMetaKeys.DATA_LINK, url, ExternalLink, required=True)
         return self.__invoke_loader(parent, 'dbnsfp', metainfo)
 
-    def create_reference_genome(self,
-                                parent=None,
-                                name=None,
-                                description='',
-                                sequence_urls=None,
-                                annotation_url=None,
-                                organism=None,
-                                assembly=None,
-                                release=None,
-                                strain=None,
-                                metainfo=None):
-        """
-        Create a Genestack Reference Genome from a local or
-        remote GTF or GFF
-        annotation file. ``name``, ``organism`` and
-        ``annotation_url`` are required fields.
-        They can be specified through the arguments or
-        via a :py:class:`~odm_sdk.Metainfo` instance.
-
-
-        :param parent: accession of parent folder
-            (if not provided, files will be created in the ``Imported files`` folder)
-        :type parent: str
-        :param name: name of the file
-        :type name: str
-        :param description: experiment description
-        :type description: str
-        :param sequence_urls: [OBSOLETE] list urls or local path to sequencing files
-        :type sequence_urls: list
-        :param annotation_url: url to annotation file
-        :type annotation_url: str
-        :param organism: organism
-        :type organism: str
-        :param assembly: assembly
-        :type assembly: str
-        :param release: release
-        :type release: str
-        :param strain: strain
-        :type strain: str
-        :param metainfo: metainfo object
-        :type metainfo: Metainfo
-        :return:
-        """
-        metainfo = DataImporter._copy_metainfo(metainfo)
-        self.__add_to_metainfo(metainfo, Metainfo.NAME, name, StringValue, required=True)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.ORGANISM, organism, StringValue, required=True)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.STRAIN, strain, StringValue)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_ASSEMBLY, assembly, StringValue)
-        self.__add_to_metainfo(metainfo, BioMetaKeys.REFERENCE_GENOME_RELEASE, release, StringValue)
-        self.__add_to_metainfo(metainfo, ANNOTATION_KEY, annotation_url, ExternalLink, required=True)
-        self.__add_to_metainfo(metainfo, metainfo.DESCRIPTION, description, StringValue)
-        return self.__invoke_loader(parent, 'genomes', metainfo)
 
     def create_report_file(self, parent=None, name=None, urls=None, metainfo=None):
         """
