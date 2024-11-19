@@ -92,6 +92,8 @@ TAGS = {"-sm": "samples",
         "-vm": "variant-metadata",
         "-e": "expression",
         "-em": "expression-metadata",
+        "-fl": "file",
+        "-flm": "file-metadata",
         "-mpf": "mapping-file",
         "-mpfa": "mapping-file-accession",
         "-mpfm": "mapping-file-metadata",
@@ -389,9 +391,9 @@ def _select_source(links):
 
 
 # pylint: disable-next=too-many-arguments
-def _prepare_etl_payload(kind, metadata_link, template_id=None, data_link=None,
+def _prepare_etl_payload(kind, metadata_link=None, template_id=None, data_link=None,
                          prev_version=None, number_of_feature_attributes=None,
-                         data_class=None, measurement_separator=None, source=None):
+                         data_class=None, measurement_separator=None, source=None, study=None):
     ''' Prepare payload to be sent to ETL as parameters '''
     payload = {}
     if template_id is not None:
@@ -411,6 +413,8 @@ def _prepare_etl_payload(kind, metadata_link, template_id=None, data_link=None,
         payload["dataClass"] = data_class
     if measurement_separator is not None:
         payload["measurementSeparator"] = measurement_separator.lstrip()
+    if study is not None:
+        payload["studyAccession"] = study
     if source is None:
         # determine list of links eligible for source guesswork
         source_links = [data_link]
@@ -422,9 +426,8 @@ def _prepare_etl_payload(kind, metadata_link, template_id=None, data_link=None,
 
 
 # pylint: disable-next=too-many-arguments
-def _async_import(kind, metadata_link, params, data_link=None,
-                  prev_version=None, number_of_feature_attributes=None,
-                  data_class=None, measurement_separator=None):
+def _async_import(kind, params, metadata_link=None, data_link=None, prev_version=None,
+                  number_of_feature_attributes=None, data_class=None, study=None, measurement_separator=None):
     ''' Import data using Job/ETL API
 
     Returns ``job_info`` dictionary with all the submitted (and finished) job
@@ -442,12 +445,12 @@ def _async_import(kind, metadata_link, params, data_link=None,
         sys.exit(1)
     url = "{}/{}/job/{}/import/{}/".format(
         params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, kind.replace('_', '-'))
-    if params.ALLOW_DUPLICATES:
+    if params.ALLOW_DUPLICATES and kind != 'file':
         url += '?allow_dups=true'
-    template_id = params.TEMPLATE_ACCESSION_SUPPLIER()
+    template_id = params.TEMPLATE_ACCESSION_SUPPLIER() if kind != 'file' else None
     payload = _prepare_etl_payload(kind, metadata_link, template_id, data_link,
                                    prev_version, number_of_feature_attributes,
-                                   data_class, measurement_separator, params.ETL_SOURCE)
+                                   data_class, measurement_separator, params.ETL_SOURCE, study)
 
     resp = requests.post(url, headers=params.headers, json=payload)
     if resp.status_code == 200:
@@ -847,11 +850,15 @@ class DeprecatedAction(argparse.Action):
 class ParserAstState(object):
     def __init__(self):
         self.sample_node_list = []
+        self.file_node_list = []
         self.current_node = None
 
     def has_libraries_or_preparations(self):
         all_tags = self.get_all_tags()
         return not all_tags.isdisjoint(LIB_PREP_TAGS)
+
+    def has_files(self):
+        return len(self.file_node_list) > 0
 
     def get_all_tags(self):
         result = set()
@@ -971,6 +978,10 @@ def make_signal_action(parser_state):
 
                 last_node['metadata'] = value
             elif tag == 'number-of-feature-attributes':
+                current_tag = current_node.get('tag', '')
+                if current_tag == 'file':
+                    _err("Number of feature attributes is not a supported parameter for files", in_red=True)
+                    sys.exit(1)
                 children = current_node.get('children', [])
                 last_node = next(
                     (
@@ -988,23 +999,37 @@ def make_signal_action(parser_state):
 
                 last_node['nfa'] = value
             elif tag == 'data-class':
-                children = current_node.get('children', [])
-                last_node = next(
-                    (
-                        item for item in reversed(children)
-                        if 'dc' not in item
-                    ),
-                    None
-                )
-                if last_node is None:
-                    _err(
-                        "A file can only have one value of data class. "
-                        "Please check --data-class (-dc) argument in your input.",
-                        in_red=True)
-                    sys.exit(1)
+                current_tag = current_node.get('tag', '')
+                if current_tag == 'file':
+                    if 'dc' in current_node:
+                        _err(
+                            "A file can only have one value of data class. "
+                            "Please check --data-class (-dc) argument in your input.",
+                            in_red=True)
+                        sys.exit(1)
+                    current_node['dc'] = value
+                else:
+                    children = current_node.get('children', [])
+                    last_node = next(
+                        (
+                            item for item in reversed(children)
+                            if 'dc' not in item
+                        ),
+                        None
+                    )
+                    if last_node is None:
+                        _err(
+                            "A file can only have one value of data class. "
+                            "Please check --data-class (-dc) argument in your input.",
+                            in_red=True)
+                        sys.exit(1)
 
-                last_node['dc'] = value
+                    last_node['dc'] = value
             elif tag == 'measurement-separator':
+                current_tag = current_node.get('tag', '')
+                if current_tag == 'file':
+                    _err("Measurement separator is not a supported parameter for files", in_red=True)
+                    sys.exit(1)
                 children = current_node.get('children', [])
                 last_node = next(
                     (
@@ -1028,6 +1053,29 @@ def make_signal_action(parser_state):
                 current_node['children'] = children
 
     return SignalAction
+
+
+def make_file_action(parser_state):
+    class FileAction(BaseCustomAction):
+        def handle_action(self, tag, value, option_string):
+            if tag == 'file-metadata':
+                current_node = parser_state.current_node
+                if current_node is None:
+                    _err("No file link is provided for the file metadata 'PROVIDED_METADATA_LINK'", in_red=True)
+                    sys.exit(1)
+                if 'metadata' in current_node:
+                    _err(
+                        "A file can only have one file metadata link. "
+                        "Please check --file-metadata (-flm) argument in your input.",
+                        in_red=True)
+                    sys.exit(1)
+                current_node['metadata'] = value
+            else:
+                new_file_node = {'tag': tag, 'value': value}
+                parser_state.file_node_list.append(new_file_node)
+                parser_state.current_node = new_file_node
+
+    return FileAction
 
 
 def make_mapping_file_action(parser_state):
@@ -1209,6 +1257,20 @@ def handle_samples_signals_case(parser_state, params, study, failures):
         add_signals_to_parent(
             sample_group, 'sample', signals, signal_cache, params, failures
         )
+
+
+def handle_files_case(parser_state, params, study):
+    for file_node in parser_state.file_node_list:
+        value = file_node['value']
+        dc = file_node.get('dc')
+        if dc is None:
+            _err("No Data class for the file was provided", in_red=True)
+            sys.exit(1)
+        flm = file_node.get('metadata')
+        job_info, _ = _async_import(
+            'file', params, metadata_link=flm, data_link=value, study=study, data_class=dc)
+        accession = job_info.get(u'result', {}).get(u'accession')
+        print(f"file {accession} was attached successfully to study {study}")
 
 
 def check_for_repeated_links(link, nodes, links_cache):
@@ -1403,6 +1465,9 @@ def do_import(import_params):
     else:
         handle_samples_signals_case(parser_args_state, import_params, study, failures)
 
+    if parser_args_state.has_files():
+        handle_files_case(parser_args_state, import_params, study)
+
     print(green_text(u"Execution is finished!"))
     if failures:
         sys.exit(1)
@@ -1475,7 +1540,7 @@ class ImportParams:
                 samples_link, libraries_link, preparations_link,
                 expression_link, expression_metadata_link,
                 variant_link, variant_metadata_link,
-                flow_cytometry_link, flow_cytometry_metadata_link
+                flow_cytometry_link, flow_cytometry_metadata_link,
             )
         self.parser_args_state = parser_args_state
 
@@ -1719,6 +1784,14 @@ def main():
                         dest="data",
                         metavar="SIGNAL_METADATA_LINK",
                         help="link to flow cytometry metadata file",
+                        nargs="?")
+    parser.add_argument("-fl", "--file",
+                        action=make_file_action(parser_args_state),
+                        help="link to a file to be attached",
+                        nargs="?")
+    parser.add_argument("-flm", "--file-metadata",
+                        action=make_file_action(parser_args_state),
+                        help="link to metadata file for this attached file",
                         nargs="?")
     parser.add_argument("-nfa", "--number-of-feature-attributes",
                         action=make_signal_action(parser_args_state),
