@@ -18,8 +18,9 @@ ALLOWED_WAIT_CYCLES = 120
 TIMEOUT_IN_SECONDS = 10
 
 
-def is_api_ready(odm_url, endpoint='frontend/health'):
+def is_api_ready(odm_url):
     try:
+        endpoint='frontend/health'
         response = requests.get(
             url=f'{odm_url}/{endpoint}',
         )
@@ -36,24 +37,19 @@ def main():
         type=str, help='host address', required=True
     )
 
-    arg_parser.add_argument(
-        '--odm-endpoint', default='frontend/health',
-        type=str, help='(optional) specific endpoint to query', required=False
-    )
-
     args = arg_parser.parse_args()
 
     wait_cycle = 0
 
     while wait_cycle < ALLOWED_WAIT_CYCLES:
         time.sleep(TIMEOUT_IN_SECONDS)
-        if is_api_ready(args.odm_url, args.odm_endpoint):
-            print(f'Host {args.odm_url}/{args.odm_endpoint} is ready!')
+        if is_api_ready(args.odm_url):
+            print(f'Host {args.odm_url} is ready!')
             sys.exit(0)
         else:
             wait_cycle += 1
             print(
-                f'Iteration {wait_cycle}: {args.odm_url}/{args.odm_endpoint} '
+                f'Iteration {wait_cycle}: {args.odm_url}'
                 f'is not ready yet. Waiting another {TIMEOUT_IN_SECONDS} '
                 'seconds to re-check.'
             )
