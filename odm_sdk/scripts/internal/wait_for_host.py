@@ -44,12 +44,12 @@ def main():
     while wait_cycle < ALLOWED_WAIT_CYCLES:
         time.sleep(TIMEOUT_IN_SECONDS)
         if is_api_ready(args.odm_url):
-            print(f'Host {args.odm_url}/{args.odm_endpoint} is ready!')
+            print(f'Host {args.odm_url} is ready!')
             sys.exit(0)
         else:
             wait_cycle += 1
             print(
-                f'Iteration {wait_cycle}: {args.odm_url}/{args.odm_endpoint} '
+                f'Iteration {wait_cycle}: {args.odm_url}'
                 f'is not ready yet. Waiting another {TIMEOUT_IN_SECONDS} '
                 'seconds to re-check.'
             )
