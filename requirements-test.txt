@@ -1,2 +1,2 @@
-pytest==8.3.3
+pytest==8.3.4
 requests_mock==1.12.1
