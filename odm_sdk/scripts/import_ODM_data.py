@@ -67,7 +67,7 @@ ETL_WAITING_TIMEOUT = 30 * 60
 ETL_POLLING_INTERVAL = 5
 
 # all supported file "sources" supported by ETL
-ETL_SOURCES = ('S3', 'HTTP', 'Arvados', 'LOCAL')
+ETL_SOURCES = ('S3', 'HTTP', 'LOCAL')
 
 # a mapping of URL scheme to its *default* ETL "source" (see above)
 # if no source is provided explicitly
@@ -1515,6 +1515,9 @@ class ImportParams:
         self.study_accession = study_accession
         self.APP_VERSION = app_version
         self.ETL_SOURCE = etl_source
+        if etl_source is not None:  # todo remove in 1.61
+            print("The source parameter is ignored and will be removed in version 1.61.\n"
+                  "The source is automatically extracted from the link")
         self.TEMPLATE_ACCESSION_SUPPLIER = template_accession_supplier
         self.ALLOW_DUPLICATES = allow_duplicates
         self.NUMBER_OF_FEATURE_ATTRIBUTES = number_of_feature_attributes
@@ -1844,8 +1847,8 @@ def main():
     parser.add_argument("--import-source", dest="ETL_SOURCE", metavar="PROTOCOL",
                         choices=ETL_SOURCES,
                         help="protocol (source) for server to fetch data; valid choices are: {}\n"
-                             "Usually not required, but you might need to override "
-                             "heuristics based on URL itself and server configuration"
+                             "The source parameter is ignored and will be removed in version 1.61."
+                             "The source is automatically extracted from the link"
                              "".format(ETL_SOURCES))
     parser.add_argument("-lata", "--link-all-to-all",
                         dest="LINK_SIGNALS_TO_ALL_SAMPLES",
