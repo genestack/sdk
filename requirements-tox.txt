@@ -1,2 +1,2 @@
 tox==4.24.1
-setuptools==75.8.0
+setuptools==75.8.2
