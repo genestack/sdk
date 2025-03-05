@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-#  Copyright (c) 2011-2025 Genestack Limited
-#  All Rights Reserved
-#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-#  The copyright notice above does not evidence any
-#  actual or intended publication of such source code.
-
 # This script deletes files using wipeStudy method.
 # Provide an accession of a study/template which needs to be deleted.
 
