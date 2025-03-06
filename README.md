@@ -2,7 +2,7 @@
 
 ### Documentation
 
-   [stable](http://genestack-client.readthedocs.io/en/stable/)
+   [stable](https://odm.demo.genestack.com/user-docs/tools/odm-sdk/installation/)
 
 ### Installation
 
