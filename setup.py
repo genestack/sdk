@@ -56,8 +56,8 @@ setup(
         ],
 
     project_urls={
-        'Documentation': 'https://genestack-client.readthedocs.io/en/stable/',
-        'Source': 'https://github.com/genestack/python-client/',
-        'Tracker': 'https://github.com/genestack/python-client/issues',
+        'Documentation': 'https://odm.demo.genestack.com/user-docs/tools/odm-sdk/installation/',
+        'Source': 'https://github.com/genestack/sdk/',
+        'Tracker': 'https://github.com/genestack/sdk/issues',
     },
 )
