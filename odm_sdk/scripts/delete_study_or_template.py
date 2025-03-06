@@ -6,11 +6,11 @@
 from __future__ import print_function, unicode_literals
 
 import re
+import sys
 
 from odm_sdk import GenestackServerException
-from odm_sdk.utils import make_connection_parser, get_connection
-
 from odm_sdk.scripts.utils import colored, GREEN, RED
+from odm_sdk.utils import make_connection_parser, get_connection
 
 
 def main():
@@ -32,7 +32,8 @@ def main():
             result = p.search(e.stack_trace)
             if result:
                 message = result.group(1)
-        print(colored(message, RED))
+        print(colored(message, RED), file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
