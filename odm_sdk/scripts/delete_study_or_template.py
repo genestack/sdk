@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 # This script deletes files using wipeStudy method.
 # Provide an accession of a study/template which needs to be deleted.
 
 from __future__ import print_function, unicode_literals
 
 import re
+import sys
 
 from odm_sdk import GenestackServerException
-from odm_sdk.utils import make_connection_parser, get_connection
-
 from odm_sdk.scripts.utils import colored, GREEN, RED
+from odm_sdk.utils import make_connection_parser, get_connection
 
 
 def main():
@@ -27,13 +26,14 @@ def main():
         connection.application('genestack/study-metainfo-editor').invoke('wipeStudy', accession)
         print(colored("Success", GREEN))
     except GenestackServerException as e:
-        p = re.compile('File .* not found')
-        result = p.search(e.message)
-        if result is not None:
-            print(colored("Study/template with accession %s does not exist" % accession,
-                          RED))
-        else:
-            print(colored(e, RED))
+        message = e
+        if e.stack_trace is not None:
+            p = re.compile(r"GenestackRestApiException: (.*?)(?=\n)")
+            result = p.search(e.stack_trace)
+            if result:
+                message = result.group(1)
+        print(colored(message, RED), file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

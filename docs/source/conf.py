@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-
-#  Copyright (c) 2011-2024 Genestack Limited
-#  All Rights Reserved
-#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
-#  The copyright notice above does not evidence any
-#  actual or intended publication of such source code.
-
 #
 # Python Client Library documentation build configuration file, created by
 # sphinx-quickstart on Thu Jan 15 21:46:07 2015.
