@@ -1,3 +1,9 @@
+#  Copyright (c) 2011-2025 Genestack Limited
+#  All Rights Reserved
+#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
+#  The copyright notice above does not evidence any
+#  actual or intended publication of such source code.
+
 from getpass import getpass
 from urllib.parse import urlsplit
 
@@ -17,8 +23,8 @@ def _get_server_url(host):
     # trust provided path if it ends with '/frontend'
     if url_stub.split('/')[-1] == 'frontend':
         return '/'.join([url_stub, 'endpoint'])
-    # return '.../frontend/endpoint' if '.../frontend/health' works
-    if requests.get('%s/frontend/health' % url_stub).ok:
+    # return '.../frontend/endpoint' if '.../frontend/endpoint/actuator/health' works
+    if requests.get('%s/frontend/endpoint/actuator/health' % url_stub).ok:
         return '%s/frontend/endpoint' % url_stub
 
     raise GenestackAuthenticationException(
