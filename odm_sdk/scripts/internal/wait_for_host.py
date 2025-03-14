@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
+
+#  Copyright (c) 2011-2025 Genestack Limited
+#  All Rights Reserved
+#  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF GENESTACK LIMITED
+#  The copyright notice above does not evidence any
+#  actual or intended publication of such source code.
+
+import argparse
 import sys
 import time
+
 import requests
-import argparse
 
 EXPECTED_RESPONSE_CODE = 200
 ALLOWED_WAIT_CYCLES = 120
@@ -11,7 +19,7 @@ TIMEOUT_IN_SECONDS = 10
 
 def is_api_ready(odm_url):
     try:
-        endpoint='frontend/health'
+        endpoint = '/frontend/endpoint/actuator/health'
         response = requests.get(
             url=f'{odm_url}/{endpoint}',
         )
