@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+
+import argparse
 import sys
 import time
+
 import requests
-import argparse
 
 EXPECTED_RESPONSE_CODE = 200
 ALLOWED_WAIT_CYCLES = 120
@@ -11,7 +13,7 @@ TIMEOUT_IN_SECONDS = 10
 
 def is_api_ready(odm_url):
     try:
-        endpoint='frontend/health'
+        endpoint = '/frontend/endpoint/actuator/health'
         response = requests.get(
             url=f'{odm_url}/{endpoint}',
         )
