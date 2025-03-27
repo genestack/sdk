@@ -7,6 +7,7 @@ import sys
 PY3 = sys.version_info > (3,)
 
 BLUE = 34
+YELLOW = 33
 GREEN = 32
 RED = 31
 
