@@ -28,8 +28,7 @@ FEATURES_STRING = {
     "name": Metainfo.FEATURES_STRING,
     "isReadOnly": True,
     "description": "If your dataset contains multiple columns for feature, "
-                   "this parameter lists columns with text content (e.g., Gene Name). "
-                   "Please do not remove this attribute."
+                   "this parameter lists columns with text content (e.g., Gene Name)."
 }
 FEATURES_NUMERIC = {
     "isRequired": False,
