@@ -9,7 +9,7 @@ from odm_sdk import (Application, FilesUtil, GenestackException,
                               GenestackServerException, SpecialFolders,
                               GroupsUtil, ShareUtil)
 
-from . import json_validation
+from . import json_validation, template_technical_fields
 from .dictionary_search import DictionarySearch
 from .format import colored, print_result, Color
 
@@ -67,6 +67,7 @@ class TemplateImporter(Application):
 
     def _create_template(self, name, json_path, replace):
         content = json_validation.load_json(json_path, schema_name='template_schema.json')
+        template_technical_fields.validate_content(content)
         accession = self._find_existing_template(name)
 
         if accession is None:
@@ -137,6 +138,7 @@ class TemplateImporter(Application):
             types.setdefault(data_type, []).append(item)
 
         for data_type, data_type_items in types.items():
+            data_type_items = template_technical_fields.enrich_items(data_type, data_type_items)
             self.invoke('setKeyInfosForFileKind', accession, data_type, data_type_items)
 
     def _find_dict(self, path, name):

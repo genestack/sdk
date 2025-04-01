@@ -20,6 +20,10 @@ class Metainfo(dict):
     SOURCE_DATA = 'genestack:sourceData'
     DATA_TYPE = 'genestack:dataType'
     LAST_UPDATE_DATE = 'genestack:file.last-update'
+    FEATURES_STRING = 'Features (string)'
+    FEATURES_NUMERIC = 'Features (numeric)'
+    VALUES_NUMERIC = 'Values (numeric)'
+    DATA_CLASS = 'Data Class'
 
     # Metainfo key for links from data files to their samples.
     SAMPLE_LINK = "genestack:sampleLink"
