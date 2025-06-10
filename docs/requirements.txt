@@ -1,5 +1,5 @@
 keyring==25.6.0
-requests==2.32.3
+requests==2.32.4
 pyOpenSSL==25.1.0
 jsonschema==4.24.0
 future==1.0.0
