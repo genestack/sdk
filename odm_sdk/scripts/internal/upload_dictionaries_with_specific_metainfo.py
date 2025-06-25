@@ -7,7 +7,7 @@ def upload_disease():
     # Upload Disease Ontology
     disease_ontology = {
         'name': 'Disease Ontology - DOID',
-        'url': 'https://odm-init.s3.ap-south-1.amazonaws.com/dictionaries/odm-12611/doid.owl',
+        'url': 'https://odm-init.s3.amazonaws.com/dictionaries/odm-12611/doid.owl',
         'description': 'Classification of human diseases by etiology. Domain: Diseases / Human Health, Version: 2025-05-30. The original data is available via the link https://purl.obolibrary.org/obo/doid/releases/2025-05-30/doid.owl'
     }
     connection = get_connection()
@@ -20,7 +20,7 @@ def upload_disease():
     metainfo.add_file_reference("genestack.dictionary:parent", disease_ontology_accession)
     disease_ontology_extended = {
         'name': 'Disease Ontology Extended',
-        'url': 'https://odm-init.s3.ap-south-1.amazonaws.com/dictionaries/odm-12611/disease_extension.csv',
+        'url': 'https://odm-init.s3.amazonaws.com/dictionaries/odm-12611/disease_extension.csv',
         'description': 'Classification of human diseases by etiology enriched by term "Healthy" and its synonyms. Domain: Diseases / Human Health, Version: 2025-05-30, extended by term "Healthy". The original data is available via the link https://purl.obolibrary.org/obo/doid/releases/2025-05-30/doid.owl'
     }
     disease_ontology_extended_accession = load_dictionary(connection, disease_ontology_extended, metainfo=metainfo)
@@ -32,7 +32,7 @@ def upload_gene_ontology():
 
     gene_ontology = {
         "name": "Gene Ontology - GO",
-        "url": "https://odm-init.s3.ap-south-1.amazonaws.com/dictionaries/odm-12611/go.owl",
+        "url": "https://odm-init.s3.amazonaws.com/dictionaries/odm-12611/go.owl",
         "description": "Describes gene functions: biological process, molecular function, cellular component. Domain: Molecular Function / Biological Process, Version: 2024-11-03. The original data is available via the link https://purl.obolibrary.org/obo/go/releases/2024-11-03/extensions/go-plus.owl"
     }
 
