@@ -44,41 +44,6 @@ def upload_gene_ontology():
     initialization(connection, [gene_ontology_accession])
 
 
-def upload_gene_dictionaries():
-    organisms_to_load = [
-        'Bos taurus',
-        'Danio rerio',
-        'Homo sapiens',
-        'Macaca fascicularis',
-        'Mus musculus',
-        'Oryctolagus cuniculus',
-        'Rattus norvegicus',
-        'Sus scrofa'
-    ]
-    connection = get_connection()
-    dictionary_accessions = []
-
-    for organism in organisms_to_load:
-        gene_dict = {
-            "name": organism + " genes",
-            "url": "https://odm-init.s3.ap-south-1.amazonaws.com/dictionaries/gene-dictionaries/" +
-                   organism.replace(" ", "+") + ".csv",
-            "description": "Dictionary contains the following information about gene: Ensembl gene name and id, "
-                           "Ensembl transcript name and id, Ensembl protein id, Reactome pathway name and id, "
-                           "Entrez gene id, Uniprot symbol, HGNC gene id and description, GO term label and id."
-        }
-
-        metainfo = Metainfo()
-        metainfo.add_string('genestack.dictionary:termType', 'gene')
-        metainfo.add_string('Release', '99')
-        metainfo.add_string('genestack.bio:organism', organism)
-        gene_ontology_accession = load_dictionary(connection, gene_dict, metainfo=metainfo)
-        dictionary_accessions.append(gene_ontology_accession)
-
-
-    sharing(connection, dictionary_accessions)
-
-
 def main():
     """
     Currently we don't support metainfo parsing via auxiliary scripts from json in proper way.
@@ -86,7 +51,6 @@ def main():
     """
     upload_disease()
     upload_gene_ontology()
-    # upload_gene_dictionaries()    "It was decided not to load outdated gene dictionaries"
 
 
 if __name__ == '__main__':
