@@ -4,6 +4,7 @@
   "ignorePresets": [":ignoreModulesAndTests"],
   "schedule": ["* */2 * * 6,0"],
   "rebaseWhen": "behind-base-branch",
+  "updateNotScheduled": false,
   "labels": ["renovate"],
   "dockerfile": {
     "fileMatch": [
