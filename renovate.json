@@ -1,11 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "pre-commit": {
-    "enabled": true
-  },
+  "ignorePresets": [":ignoreModulesAndTests"],
   "schedule": ["* */2 * * 6,0"],
-  "updateNotScheduled": false,
+  "rebaseWhen": "behind-base-branch",
   "labels": ["renovate"],
   "dockerfile": {
     "fileMatch": [
