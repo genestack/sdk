@@ -82,6 +82,7 @@ SCHEME_TO_ETL_SOURCE = {
 assert set(SCHEME_TO_ETL_SOURCE.values()).issubset(ETL_SOURCES)
 
 COMMON_URL_PREFIX = 'frontend/rs/genestack'
+# INTEGRATION_CURATOR_URL_PREFIX = 'api/v1/as-curator/integration/link'
 
 TAGS = {"-sm": "samples",
         "-lb": "libraries",
@@ -91,6 +92,7 @@ TAGS = {"-sm": "samples",
         "-v": "variant",
         "-vm": "variant-metadata",
         "-e": "expression",
+        "-c": "cell",
         "-em": "expression-metadata",
         "-fl": "file",
         "-flm": "file-metadata",
@@ -102,7 +104,8 @@ TAGS = {"-sm": "samples",
         "-ms": "measurement-separator"
         }
 
-LIB_PREP_TAGS = {'libraries', 'preparations'}
+CELL_PARENTS = {"samples", "libraries", "preparations"}
+LIB_PREP_CELL_TAGS = {'libraries', 'preparations', 'cell'}
 SIGNAL_TAGS = {'flow-cytometry', 'variant', 'expression'}
 
 FILE_FOUND_ERR_MSG_RE = r'job instance already exists .+ jobExecId=([0-9]+)'
@@ -396,6 +399,10 @@ def _prepare_etl_payload(kind, metadata_link=None, template_id=None, data_link=N
                          data_class=None, measurement_separator=None, source=None, study=None):
     ''' Prepare payload to be sent to ETL as parameters '''
     payload = {}
+    # if import cells, job accepts only dataLink parameter, throws an error when's more
+    if kind == 'cell':
+        payload['dataLink'] = metadata_link
+        return payload
     if template_id is not None:
         payload["templateId"] = template_id
     inline_metadata = False
@@ -443,8 +450,9 @@ def _async_import(kind, params, metadata_link=None, data_link=None, prev_version
         _err("No data link is provided for {} import"
              "".format(kind))
         sys.exit(1)
+    type_name = kind + 's' if kind == 'cell' else kind.replace('_', '-')
     url = "{}/{}/job/{}/import/{}/".format(
-        params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, kind.replace('_', '-'))
+        params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, type_name)
     if params.ALLOW_DUPLICATES and kind != 'file':
         url += '?allow_dups=true'
     template_id = params.TEMPLATE_ACCESSION_SUPPLIER() if kind != 'file' else None
@@ -620,7 +628,7 @@ def check_study_has_libs_preps(group_acc, samples_group, file_type, params, stud
                                 accession_from=samples_group)
 
 
-def add_and_link_libs_preps(
+def add_and_link_libs_preps_cell(
         samples_group,
         metadata_link,
         file_type,
@@ -644,8 +652,9 @@ def add_and_link_libs_preps(
                    accession_to=samples_group,
                    params=params)
     try:
-        # TODO remove this check when https://genestack.atlassian.net/browse/ODM-7793 will be fixed
-        check_study_has_libs_preps(group_acc, samples_group, file_type, params, study)
+        if file_type != 'cell':
+            # TODO remove this check when https://genestack.atlassian.net/browse/ODM-7793 will be fixed
+            check_study_has_libs_preps(group_acc, samples_group, file_type, params, study)
     except GroupLinkingError as ex:
         _err("Linking {} ({} to {}) failed"
              "".format(file_type, group_acc, samples_group), in_red=True)
@@ -694,6 +703,9 @@ def link_by_parent(what, accession_to, accession_from, params):
         'samples_to_study': 'sample/group/{sourceId}/to/study/{targetId}',
         'libraries_to_samples': 'library/group/{sourceId}/to/sample/group/{targetId}',
         'preparations_to_samples': 'preparation/group/{sourceId}/to/sample/group/{targetId}',
+        'cell_to_samples': 'cell/group/{sourceId}/to/sample/group/{targetId}',
+        'cell_to_libraries': 'cell/group/{sourceId}/to/library/group/{targetId}',
+        'cell_to_preparations': 'cell/group/{sourceId}/to/library/group/{targetId}',
         'expression_to_sample': 'expression/group/{sourceId}/to/sample/group/{targetId}',
         'expression_to_libraries': 'expression/group/{sourceId}/to/library/group/{targetId}',
         'expression_to_preparations': 'expression/group/{sourceId}/to/preparation/group/{targetId}',
@@ -708,13 +720,27 @@ def link_by_parent(what, accession_to, accession_from, params):
         # 'flow-cytometry_to_preparations':
         #     'flow_cytometry/group/{sourceId}/to/preparation/group/{targetId}',
     }
+    # cells are linked through integration URL
+    # if what.startswith('cell'):
+    #     url = "/".join([params.SERVER, INTEGRATION_CURATOR_URL_PREFIX, ENDPOINT_DICT[what]])
+    # # everything else is linked over frontend URL
+    # else:
+    #     url = '/'.join([params.SERVER, COMMON_URL_PREFIX,
+    #                     INTEGRATION_PREFIX.rstrip('/') % params.APP_VERSION, ENDPOINT_DICT[what]])
+    pop = ENDPOINT_DICT[what]
     url = '/'.join([params.SERVER, COMMON_URL_PREFIX,
                     INTEGRATION_PREFIX.rstrip('/') % params.APP_VERSION, ENDPOINT_DICT[what]])
     response = requests.post(url.format(sourceId=accession_from,
                                         targetId=accession_to),
                              headers=params.headers)
     if response.ok:
-        print("Successfully linked: [{}]".format(what))
+        # TODO remove this check when https://genestack.atlassian.net/browse/ODM-7793 will be fixed
+        # libraries and preparations have additional linkage check
+        # so the confirmation print will be done after it
+        should_print = not (what.startswith('libraries')
+                            or what.startswith('preparations')
+                            or what.startswith('cell'))
+        if should_print: print("Successfully linked: [{}]".format(what))
         return
 
     what = what.replace('_', ' ')
@@ -855,7 +881,7 @@ class ParserAstState(object):
 
     def has_libraries_or_preparations(self):
         all_tags = self.get_all_tags()
-        return not all_tags.isdisjoint(LIB_PREP_TAGS)
+        return not all_tags.isdisjoint(LIB_PREP_CELL_TAGS)
 
     def has_files(self):
         return len(self.file_node_list) > 0
@@ -879,14 +905,14 @@ class ParserAstState(object):
         # should be linked to them instead of samples
         for sample_node in self.sample_node_list:
             for child_node in sample_node.get('children', []):
-                if child_node['tag'] not in LIB_PREP_TAGS:
+                if child_node['tag'] not in LIB_PREP_CELL_TAGS:
                     return False
         return True
 
     def has_non_expression_signals(self):
         all_tags = self.get_all_tags()
         return not all_tags.issubset({'samples', 'libraries', 'preparations',
-                                      'expression', 'mapping-file'})
+                                      'expression', 'cell', 'mapping-file'})
 
 
 class BaseCustomAction(argparse.Action):
@@ -948,6 +974,36 @@ def make_libraries_and_preparations_action(parser_state):
             parser_state.current_node = new_node
 
     return LibPrepAction
+
+
+def make_cell_action(parser_state):
+    class CellAction(BaseCustomAction):
+        def handle_action(self, tag, value, option_string):
+            sample_node = next(
+                (
+                    node for node in reversed(parser_state.sample_node_list)
+                    if node['value'] != 'implicit' and node['tag'] in CELL_PARENTS
+                ),
+                None
+            )
+            if sample_node is not None:
+                new_node = {'tag': tag, 'value': value}
+                children = sample_node.get('children', [])
+                if not children:
+                    children.append(new_node)
+                    sample_node['children'] = children
+                else:
+                    parent_node = sample_node['children'][-1]
+                    children = parent_node.get('children', [])
+                    children.append(new_node)
+                    parent_node['children'] = children
+                parser_state.current_node = new_node
+            else:
+                _err("You've provided {} before sample file or sample parent accession. Exit!"
+                     .format(tag.replace('-', ' ')), in_red=True)
+                sys.exit(1)
+
+    return CellAction
 
 
 def make_signal_action(parser_state):
@@ -1122,7 +1178,7 @@ def check_and_merge_mapping_file_in_sample_nodes(sample_nodes):
     for sample_node in sample_nodes:
         children = sample_node.get('children', [])
         children_tags = {child['tag'] for child in children}
-        if children_tags.issubset(LIB_PREP_TAGS):
+        if children_tags.issubset(LIB_PREP_CELL_TAGS):
             for lib_prep_node in children:
                 if 'children' not in lib_prep_node:
                     continue
@@ -1174,19 +1230,26 @@ def add_signals_to_parent(parent_prep_group, parent_prep_file_type, signal_nodes
                 link_mappings(map_f_acc, expr_acc, params)
 
 
-def add_lib_prep(sample_group, nodes, link_cache, params, study, failures):
+def add_lib_prep_cell(sample_group, nodes, link_cache, params, study, failures):
     for node in nodes:
-        lib_prep_file_type = node['tag']
+        lib_prep_cell_file_type = node['tag']
         url = node['value']
-        lib_prep_group = link_cache.get(url, None)
-        if lib_prep_group is None:
-            lib_prep_group = add_and_link_libs_preps(
-                sample_group, url, lib_prep_file_type, params, study, failures
+        lib_prep_cell_group = link_cache.get(url, None)
+        if lib_prep_cell_group is None:
+            lib_prep_cell_group = add_and_link_libs_preps_cell(
+                sample_group, url, lib_prep_cell_file_type, params, study, failures
             )
-            link_cache[url] = lib_prep_group
+            link_cache[url] = lib_prep_cell_group
         children = node.get('children', [])
+        if lib_prep_cell_file_type != "cell":
+            cell_node_index = next(
+                (i for i, node in enumerate(children) if node["tag"] == "cell")
+            )
+            cell_node = children.pop(cell_node_index)
+            if cell_node:
+                add_lib_prep_cell(node, [cell_node], link_cache, params, study, failures)
         add_signals_to_parent(
-            lib_prep_group, lib_prep_file_type, children,
+            lib_prep_cell_group, lib_prep_cell_file_type, children,
             link_cache, params, failures
         )
 
@@ -1227,7 +1290,7 @@ def handle_lib_prep_case(parser_state, params, study, failures):
                 failures.append(ex)
                 continue
 
-        add_lib_prep(
+        add_lib_prep_cell(
             sample_group, libraries_and_preparations,
             link_cache, params, study, failures
         )
@@ -1315,7 +1378,7 @@ def collect_all_mapping_file_nodes(nodes):
 def add_all_signal_args_to_all_lib_preps(sample_nodes):
     all_libs_preps = collect_all_nodes_by_tag(
         sample_nodes,
-        lambda x: x in LIB_PREP_TAGS
+        lambda x: x in LIB_PREP_CELL_TAGS
     )
     all_signal_nodes = collect_all_nodes_by_tag(
         sample_nodes,
@@ -1749,6 +1812,12 @@ def main():
                         metavar="PREPARATIONS_LINK_OR_ACCESSION",
                         help="link to preparations data file or accession of "
                              "existing preparation group",
+                        nargs="?")
+    parser.add_argument("-c", "--cell",
+                        action=make_cell_action(parser_args_state),
+                        dest="data",
+                        metavar="SIGNAL_LINK",
+                        help="link to cell data file",
                         nargs="?")
     parser.add_argument("-e", "--expression",
                         action=make_signal_action(parser_args_state),
