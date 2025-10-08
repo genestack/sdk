@@ -1530,7 +1530,7 @@ def do_import(import_params):
         _err('Only one mapping file is expected with link-all-to-all option', in_red=True)
         sys.exit(1)
 
-    if (parser_args_state.has_libraries_or_preparations_or_cells()
+    if (parser_args_state.has_libraries_or_preparations()
             and parser_args_state.has_non_expression_signals()):
         _err('the linkage between libraries/preparations and variants/flow-cytometry '
              'is not supported', in_red=True)
