@@ -347,6 +347,10 @@ class ImportTest(unittest.TestCase):
                     "https://cell1",
                     "--cell",
                     "https://cell2",
+                    "-e",
+                    "https://expressions1",
+                    "-v",
+                    "https://variant1",
                     "--samples",
                     "https://samples2.tsv",
                     "-c",
@@ -377,9 +381,9 @@ class ImportTest(unittest.TestCase):
             [c for c in parent.get('children') if c['tag'] == 'cells']
         )
         active_sample = sample_node_list[0]
-        self.assertEqual(2,
+        self.assertEqual(4,
                          len(active_sample.get('children')),
-                         "First sample should have two children")
+                         "First sample should have four children")
         self.assertEqual(2,
                          len(get_cell_children(active_sample)),
                          "First sample should have two cell children")

@@ -105,6 +105,7 @@ TAGS = {"-sm": "samples",
 
 CELL_PARENTS = {"samples", "libraries", "preparations"}
 LIB_PREP_CELL_TAGS = {'libraries', 'preparations', 'cells'}
+LIB_PREP_TAGS = {'libraries', 'preparations'}
 SIGNAL_TAGS = {'flow-cytometry', 'variant', 'expression'}
 
 FILE_FOUND_ERR_MSG_RE = r'job instance already exists .+ jobExecId=([0-9]+)'
@@ -874,6 +875,10 @@ class ParserAstState(object):
         all_tags = self.get_all_tags()
         return not all_tags.isdisjoint(LIB_PREP_CELL_TAGS)
 
+    def has_libraries_or_preparations(self):
+        all_tags = self.get_all_tags()
+        return not all_tags.isdisjoint(LIB_PREP_TAGS)
+
     def has_files(self):
         return len(self.file_node_list) > 0
 
@@ -890,7 +895,7 @@ class ParserAstState(object):
         return result
 
     def has_consistent_data_model(self):
-        if not self.has_libraries_or_preparations_or_cells():
+        if not self.has_libraries_or_preparations():
             return True
         # in case libraries or preparations have been passed, all signals
         # should be linked to them instead of samples
@@ -1307,12 +1312,12 @@ def handle_samples_signals_case(parser_state, params, study, failures):
     signal_cache = {}
     for sample_node in parser_state.sample_node_list:
         value = sample_node['value']
-        signals = sample_node.get('children', [])
+        children = sample_node.get('children', [])
 
         if is_acc(value):
-            # existing samples group, expect some signals
-            if not signals:
-                _err('No signals provided to link, ignoring `--samples {}`'.format(value))
+            # existing samples group, expect some children
+            if not children:
+                _err('Nothing provided to link, ignoring `--samples {}`'.format(value))
                 return
             sample_group = value
         else:
@@ -1323,9 +1328,19 @@ def handle_samples_signals_case(parser_state, params, study, failures):
                     sys.exit(1)
                 failures.append(ex)
                 continue
-
+        cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
+        if cell_nodes:
+            add_lib_prep_cell(sample_group,
+                              cell_nodes,
+                              {},
+                              params,
+                              study,
+                              failures,
+                              sample_node)
+            # remove cell nodes from children if execution was successful
+            children = [child for child in children if child['tag'] != 'cells']
         add_signals_to_parent(
-            sample_group, 'sample', signals, signal_cache, params, failures
+            sample_group, 'sample', children, signal_cache, params, failures
         )
 
 
@@ -1542,7 +1557,7 @@ def do_import(import_params):
 
     study = add_study(params=import_params)
     failures = []
-    if parser_args_state.has_libraries_or_preparations_or_cells():
+    if parser_args_state.has_libraries_or_preparations():
         handle_lib_prep_cell_case(parser_args_state, import_params, study, failures)
     else:
         handle_samples_signals_case(parser_args_state, import_params, study, failures)
