@@ -977,6 +977,10 @@ def make_cell_action(parser_state):
                 ),
                 None
             )
+            if sample_node is None:
+                _err("You've provided cell before sample file or accession. Exit!"
+                     , in_red=True)
+                sys.exit(1)
             # find a parent, it would be the last one entered
             # between preparation, library or sample
             parent_node = next(
@@ -986,19 +990,13 @@ def make_cell_action(parser_state):
                 ),
                 sample_node
             )
-            if parent_node is not None:
-                # set tag to plural for compatibility and easier manipulation
-                # it will be singular if argument is passed with double dash (--cell)
-                tag = 'cells' if tag == 'cell' else tag
-                new_node = {'tag': tag, 'value': value}
-                children = parent_node.get('children', [])
-                children.append(new_node)
-                parent_node['children'] = children
-            else:
-                _err("You've provided {} before it's parent (sample, library or preparation"
-                     " file or sample parent accession. Exit!"
-                     .format(tag.replace('-', ' ')), in_red=True)
-                sys.exit(1)
+            # set tag to plural for compatibility and easier manipulation
+            # it will be singular if argument is passed with double dash (--cell)
+            tag = 'cells' if tag == 'cell' else tag
+            new_node = {'tag': tag, 'value': value}
+            children = parent_node.get('children', [])
+            children.append(new_node)
+            parent_node['children'] = children
 
     return CellAction
 

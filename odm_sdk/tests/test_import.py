@@ -374,7 +374,7 @@ class ImportTest(unittest.TestCase):
                          len(sample_node_list),
                          "There should be two samples for the study")
         get_cell_children = lambda parent: (
-            [c for c in parent.get('children') if c['tag'] == 'cell']
+            [c for c in parent.get('children') if c['tag'] == 'cells']
         )
         active_sample = sample_node_list[0]
         self.assertEqual(2,
