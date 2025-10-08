@@ -975,13 +975,7 @@ def make_libraries_and_preparations_action(parser_state):
 def make_cell_action(parser_state):
     class CellAction(BaseCustomAction):
         def handle_action(self, tag, value, option_string):
-            sample_node = next(
-                (
-                    node for node in reversed(parser_state.sample_node_list)
-                    if node['value'] != 'implicit'
-                ),
-                None
-            )
+            sample_node = parser_state.sample_node_list[-1]
             if sample_node is None:
                 _err("You've provided cell before sample file or accession. Exit!"
                      , in_red=True)
