@@ -1278,6 +1278,18 @@ def handle_lib_prep_cell_case(parser_state, params, study, failures):
             assert len(libraries_and_preparations) == 1, \
                 'Internal error: expect only one subnode for implicit sample node'
             sub_node = libraries_and_preparations[0]
+            children = sub_node.get('children', [])
+            cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
+            if cell_nodes:
+                add_lib_prep_cell(sub_node['value'],
+                                  cell_nodes,
+                                  link_cache,
+                                  params,
+                                  study,
+                                  failures,
+                                  sub_node)
+                # remove cell nodes from children if execution was successful
+                sub_node['children'] = [child for child in children if child['tag'] != 'cells']
             existing_lib_prop(sub_node, link_cache, params, failures)
             return
 
@@ -1285,7 +1297,7 @@ def handle_lib_prep_cell_case(parser_state, params, study, failures):
             # existing samples group, expect some libraries and preparations
             if len(libraries_and_preparations) == 0:
                 print('samples argument {} is ignored'.format(value))
-                return
+                continue
             sample_group = value
         else:
             try:
