@@ -729,9 +729,7 @@ def link_by_parent(what, accession_to, accession_from, params):
         # TODO remove this check when https://genestack.atlassian.net/browse/ODM-7793 will be fixed
         # libraries, preparations and cells have
         # confirmation print in parent function
-        should_print = not (what.startswith('libraries')
-                            or what.startswith('preparations')
-                            or what.startswith('cells'))
+        should_print = what.split("_")[0] not in LIB_PREP_CELL_TAGS
         if should_print: print("Successfully linked: [{}]".format(what))
         return
 
@@ -977,7 +975,7 @@ def make_cell_action(parser_state):
         def handle_action(self, tag, value, option_string):
             sample_node = parser_state.sample_node_list[-1]
             if sample_node is None:
-                _err("You've provided cell before sample file or accession. Exit!"
+                _err("Cell file can have only sample, library or preparation as parent. Exit!"
                      , in_red=True)
                 sys.exit(1)
             # find a parent, it would be the last one entered
@@ -1415,7 +1413,7 @@ def add_all_signal_args_to_all_lib_preps(sample_nodes):
     mapping_file_nodes = collect_all_mapping_file_nodes(sample_nodes)
     for libs_preps_cell_node in all_libs_preps_cells:
         cell_nodes = []
-        if libs_preps_cell_node['tag'] in {"libraries", "preparations"}:
+        if libs_preps_cell_node['tag'] in LIB_PREP_TAGS:
             cell_nodes = collect_all_nodes_by_tag(
                 libs_preps_cell_node.get('children', []),
                 lambda x: x == 'cells'
@@ -1427,7 +1425,7 @@ def add_all_signal_args_to_all_lib_preps(sample_nodes):
         sample_node = sample_nodes[0]
         libs_preps_cell_node = sample_node['children'][0]
         cell_nodes = []
-        if libs_preps_cell_node['tag'] in {"libraries", "preparations"}:
+        if libs_preps_cell_node['tag'] in LIB_PREP_TAGS:
             cell_nodes = collect_all_nodes_by_tag(
                 libs_preps_cell_node.get('children', []),
                 lambda x: x == 'cells'
