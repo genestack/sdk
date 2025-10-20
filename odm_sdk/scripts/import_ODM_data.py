@@ -194,7 +194,7 @@ class TemplateAccessionSupplier:
             if not json.loads(result.text)["result"]["authenticated"]:
                 if self.debug:
                     print(result, result.text)
-                print(red_text("You set invalid token or your license is expired!"))
+                print(red_text("You set invalid token!"))
                 sys.exit(1)
             return session
         except requests.exceptions.ConnectionError as error:
