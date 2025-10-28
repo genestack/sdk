@@ -709,6 +709,7 @@ def link_by_parent(what, accession_to, accession_from, params):
         'expression_to_sample': 'expression/group/{sourceId}/to/sample/group/{targetId}',
         'expression_to_libraries': 'expression/group/{sourceId}/to/library/group/{targetId}',
         'expression_to_preparations': 'expression/group/{sourceId}/to/preparation/group/{targetId}',
+        'expression_to_cells': 'expression/group/{sourceId}/to/cell/group/{targetId}',
         'variant_to_sample': 'variant/group/{sourceId}/to/sample/group/{targetId}',
         # API not yet implemented
         # 'variant_to_libraries': 'variant/group/{sourceId}/to/library/group/{targetId}',
@@ -990,10 +991,11 @@ def make_cell_action(parser_state):
             # set tag to plural for compatibility and easier manipulation
             # it will be singular if argument is passed with double dash (--cell)
             tag = 'cells' if tag == 'cell' else tag
-            new_node = {'tag': tag, 'value': value}
+            new_node = {'tag': tag, 'value': value, 'parent_node': parent_node}
             children = parent_node.get('children', [])
             children.append(new_node)
             parent_node['children'] = children
+            parser_state.current_node = new_node
 
     return CellAction
 
@@ -1007,7 +1009,13 @@ def make_signal_action(parser_state):
                      .format(tag.replace('-', ' ')), in_red=True)
                 sys.exit(1)
 
-            if tag.endswith('-metadata'):
+            # cells currently support only expressions with number of feature attributes
+            # if it's not expression or NFA, recall this method for the cell's parent
+            if (current_node['tag'] == 'cells'
+                    and tag not in ["expression", "number-of-feature-attributes"]):
+                parser_state.current_node = current_node["parent_node"]
+                self.handle_action(tag, value, option_string)
+            elif tag.endswith('-metadata'):
                 file_type = tag[:-9]
                 children = current_node.get('children', [])
                 # search for the closest node with the same file_type which

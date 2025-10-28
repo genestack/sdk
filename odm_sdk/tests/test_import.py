@@ -331,7 +331,7 @@ class ImportTest(unittest.TestCase):
         Tests if hierarchy is parsed correctly. Samples can have libraries, preparations
         and cells. Libraries and preparations can have samples for parent and
         signals and cells for children. Cells can have samples, libraries or preparations
-        for parents.
+        for parents and expressions for children.
         """
         parser_args_state = ParserAstState()
         parser = get_arg_parser(parser_args_state)
@@ -343,6 +343,8 @@ class ImportTest(unittest.TestCase):
                     "https://study.tsv",
                     "--samples",
                     "https://samples1.tsv",
+                    "-pr",
+                    "https://preparations",
                     "-c",
                     "https://cell1",
                     "--cell",
@@ -370,7 +372,9 @@ class ImportTest(unittest.TestCase):
                     "-c",
                     "https://cell5",
                     "-e",
-                    "https://expressions5"]
+                    "https://expressions5",
+                    "-e",
+                    "https://expressions6"]
         args = parser.parse_args(args=argsMock)
         parsedArgs = ImportParams.from_parsed_params(args, parser_args_state).parser_args_state
         sample_node_list = parsedArgs.sample_node_list
@@ -381,12 +385,20 @@ class ImportTest(unittest.TestCase):
             [c for c in parent.get('children') if c['tag'] == 'cells']
         )
         active_sample = sample_node_list[0]
-        self.assertEqual(4,
+        self.assertEqual(1,
                          len(active_sample.get('children')),
-                         "First sample should have four children")
+                         "First sample should have one child - preparations")
+        preparation = active_sample.get('children')[0]
+        self.assertEqual(3,
+                         len(preparation.get('children')),
+                         "First samples preparation should have three children")
+        cell_children = get_cell_children(active_sample.get('children')[0])
         self.assertEqual(2,
-                         len(get_cell_children(active_sample)),
+                         len(cell_children),
                          "First sample should have two cell children")
+        self.assertEqual(1,
+                         len(cell_children[1].get('children')),
+                         "Second cell should have one expression child")
         active_sample = sample_node_list[1]
         self.assertEqual(3,
                          len(active_sample.get('children')),
@@ -398,9 +410,16 @@ class ImportTest(unittest.TestCase):
                        None)
         self.assertIsNotNone(library,
                              "Second sample should have library")
-        self.assertEqual(3,
+        self.assertEqual(2,
                          len(library.get('children')),
                          "Second sample's library should have three children")
+        cell_children = get_cell_children(library)
+        self.assertEqual(1,
+                         len(cell_children),
+                         "Second sample library should have one cell child")
+        self.assertEqual(1,
+                         len(cell_children[0].get('children')),
+                         "Second sample library cell child should have one expression child")
         self.assertEqual(1,
                          len(get_cell_children(library)),
                          "Second sample's library should have one cell child")
@@ -408,12 +427,16 @@ class ImportTest(unittest.TestCase):
                            None)
         self.assertIsNotNone(preparation,
                              "Second sample should have one preparation")
-        self.assertEqual(3,
+        self.assertEqual(2,
                          len(preparation.get('children')),
                          "Second sample's  preparation should have three children")
+        cell_children = get_cell_children(preparation)
         self.assertEqual(1,
-                         len(get_cell_children(preparation)),
+                         len(cell_children),
                          "Second sample's  preparation should have one cell child")
+        self.assertEqual(2,
+                         len(cell_children[0].get('children')),
+                         "Second sample's preparation cell should have two children")
 
     @requests_mock.Mocker()
     def test_linking_error_is_visible_to_a_user(self, m):
