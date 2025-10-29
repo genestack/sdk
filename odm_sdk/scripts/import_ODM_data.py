@@ -1011,10 +1011,11 @@ def make_signal_action(parser_state):
 
             # cells currently support only expressions with number of feature attributes
             # if it's not expression or NFA, recall this method for the cell's parent
-            if (current_node['tag'] == 'cells'
-                    and tag not in ["expression", "number-of-feature-attributes"]):
-                parser_state.current_node = current_node["parent_node"]
-                self.handle_action(tag, value, option_string)
+            # if (current_node['tag'] == 'cells'
+            #         and not tag.endswith('-metadata')
+            #         and tag not in ["expression", "number-of-feature-attributes"]):
+            #     parser_state.current_node = current_node["parent_node"]
+            #     self.handle_action(tag, value, option_string)
             elif tag.endswith('-metadata'):
                 file_type = tag[:-9]
                 children = current_node.get('children', [])
