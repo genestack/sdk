@@ -351,8 +351,6 @@ class ImportTest(unittest.TestCase):
                     "https://cell2",
                     "-e",
                     "https://expressions1",
-                    "-v",
-                    "https://variant1",
                     "--samples",
                     "https://samples2.tsv",
                     "-c",
@@ -389,9 +387,9 @@ class ImportTest(unittest.TestCase):
                          len(active_sample.get('children')),
                          "First sample should have one child - preparations")
         preparation = active_sample.get('children')[0]
-        self.assertEqual(3,
+        self.assertEqual(2,
                          len(preparation.get('children')),
-                         "First samples preparation should have three children")
+                         "First samples preparation should have two children")
         cell_children = get_cell_children(active_sample.get('children')[0])
         self.assertEqual(2,
                          len(cell_children),
