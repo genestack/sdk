@@ -2,7 +2,7 @@ VERSION 0.8
 
 tox:
     FROM python:3.13.7-alpine
-    DO github.com/genestack/earthly-libs+PYTHON_PREPARE
+    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
     RUN \
@@ -73,7 +73,7 @@ push:
 
 docs:
     FROM python:3.13.7
-    DO github.com/genestack/earthly-libs+PYTHON_PREPARE
+    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
 
     # Build
     COPY --dir docs setup.py odm_sdk  .
@@ -103,7 +103,7 @@ docs:
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-libs+SONARCLOUD_RUN
+    DO --pass-args github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+SONARCLOUD_RUN
 
 main:
     BUILD +push
