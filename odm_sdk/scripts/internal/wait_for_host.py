@@ -17,7 +17,7 @@ def is_api_ready(odm_url):
         response = requests.get(
             url=f'{odm_url}/{endpoint}',
         )
-        return response.status_code not in [404, 500]  #  we need to wait till endpoint is actually available
+        return response.status_code is 200  #  we need to wait till endpoint is actually available
     except Exception:
         return False
 
