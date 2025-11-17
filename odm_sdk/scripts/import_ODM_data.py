@@ -1101,6 +1101,8 @@ def make_signal_action(parser_state):
 
                 last_node['ms'] = value
             else:
+                if current_node['tag'] == 'cells' and tag != 'expression':
+                    current_node = current_node['parent']
                 new_signal_node = {'tag': tag, 'value': value}
                 children = current_node.get('children', [])
                 children.append(new_signal_node)
@@ -1273,15 +1275,15 @@ def existing_lib_prop(node, signal_cache, params, failures):
     )
 
 
-def handle_lib_prep_cell_case(parser_state, params, study, failures):
+def handle_upload_and_linking(parser_state, params, study, failures):
     link_cache = {}
     for sample_node in parser_state.sample_node_list:
         value = sample_node['value']
-        libraries_and_preparations = sample_node.get('children', [])
+        sample_children = sample_node.get('children', [])
         if value == 'implicit':
-            assert len(libraries_and_preparations) == 1, \
+            assert len(sample_children) == 1, \
                 'Internal error: expect only one subnode for implicit sample node'
-            sub_node = libraries_and_preparations[0]
+            sub_node = sample_children[0]
             children = sub_node.get('children', [])
             if sub_node['tag'] != 'cells':
                 cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
@@ -1300,7 +1302,7 @@ def handle_lib_prep_cell_case(parser_state, params, study, failures):
 
         if is_acc(value):
             # existing samples group, expect some libraries and preparations
-            if len(libraries_and_preparations) == 0:
+            if len(sample_children) == 0:
                 print('samples argument {} is ignored'.format(value))
                 continue
             sample_group = value
@@ -1312,48 +1314,18 @@ def handle_lib_prep_cell_case(parser_state, params, study, failures):
                     sys.exit(1)
                 failures.append(ex)
                 continue
-
+        sample_signals = [child for child in sample_children if
+                          child['tag'] not in LIB_PREP_CELL_TAGS]
+        if sample_signals:
+            add_signals_to_parent(
+                sample_group, 'sample', sample_signals, link_cache, params, failures
+            )
+            sample_children = [child for child in sample_children if
+                               child['tag'] in LIB_PREP_CELL_TAGS]
         add_lib_prep_cell(
-            sample_group, libraries_and_preparations,
+            sample_group, sample_children,
             link_cache, params, study, failures, sample_node
         )
-
-
-def handle_samples_signals_case(parser_state, params, study, failures):
-    signal_cache = {}
-    for sample_node in parser_state.sample_node_list:
-        value = sample_node['value']
-        children = sample_node.get('children', [])
-
-        if is_acc(value):
-            # existing samples group, expect some children
-            if not children:
-                _err('Nothing provided to link, ignoring `--samples {}`'.format(value))
-                return
-            sample_group = value
-        else:
-            try:
-                sample_group = add_and_link_samples(params, study, sample_link=value)
-            except GroupLinkingError as ex:
-                if not params.IGNORE_LINKING_ERRORS:
-                    sys.exit(1)
-                failures.append(ex)
-                continue
-        cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
-        if cell_nodes:
-            add_lib_prep_cell(sample_group,
-                              cell_nodes,
-                              {},
-                              params,
-                              study,
-                              failures,
-                              sample_node)
-            # remove cell nodes from children if execution was successful
-            children = [child for child in children if child['tag'] != 'cells']
-        add_signals_to_parent(
-            sample_group, 'sample', children, signal_cache, params, failures
-        )
-
 
 def handle_files_case(parser_state, params, study):
     for file_node in parser_state.file_node_list:
@@ -1568,10 +1540,7 @@ def do_import(import_params):
 
     study = add_study(params=import_params)
     failures = []
-    if parser_args_state.has_libraries_or_preparations_or_cells():
-        handle_lib_prep_cell_case(parser_args_state, import_params, study, failures)
-    else:
-        handle_samples_signals_case(parser_args_state, import_params, study, failures)
+    handle_upload_and_linking(parser_args_state, import_params, study, failures)
 
     if parser_args_state.has_files():
         handle_files_case(parser_args_state, import_params, study)
