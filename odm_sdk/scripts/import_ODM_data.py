@@ -104,7 +104,7 @@ TAGS = {"-sm": "samples",
         }
 
 CELL_PARENTS = {"samples", "libraries", "preparations"}
-LIB_PREP_CELL_TAGS = {'libraries', 'preparations', 'cells'}
+LIB_PREP_CELL_TAGS = {'libraries', 'preparations', 'cells', 'cell'}
 LIB_PREP_TAGS = {'libraries', 'preparations'}
 SIGNAL_TAGS = {'flow-cytometry', 'variant', 'expression'}
 
@@ -974,27 +974,32 @@ def make_libraries_and_preparations_action(parser_state):
 def make_cell_action(parser_state):
     class CellAction(BaseCustomAction):
         def handle_action(self, tag, value, option_string):
-            sample_node = parser_state.sample_node_list[-1]
-            if sample_node is None:
-                _err("Cell file can have only sample, library or preparation as parent. Exit!"
-                     , in_red=True)
-                sys.exit(1)
-            # find a parent, it would be the last one entered
-            # between preparation, library or sample
-            parent_node = next(
-                (
-                    node for node in reversed(sample_node.get('children', []))
-                    if node['tag'] in CELL_PARENTS
-                ),
-                sample_node
-            )
-            # set tag to plural for compatibility and easier manipulation
-            # it will be singular if argument is passed with double dash (--cell)
+            # set tag to plural for API compatibility and easier manipulation
+            # it will be singular only if argument is passed with double dash (--cell)
             tag = 'cells' if tag == 'cell' else tag
-            new_node = {'tag': tag, 'value': value, 'parent_node': parent_node}
-            children = parent_node.get('children', [])
-            children.append(new_node)
-            parent_node['children'] = children
+            parent_node = parser_state.current_node
+            # keep track of parent node for next cell entries
+            if parent_node['tag'] == 'cells':
+                parent_node = parent_node['parent']
+            new_node = {
+                'tag': tag,
+                'value': value,
+                'parent': parent_node
+            }
+            if is_acc(value):
+                # if it's accession that means it should be connected to SLP,
+                # and we don't care about parent in that case.
+                # It's safe to mock the parent and import and link children
+                implicit_sample_node = {
+                    'tag': 'samples',
+                    'value': 'implicit',
+                    'children': [new_node]
+                }
+                parser_state.sample_node_list.append(implicit_sample_node)
+            else:
+                children = parent_node.get('children', [])
+                children.append(new_node)
+                parent_node['children'] = children
             parser_state.current_node = new_node
 
     return CellAction
@@ -1008,14 +1013,6 @@ def make_signal_action(parser_state):
                 _err("You've provided {} before sample file or sample parent accession. Exit!"
                      .format(tag.replace('-', ' ')), in_red=True)
                 sys.exit(1)
-
-            # cells currently support only expressions with number of feature attributes
-            # if it's not expression or NFA, recall this method for the cell's parent
-            # if (current_node['tag'] == 'cells'
-            #         and not tag.endswith('-metadata')
-            #         and tag not in ["expression", "number-of-feature-attributes"]):
-            #     parser_state.current_node = current_node["parent_node"]
-            #     self.handle_action(tag, value, option_string)
             elif tag.endswith('-metadata'):
                 file_type = tag[:-9]
                 children = current_node.get('children', [])
@@ -1286,19 +1283,20 @@ def handle_lib_prep_cell_case(parser_state, params, study, failures):
                 'Internal error: expect only one subnode for implicit sample node'
             sub_node = libraries_and_preparations[0]
             children = sub_node.get('children', [])
-            cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
-            if cell_nodes:
-                add_lib_prep_cell(sub_node['value'],
-                                  cell_nodes,
-                                  link_cache,
-                                  params,
-                                  study,
-                                  failures,
-                                  sub_node)
-                # remove cell nodes from children if execution was successful
-                sub_node['children'] = [child for child in children if child['tag'] != 'cells']
+            if sub_node['tag'] != 'cells':
+                cell_nodes = [cell_node for cell_node in children if cell_node['tag'] == 'cells']
+                if cell_nodes:
+                    add_lib_prep_cell(sub_node['value'],
+                                      cell_nodes,
+                                      link_cache,
+                                      params,
+                                      study,
+                                      failures,
+                                      sub_node)
+                    # remove cell nodes from children if execution was successful
+                    sub_node['children'] = [child for child in children if child['tag'] != 'cells']
             existing_lib_prop(sub_node, link_cache, params, failures)
-            return
+            continue
 
         if is_acc(value):
             # existing samples group, expect some libraries and preparations
@@ -1570,7 +1568,7 @@ def do_import(import_params):
 
     study = add_study(params=import_params)
     failures = []
-    if parser_args_state.has_libraries_or_preparations():
+    if parser_args_state.has_libraries_or_preparations_or_cells():
         handle_lib_prep_cell_case(parser_args_state, import_params, study, failures)
     else:
         handle_samples_signals_case(parser_args_state, import_params, study, failures)
