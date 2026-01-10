@@ -5,5 +5,5 @@ jsonschema==4.25.1
 future==1.0.0
 pyrsistent==0.20.0
 sphinx-rtd-theme==3.0.2
-sphinx-markdown-builder==0.6.8
+sphinx-markdown-builder==0.6.9
 sphinx==7.4.7
