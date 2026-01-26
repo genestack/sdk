@@ -48,6 +48,7 @@ class FilesUtil(Application):
     ALIGNED_READS = 'com.genestack.bio.files.IAlignedReads'
     VARIATION_FILE = 'com.genestack.bio.files.IVariationFile'
     APPLICATION_PAGE_FILE = 'com.genestack.api.files.IApplicationPageFile'
+    DICTIONARY_FILE = 'com.genestack.api.files.IDictionaryFile'
     REFERENCE_GENOME = 'com.genestack.bio.files.IReferenceGenome'
     AUXILIARY_FILE = 'com.genestack.api.files.IAuxiliaryFile'
     INDEX_FILE = 'com.genestack.api.files.IIndexFile'
@@ -366,7 +367,33 @@ class FilesUtil(Application):
         """
         return self.invoke('loadInfo', accessions)
 
-    def search_files(self, accession):
-        return self.invoke('searchFiles',
-                           accession,  # type: str
-                           {}, [], 100, 0, None, False)
+    def search_files(self, search_string, parameters=None, data_types=None,
+                     max_on_page=100, page_num=0, sort_order=None, ascending=False):
+        """
+        Search for files.
+
+        :param search_string: search string (e.g. accession)
+        :type search_string: str
+        :param parameters: dictionary of search parameters
+        :type parameters: dict[str, str]
+        :param data_types: list of Java class names for file types
+        :type data_types: list[str]
+        :param max_on_page: maximum number of results per page
+        :param page_num: page number
+        :param sort_order: sort order (see SortOrder class)
+        :param ascending: sort direction
+        :return: list of file infos
+        """
+        parameters = parameters or {}
+        data_types = data_types or []
+
+        return self.invoke(
+            'searchFiles',
+            search_string,  # type: str
+            parameters,     # type: dict
+            data_types,     # type: list
+            max_on_page,    # type: int
+            page_num,       # type: int
+            sort_order,     # type: str
+            ascending       # type: bool
+        )

@@ -39,13 +39,15 @@ def load_dictionary(connection, data, parent_dictionary=None, replace=True,
         create=True)
 
     di = DataImporter(connection)
-    old_dictionary_version = fu.find_file_by_name(name, parent=parent)
-    if old_dictionary_version:
+    search_dictionaries = fu.search_files(
+        search_string=name,
+        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': False})
+    if search_dictionaries['count'] > 0:
+        old_dictionary_version = search_dictionaries['files'][0]['accessions'][0]
         if replace:
+            fu.mark_obsolete(old_dictionary_version)
             print('Old version of dictionary %s / %s is removed'
                   % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-            fu.mark_obsolete(old_dictionary_version)
-            fu.unlink_file(old_dictionary_version, parent)
         else:
             if reuse_old_version:
                 print('Dictionary %s / %s already exists and will be reused'
