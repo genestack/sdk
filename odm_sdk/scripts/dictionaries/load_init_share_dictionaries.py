@@ -18,8 +18,7 @@ from odm_sdk.utils import get_connection, make_connection_parser
 from odm_sdk.scripts.utils import colored, GREEN, BLUE, RED
 
 
-def load_dictionary(connection, data, parent_dictionary=None, replace=True,
-                    reuse_old_version=False, metainfo=None):
+def load_dictionary(connection, data, parent_dictionary=None, replace=False, metainfo=None):
 
     if metainfo:
         metainfo.add_string(Metainfo.DESCRIPTION, data.get('description'))
@@ -46,15 +45,11 @@ def load_dictionary(connection, data, parent_dictionary=None, replace=True,
         old_dictionary_version = search_dictionaries['files'][0]['accessions'][0]
         if replace:
             fu.mark_obsolete(old_dictionary_version)
-            print('Old version of dictionary %s / %s is removed'
+            print('Old version of dictionary %s / %s is marked as obsolete'
                   % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
         else:
-            if reuse_old_version:
-                print('Dictionary %s / %s already exists and will be reused'
-                      % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-                return old_dictionary_version
             raise GenestackException(
-                "Dictionary %s / %s already exists, set replace=True to replace it"
+                "Dictionary %s / %s already exists, use --replace flag to overwrite it"
                 % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
 
     accession = di.create_dictionary(
@@ -105,7 +100,7 @@ def main():
         connection = get_connection(args)
         with open(args.file_with_dictionaries, 'r') as data_file:
             dictionaries = json.load(data_file)
-        accessions = [load_dictionary(connection, data) for data in dictionaries]
+        accessions = [load_dictionary(connection, data, replace=args.replace) for data in dictionaries]
         initialization(connection, accessions)
         sharing(connection, accessions)
 
@@ -119,6 +114,8 @@ def get_arguments():
     group.add_argument('--file_with_dictionaries', metavar='<file_with_dictionaries>',
                        default="dictionaries.json",
                        help='dictionaries to load', required=True)
+    parser.add_argument('--replace', action='store_true', default=False,
+                        help='replace existing dictionaries')
     args = parser.parse_args()
     return args
 
