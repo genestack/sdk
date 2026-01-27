@@ -40,7 +40,7 @@ def load_dictionary(connection, data, parent_dictionary=None, replace=False, met
     di = DataImporter(connection)
     search_dictionaries = fu.search_files(
         search_string=name,
-        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': False})
+        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
     if search_dictionaries['count'] > 0:
         old_dictionary_version = search_dictionaries['files'][0]['accessions'][0]
         if replace:
