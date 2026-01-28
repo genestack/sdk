@@ -31,27 +31,32 @@ def load_dictionary(connection, data, parent_dictionary=None, replace=False, met
     term_type = data.get('term_type')
 
     fu = FilesUtil(connection)
+    di = DataImporter(connection)
+
+    search_dictionaries = fu.search_files(
+        search_string=name,
+        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
+    if search_dictionaries['count'] > 0:
+        if replace:
+            # Mark all existing dictionaries as obsolete
+            for dictionary_file in search_dictionaries['files']:
+                accession = dictionary_file['accessions'][0]
+                fu.mark_obsolete(accession)
+                print('Old version of dictionary %s / %s is marked as obsolete'
+                      % (colored(accession, GREEN), colored(name, BLUE)))
+        else:
+            existing_accessions = []
+            for dictionary_file in search_dictionaries['files']:
+                existing_accessions.extend(dictionary_file['accessions'])
+            raise GenestackException(
+                "Dictionary %s already exists with accessions: %s. Use --replace flag to overwrite it"
+                % (colored(name, BLUE), ', '.join([colored(acc, GREEN) for acc in existing_accessions])))
+
     parent = fu.get_folder(
         fu.get_special_folder(SpecialFolders.CREATED),
         'Data samples',
         'Dictionaries',
         create=True)
-
-    di = DataImporter(connection)
-    search_dictionaries = fu.search_files(
-        search_string=name,
-        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
-    if search_dictionaries['count'] > 0:
-        old_dictionary_version = search_dictionaries['files'][0]['accessions'][0]
-        if replace:
-            fu.mark_obsolete(old_dictionary_version)
-            print('Old version of dictionary %s / %s is marked as obsolete'
-                  % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-        else:
-            raise GenestackException(
-                "Dictionary %s / %s already exists, use --replace flag to overwrite it"
-                % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-
     accession = di.create_dictionary(
         parent=parent,
         name=name,
