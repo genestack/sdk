@@ -18,8 +18,7 @@ from odm_sdk.utils import get_connection, make_connection_parser
 from odm_sdk.scripts.utils import colored, GREEN, BLUE, RED
 
 
-def load_dictionary(connection, data, parent_dictionary=None, replace=True,
-                    reuse_old_version=False, metainfo=None):
+def load_dictionary(connection, data, parent_dictionary=None, replace=False, metainfo=None):
 
     if metainfo:
         metainfo.add_string(Metainfo.DESCRIPTION, data.get('description'))
@@ -32,29 +31,32 @@ def load_dictionary(connection, data, parent_dictionary=None, replace=True,
     term_type = data.get('term_type')
 
     fu = FilesUtil(connection)
+    di = DataImporter(connection)
+
+    search_dictionaries = fu.search_files(
+        search_string=name,
+        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
+    if search_dictionaries['count'] > 0:
+        if replace:
+            # Mark all existing dictionaries as obsolete
+            for dictionary_file in search_dictionaries['files']:
+                accession = dictionary_file['accessions'][0]
+                fu.mark_obsolete(accession)
+                print('Old version of dictionary %s / %s is marked as obsolete'
+                      % (colored(accession, GREEN), colored(name, BLUE)))
+        else:
+            existing_accessions = []
+            for dictionary_file in search_dictionaries['files']:
+                existing_accessions.extend(dictionary_file['accessions'])
+            raise GenestackException(
+                "Dictionary %s already exists with accessions: %s. Use --replace flag to overwrite it"
+                % (colored(name, BLUE), ', '.join([colored(acc, GREEN) for acc in existing_accessions])))
+
     parent = fu.get_folder(
         fu.get_special_folder(SpecialFolders.CREATED),
         'Data samples',
         'Dictionaries',
         create=True)
-
-    di = DataImporter(connection)
-    old_dictionary_version = fu.find_file_by_name(name, parent=parent)
-    if old_dictionary_version:
-        if replace:
-            print('Old version of dictionary %s / %s is removed'
-                  % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-            fu.mark_obsolete(old_dictionary_version)
-            fu.unlink_file(old_dictionary_version, parent)
-        else:
-            if reuse_old_version:
-                print('Dictionary %s / %s already exists and will be reused'
-                      % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-                return old_dictionary_version
-            raise GenestackException(
-                "Dictionary %s / %s already exists, set replace=True to replace it"
-                % (colored(old_dictionary_version, GREEN), colored(name, BLUE)))
-
     accession = di.create_dictionary(
         parent=parent,
         name=name,
@@ -103,7 +105,7 @@ def main():
         connection = get_connection(args)
         with open(args.file_with_dictionaries, 'r') as data_file:
             dictionaries = json.load(data_file)
-        accessions = [load_dictionary(connection, data) for data in dictionaries]
+        accessions = [load_dictionary(connection, data, replace=args.replace) for data in dictionaries]
         initialization(connection, accessions)
         sharing(connection, accessions)
 
@@ -117,6 +119,8 @@ def get_arguments():
     group.add_argument('--file_with_dictionaries', metavar='<file_with_dictionaries>',
                        default="dictionaries.json",
                        help='dictionaries to load', required=True)
+    parser.add_argument('--replace', action='store_true', default=False,
+                        help='replace existing dictionaries')
     args = parser.parse_args()
     return args
 
