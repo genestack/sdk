@@ -11,8 +11,8 @@ from odm_sdk.scripts.import_ODM_data import ImportParams, do_import, ParserAstSt
     DeprecatedAction, make_libraries_and_preparations_action, make_cell_action, make_signal_action, \
     make_file_action, make_mapping_file_action, ETL_WAITING_TIMEOUT, ETL_SOURCES
 
-JOB_API_PATH = "frontend/rs/genestack/job/default-released"
-INTEGRATION_LINK_PATH = "frontend/rs/genestack/integrationCurator/default-released/integration/link"
+JOB_API_PATH = "frontend/endpoint/rs/genestack/job/default-released"
+INTEGRATION_LINK_PATH = "frontend/endpoint/rs/genestack/integrationCurator/default-released/integration/link"
 
 
 @contextmanager

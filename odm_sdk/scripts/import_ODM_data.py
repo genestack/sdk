@@ -81,7 +81,7 @@ SCHEME_TO_ETL_SOURCE = {
 # guard against possible mistakes in ETL source constants
 assert set(SCHEME_TO_ETL_SOURCE.values()).issubset(ETL_SOURCES)
 
-COMMON_URL_PREFIX = 'frontend/rs/genestack'
+COMMON_URL_PREFIX = 'frontend/endpoint/rs/genestack'
 
 TAGS = {"-sm": "samples",
         "-lb": "libraries",
@@ -227,7 +227,7 @@ class TemplateAccessionSupplier:
 
 def get_study(params):
     response = requests.get(
-        url='{0}/frontend/rs/genestack/studyUser/{1}/studies/{2}'.format(
+        url='{0}/frontend/endpoint/rs/genestack/studyUser/{1}/studies/{2}'.format(
             params.SERVER, params.APP_VERSION, params.study_accession),
         headers=params.headers)
     return response
