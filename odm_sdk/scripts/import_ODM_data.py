@@ -450,7 +450,7 @@ def _async_import(kind, params, metadata_link=None, data_link=None, prev_version
         _err("No data link is provided for {} import"
              "".format(kind))
         sys.exit(1)
-    url = "{}/{}/job/{}/import/{}/".format(
+    url = "{}/{}/job/{}/import/{}".format(
         params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, kind.replace('_', '-'))
     if params.ALLOW_DUPLICATES and kind != 'file':
         url += '?allow_dups=true'

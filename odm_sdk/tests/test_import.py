@@ -539,7 +539,7 @@ class ImportTest(unittest.TestCase):
             "status": "STARTING",
             "createTime": "16-11-2022 08:40:14"
         }
-        m.post(f"{srv}/{JOB_API_PATH}/import/study/", json=study_job)
+        m.post(f"{srv}/{JOB_API_PATH}/import/study", json=study_job)
         study_job["status"] = "COMPLETED"
         m.get(f"{srv}/{JOB_API_PATH}/{study_job_id}/info", json=study_job)
         study_accession = "GSF020175"
@@ -559,7 +559,7 @@ class ImportTest(unittest.TestCase):
             "status": "STARTING",
             "createTime": "16-11-2022 08:41:14"
         }
-        m.post(f"{srv}/{JOB_API_PATH}/import/samples/", json=samples_job)
+        m.post(f"{srv}/{JOB_API_PATH}/import/samples", json=samples_job)
         samples_job["status"] = "COMPLETED"
         m.get(f"{srv}/{JOB_API_PATH}/{samples_job_id}/info", json=samples_job)
         samples_group_accession = "GSF020176"
