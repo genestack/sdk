@@ -778,7 +778,8 @@ def _summarise_transforms(jobs: list[TransformationJob]) -> str:
 
 
 def watch_transformations(
-    server: str, token: str, jobs: list[TransformationJob], poll_s: int = 30
+    server: str, token: str, jobs: list[TransformationJob], poll_s: int = 30,
+    on_change=None,
 ) -> None:
     """Poll transformations until every job is in a terminal state.
 
@@ -787,6 +788,11 @@ def watch_transformations(
     imports — initial snapshot, periodic transitions, periodic tally, final
     summary. Transformations typically take hours, so the default 30 s poll
     cadence is plenty.
+
+    `on_change`, if supplied, is invoked after every state transition (and
+    once after the initial snapshot) so the manifest can be persisted
+    mid-watch — useful when other processes (or the user) are tailing
+    progress.
 
     Skips entries that never got a job_id (SUBMIT_FAILED) or are already in a
     terminal state from a previous run.
@@ -811,12 +817,15 @@ def watch_transformations(
         print(f"[watch-transform] {tj.plate} (#{job_id}): {tj.state}"
               f"{(' (' + tj.state_reason + ')') if tj.state_reason else ''}")
     print(f"[watch-transform] initial: {_summarise_transforms(jobs)}")
+    if on_change is not None:
+        on_change()
 
     cycle = 0
     while pending:
         time.sleep(poll_s)
         cycle += 1
         finished_ids: list[int] = []
+        changed = False
         for job_id, tj in pending.items():
             try:
                 body = _get_transformation(server, token, job_id)
@@ -828,10 +837,13 @@ def watch_transformations(
             if tj.state != prev:
                 print(f"[watch-transform] {tj.plate} (#{job_id}): {prev} -> {tj.state}"
                       f"{(' reason=' + tj.state_reason) if tj.state_reason else ''}")
+                changed = True
             if (tj.state or "") in TRANSFORM_TERMINAL_STATES:
                 finished_ids.append(job_id)
         for jid in finished_ids:
             del pending[jid]
+        if changed and on_change is not None:
+            on_change()
         if cycle % 10 == 0 and pending:
             print(f"[watch-transform] cycle {cycle}: {_summarise_transforms(jobs)}")
     print(f"[watch-transform] all transformations terminal: {_summarise_transforms(jobs)}")
@@ -864,8 +876,18 @@ def _summarise(jobs: list[FileJob]) -> str:
     return ", ".join(f"{n} {st}" for st, n in sorted(counts.items()))
 
 
-def watch_jobs(server: str, token: str, jobs: list[FileJob], poll_s: int = 30) -> None:
-    """Poll until every job is terminal. Updates jobs in place."""
+def watch_jobs(
+    server: str, token: str, jobs: list[FileJob], poll_s: int = 30,
+    on_change=None,
+) -> None:
+    """Poll until every job is terminal. Updates jobs in place.
+
+    `on_change`, if supplied, is invoked after every status transition (and
+    once after the initial snapshot) so callers can persist progress to the
+    manifest mid-watch — needed so a parallel `--transform-only` loop can see
+    file jobs flip to COMPLETED and queue their transformations without
+    waiting for the full batch to finish.
+    """
     pending = {j.job_exec_id: j for j in jobs if j.job_exec_id is not None
                and j.status in RUNNING_STATUSES}
     if not pending:
@@ -883,12 +905,15 @@ def watch_jobs(server: str, token: str, jobs: list[FileJob], poll_s: int = 30) -
             continue
         print(f"[watch] {fj.plate} (#{job_id}): {fj.status}")
     print(f"[watch] initial: {_summarise(jobs)}")
+    if on_change is not None:
+        on_change()
 
     cycle = 0
     while pending:
         time.sleep(poll_s)
         cycle += 1
         finished_ids: list[int] = []
+        changed = False
         for job_id, fj in pending.items():
             try:
                 status = _job_status(server, token, job_id)
@@ -898,6 +923,7 @@ def watch_jobs(server: str, token: str, jobs: list[FileJob], poll_s: int = 30) -
             if status != fj.status:
                 print(f"[watch] {fj.plate} (#{job_id}): {fj.status} -> {status}")
                 fj.status = status
+                changed = True
             if status in TERMINAL_STATUSES:
                 try:
                     output = _job_output(server, token, job_id)
@@ -907,8 +933,11 @@ def watch_jobs(server: str, token: str, jobs: list[FileJob], poll_s: int = 30) -
                 except Exception as exc:
                     fj.error = f"output fetch failed: {exc}"
                 finished_ids.append(job_id)
+                changed = True
         for jid in finished_ids:
             del pending[jid]
+        if changed and on_change is not None:
+            on_change()
         # Periodic tally so the user sees forward progress even when no
         # individual job has flipped state in the last poll cycle.
         if cycle % 10 == 0 and pending:
@@ -1097,7 +1126,10 @@ def main() -> int:
         )
         write_manifest(manifest_path, manifest)
         if args.watch_transforms:
-            watch_transformations(manifest.server, args.token, manifest.transformation_jobs)
+            watch_transformations(
+                manifest.server, args.token, manifest.transformation_jobs,
+                on_change=lambda: write_manifest(manifest_path, manifest),
+            )
             write_manifest(manifest_path, manifest)
 
     if args.transform_only:
@@ -1118,7 +1150,10 @@ def main() -> int:
             return 2
         manifest = load_manifest(manifest_path)
         apply_accession_overrides(manifest, args)
-        watch_jobs(manifest.server, args.token, manifest.file_jobs)
+        watch_jobs(
+            manifest.server, args.token, manifest.file_jobs,
+            on_change=lambda: write_manifest(manifest_path, manifest),
+        )
         write_manifest(manifest_path, manifest)
         if args.transform:
             _maybe_run_transform(manifest)
@@ -1190,7 +1225,10 @@ def main() -> int:
         if failed:
             print(f"[summary] {len(failed)} submit failure(s); see manifest.errors")
         if args.watch:
-            watch_jobs(manifest.server, args.token, manifest.file_jobs)
+            watch_jobs(
+                manifest.server, args.token, manifest.file_jobs,
+                on_change=lambda: write_manifest(manifest_path, manifest),
+            )
             write_manifest(manifest_path, manifest)
             completed = sum(1 for j in manifest.file_jobs if j.status == "COMPLETED")
             print(f"[summary] {completed}/{len(manifest.file_jobs)} completed")
@@ -1237,7 +1275,10 @@ def main() -> int:
         print(f"[summary] {len(failed)} submit failure(s); see manifest.errors")
 
     if args.watch:
-        watch_jobs(args.server, args.token, manifest.file_jobs)
+        watch_jobs(
+            args.server, args.token, manifest.file_jobs,
+            on_change=lambda: write_manifest(manifest_path, manifest),
+        )
         write_manifest(manifest_path, manifest)
         completed = sum(1 for j in manifest.file_jobs if j.status == "COMPLETED")
         print(f"[summary] {completed}/{len(manifest.file_jobs)} completed")
