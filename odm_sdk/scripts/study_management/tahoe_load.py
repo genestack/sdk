@@ -896,7 +896,11 @@ def watch_jobs(
 
     # Initial snapshot: fetch current status for every job and log it once,
     # so the user sees all 14 (or however many) at startup — not just the
-    # subset whose status happens to differ from the manifest seed.
+    # subset whose status happens to differ from the manifest seed. For any
+    # job that's already terminal at snapshot time, also pull the output so
+    # the accession lands in the manifest before the first sleep — a parallel
+    # --transform-only otherwise sees "COMPLETED with no accession" and skips.
+    snapshot_finished: list[int] = []
     for job_id, fj in pending.items():
         try:
             fj.status = _job_status(server, token, job_id)
@@ -904,6 +908,17 @@ def watch_jobs(
             print(f"[watch] {fj.plate} (#{job_id}) initial status check failed: {exc}")
             continue
         print(f"[watch] {fj.plate} (#{job_id}): {fj.status}")
+        if fj.status in TERMINAL_STATUSES:
+            try:
+                output = _job_output(server, token, job_id)
+                fj.accession = (output.get("result") or {}).get("accession")
+                if fj.status != "COMPLETED":
+                    fj.error = str(output.get("errors") or output.get("result") or output)
+            except Exception as exc:
+                fj.error = f"output fetch failed: {exc}"
+            snapshot_finished.append(job_id)
+    for jid in snapshot_finished:
+        del pending[jid]
     print(f"[watch] initial: {_summarise(jobs)}")
     if on_change is not None:
         on_change()
