@@ -82,7 +82,7 @@ DEFAULT_PARALLELISM = 4
 # explicitly with --transform-config-id. The `--template` accession is also
 # per-instance state with no portable default.
 DEFAULT_TRANSFORM_IMAGE_NAME = "hdf5-cells"
-DEFAULT_TRANSFORM_IMAGE_VERSION = "1.0.0-22"
+DEFAULT_TRANSFORM_IMAGE_VERSION = "1.0.0-23"
 DEFAULT_TRANSFORM_MEMORY = "35Gi"
 DEFAULT_TRANSFORM_VOLUME = "35Gi"
 
@@ -247,6 +247,63 @@ def _link_library_group_to_sample_group(server: str, token: str,
     )
 
 
+def _link_cell_group_to_library_group(server: str, token: str,
+                                       cell_group_accession: str,
+                                       library_group_accession: str) -> None:
+    """Cell-group → library-group SLP link. Mirrors the link the hdf5-cells
+    transformation pod issues internally after uploading cells."""
+    _post_link(
+        server, token,
+        f"cell/group/{cell_group_accession}/to/library/group/{library_group_accession}"
+    )
+
+
+def _list_cell_groups_in_study(server: str, token: str, study_accession: str) -> list[dict]:
+    """List cell groups attached to a study, surfacing all system metainfo so
+    `genestack:transformationSourceAttachmentAccession` is visible. Mirrors
+    the path that the hdf5-cells transformation pod uses internally
+    (`_list_groups_by_study` in transformation-images/hdf5-cells/lib/api_wrappers.py).
+
+    Endpoint: GET /api/v1/as-curator/integration/link/cell/group/by/study/{study}
+    with `?returnedMetadataFields=all` so the response carries the system
+    metainfo we need to match against the source attachment.
+
+    Returns the list of `{itemId, metadata}` dicts. Empty list if the study
+    has no cell groups.
+    """
+    url = (
+        f"{server}/{LINK_PREFIX}/cell/group/by/study/{study_accession}"
+        f"?returnedMetadataFields=all"
+    )
+    r = requests.get(url, headers=_headers(token), timeout=120)
+    r.raise_for_status()
+    body = r.json()
+    return body if isinstance(body, list) else []
+
+
+def _find_cell_group_for_source_attachment(
+    cell_groups: list[dict], source_attachment_accession: str
+) -> str | None:
+    """Among the cell groups returned by `_list_cell_groups_in_study`, find the
+    one whose `genestack:transformationSourceAttachmentAccession` references
+    the given source attachment. Returns the accession or None.
+
+    Matches the transformation pod's `find_existing_group_for_source_attachment`
+    logic so an --ensure-links run heals exactly the cell groups that an in-pod
+    reuse-lookup would find.
+    """
+    key = "genestack:transformationSourceAttachmentAccession"
+    for item in cell_groups:
+        metadata = item.get("metadata") or {}
+        ref = metadata.get(key)
+        # The ref can come back as a string accession or a FileReference dict.
+        if isinstance(ref, dict):
+            ref = ref.get("accession") or ref.get("genestack:accession")
+        if ref == source_attachment_accession:
+            return item.get("itemId") or metadata.get("genestack:accession")
+    return None
+
+
 def _wait_for_job(server: str, token: str, job_id: int, label: str, poll_s: int = 5,
                   timeout_s: int | None = None) -> dict:
     """Block until a job leaves STARTING/STARTED/RUNNING. Returns its final output."""
@@ -355,6 +412,30 @@ def ensure_links(server: str, token: str, manifest: Manifest) -> None:
     samples/libraries don't show up in the GUI because the link step was
     missed by an older version of the script.
 
+    Covers three link types:
+      1. sample group → study
+      2. library group → sample group
+      3. cell group → library group (NEW)
+
+    The first two are entity links created at study-load time. The third is
+    normally created by the hdf5-cells transformation pod after a successful
+    cell-metadata upload — but failure modes between cell upload and SLP
+    linking (e.g. distributed DDL queue timeouts on the temp-table CREATE
+    inside findExistingSLPCellLinks) can leave a cell group fully uploaded
+    but unlinked. --ensure-links discovers those cell groups via the
+    standard `link/cell/group/by/study/{study}` endpoint and links each one
+    to the manifest's library group.
+
+    WARNING: linking heals "uploaded but unlinked" cell groups, but NOT
+    "uploaded partially then crashed" cell groups. The pod's cell uploader
+    flushes in 50,000-row chunks; an interrupted upload leaves a row count
+    that is an exact multiple of 50,000. Re-linking such a group would
+    fully linkify an incomplete dataset and let downstream transformations
+    propagate the missing cells. ensure_links warns when it sees a suspect
+    row count (matching pattern), but it cannot inspect the source h5ad
+    to verify the expected count — callers seeing the warning should
+    delete the suspect cell group and re-run the transformation instead.
+
     Doesn't touch file_jobs — the file→study link is handled by the
     importExpression flow itself when each plate's job completes (each
     file gets attached as a study AFile via studyAccession in the import
@@ -378,6 +459,62 @@ def ensure_links(server: str, token: str, manifest: Manifest) -> None:
         )
     if not manifest.samples_group_accession:
         print("[ensure-links] no samples_group_accession in manifest; skipping.")
+    ensure_cell_links(server, token, manifest)
+
+
+def ensure_cell_links(server: str, token: str, manifest: Manifest) -> None:
+    """Find cell groups in the study created by hdf5-cells transformations and
+    link any that are missing the library-group SLP link. Idempotent.
+
+    Cross-references manifest.file_jobs accessions (each = a source attachment
+    fed into a transformation) against the study's cell groups; only links
+    cell groups whose `genestack:transformationSourceAttachmentAccession`
+    matches one of the loaded plates. Cell groups produced by an unrelated
+    workflow on the same study are left alone.
+
+    Skipped when the manifest is missing study or library group accessions
+    (nothing to link to).
+    """
+    if not manifest.study_accession or not manifest.libraries_group_accession:
+        print("[ensure-links] cell-group linking skipped: "
+              "missing study_accession or libraries_group_accession in manifest.")
+        return
+
+    source_accs = {fj.accession for fj in manifest.file_jobs if fj.accession}
+    if not source_accs:
+        print("[ensure-links] cell-group linking skipped: "
+              "no file_jobs with accessions in manifest.")
+        return
+
+    try:
+        cell_groups = _list_cell_groups_in_study(server, token, manifest.study_accession)
+    except Exception as exc:
+        print(f"[ensure-links] failed to list cell groups in study "
+              f"{manifest.study_accession}: {exc}")
+        return
+
+    print(f"[ensure-links] checking {len(cell_groups)} cell group(s) in study "
+          f"{manifest.study_accession} against {len(source_accs)} loaded source attachment(s)")
+    linked = 0
+    skipped = 0
+    for src_acc in sorted(source_accs):
+        cg_acc = _find_cell_group_for_source_attachment(cell_groups, src_acc)
+        if not cg_acc:
+            continue
+        print(f"[ensure-links] cell group {cg_acc} (source={src_acc}) → "
+              f"library {manifest.libraries_group_accession}")
+        try:
+            _link_cell_group_to_library_group(
+                server, token, cg_acc, manifest.libraries_group_accession
+            )
+            linked += 1
+        except Exception as exc:
+            # 409 is already handled inside _post_link; anything else here
+            # is a real failure. Don't abort the whole pass — log and move on.
+            print(f"[ensure-links] cell group {cg_acc} link failed: {exc}")
+            skipped += 1
+    print(f"[ensure-links] cell-group linking: {linked} linked (or already linked), "
+          f"{skipped} failed.")
 
 
 def submit_file(server: str, token: str, study_accession: str, plate: dict,
