@@ -627,6 +627,8 @@ def submit_transformations(
     memory: str, volume: str,
     parallelism: int = 4,
     no_submit: bool = False,
+    auto_confirm: bool = False,
+    skip_plates: frozenset[str] = frozenset(),
 ) -> list[TransformationJob]:
     """Queue one transformation per completed h5ad attachment.
 
@@ -674,6 +676,7 @@ def submit_transformations(
     skipped_no_accession: list[str] = []
     skipped_already: list[str] = []
     skipped_not_completed: list[str] = []
+    skipped_user: list[str] = []
     for fj in file_jobs:
         if fj.status != "COMPLETED":
             skipped_not_completed.append(fj.plate)
@@ -683,6 +686,9 @@ def submit_transformations(
             continue
         if fj.accession in already or fj.accession in reconciled_accs:
             skipped_already.append(fj.plate)
+            continue
+        if fj.plate in skip_plates:
+            skipped_user.append(fj.plate)
             continue
         candidates.append(fj)
 
@@ -695,14 +701,16 @@ def submit_transformations(
     if skipped_already:
         print(f"[transform] skipping {len(skipped_already)} already-submitted "
               f"({', '.join(skipped_already[:3])}{'...' if len(skipped_already) > 3 else ''})")
+    if skipped_user:
+        print(f"[transform] skipping {len(skipped_user)} plate(s) per --skip-plates "
+              f"({', '.join(skipped_user[:3])}{'...' if len(skipped_user) > 3 else ''})")
     if not candidates:
         print("[transform] nothing to do.")
         return existing
 
     # Make it impossible to silently double-submit. Always print the full list
-    # of candidate accessions before any POST fires — the caller can `kill`
-    # the process during the gap if anything looks wrong. The list is
-    # deliberately verbose so a re-submission accident is visible at a glance.
+    # of candidate accessions before any POST fires. List is deliberately
+    # verbose so a re-submission accident is visible at a glance.
     print(f"[transform] ABOUT TO SUBMIT {len(candidates)} transformation(s) "
           f"with config_id={config_id} {image_name}:{image_version} mem={memory} vol={volume}")
     for fj in candidates:
@@ -716,6 +724,28 @@ def submit_transformations(
         print(f"[transform] --transform-no-submit set; SKIPPING {len(candidates)} new "
               f"submission(s). Re-run without --transform-no-submit if you want to POST.")
         return existing
+
+    # Final gate before POSTing. The server-side LIST endpoint only reports
+    # currently-running pods (completed transformations vanish once their Job
+    # pods are GC'd), so reconciliation cannot reliably detect transformations
+    # that *already finished* outside this manifest. The manifest itself is
+    # the source of truth for what *this* run has submitted, and may miss
+    # submissions made via the UI / a prior --transform-only invocation that
+    # used a different manifest. So when running interactively, require
+    # explicit Y before POSTing. In non-interactive (nohup) runs, --yes is
+    # mandatory to confirm the candidate list is what the user expects.
+    if not auto_confirm:
+        if sys.stdin.isatty():
+            answer = input(f"[transform] proceed with {len(candidates)} submission(s)? [y/N] ").strip().lower()
+            if answer != "y":
+                print("[transform] aborted by user; no transformations submitted.")
+                return existing
+        else:
+            print(f"[transform] REFUSING to submit {len(candidates)} transformation(s): "
+                  f"running non-interactively without --yes. Re-run with --yes once you've "
+                  f"reviewed the candidate list above (and used --skip-plates to exclude any "
+                  f"plates already submitted outside this manifest).", file=sys.stderr)
+            return existing
 
     def _submit_one(fj: FileJob) -> TransformationJob:
         tj = TransformationJob(
@@ -1089,6 +1119,15 @@ def main() -> int:
                          "POST any new transformations. Use when you suspect previous POSTs "
                          "may have succeeded server-side despite client-side timeouts and "
                          "want to recover real job IDs without risking duplicate submissions.")
+    ap.add_argument("--yes", "-y", action="store_true",
+                    help="Skip the interactive confirmation prompt before POSTing "
+                         "transformations. Required when running non-interactively (nohup, "
+                         "CI) and the script needs to POST anything.")
+    ap.add_argument("--skip-plates", default="",
+                    help="Comma-separated plate stems to skip during transformation "
+                         "submission. Use when some plates were already transformed outside "
+                         "this manifest (e.g. via the UI or a prior run) — server-side "
+                         "reconciliation can't detect completed-and-GC'd transformations.")
     ap.add_argument("--transform-config-id", type=int, default=None,
                     help="ODM transformation configuration_id to use "
                          "(required when --transform/--transform-only is set; "
@@ -1138,6 +1177,8 @@ def main() -> int:
             args.transform_volume,
             parallelism=args.parallelism,
             no_submit=args.transform_no_submit,
+            auto_confirm=args.yes,
+            skip_plates=frozenset(p.strip() for p in (args.skip_plates or "").split(",") if p.strip()),
         )
         write_manifest(manifest_path, manifest)
         if args.watch_transforms:
