@@ -14,11 +14,10 @@ TIMEOUT_IN_SECONDS = 10
 def is_api_ready(odm_url):
     try:
         endpoint = '/frontend/endpoint/actuator/health'
-        response = requests.get(
-            url=f'{odm_url}/{endpoint}',
-        )
+        response = requests.get(url=f'{odm_url}{endpoint}')
         return response.status_code is EXPECTED_RESPONSE_CODE  #  we need to wait till endpoint is actually available
-    except Exception:
+    except Exception as e:
+        print(f"API not ready: {e}")
         return False
 
 
