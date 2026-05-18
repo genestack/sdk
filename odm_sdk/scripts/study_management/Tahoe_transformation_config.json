@@ -1,0 +1,49 @@
+{
+  "name": "Tahoe_config.json",
+  "description": "Config to transform Tahoe-100M datasets",
+  "data": {
+    "file_type": "h5ad",
+    "biosample_metadata": {
+      "metadata_keys": {
+        "obs": "metadata"
+      },
+      "biosample_column_name": {
+        "batch": ["sample", "cell_line"]
+      }
+    },
+    "cell_metadata": {
+      "metadata_keys": {
+        "obs": "metadata"
+      },
+      "linking_group": null,
+      "columns_to_drop": [
+        "sample",
+        "drugname_drugconc", 
+        "drug",
+        "cell_line",
+        "cell_name",
+        "plate"
+      ],
+      "columns_renaming_map": {
+          "BARCODE": "well_id",
+          "BARCODE_SUB_LIB_ID": "barcode",
+          "tscp_count": "n_counts",
+          "mread_count": "raw_counts",
+          "pcnt_mito": "percent_mito"
+      },
+      "add_qc_metrics": true
+    },
+    "feature_metadata": {
+      "metadata_keys": {
+        "var": "metadata"
+      },
+      "map_gene_ids_to_names": false,
+      "harmonize_gene_symbols": true
+    },
+    "cell_expression": {
+      "data_class": "Single-cell transcriptomics",
+      "source_file_metadata": true
+    }
+  }
+}
+

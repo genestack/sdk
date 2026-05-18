@@ -82,7 +82,7 @@ DEFAULT_PARALLELISM = 4
 # explicitly with --transform-config-id. The `--template` accession is also
 # per-instance state with no portable default.
 DEFAULT_TRANSFORM_IMAGE_NAME = "hdf5-cells"
-DEFAULT_TRANSFORM_IMAGE_VERSION = "1.0.0-23"
+DEFAULT_TRANSFORM_IMAGE_VERSION = "1.0.0-24"
 DEFAULT_TRANSFORM_MEMORY = "35Gi"
 DEFAULT_TRANSFORM_VOLUME = "35Gi"
 
