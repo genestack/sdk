@@ -18,7 +18,8 @@ def is_api_ready(odm_url):
             url=f'{odm_url}/{endpoint}',
         )
         return response.status_code is EXPECTED_RESPONSE_CODE  #  we need to wait till endpoint is actually available
-    except Exception:
+    except Exception as e:
+        print(f"API not ready: {e}")
         return False
 
 
