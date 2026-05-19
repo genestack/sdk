@@ -239,7 +239,7 @@ class FilesUtil(Application):
 
         :param parent: accession of folder to search in
         :type parent: str
-        :param \*names: tuple of "path components", a hierarchy of folders to
+        :param *names: tuple of "path components", a hierarchy of folders to
                         find
         :type names: tuple
         :param create: whether to create folders from ``names`` if they don't

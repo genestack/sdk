@@ -38,13 +38,13 @@ class TsvReader():
     def __exit__(self, type_, value, traceback):
         self.f.close()
 
-    def next(self):
+    def __iter__(self):
+        return self
+
+    def __next__(self):
         row = next(self.reader)
         if PY3:
             return row
         return [s.decode(self.encoding) for s in row]
 
-    __next__ = next
-
-    def __iter__(self):
-        return self
+    next = __next__
