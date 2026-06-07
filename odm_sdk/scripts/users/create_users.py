@@ -59,7 +59,7 @@ def read_users_from_file(args):
             try:
                 email = row[0].strip()
                 name = row[1].strip()
-                pwd = row[2].strip()
+                pwd = row[2].strip() if len(row) > 2 else ''
                 if len(email) == 0 or len(name) == 0:
                     raise IndexError
                 if len(pwd) == 0:
@@ -85,8 +85,8 @@ def main():
     parser = make_connection_parser()
     parser.add_argument('--file_with_users', metavar='<file_with_users>', default="users.tsv",
                         help='create users')
-    connection = get_connection()
     args = parser.parse_args()
+    connection = get_connection(args)
 
     users = read_users_from_file(args)
 
