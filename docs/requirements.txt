@@ -1,6 +1,6 @@
 keyring==25.7.0
 requests==2.34.2
-pyOpenSSL==26.2.0
+pyOpenSSL==26.3.0
 jsonschema==4.26.0
 future==1.0.0
 pyrsistent==0.20.0
