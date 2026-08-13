@@ -316,7 +316,7 @@ class ImportTest(unittest.TestCase):
                      "study-metainfotemplateeditor/listTemplates",
             json={
                 "result": [
-                    {"accession": "GSF000101", "isDefault": False},
+                    {"accession": "GSF020202", "isDefault": False},
                     {"accession": template_accession, "isDefault": True},
                 ]
             },
