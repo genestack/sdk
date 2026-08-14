@@ -167,7 +167,8 @@ class TemplateAccessionSupplier:
     """
     def __init__(self, args):
         self.server = args.SERVER
-        self.token = args.API_TOKEN
+        self.api_token = args.API_TOKEN
+        self.access_token = args.ACCESS_TOKEN
         self.debug = args.debug
         self.template_accession = args.TEMPLATE_ACCESSION
         self.should_request_default = args.TEMPLATE_ACCESSION is None and \
@@ -175,8 +176,9 @@ class TemplateAccessionSupplier:
         self._validate()
 
     def _validate(self):
-        if self.token is None and self.should_request_default:
-            _err("Please provide template accession when using Access Token", in_red=True)
+        if (self.api_token is None and self.access_token is None
+                and self.should_request_default):
+            _err("Authentication is required to discover the default template", in_red=True)
             sys.exit(1)
 
     def __call__(self, *args, **kwargs):
@@ -186,11 +188,25 @@ class TemplateAccessionSupplier:
         return self.template_accession
 
     def _authenticate(self):
-        aut_url = "/frontend/endpoint/application/invoke/genestack/signin/authenticateByApiToken"
+        if self.access_token is not None:
+            auth_method = "authenticateOAuthAccessToken"
+            token = self.access_token
+        else:
+            auth_method = "authenticateByApiToken"
+            token = self.api_token
+
+        aut_url = (
+            "/frontend/endpoint/application/invoke/genestack/signin/{}"
+            .format(auth_method)
+        )
         url_authenticate = self.server + aut_url
         session = requests.Session()
+        if self.access_token is not None:
+            session.headers.update(
+                {"Authorization": "Bearer {}".format(self.access_token)}
+            )
         try:
-            result = session.post(url_authenticate, json=[self.token], timeout=10)
+            result = session.post(url_authenticate, json=[token], timeout=10)
             if not json.loads(result.text)["result"]["authenticated"]:
                 if self.debug:
                     print(result, result.text)
