@@ -336,7 +336,7 @@ def check_mapping_file(acc, params):
     """
     if acc is None:
         return None
-    url = ('{}/{}/reference-data/{}/xrefsets/{}/metadata'
+    url = ('{}/{}/xrefsets/{}/xrefsets/{}/metadata'
            ''.format(params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, acc))
     resp = requests.get(url, headers=params.headers)
     if resp.ok:
@@ -544,7 +544,7 @@ def add_mappings(data_link, params, metadata_link=None):
         https://genestack.atlassian.net/browse/ODM-7489
     """
     metadata = fetch_and_parse_csv(metadata_link) if metadata_link else None
-    url = ('{}/{}/reference-data/{}/xrefsets'
+    url = ('{}/{}/xrefsets/{}/xrefsets'
            ''.format(params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION))
     source = _get_etl_source_from_url(data_link).lower()
     payload = {
