@@ -10,8 +10,8 @@
 # Same groups may be repeated several times on different lines.
 
 # For example:
-# MANAGE_ORGANIZATION,MANAGE_GROUPS,MANAGE_TEMPLATES,MANAGE_FACETS alice@alphacorp.com,suzy@alphacorp.com
-# MANAGE_ORGANIZATION  bob@alphacorp.com
+# ORGANISATION_ADMINISTRATOR,GROUP_ADMINISTRATOR,TEMPLATE_ADMINISTRATOR,CATALOGUE_ADMINISTRATOR alice@alphacorp.com,suzy@alphacorp.com
+# ORGANISATION_ADMINISTRATOR  bob@alphacorp.com
 
 # See the full instruction at:
 # https://genestack.atlassian.net/wiki/spaces/ODMP/pages/1143242753/How+to+create+groups+and+add+existing+users+to+them+via+python+scripts
