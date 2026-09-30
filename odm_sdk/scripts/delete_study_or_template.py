@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# This script deletes files using wipeStudy method.
+# This script deletes files using DELETE manageData/data endpoint.
 # Provide an accession of a study/template which needs to be deleted.
 
 from __future__ import print_function, unicode_literals
 
-import re
 import sys
 
-from odm_sdk import GenestackServerException
+import requests
+
+from odm_sdk import GenestackException
 from odm_sdk.scripts.utils import colored, GREEN, RED
 from odm_sdk.utils import make_connection_parser, get_connection
 
@@ -22,18 +23,20 @@ def main():
     connection = get_connection(args)
 
     accession = args.accession
+    # server_url looks like '<host>/frontend/endpoint', while REST controllers live under '<host>/frontend/rs'
+    rest_url = connection.server_url.rstrip('/').rsplit('/endpoint', 1)[0] + '/rs'
+    url = rest_url + '/genestack/manageData/default-released/data'
     try:
-        connection.application('genestack/study-metainfo-editor').invoke('wipeStudy', accession)
-        print(colored("Success", GREEN))
-    except GenestackServerException as e:
-        message = e
-        if e.stack_trace is not None:
-            p = re.compile(r"GenestackRestApiException: (.*?)(?=\n)")
-            result = p.search(e.stack_trace)
-            if result:
-                message = result.group(1)
-        print(colored(message, RED), file=sys.stderr)
+        response = connection.session.delete(url, params={'accessions': accession})
+    except (GenestackException, requests.exceptions.RequestException) as e:
+        print(colored(e, RED), file=sys.stderr)
         sys.exit(1)
+
+    if response.status_code != requests.codes.accepted:
+        print(colored("Deletion failed: HTTP {} {}".format(response.status_code, response.text),
+                      RED), file=sys.stderr)
+        sys.exit(1)
+    print(colored("Success", GREEN))
 
 
 if __name__ == "__main__":
