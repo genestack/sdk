@@ -9,7 +9,7 @@ import sys
 
 import requests
 
-from odm_sdk import GenestackException
+from odm_sdk import GenestackBaseException
 from odm_sdk.scripts.utils import colored, GREEN, RED
 from odm_sdk.utils import make_connection_parser, get_connection
 
@@ -23,12 +23,10 @@ def main():
     connection = get_connection(args)
 
     accession = args.accession
-    # server_url looks like '<host>/frontend/endpoint', while REST controllers live under '<host>/frontend/rs'
-    rest_url = connection.server_url.rstrip('/').rsplit('/endpoint', 1)[0] + '/rs'
-    url = rest_url + '/genestack/manageData/default-released/data'
     try:
-        response = connection.session.delete(url, params={'accessions': accession})
-    except (GenestackException, requests.exceptions.RequestException) as e:
+        response = connection.rest_request(
+            'DELETE', '/manageData/default-released/data', params={'accessions': accession})
+    except GenestackBaseException as e:
         print(colored(e, RED), file=sys.stderr)
         sys.exit(1)
 

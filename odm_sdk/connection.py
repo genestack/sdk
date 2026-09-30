@@ -198,6 +198,36 @@ class Connection(object):
         except RequestException as e:
             raise GenestackConnectionFailure(str(e))
 
+    def rest_request(self, method, path, params=None, **kwargs):
+        """
+        Perform an HTTP request to a REST controller of Genestack server, reusing the authenticated session.
+
+        :param str method: HTTP method, e.g. ``'GET'`` or ``'DELETE'``
+        :param str path: REST path relative to ``<host>/frontend/rs/genestack``,
+                     e.g. ``'/manageData/default-released/data'``
+        :param dict params: query parameters
+        :param kwargs: any other argument accepted by :py:meth:`requests.Session.request`
+        :return: response from server, the status code is not checked
+        :rtype: requests.Response
+        :raises: :py:class:`~odm_sdk.GenestackAuthenticationException` if the server responds with 401,
+                 :py:class:`~odm_sdk.GenestackConnectionFailure` if the request fails
+        """
+        # server_url is '<host>/frontend/endpoint', REST controllers are served under '<host>/frontend/rs'
+        frontend_url = self.server_url.rstrip('/')
+        if frontend_url.endswith('/endpoint'):
+            frontend_url = frontend_url[:-len('/endpoint')]
+        kwargs.setdefault(
+            'timeout',
+            int(os.environ["GENESTACK_CLIENT_TIMEOUT"]) if os.environ.get("GENESTACK_CLIENT_TIMEOUT") else None)
+        try:
+            response = self.session.request(
+                method, frontend_url + '/rs/genestack' + path, params=params, **kwargs)
+        except RequestException as e:
+            raise GenestackConnectionFailure(str(e))
+        if response.status_code == 401:
+            raise GenestackAuthenticationException('Authentication failure')
+        return response
+
     def application(self, application_id):
         """
         Returns an application handler for the application with the specified ID.
