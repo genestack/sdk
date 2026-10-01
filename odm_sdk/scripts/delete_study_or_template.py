@@ -5,28 +5,32 @@
 
 from __future__ import print_function, unicode_literals
 
+import argparse
 import sys
 
 import requests
 
-from odm_sdk import GenestackBaseException
+from odm_sdk.scripts.token_auth import Headers, add_host_argument, add_token_arguments
 from odm_sdk.scripts.utils import colored, GREEN, RED
-from odm_sdk.utils import make_connection_parser, get_connection
+
+MANAGE_DATA_PATH = 'frontend/rs/genestack/manageData/default-released/data'
 
 
 def main():
-    parser = make_connection_parser()
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_host_argument(parser, 'URL of the instance a study/template is deleted from')
+    add_token_arguments(parser)
     group = parser.add_argument_group('required arguments')
     group.add_argument('--accession', metavar='<accession>',
                        help='accession of a study/template to delete', required=True)
     args = parser.parse_args()
-    connection = get_connection(args)
+    headers = Headers(args)
 
-    accession = args.accession
     try:
-        response = connection.rest_request(
-            'DELETE', '/manageData/default-released/data', params={'accessions': accession})
-    except GenestackBaseException as e:
+        response = requests.delete(
+            '{}/{}'.format(args.SERVER, MANAGE_DATA_PATH),
+            headers=headers, params={'accessions': args.accession})
+    except requests.exceptions.RequestException as e:
         print(colored(e, RED), file=sys.stderr)
         sys.exit(1)
 

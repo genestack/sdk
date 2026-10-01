@@ -31,6 +31,9 @@ except ImportError:
 
 import requests
 
+from odm_sdk.scripts.token_auth import (
+    Headers, add_host_argument, add_token_arguments, prevent_redundant_parameters)
+
 # let's do it `six`-style! (https://github.com/benjaminp/six/blob/master/six.py#L35)
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -816,59 +819,6 @@ class SaneArgumentParser(argparse.ArgumentParser):
                     args.append(a)
                 prev = a
         return super(SaneArgumentParser, self).parse_args(args, namespace)
-
-
-# pylint: disable-next=protected-access
-class _SingletonAction(argparse._StoreAction):
-    """ Ensures that only one argument is passed """
-
-    def __init__(self, mutually_exclusive, err_msg, *args, **kwargs):
-        super(_SingletonAction, self).__init__(*args, **kwargs)
-        self.err_msg = err_msg
-        self.mutually_exclusive = mutually_exclusive
-
-    def __call__(self, parser_, namespace, values, option_string=None):
-        already_defined = any(getattr(namespace, v) is not None
-                              for v in self.mutually_exclusive)
-        if already_defined:
-            raise argparse.ArgumentError(self, self.err_msg)
-        setattr(namespace, self.dest, values)
-
-# pylint: disable-next=protected-access
-class _StoreServerName(argparse._StoreAction):
-    """ Ensures that server name is not ended wit `/` """
-
-    def __call__(self, parser_, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values.rstrip("/"))
-
-
-def prevent_redundant_parameters(mutually_exclusive, err_msg):
-    return lambda *args, **kwargs: _SingletonAction(mutually_exclusive, err_msg, *args, **kwargs)
-
-
-class Headers(dict):
-    """Derives http-headers from arguments"""
-
-    def __init__(self, args):
-        super(dict, self).__init__()
-        self["Genestack-API-Token"] = args.API_TOKEN
-        self["Authorization"] = "Bearer {}".format(args.ACCESS_TOKEN) if args.ACCESS_TOKEN else None
-        self["Accept"] = "application/json"
-        self["Content-Type"] = "application/json"
-        self._validate()
-
-    def _validate(self):
-        if self["Genestack-API-Token"] and self["Authorization"]:
-            _err("Please provide a Genestack-Api-Token or an Access Token but not both",
-                 in_red=True)
-            sys.exit(1)
-        if self["Genestack-API-Token"] is None and self["Authorization"] is None:
-            _err("Please provide a Genestack-Api-Token or an Access Token",
-                 in_red=True)
-            sys.exit(1)
-
-    def __getstate__(self):
-        return self
 
 
 class DeprecatedAction(argparse.Action):
@@ -1778,31 +1728,8 @@ def main():
                                        "(e.g., '--link_all_to_all') are still supported, "
                                        "but considered obsolete",
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                        "only one token can be specified. "
-                                                        "Please choose the authentication method: "
-                                                        "through the Access Token or "
-                                                        "through the Genestack-API-token"),
-                        dest="API_TOKEN",
-                        nargs="?",
-                        help="API_TOKEN")
-    parser.add_argument("-at", "--access-token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                        "only one token can be specified. "
-                                                        "Please choose the authentication method: "
-                                                        "through the Access Token or "
-                                                        "through the Genestack-API-token"),
-                        dest="ACCESS_TOKEN",
-                        nargs="?",
-                        help="ACCESS_TOKEN")
-    parser.add_argument("-H", "--host", "-srv", "--server",
-                        action=_StoreServerName,
-                        const="https://odm-demos.genestack.com/",
-                        default="https://odm-demos.genestack.com/",
-                        nargs="?",
-                        dest="SERVER",
-                        help="URL of the instance data is being loaded to")
+    add_token_arguments(parser)
+    add_host_argument(parser, "URL of the instance data is being loaded to")
     parser.add_argument("-tmpl", "--template",
                         action="store",
                         const=None,

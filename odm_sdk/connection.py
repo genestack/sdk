@@ -63,7 +63,6 @@ class Connection(object):
         """
         self.server_url = server_url
         self.session = requests.session()
-        self._api_token = None
         self.debug = debug
         self.show_logs = show_logs
 
@@ -131,7 +130,6 @@ class Connection(object):
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
-        self._api_token = token
 
     def login_by_access_token(self, access_token):
         """
@@ -199,43 +197,6 @@ class Connection(object):
 
         except RequestException as e:
             raise GenestackConnectionFailure(str(e))
-
-    def rest_request(self, method, path, params=None, **kwargs):
-        """
-        Perform an HTTP request to a REST controller of Genestack server.
-
-        Works for connections authenticated by an API token or an access token. REST controllers do not accept
-        the session that a login by email and password opens.
-
-        :param str method: HTTP method, e.g. ``'GET'`` or ``'DELETE'``
-        :param str path: REST path relative to ``<host>/frontend/rs/genestack``,
-                     e.g. ``'/manageData/default-released/data'``
-        :param dict params: query parameters
-        :param kwargs: any other argument accepted by :py:meth:`requests.Session.request`
-        :return: response from server, the status code is not checked
-        :rtype: requests.Response
-        :raises: :py:class:`~odm_sdk.GenestackAuthenticationException` if the server responds with 401,
-                 :py:class:`~odm_sdk.GenestackConnectionFailure` if the request fails
-        """
-        # server_url is '<host>/frontend/endpoint', REST controllers are served under '<host>/frontend/rs'
-        frontend_url = self.server_url.rstrip('/')
-        if frontend_url.endswith('/endpoint'):
-            frontend_url = frontend_url[:-len('/endpoint')]
-        # REST controllers never use the HTTP session: they need the API token (or the access token, which is
-        # already in the session headers) in every request
-        if self._api_token is not None:
-            kwargs['headers'] = {'Genestack-API-Token': self._api_token, **(kwargs.get('headers') or {})}
-        kwargs.setdefault(
-            'timeout',
-            int(os.environ["GENESTACK_CLIENT_TIMEOUT"]) if os.environ.get("GENESTACK_CLIENT_TIMEOUT") else None)
-        try:
-            response = self.session.request(
-                method, frontend_url + '/rs/genestack' + path, params=params, **kwargs)
-        except RequestException as e:
-            raise GenestackConnectionFailure(str(e))
-        if response.status_code == 401:
-            raise GenestackAuthenticationException('Authentication failure')
-        return response
 
     def application(self, application_id):
         """
