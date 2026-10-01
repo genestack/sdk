@@ -20,7 +20,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Delete a study or a template with all its content. '
                     'Authentication by either an API token or an access token is required.')
-    add_host_argument(parser, 'URL of the instance a study/template is deleted from', required=True)
+    add_host_argument(parser, 'URL of the instance a study/template is deleted from')
     add_token_arguments(parser, nargs=None)
     group = parser.add_argument_group('required arguments')
     group.add_argument('--accession', metavar='<accession>',

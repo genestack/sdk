@@ -9,8 +9,6 @@ import sys
 
 from odm_sdk.scripts.utils import colored, RED
 
-DEFAULT_HOST = "https://odm-demos.genestack.com"
-
 _TOKEN_CONFLICT_MESSAGE = ("only one token can be specified. "
                            "Please choose the authentication method: "
                            "through the Access Token or "
@@ -46,25 +44,14 @@ def prevent_redundant_parameters(mutually_exclusive, err_msg):
     return lambda *args, **kwargs: _SingletonAction(mutually_exclusive, err_msg, *args, **kwargs)
 
 
-def add_host_argument(parser, help_text, required=False):
-    """Adds the host option to ``parser``. The value is stored in ``SERVER``.
-
-    If ``required`` is false, ``DEFAULT_HOST`` is used when the option is omitted."""
-    if required:
-        parser.add_argument("-H", "--host", "-srv", "--server",
-                            action=_StoreServerName,
-                            required=True,
-                            dest="SERVER",
-                            metavar="<host>",
-                            help=help_text)
-        return
+def add_host_argument(parser, help_text):
+    """Adds the required host option to ``parser``. The value is stored in ``SERVER``."""
     parser.add_argument("-H", "--host", "-srv", "--server",
                         action=_StoreServerName,
-                        const=DEFAULT_HOST,
-                        default=DEFAULT_HOST,
-                        nargs="?",
+                        required=True,
                         dest="SERVER",
-                        help="{} (default: {})".format(help_text, DEFAULT_HOST))
+                        metavar="<host>",
+                        help=help_text)
 
 
 def add_token_arguments(parser, nargs="?"):
