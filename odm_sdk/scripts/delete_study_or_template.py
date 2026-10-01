@@ -17,9 +17,11 @@ MANAGE_DATA_PATH = 'frontend/rs/genestack/manageData/default-released/data'
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    add_host_argument(parser, 'URL of the instance a study/template is deleted from')
-    add_token_arguments(parser)
+    parser = argparse.ArgumentParser(
+        description='Delete a study or a template with all its content. '
+                    'Authentication by either an API token or an access token is required.')
+    add_host_argument(parser, 'URL of the instance a study/template is deleted from', required=True)
+    add_token_arguments(parser, nargs=None)
     group = parser.add_argument_group('required arguments')
     group.add_argument('--accession', metavar='<accession>',
                        help='accession of a study/template to delete', required=True)

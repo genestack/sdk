@@ -46,32 +46,44 @@ def prevent_redundant_parameters(mutually_exclusive, err_msg):
     return lambda *args, **kwargs: _SingletonAction(mutually_exclusive, err_msg, *args, **kwargs)
 
 
-def add_host_argument(parser, help_text):
-    """Adds the host option to ``parser``. The value is stored in ``SERVER``."""
+def add_host_argument(parser, help_text, required=False):
+    """Adds the host option to ``parser``. The value is stored in ``SERVER``.
+
+    If ``required`` is false, ``DEFAULT_HOST`` is used when the option is omitted."""
+    if required:
+        parser.add_argument("-H", "--host", "-srv", "--server",
+                            action=_StoreServerName,
+                            required=True,
+                            dest="SERVER",
+                            metavar="<host>",
+                            help=help_text)
+        return
     parser.add_argument("-H", "--host", "-srv", "--server",
                         action=_StoreServerName,
                         const=DEFAULT_HOST,
                         default=DEFAULT_HOST,
                         nargs="?",
                         dest="SERVER",
-                        help=help_text)
+                        help="{} (default: {})".format(help_text, DEFAULT_HOST))
 
 
-def add_token_arguments(parser):
+def add_token_arguments(parser, nargs="?"):
     """Adds the mutually exclusive API token and access token options. Values are stored in
     ``API_TOKEN`` and ``ACCESS_TOKEN``."""
     parser.add_argument("-t", "--token",
                         action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
                                                             _TOKEN_CONFLICT_MESSAGE),
                         dest="API_TOKEN",
-                        nargs="?",
-                        help="API_TOKEN")
+                        nargs=nargs,
+                        metavar="<api-token>",
+                        help="Genestack API token. Either this or --access-token is required")
     parser.add_argument("-at", "--access-token",
                         action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
                                                             _TOKEN_CONFLICT_MESSAGE),
                         dest="ACCESS_TOKEN",
-                        nargs="?",
-                        help="ACCESS_TOKEN")
+                        nargs=nargs,
+                        metavar="<access-token>",
+                        help="OAuth access token. Either this or --token is required")
 
 
 class Headers(dict):

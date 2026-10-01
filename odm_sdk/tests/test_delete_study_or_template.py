@@ -5,7 +5,6 @@ from unittest import mock
 import requests_mock
 
 from odm_sdk.scripts import delete_study_or_template
-from odm_sdk.scripts.token_auth import DEFAULT_HOST
 
 DELETE_URL = "https://odm.test/frontend/rs/genestack/manageData/default-released/data"
 
@@ -34,12 +33,12 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
         self.assertEqual("Bearer jwt", request.headers["Authorization"])
         self.assertNotIn("Genestack-API-Token", request.headers)
 
-    def test_uses_default_host(self):
+    def test_host_is_required(self):
         with requests_mock.Mocker() as m:
-            m.delete(DEFAULT_HOST + "/frontend/rs/genestack/manageData/default-released/data",
-                     status_code=202, json=[])
-            run_script("--token", "tkn", "--accession", "GSF1")
-        self.assertEqual(1, m.call_count)
+            with self.assertRaises(SystemExit) as cm:
+                run_script("--token", "tkn", "--accession", "GSF1")
+        self.assertEqual(2, cm.exception.code)
+        self.assertEqual(0, m.call_count)
 
     def test_fails_on_error_response(self):
         with requests_mock.Mocker() as m:
