@@ -44,7 +44,7 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
         with requests_mock.Mocker() as m:
             with self.assertRaises(SystemExit) as cm:
                 run_script("-H", "odm.test", "--token", "tkn", "--accession", "GSF1")
-        self.assertEqual(2, cm.exception.code)
+        self.assertEqual(1, cm.exception.code)
         self.assertEqual(0, m.call_count)
 
     def test_fails_on_error_response(self):
