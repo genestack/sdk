@@ -70,12 +70,12 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
 
     def test_rejects_both_tokens(self):
         with self.assertRaises(SystemExit) as cm:
-            run_script("--token", "a", "--access-token", "b", "--accession", "GSF1")
+            run_script("-H", "https://odm.test", "--token", "a", "--access-token", "b", "--accession", "GSF1")
         self.assertEqual(2, cm.exception.code)
 
     def test_login_and_password_are_not_supported(self):
         with self.assertRaises(SystemExit) as cm:
-            run_script("-u", "root@genestack.com", "-p", "pwd", "--accession", "GSF1")
+            run_script("-H", "https://odm.test", "-u", "root@genestack.com", "-p", "pwd", "--accession", "GSF1")
         self.assertEqual(2, cm.exception.code)
 
 
