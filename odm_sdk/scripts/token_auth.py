@@ -34,17 +34,12 @@ class _SingletonAction(argparse._StoreAction):
 
 # pylint: disable-next=protected-access
 class _StoreServerName(argparse._StoreAction):
-    """ Ensures that server name is not ended wit `/` """
+    """ Ensures that server name has a scheme (``https://`` by default) and is not ended with `/` """
 
     def __call__(self, parser_, namespace, values, option_string=None):
+        if "://" not in values:
+            values = "https://" + values
         setattr(namespace, self.dest, values.rstrip("/"))
-
-
-def check_server_url(server):
-    """Exits if ``server`` has no ``http://`` or ``https://`` scheme."""
-    if not (server.startswith("https://") or server.startswith("http://")):
-        print("The server url should start with 'http' or 'https'", file=sys.stderr)
-        sys.exit(1)
 
 
 def prevent_redundant_parameters(mutually_exclusive, err_msg):
@@ -58,7 +53,7 @@ def add_host_argument(parser, help_text):
                         required=True,
                         dest="SERVER",
                         metavar="<host>",
-                        help=help_text)
+                        help="{} (https:// is used if the scheme is omitted)".format(help_text))
 
 
 def add_token_arguments(parser, nargs="?"):

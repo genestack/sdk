@@ -10,7 +10,7 @@ import sys
 
 import requests
 
-from odm_sdk.scripts.token_auth import Headers, add_host_argument, add_token_arguments, check_server_url
+from odm_sdk.scripts.token_auth import Headers, add_host_argument, add_token_arguments
 from odm_sdk.scripts.utils import colored, GREEN, RED
 
 MANAGE_DATA_PATH = 'frontend/rs/genestack/manageData/default-released/data'
@@ -26,7 +26,6 @@ def main():
     group.add_argument('--accession', metavar='<accession>',
                        help='accession of a study/template to delete', required=True)
     args = parser.parse_args()
-    check_server_url(args.SERVER)
     headers = Headers(args)
 
     try:

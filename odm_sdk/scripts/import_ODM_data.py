@@ -32,7 +32,7 @@ except ImportError:
 import requests
 
 from odm_sdk.scripts.token_auth import (
-    Headers, add_host_argument, add_token_arguments, check_server_url, prevent_redundant_parameters)
+    Headers, add_host_argument, add_token_arguments, prevent_redundant_parameters)
 
 # let's do it `six`-style! (https://github.com/benjaminp/six/blob/master/six.py#L35)
 PY2 = sys.version_info[0] == 2
@@ -1445,7 +1445,9 @@ def check_signal_versions_samples(sample_nodes, study_acc):
 
 def do_import(import_params):
     parser_args_state = import_params.parser_args_state
-    check_server_url(import_params.SERVER)
+    if not (import_params.SERVER.startswith("https://") or import_params.SERVER.startswith("http://")):
+        _err("The server url should start with 'http' or 'https'")
+        sys.exit(1)
     if not (import_params.study_link or import_params.study_accession):
         _err("No study link or accession was provided", in_red=True)
         sys.exit(1)

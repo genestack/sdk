@@ -40,12 +40,19 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
         self.assertEqual(2, cm.exception.code)
         self.assertEqual(0, m.call_count)
 
-    def test_host_without_scheme_is_rejected(self):
+    def test_host_without_scheme_uses_https(self):
         with requests_mock.Mocker() as m:
-            with self.assertRaises(SystemExit) as cm:
-                run_script("-H", "odm.test", "--token", "tkn", "--accession", "GSF1")
-        self.assertEqual(1, cm.exception.code)
-        self.assertEqual(0, m.call_count)
+            m.delete("https://odm.test:8443/frontend/rs/genestack/manageData/default-released/data",
+                     status_code=202, json=[])
+            run_script("-H", "odm.test:8443/", "--token", "tkn", "--accession", "GSF1")
+        self.assertEqual(1, m.call_count)
+
+    def test_host_with_http_scheme_is_kept(self):
+        with requests_mock.Mocker() as m:
+            m.delete("http://odm.test/frontend/rs/genestack/manageData/default-released/data",
+                     status_code=202, json=[])
+            run_script("-H", "http://odm.test", "--token", "tkn", "--accession", "GSF1")
+        self.assertEqual(1, m.call_count)
 
     def test_fails_on_error_response(self):
         with requests_mock.Mocker() as m:
