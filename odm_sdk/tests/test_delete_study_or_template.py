@@ -40,6 +40,13 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
         self.assertEqual(2, cm.exception.code)
         self.assertEqual(0, m.call_count)
 
+    def test_host_without_scheme_is_rejected(self):
+        with requests_mock.Mocker() as m:
+            with self.assertRaises(SystemExit) as cm:
+                run_script("-H", "odm.test", "--token", "tkn", "--accession", "GSF1")
+        self.assertEqual(2, cm.exception.code)
+        self.assertEqual(0, m.call_count)
+
     def test_fails_on_error_response(self):
         with requests_mock.Mocker() as m:
             m.delete(DELETE_URL, status_code=404, text="not found")

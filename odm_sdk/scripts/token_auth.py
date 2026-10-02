@@ -34,9 +34,12 @@ class _SingletonAction(argparse._StoreAction):
 
 # pylint: disable-next=protected-access
 class _StoreServerName(argparse._StoreAction):
-    """ Ensures that server name is not ended wit `/` """
+    """ Ensures that server name starts with a scheme and is not ended with `/` """
 
     def __call__(self, parser_, namespace, values, option_string=None):
+        if not values.startswith(("http://", "https://")):
+            raise argparse.ArgumentError(
+                self, "the server url should start with 'http://' or 'https://', got '{}'".format(values))
         setattr(namespace, self.dest, values.rstrip("/"))
 
 
