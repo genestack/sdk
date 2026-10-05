@@ -13,7 +13,7 @@ import requests
 from odm_sdk.scripts.token_auth import Headers, add_host_argument, add_token_arguments
 from odm_sdk.scripts.utils import colored, GREEN, RED
 
-MANAGE_DATA_PATH = 'frontend/rs/genestack/manageData/default-released/data'
+MANAGE_DATA_PATH = 'api/v1/manage-data/data'
 
 
 def main():

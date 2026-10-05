@@ -6,7 +6,7 @@ import requests_mock
 
 from odm_sdk.scripts import delete_study_or_template
 
-DELETE_URL = "https://odm.test/frontend/rs/genestack/manageData/default-released/data"
+DELETE_URL = "https://odm.test/api/v1/manage-data/data"
 
 
 def run_script(*argv):
@@ -42,14 +42,14 @@ class DeleteStudyOrTemplateTest(unittest.TestCase):
 
     def test_host_without_scheme_uses_https(self):
         with requests_mock.Mocker() as m:
-            m.delete("https://odm.test:8443/frontend/rs/genestack/manageData/default-released/data",
+            m.delete("https://odm.test:8443/api/v1/manage-data/data",
                      status_code=202, json=[])
             run_script("-H", "odm.test:8443/", "--token", "tkn", "--accession", "GSF1")
         self.assertEqual(1, m.call_count)
 
     def test_host_with_http_scheme_is_kept(self):
         with requests_mock.Mocker() as m:
-            m.delete("http://odm.test/frontend/rs/genestack/manageData/default-released/data",
+            m.delete("http://odm.test/api/v1/manage-data/data",
                      status_code=202, json=[])
             run_script("-H", "http://odm.test", "--token", "tkn", "--accession", "GSF1")
         self.assertEqual(1, m.call_count)
