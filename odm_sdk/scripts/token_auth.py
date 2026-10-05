@@ -9,6 +9,7 @@ import sys
 
 from odm_sdk.scripts.utils import colored, RED
 
+_FRONTEND_SUFFIX = "/frontend"
 _TOKEN_CONFLICT_MESSAGE = ("only one token can be specified. "
                            "Please choose the authentication method: "
                            "through the Access Token or "
@@ -34,12 +35,16 @@ class _SingletonAction(argparse._StoreAction):
 
 # pylint: disable-next=protected-access
 class _StoreServerName(argparse._StoreAction):
-    """ Ensures that server name has a scheme (``https://`` by default) and is not ended with `/` """
+    """ Ensures that server name has a scheme (``https://`` by default) and is not ended with `/`
+    or `/frontend` (scripts add the `/frontend` path themselves) """
 
     def __call__(self, parser_, namespace, values, option_string=None):
         if "://" not in values:
             values = "https://" + values
-        setattr(namespace, self.dest, values.rstrip("/"))
+        values = values.rstrip("/")
+        if values.endswith(_FRONTEND_SUFFIX):
+            values = values[:-len(_FRONTEND_SUFFIX)].rstrip("/")
+        setattr(namespace, self.dest, values)
 
 
 def prevent_redundant_parameters(mutually_exclusive, err_msg):
