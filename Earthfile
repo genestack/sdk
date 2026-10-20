@@ -12,16 +12,17 @@ tox:
 test:
     FROM +tox
     COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt \
-                MANIFEST.in README.md LICENSE.txt \
+                uv.toml MANIFEST.in README.md LICENSE.txt \
                 setup.py odm_sdk \
                 .
 
-    # odm-api development builds are on TestPyPI, releases on PyPI
+    # odm-api development builds are on TestPyPI, releases on PyPI. tox-uv installs with uv,
+    # which uv.toml lets fall back to TestPyPI only for what PyPI lacks.
     ARG --required OPENAPI_VERSION
     RUN \
         python3 -m pip install --no-cache-dir envsubst && \
         cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
-        PIP_EXTRA_INDEX_URL=https://test.pypi.org/simple/ python3 -m tox run-parallel
+        python3 -m tox run-parallel
 
     SAVE IMAGE --cache-hint
 
@@ -39,16 +40,13 @@ push:
     FROM +build
     RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
 
-    # Releases go to PyPI, development builds to TestPyPI, and both to Nexus, which
-    # functional-tests installs from
+    # Releases go to PyPI, development builds to TestPyPI
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
-        ARG PYPI_REPOSITORY_INTERNAL="https://nexus.devops.gs.team/repository/pypi-releases/"
-        ARG PYPI_REPOSITORY_PUBLIC="https://upload.pypi.org/legacy/"
+        ARG PYPI_REPOSITORY="https://upload.pypi.org/legacy/"
         ARG PYPI_TOKEN_SECRET="PYPI_TOKEN"
     ELSE
-        ARG PYPI_REPOSITORY_INTERNAL="https://nexus.devops.gs.team/repository/pypi-snapshots/"
-        ARG PYPI_REPOSITORY_PUBLIC="https://test.pypi.org/legacy/"
+        ARG PYPI_REPOSITORY="https://test.pypi.org/legacy/"
         ARG PYPI_TOKEN_SECRET="PYPI_TOKEN_TEST"
     END
 
@@ -56,12 +54,8 @@ push:
     RUN --push \
         --secret PYPI_TOKEN \
         --secret PYPI_TOKEN_TEST \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            TWINE_USERNAME="${NEXUS_USER}" TWINE_PASSWORD="${NEXUS_PASSWORD}" \
-                twine upload dist/* --repository-url ${PYPI_REPOSITORY_INTERNAL} && \
             TWINE_USERNAME=__token__ TWINE_PASSWORD="pypi-$(printenv ${PYPI_TOKEN_SECRET})" \
-                twine upload dist/* --repository-url ${PYPI_REPOSITORY_PUBLIC}
+                twine upload dist/* --repository-url ${PYPI_REPOSITORY}
 
 docs:
     FROM python:3.15.0
