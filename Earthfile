@@ -1,11 +1,11 @@
 VERSION 0.8
 
 tox:
-    FROM python:3.15.0-alpine
+    FROM astral/uv:0.13.1-python3.15-alpine
     WORKDIR /app
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
-    RUN python3 -m pip install --no-cache-dir -r requirements-tox.txt
+    RUN uv pip install --system --no-cache -r requirements-tox.txt
 
     SAVE IMAGE --cache-hint
 
@@ -16,12 +16,11 @@ test:
                 setup.py odm_sdk \
                 .
 
-    # odm-api development builds are on TestPyPI, releases on PyPI. tox-uv installs with uv,
-    # which uv.toml lets fall back to TestPyPI only for what PyPI lacks.
+    # odm-api development builds are on TestPyPI, releases on PyPI. tox-uv installs with the
+    # image's uv, which uv.toml lets fall back to TestPyPI only for what PyPI lacks.
     ARG --required OPENAPI_VERSION
     RUN \
-        python3 -m pip install --no-cache-dir envsubst && \
-        cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
+        cat requirements-internal.txt.envtpl | uvx --no-cache envsubst > requirements-internal.txt && \
         python3 -m tox run-parallel
 
     SAVE IMAGE --cache-hint
