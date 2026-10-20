@@ -2,15 +2,10 @@ VERSION 0.8
 
 tox:
     FROM python:3.15.0-alpine
-    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
+    WORKDIR /app
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
-    RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements-tox.txt && \
-            pypi-clean.sh
+    RUN python3 -m pip install --no-cache-dir -r requirements-tox.txt
 
     SAVE IMAGE --cache-hint
 
@@ -21,14 +16,12 @@ test:
                 setup.py odm_sdk \
                 .
 
+    # odm-api development builds are on TestPyPI, releases on PyPI
     ARG --required OPENAPI_VERSION
     RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
-            python3 -m tox run-parallel && \
-            pypi-clean.sh
+        python3 -m pip install --no-cache-dir envsubst && \
+        cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
+        PIP_EXTRA_INDEX_URL=https://test.pypi.org/simple/ python3 -m tox run-parallel
 
     SAVE IMAGE --cache-hint
 
@@ -44,20 +37,19 @@ build:
 
 push:
     FROM +build
-    RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements-build.txt && \
-            pypi-clean.sh
+    RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
 
+    # Releases go to PyPI, development builds to TestPyPI, and both to Nexus, which
+    # functional-tests installs from
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
-        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-releases"
-        ARG PYPI_REPOSITORY_PUBLIC="pypi"
+        ARG PYPI_REPOSITORY_INTERNAL="https://nexus.devops.gs.team/repository/pypi-releases/"
+        ARG PYPI_REPOSITORY_PUBLIC="https://upload.pypi.org/legacy/"
+        ARG PYPI_TOKEN_SECRET="PYPI_TOKEN"
     ELSE
-        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-snapshots"
-        ARG PYPI_REPOSITORY_PUBLIC="testpypi"
+        ARG PYPI_REPOSITORY_INTERNAL="https://nexus.devops.gs.team/repository/pypi-snapshots/"
+        ARG PYPI_REPOSITORY_PUBLIC="https://test.pypi.org/legacy/"
+        ARG PYPI_TOKEN_SECRET="PYPI_TOKEN_TEST"
     END
 
     # Push sdk
@@ -66,25 +58,21 @@ push:
         --secret PYPI_TOKEN_TEST \
         --secret NEXUS_USER \
         --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            twine upload dist/* -r ${PYPI_REPOSITORY_INTERNAL} && \
-            twine upload dist/* -r ${PYPI_REPOSITORY_PUBLIC} && \
-            pypi-clean.sh
+            TWINE_USERNAME="${NEXUS_USER}" TWINE_PASSWORD="${NEXUS_PASSWORD}" \
+                twine upload dist/* --repository-url ${PYPI_REPOSITORY_INTERNAL} && \
+            TWINE_USERNAME=__token__ TWINE_PASSWORD="pypi-$(printenv ${PYPI_TOKEN_SECRET})" \
+                twine upload dist/* --repository-url ${PYPI_REPOSITORY_PUBLIC}
 
 docs:
     FROM python:3.15.0
-    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
+    WORKDIR /app
 
     # Build
     COPY --dir docs setup.py odm_sdk  .
     WORKDIR docs
     RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements.txt && \
-            make markdown && \
-            pypi-clean.sh
+        python3 -m pip install --no-cache-dir -r requirements.txt && \
+        make markdown
 
     # Push
     WORKDIR build/markdown
@@ -103,7 +91,12 @@ docs:
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+SONARCLOUD_RUN
+    ARG --required GIT_BRANCH_NAME
+    COPY . .
+    RUN \
+        --secret SONAR_TOKEN \
+            sonar-scanner \
+                -Dsonar.branch.name=${GIT_BRANCH_NAME}
 
 main:
     BUILD +push
