@@ -1,34 +1,34 @@
 VERSION 0.8
 
 tox:
-    FROM python:3.15.0-alpine
-    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
+    FROM astral/uv:0.13.1-python3.15-alpine
+    WORKDIR /app
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
-    RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements-tox.txt && \
-            pypi-clean.sh
+    RUN uv pip install --system --no-cache -r requirements-tox.txt
 
     SAVE IMAGE --cache-hint
 
 test:
     FROM +tox
     COPY --dir requirements-internal.txt.envtpl requirements-build.txt requirements-test.txt requirements.txt \
-                MANIFEST.in README.md LICENSE.txt \
+                uv.toml MANIFEST.in README.md LICENSE.txt \
                 setup.py odm_sdk \
                 .
 
+    # odm-api development builds are on TestPyPI, releases on PyPI. tox-uv installs with the
+    # image's uv, which uv.toml lets fall back to TestPyPI only for what PyPI lacks.
+    # TestPyPI's CDN can serve an index without a new version for up to 10 minutes after its
+    # upload (Cache-Control: max-age=600), so odm-api is resolved first, retried until the
+    # index lists it; tox's uv then reads that page from the same cache.
     ARG --required OPENAPI_VERSION
     RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            cat requirements-internal.txt.envtpl | envsubst > requirements-internal.txt && \
-            python3 -m tox run-parallel && \
-            pypi-clean.sh
+        cat requirements-internal.txt.envtpl | uvx --no-cache envsubst > requirements-internal.txt && \
+        for i in $(seq 60); do \
+            uv pip compile --quiet --refresh-package odm-api requirements-internal.txt > /dev/null && break; \
+            [ $i -lt 60 ] && sleep 10 || exit 1; \
+        done && \
+        python3 -m tox run-parallel
 
     SAVE IMAGE --cache-hint
 
@@ -44,67 +44,33 @@ build:
 
 push:
     FROM +build
-    RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements-build.txt && \
-            pypi-clean.sh
+    RUN python3 -m pip install --no-cache-dir -r requirements-build.txt
 
+    # Releases go to PyPI, development builds to TestPyPI
     ARG --required SDK_VERSION
     IF echo ${SDK_VERSION} | grep -Exq "^([0-9]+(.)?){3}$"
-        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-releases"
-        ARG PYPI_REPOSITORY_PUBLIC="pypi"
+        ARG PYPI_REPOSITORY="https://upload.pypi.org/legacy/"
+        ARG PYPI_TOKEN_SECRET="PYPI_TOKEN"
     ELSE
-        ARG PYPI_REPOSITORY_INTERNAL="nexus-pypi-snapshots"
-        ARG PYPI_REPOSITORY_PUBLIC="testpypi"
+        ARG PYPI_REPOSITORY="https://test.pypi.org/legacy/"
+        ARG PYPI_TOKEN_SECRET="PYPI_TOKEN_TEST"
     END
 
     # Push sdk
     RUN --push \
         --secret PYPI_TOKEN \
         --secret PYPI_TOKEN_TEST \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            twine upload dist/* -r ${PYPI_REPOSITORY_INTERNAL} && \
-            twine upload dist/* -r ${PYPI_REPOSITORY_PUBLIC} && \
-            pypi-clean.sh
-
-docs:
-    FROM python:3.15.0
-    DO github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+PYTHON_PREPARE
-
-    # Build
-    COPY --dir docs setup.py odm_sdk  .
-    WORKDIR docs
-    RUN \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            pypi-login.sh && \
-            python3 -m pip install --no-cache-dir -r requirements.txt && \
-            make markdown && \
-            pypi-clean.sh
-
-    # Push
-    WORKDIR build/markdown
-    ARG --required RAW_REGISTRY_SNAPSHOTS
-    ARG --required SDK_VERSION
-    RUN \
-        --push \
-        --secret NEXUS_USER \
-        --secret NEXUS_PASSWORD \
-            export DOC_ARCHIVE=odm-sdk-${SDK_VERSION}.tar.gz && \
-            tar cf ${DOC_ARCHIVE} * && \
-            curl -v --fail --user ${NEXUS_USER}:${NEXUS_PASSWORD} \
-                -H 'Content-Type: application/gzip' \
-                 --upload-file ${DOC_ARCHIVE} \
-                 ${RAW_REGISTRY_SNAPSHOTS}/docs/odm-sdk/${DOC_ARCHIVE}
+            TWINE_USERNAME=__token__ TWINE_PASSWORD="pypi-$(printenv ${PYPI_TOKEN_SECRET})" \
+                twine upload dist/* --repository-url ${PYPI_REPOSITORY}
 
 sonarcloud:
     FROM sonarsource/sonar-scanner-cli:5.0.1
-    DO --pass-args github.com/genestack/earthly-libs:6e90f15c1b437e0bfdf6f95786cac47fb5c0c7e9+SONARCLOUD_RUN
+    ARG --required GIT_BRANCH_NAME
+    COPY . .
+    RUN \
+        --secret SONAR_TOKEN \
+            sonar-scanner \
+                -Dsonar.branch.name=${GIT_BRANCH_NAME}
 
 main:
     BUILD +push
-    BUILD +docs
