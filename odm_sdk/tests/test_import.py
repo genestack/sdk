@@ -7,9 +7,11 @@ from io import StringIO
 import requests_mock
 
 from odm_sdk.scripts.import_ODM_data import ImportParams, do_import, ParserAstState, \
-    SaneArgumentParser, prevent_redundant_parameters, _StoreServerName, make_samples_action, \
+    SaneArgumentParser, make_samples_action, \
     DeprecatedAction, make_libraries_and_preparations_action, make_cell_action, make_signal_action, \
-    make_file_action, make_mapping_file_action, ETL_WAITING_TIMEOUT, ETL_SOURCES
+    make_file_action, make_mapping_file_action, ETL_WAITING_TIMEOUT, ETL_SOURCES, \
+    TemplateAccessionSupplier
+from odm_sdk.scripts.token_auth import add_host_argument, add_token_arguments, prevent_redundant_parameters
 
 JOB_API_PATH = "frontend/rs/genestack/job/default-released"
 INTEGRATION_LINK_PATH = "frontend/rs/genestack/integrationCurator/default-released/integration/link"
@@ -32,31 +34,8 @@ def get_arg_parser(parser_args_state):
                                        "(e.g., '--link_all_to_all') are still supported, "
                                        "but considered obsolete",
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                            "only one token can be specified. "
-                                                            "Please choose the authentication method: "
-                                                            "through the Access Token or "
-                                                            "through the Genestack-API-token"),
-                        dest="API_TOKEN",
-                        nargs="?",
-                        help="API_TOKEN")
-    parser.add_argument("-at", "--access-token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                            "only one token can be specified. "
-                                                            "Please choose the authentication method: "
-                                                            "through the Access Token or "
-                                                            "through the Genestack-API-token"),
-                        dest="ACCESS_TOKEN",
-                        nargs="?",
-                        help="ACCESS_TOKEN")
-    parser.add_argument("-H", "--host", "-srv", "--server",
-                        action=_StoreServerName,
-                        const="https://odm-demos.genestack.com/",
-                        default="https://odm-demos.genestack.com/",
-                        nargs="?",
-                        dest="SERVER",
-                        help="URL of the instance data is being loaded to")
+    add_token_arguments(parser)
+    add_host_argument(parser, "URL of the instance data is being loaded to")
     parser.add_argument("-tmpl", "--template",
                         action="store",
                         const=None,
@@ -299,17 +278,46 @@ class ImportTest(unittest.TestCase):
         })
         ImportParams.from_parsed_params(args, None)
 
-    def test_exception_on_providing_access_token_wo_accession(self):
-        with self.assertRaises(SystemExit) as cm, captured_output() as (out, err):
-            args = _MockArgs({
-                "ACCESS_TOKEN": "aToken",
-                "SERVER": "https://dummy",
-                "study_link": "https://provided.link"
-            })
-            ImportParams.from_parsed_params(args, None)
-        self.assertEqual(1, cm.exception.code)
-        error_text = err.getvalue().strip()
-        self.assertEqual('Please provide template accession when using Access Token', error_text)
+    @requests_mock.Mocker()
+    def test_default_template_is_discovered_with_access_token(self, mocker):
+        server = "https://dummy"
+        access_token = "access-token"
+        template_accession = "GSF010101"
+
+        mocker.post(
+            server + "/frontend/endpoint/application/invoke/genestack/"
+                     "signin/authenticateOAuthAccessToken",
+            json={"result": {"authenticated": True}},
+        )
+        mocker.post(
+            server + "/frontend/endpoint/application/invoke/genestack/"
+                     "study-metainfotemplateeditor/listTemplates",
+            json={
+                "result": [
+                    {"accession": "GSF020202", "isDefault": False},
+                    {"accession": template_accession, "isDefault": True},
+                ]
+            },
+        )
+
+        args = _MockArgs({
+            "ACCESS_TOKEN": access_token,
+            "SERVER": server,
+            "study_link": "https://provided.link",
+        })
+
+        supplier = TemplateAccessionSupplier(args)
+
+        self.assertEqual(template_accession, supplier())
+        self.assertEqual(
+            "Bearer {}".format(access_token),
+            mocker.request_history[0].headers["Authorization"],
+        )
+        self.assertEqual([access_token], mocker.request_history[0].json())
+        self.assertEqual(
+            "Bearer {}".format(access_token),
+            mocker.request_history[1].headers["Authorization"],
+        )
 
     def test_ImportParams_constructed_with_token(self):
         ip = ImportParams(server="https://dummy",

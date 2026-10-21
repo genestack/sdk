@@ -1,2 +1,3 @@
-tox==4.55.0
-setuptools==82.0.1
+tox==4.67.1
+tox-uv-bare==1.37.0
+setuptools==84.0.0

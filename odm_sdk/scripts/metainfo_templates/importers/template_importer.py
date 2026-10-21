@@ -14,8 +14,9 @@ from .dictionary_search import DictionarySearch
 from .format import colored, print_result, Color
 
 
-# permission name to look for in "not enough permissions" server error
-TEMPLATE_PERM_NAME = 'MANAGE_TEMPLATES'
+# role markers to look for in "not enough permissions" server error:
+# role title for current servers, permission id for older ones
+TEMPLATE_ROLE_MARKERS = ('Template Administrator', 'MANAGE_TEMPLATES')
 
 
 class TemplateImporter(Application):
@@ -39,9 +40,9 @@ class TemplateImporter(Application):
         try:
             return super(TemplateImporter, self).invoke(method, *params)
         except GenestackServerException as e:
-            if TEMPLATE_PERM_NAME in e.message:
+            if any(marker in e.message for marker in TEMPLATE_ROLE_MARKERS):
                 print("TIP: to create or update metainfo template, user has to "
-                      "have 'Set up templates' permission; request it from your "
+                      "have 'Template Administrator' role; request it from your "
                       "administrator", file=sys.stderr)
             raise e
 

@@ -1,39 +1,46 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# This script deletes files using wipeStudy method.
+# This script deletes files using DELETE manageData/data endpoint.
 # Provide an accession of a study/template which needs to be deleted.
 
 from __future__ import print_function, unicode_literals
 
-import re
+import argparse
 import sys
 
-from odm_sdk import GenestackServerException
+import requests
+
+from odm_sdk.scripts.token_auth import Headers, add_host_argument, add_token_arguments
 from odm_sdk.scripts.utils import colored, GREEN, RED
-from odm_sdk.utils import make_connection_parser, get_connection
+
+MANAGE_DATA_PATH = 'api/v1/manage-data/data'
 
 
 def main():
-    parser = make_connection_parser()
+    parser = argparse.ArgumentParser(
+        description='Delete a study or a template with all its content. '
+                    'Authentication by either an API token or an access token is required.')
+    add_host_argument(parser, 'URL of the instance a study/template is deleted from')
+    add_token_arguments(parser, nargs=None)
     group = parser.add_argument_group('required arguments')
     group.add_argument('--accession', metavar='<accession>',
                        help='accession of a study/template to delete', required=True)
     args = parser.parse_args()
-    connection = get_connection(args)
+    headers = Headers(args)
 
-    accession = args.accession
     try:
-        connection.application('genestack/study-metainfo-editor').invoke('wipeStudy', accession)
-        print(colored("Success", GREEN))
-    except GenestackServerException as e:
-        message = e
-        if e.stack_trace is not None:
-            p = re.compile(r"GenestackRestApiException: (.*?)(?=\n)")
-            result = p.search(e.stack_trace)
-            if result:
-                message = result.group(1)
-        print(colored(message, RED), file=sys.stderr)
+        response = requests.delete(
+            '{}/{}'.format(args.SERVER, MANAGE_DATA_PATH),
+            headers=headers, params={'accessions': args.accession})
+    except requests.exceptions.RequestException as e:
+        print(colored(e, RED), file=sys.stderr)
         sys.exit(1)
+
+    if response.status_code != requests.codes.accepted:
+        print(colored("Deletion failed: HTTP {} {}".format(response.status_code, response.text),
+                      RED), file=sys.stderr)
+        sys.exit(1)
+    print(colored("Success", GREEN))
 
 
 if __name__ == "__main__":

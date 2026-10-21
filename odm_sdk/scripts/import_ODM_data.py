@@ -31,6 +31,9 @@ except ImportError:
 
 import requests
 
+from odm_sdk.scripts.token_auth import (
+    Headers, add_host_argument, add_token_arguments, prevent_redundant_parameters)
+
 # let's do it `six`-style! (https://github.com/benjaminp/six/blob/master/six.py#L35)
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -167,7 +170,8 @@ class TemplateAccessionSupplier:
     """
     def __init__(self, args):
         self.server = args.SERVER
-        self.token = args.API_TOKEN
+        self.api_token = args.API_TOKEN
+        self.access_token = args.ACCESS_TOKEN
         self.debug = args.debug
         self.template_accession = args.TEMPLATE_ACCESSION
         self.should_request_default = args.TEMPLATE_ACCESSION is None and \
@@ -175,8 +179,9 @@ class TemplateAccessionSupplier:
         self._validate()
 
     def _validate(self):
-        if self.token is None and self.should_request_default:
-            _err("Please provide template accession when using Access Token", in_red=True)
+        if (self.api_token is None and self.access_token is None
+                and self.should_request_default):
+            _err("Authentication is required to discover the default template", in_red=True)
             sys.exit(1)
 
     def __call__(self, *args, **kwargs):
@@ -186,11 +191,25 @@ class TemplateAccessionSupplier:
         return self.template_accession
 
     def _authenticate(self):
-        aut_url = "/frontend/endpoint/application/invoke/genestack/signin/authenticateByApiToken"
+        if self.access_token is not None:
+            auth_method = "authenticateOAuthAccessToken"
+            token = self.access_token
+        else:
+            auth_method = "authenticateByApiToken"
+            token = self.api_token
+
+        aut_url = (
+            "/frontend/endpoint/application/invoke/genestack/signin/{}"
+            .format(auth_method)
+        )
         url_authenticate = self.server + aut_url
         session = requests.Session()
+        if self.access_token is not None:
+            session.headers.update(
+                {"Authorization": "Bearer {}".format(self.access_token)}
+            )
         try:
-            result = session.post(url_authenticate, json=[self.token], timeout=10)
+            result = session.post(url_authenticate, json=[token], timeout=10)
             if not json.loads(result.text)["result"]["authenticated"]:
                 if self.debug:
                     print(result, result.text)
@@ -320,7 +339,7 @@ def check_mapping_file(acc, params):
     """
     if acc is None:
         return None
-    url = ('{}/{}/reference-data/{}/xrefsets/{}/metadata'
+    url = ('{}/{}/xrefsets/{}/xrefsets/{}/metadata'
            ''.format(params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION, acc))
     resp = requests.get(url, headers=params.headers)
     if resp.ok:
@@ -528,7 +547,7 @@ def add_mappings(data_link, params, metadata_link=None):
         https://genestack.atlassian.net/browse/ODM-7489
     """
     metadata = fetch_and_parse_csv(metadata_link) if metadata_link else None
-    url = ('{}/{}/reference-data/{}/xrefsets'
+    url = ('{}/{}/xrefsets/{}/xrefsets'
            ''.format(params.SERVER, COMMON_URL_PREFIX, params.APP_VERSION))
     source = _get_etl_source_from_url(data_link).lower()
     payload = {
@@ -800,59 +819,6 @@ class SaneArgumentParser(argparse.ArgumentParser):
                     args.append(a)
                 prev = a
         return super(SaneArgumentParser, self).parse_args(args, namespace)
-
-
-# pylint: disable-next=protected-access
-class _SingletonAction(argparse._StoreAction):
-    """ Ensures that only one argument is passed """
-
-    def __init__(self, mutually_exclusive, err_msg, *args, **kwargs):
-        super(_SingletonAction, self).__init__(*args, **kwargs)
-        self.err_msg = err_msg
-        self.mutually_exclusive = mutually_exclusive
-
-    def __call__(self, parser_, namespace, values, option_string=None):
-        already_defined = any(getattr(namespace, v) is not None
-                              for v in self.mutually_exclusive)
-        if already_defined:
-            raise argparse.ArgumentError(self, self.err_msg)
-        setattr(namespace, self.dest, values)
-
-# pylint: disable-next=protected-access
-class _StoreServerName(argparse._StoreAction):
-    """ Ensures that server name is not ended wit `/` """
-
-    def __call__(self, parser_, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values.rstrip("/"))
-
-
-def prevent_redundant_parameters(mutually_exclusive, err_msg):
-    return lambda *args, **kwargs: _SingletonAction(mutually_exclusive, err_msg, *args, **kwargs)
-
-
-class Headers(dict):
-    """Derives http-headers from arguments"""
-
-    def __init__(self, args):
-        super(dict, self).__init__()
-        self["Genestack-API-Token"] = args.API_TOKEN
-        self["Authorization"] = "Bearer {}".format(args.ACCESS_TOKEN) if args.ACCESS_TOKEN else None
-        self["Accept"] = "application/json"
-        self["Content-Type"] = "application/json"
-        self._validate()
-
-    def _validate(self):
-        if self["Genestack-API-Token"] and self["Authorization"]:
-            _err("Please provide a Genestack-Api-Token or an Access Token but not both",
-                 in_red=True)
-            sys.exit(1)
-        if self["Genestack-API-Token"] is None and self["Authorization"] is None:
-            _err("Please provide a Genestack-Api-Token or an Access Token",
-                 in_red=True)
-            sys.exit(1)
-
-    def __getstate__(self):
-        return self
 
 
 class DeprecatedAction(argparse.Action):
@@ -1762,31 +1728,8 @@ def main():
                                        "(e.g., '--link_all_to_all') are still supported, "
                                        "but considered obsolete",
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                        "only one token can be specified. "
-                                                        "Please choose the authentication method: "
-                                                        "through the Access Token or "
-                                                        "through the Genestack-API-token"),
-                        dest="API_TOKEN",
-                        nargs="?",
-                        help="API_TOKEN")
-    parser.add_argument("-at", "--access-token",
-                        action=prevent_redundant_parameters(("API_TOKEN", "ACCESS_TOKEN"),
-                                                        "only one token can be specified. "
-                                                        "Please choose the authentication method: "
-                                                        "through the Access Token or "
-                                                        "through the Genestack-API-token"),
-                        dest="ACCESS_TOKEN",
-                        nargs="?",
-                        help="ACCESS_TOKEN")
-    parser.add_argument("-H", "--host", "-srv", "--server",
-                        action=_StoreServerName,
-                        const="https://odm-demos.genestack.com/",
-                        default="https://odm-demos.genestack.com/",
-                        nargs="?",
-                        dest="SERVER",
-                        help="URL of the instance data is being loaded to")
+    add_token_arguments(parser)
+    add_host_argument(parser, "URL of the instance data is being loaded to")
     parser.add_argument("-tmpl", "--template",
                         action="store",
                         const=None,

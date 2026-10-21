@@ -1,0 +1,14 @@
+# odm-api development builds are on TestPyPI, releases on PyPI. Every version a package has
+# on PyPI comes first, so TestPyPI, where anyone can publish, only serves what PyPI lacks:
+# those development builds. pip's --extra-index-url would let it serve any package.
+index-strategy = "unsafe-first-match"
+
+# tox.ini runs the environment of the one Python the CI image has and skips the rest;
+# without this, tox-uv would download the others.
+python-downloads = "never"
+
+[[index]]
+url = "https://pypi.org/simple"
+
+[[index]]
+url = "https://test.pypi.org/simple"
