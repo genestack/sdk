@@ -1,7 +1,7 @@
 VERSION 0.8
 
 tox:
-    FROM astral/uv:0.13.1-python3.15-alpine
+    FROM astral/uv:0.13.5-python3.15-alpine
     WORKDIR /app
     CACHE /root/.cache
     COPY requirements-tox.txt tox.ini .
