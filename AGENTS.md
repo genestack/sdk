@@ -88,6 +88,10 @@ result, including authentication, path, payload, and rejection behavior relevant
 to the change. Use synthetic credentials and mock settings/keyring access when
 testing account configuration.
 
+When a check fails, preserve intended behavior and test coverage. Do not weaken
+assertions, remove rejection cases, or add skips merely to make checks pass.
+Fix the cause or report the remaining failure.
+
 Run the hooks in [.pre-commit-config.yaml](.pre-commit-config.yaml) with explicit
 changed paths, including new files, and inspect any fixes. The
 [GitHub workflow](.github/workflows/pre-commit.yml) runs these hooks for ready

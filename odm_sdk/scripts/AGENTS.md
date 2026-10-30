@@ -71,6 +71,27 @@ operations continue and collect failures, but `do_import` still exits nonzero
 when failures remain. The mocked 504 case in `test_import.py` checks that the
 linking failure and server response remain visible.
 
+## Curation
+
+`odm-curate-study` uses
+[create_curation_file.py](study_management/create_curation_file.py).
+`CurationApplication.create_files` passes six positional arguments to
+`createCurationFiles`; `RULES_SCHEMA` describes the client's expected format for
+the rules argument. Preserve argument order. Verify rules-format changes against
+the server implementation, or flag the change as unverified, following the
+[shared compatibility rules](../../AGENTS.md#shared-compatibility).
+
+Publication defaults to enabled; `--do-not-publish` disables it and is mutually
+exclusive with `--version-message`. With `--do-not-publish`, the CLI still sends
+`new_version_message` with its default value, `Edited using curation script`.
+The command authenticates before it reads or schema-validates the rules file,
+and `--dry-run` is forwarded to the server, so it has no offline rules-validation
+path.
+
+For changes to these contracts, mock the connection and RPC and assert argument
+order, publication defaults, version-message and dry-run forwarding, and relevant
+validation failures. Existing tests do not cover curation.
+
 ## Shell and administrative utilities
 
 [shell.py](shell.py) and [user_setup.py](user_setup.py) use the framework in
