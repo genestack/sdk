@@ -21,15 +21,6 @@ over that area's files. Platform instructions and permissions still take priorit
 | Packaging, dependencies, CI, or version generation | [Build and dependencies](#build-and-dependencies) |
 | Sphinx sources or generated command help, including changes to shell parsers | [Documentation sources](#documentation-sources) |
 
-Codex and Claude use this same rule set. Codex discovers ancestors down to its
-starting directory, so the explicit routes also cover work below that directory.
-Claude Code 2.1.277 or later can load `AGENTS.md` natively, including descendant
-guides when it reads files there. A project or ancestor `CLAUDE.md` or
-`CLAUDE.local.md` can suppress that default. For that setup, use Claude's user-level
-Project instructions setting to load both file types. Loading details are in the
-official [Codex instructions documentation](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
-and [Claude memory documentation](https://code.claude.com/docs/en/memory#agentsmd).
-
 ## Shared compatibility
 
 - Preserve public imports in [odm_sdk/__init__.py](odm_sdk/__init__.py), console
