@@ -6,6 +6,10 @@ SHELL = /usr/bin/env bash -o pipefail
 # The version odm-sdk is published under: CI's Push and Test builds set IMAGE_VERSION in
 # every repo, image or not. A release version (X.Y.Z) goes to PyPI, any other to TestPyPI.
 IMAGE_VERSION ?= 1.0.0
+# CI's Push build sets IMAGE_PUSH=registry. Uploads run only with registry or full: a local
+# `make push` builds the artifacts and uploads nothing.
+IMAGE_PUSH    ?= docker
+UPLOAD        := $(filter registry full,$(IMAGE_PUSH))
 
 .PHONY: main
 main: push
@@ -32,15 +36,15 @@ help: ## Display this help.
 # In CI the Vault step writes every secret to .secret in the checkout (teamcity-main's
 # templates/Vault.kt); only the PyPI tokens go into the build.
 .PHONY: push
-push: ## Build the sdist of IMAGE_VERSION against odm-api OPENAPI_VERSION and upload it, without tests: PyPI for X.Y.Z, TestPyPI otherwise.
+push: ## Build the sdist of IMAGE_VERSION against odm-api OPENAPI_VERSION without tests and, with IMAGE_PUSH registry or full, upload it: PyPI for X.Y.Z, TestPyPI otherwise.
 	@if [ -f .secret ]; then set -a; . ./.secret; set +a; fi; \
 	docker buildx build \
-	--target=push \
+	--target=$(if $(UPLOAD),pypi-upload,sdist) \
 	--build-arg=SDK_VERSION=$(IMAGE_VERSION) \
 	--build-arg=OPENAPI_VERSION=$(or $(OPENAPI_VERSION),$(error OPENAPI_VERSION is not set)) \
 	--secret=id=PYPI_TOKEN,env=PYPI_TOKEN \
 	--secret=id=PYPI_TOKEN_TEST,env=PYPI_TOKEN_TEST \
-	--no-cache-filter=push \
+	--no-cache-filter=pypi-upload \
 	--output=type=cacheonly \
 	.
 

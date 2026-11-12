@@ -2,14 +2,16 @@
 #
 # odm-sdk, the Python client of ODM, published as an sdist: to PyPI for a release version
 # (X.Y.Z), to TestPyPI otherwise. No image. The build context is this repo, filtered by
-# .dockerignore. The Makefile builds three targets:
+# .dockerignore. The Makefile builds these targets:
 #
-#   push        the sdist, uploaded by twine; no tests
-#   test        tox run-parallel: pytest on the image's Python
-#   sonarcloud  the SonarCloud analysis
+#   sdist        the sdist; no tests. `make push` builds it with IMAGE_PUSH docker or none
+#   pypi-upload  the sdist, uploaded by twine. `make push` builds it with IMAGE_PUSH registry
+#                or full, as CI does
+#   test         tox run-parallel: pytest on the image's Python
+#   sonarcloud   the SonarCloud analysis
 #
 # odm-sdk pins the odm-api (the generated OpenAPI client) of OPENAPI_VERSION: setup.py
-# reads it from requirements-internal.txt, which push and test render from its envtpl.
+# reads it from requirements-internal.txt, which sdist and test render from its envtpl.
 
 ARG UV_IMAGE=astral/uv:0.13.7-python3.15-alpine
 ARG SONAR_SCANNER_IMAGE=sonarsource/sonar-scanner-cli:5.0.1
@@ -84,7 +86,7 @@ RUN --mount=type=secret,id=SONAR_TOKEN,env=SONAR_TOKEN \
     sonar-scanner -Dsonar.branch.name="${GIT_BRANCH_NAME}"
 
 # Releases go to PyPI, development builds to TestPyPI, each with its own token.
-FROM sdist AS push
+FROM sdist AS pypi-upload
 
 ARG SDK_VERSION
 RUN --mount=type=secret,id=PYPI_TOKEN,env=PYPI_TOKEN \
