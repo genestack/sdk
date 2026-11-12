@@ -1,3 +1,2 @@
 tox==4.67.13
 tox-uv-bare==1.37.7
-setuptools==84.2.1
