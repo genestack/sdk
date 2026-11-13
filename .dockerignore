@@ -1,0 +1,23 @@
+# The build context is this repo. Host build state stays out of the stages and the cache
+# key: push and test render requirements-internal.txt and build the sdist themselves.
+.git
+.github
+.idea
+.vscode
+venv
+.venv
+.tox
+.cache
+build/
+dist/
+docs/build/
+genestack_client.egg-info/
+odm_sdk.egg-info
+requirements-internal.txt
+**/__pycache__
+**/*.pyc
+# CI's Vault step writes its secrets into the checkout. No stage reads them.
+.env
+.env-woq
+.arg
+.secret
