@@ -17,6 +17,12 @@
       "description": "Automerge non-major updates",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "description": "Every minor and patch update in one PR, from renovate/all-minor-patch, a branch name every ODM repo shares: TeamCity's gate builds that name in each repo that has it, so one gate run tests the updates of all of them. Keep it the last rule: a later groupName would take updates out of it",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
     }
   ]
 }
