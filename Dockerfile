@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.28
+# syntax=docker/dockerfile:1.29
 #
 # odm-sdk, the Python client of ODM, published as an sdist: to PyPI for a release version
 # (X.Y.Z), to TestPyPI otherwise. No image. The build context is this repo, filtered by
@@ -13,7 +13,7 @@
 # odm-sdk pins the odm-api (the generated OpenAPI client) of OPENAPI_VERSION: setup.py
 # reads it from requirements-internal.txt, which sdist and test render from its envtpl.
 
-ARG UV_IMAGE=astral/uv:0.13.7-python3.15-alpine
+ARG UV_IMAGE=astral/uv:0.13.8-python3.15-alpine
 ARG SONAR_SCANNER_IMAGE=sonarsource/sonar-scanner-cli:5.0.1
 
 FROM ${UV_IMAGE} AS tox
