@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 from odm_sdk import BioMetaKeys, GenestackException, Metainfo
 from odm_sdk.metainfo_scalar_values import ExternalLink, FileReference, StringValue
 
@@ -71,15 +69,9 @@ class DataImporter(object):
         self.connection = connection
         self.importer = connection.application('genestack/upload')
 
-    def __process_links(self, metainfo):
-        all_links = [(key, val) for key, val in metainfo.items() if val[0]['type'] == 'externalLink']
-        for key, external_link_list in all_links:
-            for x in external_link_list:
-                if x['url'].startswith('s3://'):
-                    x['url'] = 's3://%s' % quote(x['url'][5:])
-
     def __invoke_loader(self, parent, importer_type, metainfo):
-        self.__process_links(metainfo)
+        # Links go as the caller wrote them: ODM's storage service is the one component that
+        # encodes or decodes them (BIA-275).
         return self.importer.invoke('createFile', parent, importer_type, metainfo)['accession']
 
     @staticmethod
