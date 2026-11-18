@@ -6,18 +6,23 @@
   "rebaseWhen": "behind-base-branch",
   "updateNotScheduled": false,
   "labels": ["renovate"],
-  "dockerfile": {
-    "fileMatch": [
-      "(^|/)Earthfile$",
-      "(^|/|\\.)Dockerfile$",
-      "(^|/)Dockerfile[^/]*$"
-    ]
-  },
   "packageRules": [
+    {
+      "description": "git_dir is the Makefile's named build context that `COPY --from` reads, not an image",
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["git_dir"],
+      "enabled": false
+    },
     {
       "description": "Automerge non-major updates",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "description": "Every minor and patch update in one PR, from renovate/all-minor-patch, a branch name every ODM repo shares: TeamCity's gate builds that name in each repo that has it, so one gate run tests the updates of all of them. Keep it the last rule: a later groupName would take updates out of it",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
     }
   ]
 }

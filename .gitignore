@@ -13,7 +13,7 @@ genestack_client.egg-info/
 # generated shell docs
 docs/source/scripts/genestack-user-setup.rst
 
-# Earthly stuff
+# CI's Vault step writes these into the checkout
 .env
 .env-woq
 .arg
