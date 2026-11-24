@@ -90,6 +90,23 @@ class FilesUtil(Application):
             name, parent, file_class
         )
 
+    def find_dictionaries_by_name(self, name):
+        """
+        Finds the dictionaries that are not obsolete and have exactly the specified name.
+        The search uses the search index, not the folders.
+
+        :param name: dictionary name
+        :type name: str
+        :return: accessions of the dictionaries
+        :rtype: list[str]
+        """
+        response = self.search_files(
+            search_string=name,
+            parameters={'type': self.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
+        return [accession
+                for dictionary_file in response['files']
+                for accession in dictionary_file['accessions']]
+
     def find_application_page_file_by_name(self, name, parent=None):
         return self.find_file_by_name(name, parent, self.APPLICATION_PAGE_FILE)
 

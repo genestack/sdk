@@ -21,12 +21,7 @@ from odm_sdk.scripts.utils import colored, GREEN, BLUE, RED
 def load_dictionary(connection, data, parent_dictionary=None, replace=False, metainfo=None):
     name = data['name']
 
-    search_dictionaries = FilesUtil(connection).search_files(
-        search_string=name,
-        parameters={'type': FilesUtil.DICTIONARY_FILE, 'name': name, 'obsolete': 'false'})
-    existing_accessions = [accession
-                           for dictionary_file in search_dictionaries['files']
-                           for accession in dictionary_file['accessions']]
+    existing_accessions = FilesUtil(connection).find_dictionaries_by_name(name)
     if existing_accessions and not replace:
         raise GenestackException(
             "Dictionary %s already exists with accessions: %s. Use --replace flag to overwrite it"
