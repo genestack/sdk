@@ -1,8 +1,6 @@
 from odm_sdk import (Application, FileFilter, GenestackException, Metainfo,
                               validate_constant)
 
-CALCULATE_CHECKSUMS_KEY = 'genestack.checksum:markedForTests'
-EXPECTED_CHECKSUM_PREFIX = 'genestack.checksum.expected:'
 FILE_BATCH_SIZE = 500
 
 
@@ -130,73 +128,6 @@ class FilesUtil(Application):
         """
         return self.invoke('findOrCreateFolder', name, parent)
 
-    def unlink_file(self, accession, parent):
-        """
-        Unlink a file from a folder.
-
-        :param accession: file accession
-        :type accession: str
-        :param parent: folder accession
-        :type parent: str
-        :rtype: None
-        """
-        self.invoke('unlinkFiles', {accession: [parent]})
-
-    def link_files(self, children_to_parents_dict):
-        """
-        Link files to containers.
-
-        :param children_to_parents_dict: dictionary where keys are accessions of the files to link, and
-            values are lists of accessions of the containers to link into
-        :type: dict
-
-        :rtype: None
-        """
-        self.invoke('linkFiles', children_to_parents_dict)
-
-    def unlink_files(self, children_to_parents_dict):
-        """
-        Unlink files from containers.
-
-        :param children_to_parents_dict: dictionary where keys are accessions of the files to unlink, and
-            values are lists of accessions of the containers to unlink from
-        :type children_to_parents_dict: dict[str, list[str]]
-        :rtype: None
-        """
-        self.invoke('unlinkFiles', children_to_parents_dict)
-
-    def add_metainfo_string_value(self, accession_list, key, value):
-        """
-        Add a string value to the metainfo of specified files.
-
-        :param accession_list: list of files to be updated
-        :type accession_list: list[str]
-        :param key: metainfo key
-        :type key: str
-        :param value: string
-        :type value: str
-        :rtype: None
-        """
-        self.invoke('addMetainfoStringValue', accession_list, key, value)
-
-    def add_metainfo_values(self, accession, metainfo, skip_existing_keys=True, replace_existing_keys=False):
-        """
-        Add metainfo to a specified file.
-        By default, metainfo keys that are already present in the file will be skipped.
-
-        :param accession: accession of the file to update
-        :param metainfo: metainfo object containing the metainfo to add
-        :type metainfo: Metainfo
-        :param skip_existing_keys: ignore metainfo keys that are already present in the file's metainfo
-            (default: ``True``)
-        :type skip_existing_keys: bool
-        :param replace_existing_keys: replace the existing metainfo value for the metainfo keys
-            that are already present in the file's metainfo (default: ``False``)
-        :type replace_existing_keys: bool
-        :rtype: None
-        """
-        self.invoke('addMetainfoValues', accession, metainfo, skip_existing_keys, replace_existing_keys)
-
     def get_special_folder(self, name):
         """
         Return the accession of a special folder.
@@ -285,51 +216,6 @@ class FilesUtil(Application):
         :rtype: str
         """
         return 'public'
-
-    def mark_for_tests(self, app_file):
-        """
-        Mark Genestack file as test one by adding corresponding key to metainfo.
-        Test file will calculate md5 checksums of its encapsulated physical files
-        during initialization.
-
-        :param app_file: accession of file
-        :return: None
-        """
-        metainfo = Metainfo()
-        metainfo.add_boolean(CALCULATE_CHECKSUMS_KEY, True)
-        self.add_metainfo_values(app_file, metainfo)
-
-    def mark_obsolete(self, accession):
-        """
-        Mark Genestack file as obsolete one by adding corresponding key to metainfo.
-
-        :param accession: accession of file
-        :return: None
-        """
-        metainfo = Metainfo()
-        metainfo.add_boolean('genestack:obsolete', True)
-        self.add_metainfo_values(accession, metainfo)
-
-    def add_checksums(self, app_file, expected_checksums):
-        """
-        Add expected MD5 checksum to the metainfo of a CLA file.
-        Expected checksums are calculated in the following way:
-
-            - The number of checksums equals number of entries in storage.
-              For instance, a Reference Genome file has 2 entries (annotation and sequence files).
-            - If there are multiple files in one entry, they will be concatenated in the same order
-              as they were ``PUT`` to storage by the initialization script.
-            - If a file is marked for testing, then after initialization its metainfo
-              will contain both expected and actual checksum values.
-
-        :param app_file: accession of application file
-        :param expected_checksums: collection of MD5 checksums
-        :return: None
-        """
-        metainfo = Metainfo()
-        for key, value in expected_checksums.items():
-            metainfo.add_string('%s%s' % (EXPECTED_CHECKSUM_PREFIX, key), value)
-        self.add_metainfo_values(app_file, metainfo)
 
     def initialize(self, accessions):
         """

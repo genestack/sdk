@@ -63,6 +63,8 @@ class Connection(object):
         """
         self.server_url = server_url
         self.session = requests.session()
+        # The REST API accepts only a token header, not the session cookie of a login (it's browser only)
+        self._rest_auth_headers = None
         self.debug = debug
         self.show_logs = show_logs
 
@@ -115,6 +117,7 @@ class Connection(object):
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException(
                 'Fail to login with "%s" to "%s"' % (email, hostname))
+        self._rest_auth_headers = None
 
     def login_by_token(self, token):
         """
@@ -130,6 +133,7 @@ class Connection(object):
         if not logged['authenticated']:
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
+        self._rest_auth_headers = {'Genestack-API-Token': token}
 
     def login_by_access_token(self, access_token):
         """
@@ -149,6 +153,7 @@ class Connection(object):
             self.session.headers.pop('Authorization')
             hostname = urlsplit(self.server_url).hostname
             raise GenestackAuthenticationException('Fail to login by token to %s' % hostname)
+        self._rest_auth_headers = {'Authorization': f'Bearer {access_token}'}
 
     def logout(self):
         """
@@ -197,6 +202,40 @@ class Connection(object):
 
         except RequestException as e:
             raise GenestackConnectionFailure(str(e))
+
+    def post_rest(self, path, payload):
+        """
+        Send a JSON POST request to the ODM REST API.
+
+        The REST API accepts only a token. Thus the connection must log in with
+        :py:meth:`login_by_token` or :py:meth:`login_by_access_token`.
+
+        :param str path: path after the host, it starts with ``/api/v1``
+        :param payload: request body, any JSON-serializable value
+        :return: response body, parsed from JSON
+        :raises: :py:class:`~odm_sdk.GenestackAuthenticationException`
+                 if the connection did not log in with a token or the token is not accepted
+        :raises: :py:class:`~odm_sdk.GenestackResponseError` if the server returns an error
+        """
+        if not self._rest_auth_headers:
+            raise GenestackAuthenticationException(
+                'The ODM REST API accepts only an API token or an access token. '
+                'Log in with a token to use this method.')
+        # server_url is the path of the application API, the REST API is at the root of the host
+        host_url = self.server_url.rstrip('/').removesuffix('/frontend/endpoint')
+        try:
+            response = self.session.post(
+                host_url + path, json=payload, headers=self._rest_auth_headers,
+                timeout=int(os.environ.get("GENESTACK_CLIENT_TIMEOUT"))
+                if os.environ.get("GENESTACK_CLIENT_TIMEOUT", None) else None)
+        except RequestException as e:
+            raise GenestackConnectionFailure(str(e))
+        if response.status_code == 401:
+            raise GenestackAuthenticationException('Authentication failure')
+        if not response.ok:
+            raise GenestackResponseError(
+                'HTTP %s %s: %s' % (response.status_code, response.reason, response.text))
+        return response.json()
 
     def application(self, application_id):
         """
