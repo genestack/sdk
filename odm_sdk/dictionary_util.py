@@ -1,5 +1,4 @@
 import sys
-from urllib.parse import quote
 
 from odm_sdk import BioMetaKeys, GenestackException, Metainfo
 
@@ -76,8 +75,6 @@ class DictionaryUtil(object):
         for field in ('name', 'url'):
             if not request.get(field):
                 raise GenestackException('"%s" is required' % field)
-        if request['url'].startswith('s3://'):
-            request['url'] = 's3://' + quote(request['url'][len('s3://'):])
         request['replaces'] = list(replaces or [])
         response = self.connection.post_rest(DICTIONARIES_PATH, request)
         return response[Metainfo.ACCESSION]

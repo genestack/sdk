@@ -66,7 +66,7 @@ class DictionaryUtilTest(unittest.TestCase):
             DictionaryUtil(connection).create_dictionary(metainfo=metainfo)
 
         self.assertEqual({
-            "name": "name", "url": "s3://bucket/file%20name.owl", "parentDictionary": "GSF2",
+            "name": "name", "url": "s3://bucket/file name.owl", "parentDictionary": "GSF2",
             "dataType": "Gene Ontology", "replaces": [],
         }, json.loads(m.request_history[-1].body))
 
