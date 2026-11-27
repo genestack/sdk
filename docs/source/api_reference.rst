@@ -18,12 +18,12 @@ Application
         :members:
         :show-inheritance:
 
-.. _DataImporter:
+.. _DictionaryUtil:
 
-DataImporter
-------------
+DictionaryUtil
+--------------
 
-.. autoclass:: odm_sdk.DataImporter
+.. autoclass:: odm_sdk.DictionaryUtil
         :members:
         :show-inheritance:
 

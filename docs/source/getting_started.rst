@@ -294,56 +294,24 @@ Finding a folder by its name::
 See :ref:`FilesUtil` for more methods.
 
 
-Importers
----------
+Dictionaries
+------------
 
-As always, we start by creating a connection::
+A Reference Data Administrator can create a dictionary. The ODM REST API accepts only a token,
+thus log in with an API token or an access token::
 
-    >>> from odm_sdk import get_connection
-    >>> connection = get_connection()
+    >>> from odm_sdk import Connection, DictionaryUtil
+    >>> connection = Connection('https://odm.example.com/frontend/endpoint')
+    >>> connection.login_by_token('my-api-token')
+    >>> dictionary_util = DictionaryUtil(connection)
+    >>> accession = dictionary_util.create_dictionary(name='Disease Ontology',
+    ...                                               url='https://example.com/doid.owl',
+    ...                                               replaces=['GSF000001'])
 
-Then we create a new instance of the app::
+ODM shares the new dictionary with all users, starts its initialization and marks the
+dictionary ``GSF000001`` obsolete.
 
-    >>> from odm_sdk import DataImporter
-    >>> importer = DataImporter(connection)
-
-Then let's create an experiment in ``Imported files``::
-
-    >>> experiment = importer.create_experiment(name='Sample of paired-end reads from A. fumigatus WGS experiment',
-    ... description='A segment of a paired-end whole genome sequencing experiment of A. fumigatus')
-
-
-We can add a sequencing assay to the experiment, using local files as sources::
-
-
-    >>> assay = importer.create_sequencing_assay(experiment,
-    ...                                          name='Test paired-end sequencing of A. fumigatus',
-    ...                                          links=['ds1.gz', 'ds2.gz'],
-    ...                                          organism='Aspergillus fumigatus',
-    ...                                          method='genome variation profiling by high throughput sequencing')
-    Uploading ds1.gz - 100.00%
-    Uploading ds2.gz - 100.00%
-
-Let's print the results to know the accession of our files::
-
-    >>> print 'Successfully load assay with accession %s to experiment %s' % (assay, experiment)
-    Successfully load assay with accession GSF000002 to experiment GSF000001
-
-And finally we can start the initialization of the file::
-
-    >>> from odm_sdk import FilesUtil
-    >>> files_util = FilesUtil(connection)
-    >>> files_util.initialize([assay])
-    >>> print 'Start initialization of %s' % assay
-    Start initialization of GSF000002
-
-As a result you should have:
-
-    - an ``Experiment`` folder in ``Imported files``;
-    - a ``Sequencing assay`` file inside the experiment;
-    - two ``Raw Upload`` files in the ``Uploaded files`` folder (these are just plain copies of your raw uploaded files; they can be removed once the sequencing assays have been initialized).
-
-See :ref:`DataImporter` for more info.
+See :ref:`DictionaryUtil` for more info.
 
 TaskLogViewer
 -------------

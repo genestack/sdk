@@ -128,7 +128,6 @@ class Metainfo(dict):
         """
         Add an external link. The URL should point to a valid source file.
         The source should be either a publicly available file on the web, or a local file.
-        Local files will be uploaded if imported with :py:class:`~odm_sdk.DataImporter`
 
         :param key: key
         :type key: str

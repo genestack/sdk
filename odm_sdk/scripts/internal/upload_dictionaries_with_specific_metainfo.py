@@ -1,6 +1,5 @@
 from odm_sdk import get_connection, Metainfo
-from odm_sdk.scripts.dictionaries.load_init_share_dictionaries import (load_dictionary, sharing,
-                                                                                   initialization)
+from odm_sdk.scripts.dictionaries.load_init_share_dictionaries import load_dictionary
 
 def upload_disease():
 
@@ -12,8 +11,6 @@ def upload_disease():
     }
     connection = get_connection()
     disease_ontology_accession = load_dictionary(connection, disease_ontology)
-    sharing(connection, [disease_ontology_accession])
-    initialization(connection, [disease_ontology_accession])
 
     # Upload Disease Ontology Extended with reference to Disease Ontology
     metainfo = Metainfo()
@@ -23,9 +20,7 @@ def upload_disease():
         'url': 'https://odm-init.s3.amazonaws.com/dictionaries/odm-12611/disease_extension.csv',
         'description': 'Classification of human diseases by etiology enriched by term "Healthy" and its synonyms. Domain: Diseases / Human Health, Version: 2025-05-30, extended by term "Healthy". The original data is available via the link https://purl.obolibrary.org/obo/doid/releases/2025-05-30/doid.owl'
     }
-    disease_ontology_extended_accession = load_dictionary(connection, disease_ontology_extended, metainfo=metainfo)
-    sharing(connection, [disease_ontology_extended_accession])
-    initialization(connection, [disease_ontology_extended_accession])
+    load_dictionary(connection, disease_ontology_extended, metainfo=metainfo)
 
 
 def upload_gene_ontology():
@@ -39,9 +34,7 @@ def upload_gene_ontology():
     connection = get_connection()
     metainfo = Metainfo()
     metainfo.add_string(Metainfo.DATA_TYPE, 'Gene Ontology')
-    gene_ontology_accession = load_dictionary(connection, gene_ontology, metainfo=metainfo)
-    sharing(connection, [gene_ontology_accession])
-    initialization(connection, [gene_ontology_accession])
+    load_dictionary(connection, gene_ontology, metainfo=metainfo)
 
 
 def main():
